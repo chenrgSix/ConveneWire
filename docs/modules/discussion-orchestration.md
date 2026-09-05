@@ -134,7 +134,11 @@ reviewed results and explicitly identifies unmeasured startup hypotheses.
 [QA-068](../acceptance/qa-068-discussion-continuation.md) owns a separately
 authorized continuation of the five incomplete balanced pairs. It reuses the
 unchanged packet and retains QA-067's failed attempt; completing its comparison
-does not introduce a production routing or startup decision.
+does not introduce a production routing or startup decision. The complete
+six-case evidence shows equal 22/24 criterion coverage and six/eighteen Runs
+for Single/Discussion, with failed attempts retained separately. Optional
+assessment must pass the existing wire schema before the Bridge emits it;
+ADP-019's reply-only fallback preserves delivery without manufacturing approval.
 
 `DISC-012` adds no generic soft barrier. Its accepted target is a separate
 `read_only_quorum` completion mode available only when every participant is a

@@ -179,3 +179,8 @@ hashes against the recorded commit, all nine attempted prompt hashes, rubric
 decisions, Run counts and the declared-only report transformation. The frozen
 packet, historical QA-065 evidence and ADR-0043 remain unchanged. All 393
 maintained Markdown files and whitespace checks pass after adding the guide.
+
+The separately authorized [QA-068 continuation](qa-068-discussion-continuation.md)
+later completes the remaining five pairs and retains this invocation unchanged.
+Its complete comparison and reproduced metadata-delivery defect are separate
+evidence; this record's failed and unstarted attempts remain historical facts.

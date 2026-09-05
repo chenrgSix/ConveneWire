@@ -55,8 +55,8 @@ lint and physical cleanup before committing the result.
 
 ## Execution evidence
 
-The manifest and acceptance above are frozen before continuation model calls.
-Results will be appended after execution; prior QA-067 evidence is immutable.
+The manifest and acceptance were frozen before continuation model calls.
+Results are retained below; prior QA-067 evidence remains immutable.
 
 The preflight passes 14 checks: four adapter tests, seven packet/answer/
 continuation tests and three complete synthetic Server/Bridge suites (legacy,
@@ -105,7 +105,84 @@ the retained failed attempt, this continuation phase is capped at 23 calls.
 There is no automatic retry or unbounded loop. The prior failure, partial local
 answer and failed lifecycle remain separately retained and unscored.
 
-The repair passes the Runtime package and all 14 benchmark checks, including
-the complete 20-Run invalid-metadata synthetic continuation. Their owned roots
-are physically removed. Full Bridge tests, vet and Runtime race checks are
-also being run; their results remain separate from real answer quality.
+The repair passes the Runtime package, full Bridge `go test ./...`,
+`go vet ./...`, Runtime `go test -race ./internal/runtime` and all 14 benchmark
+checks, including the complete 20-Run invalid-metadata synthetic continuation.
+Their owned roots are physically removed. These checks remain separate from
+real answer quality.
+
+## Completed real comparison
+
+The [reviewed continuation](evidence/qa-068-discussion-continuation-2026-09-06.json)
+retains clean source `1b9b16f6d09d7d3e57e21c4f00df519a066f329c`, 14 source hashes,
+ten task-input hashes and all ten final answers plus intermediate contributions.
+The original raw report SHA-256 is
+`0227ef9c5c08ab83e81e08b4eb3877554edb1ddd95d3231c27f92303358423b9`.
+The reviewed copy adds only fixed-rubric decisions/evidence and review metadata;
+answer text, prompts, states and timings are unchanged. Requested model and CLI
+remain `gpt-5.4-mini`, low effort and `codex-cli 0.153.3`; provider model identity
+is not independently attested.
+
+All 20 new Runs completed across five pairs. The command exited successfully
+after 292.3 seconds including setup; the live owned root was physically removed.
+The two QA-068 invocations used 3 + 20 = 23 calls with no automatic retry.
+The task agent reviewed all answers directly; review is neither independent
+nor blinded and consumed no additional provider calls.
+
+| Task | Source | Single criteria | Discussion criteria | Single wall s | Discussion wall s |
+| --- | --- | --- | --- | --- | --- |
+| Cross-domain grant review | QA-067 | 4/4 | 4/4 | 16.457 | 36.837 |
+| Simple selector review | Repaired QA-068 | 4/4 | 4/4 | 14.897 | 34.670 |
+| Cross-domain restart diagnosis | Repaired QA-068 | 4/4 | 4/4 | 18.738 | 43.526 |
+| Simple usage diagnosis | Repaired QA-068 | 2/4 | 2/4 | 23.327 | 41.223 |
+| Cross-domain transport comparison | Repaired QA-068 | 4/4 | 4/4 | 14.707 | 38.463 |
+| Simple schedule comparison | Repaired QA-068 | 4/4 | 4/4 | 13.191 | 31.600 |
+| Total | Two source invocations | 22/24 | 22/24 | 101.317 | 226.319 |
+
+Each Single arm creates one Run and each Discussion arm creates three. The
+completed comparison therefore uses six versus eighteen Runs. Both arms fully
+pass five of six cases; multi-perspective cases cover 12/12 items and simple
+controls cover 10/12. The usage task fails the duration and late-completion
+criteria in both arms: answers give 120 seconds instead of the required
+createdAt-to-terminalAt 30 seconds. Both Discussion contributors make that
+error and the Finalizer repeats it. The rubric was not changed to excuse it.
+
+Successful-pair totals exclude two separately retained failed selector
+Discussions, one in QA-067 and one in QA-068. Together those attempts add six
+created Runs (four completed, two outcome_unknown) and 635.073 seconds of arm
+wall time. They are not quality successes and are not removed from the record.
+The original six fixed replays are direct invocations, not product Runs, and
+are not rerun or pooled into this table.
+
+Four repaired Discussion final answers retain `recommendation: "stop"` as
+ordinary reply text under existing malformed-envelope behavior; it never
+becomes structured approval. This demonstrates the real delivery repair and
+also leaves a visible formatting limitation. The restart Discussion adds a
+conditional idempotency alternative absent from the supplied facts and claims
+exactly one lookup in its test. These observations are retained outside the
+frozen four-item rubric rather than hidden by a coverage score.
+
+There is no observed Discussion quality gain in these six fixed cases. The
+local successful-arm elapsed total is about 2.23 times Single, with three times
+the Runs. This is not a latency guarantee or a general model comparison:
+timings come from one local execution with background verification, one model,
+fixed closed inputs and a task-agent review. The first pair predates the
+metadata repair, while all remaining pairs share the repaired source within
+each comparison. The result completes the missing evidence without being a
+fresh independent six-case replication or proving that Discussion never helps.
+
+The [updated usage guide](../discussion-usage-guide.md) recommends checking
+Single Agent coverage first when facts are complete. Independent information,
+different workspaces or multi-party workflow requirements remain explicitly
+unmeasured candidate reasons for Discussion. Production broad fallback and
+manual choice remain intact; a live Broad/Top-N quality experiment is still
+outside this continuation.
+
+Final consistency checks verify all 14 source hashes against the recorded
+commit, ten input hashes and equal inputs within each pair, completed Finalizer
+Run/message pins, per-answer decisions and exact combined counts/times. The
+reviewed report normalizes back to the raw report after removing only the
+declared review fields. Both pinned QA-067 inputs/evidence and the first
+continuation report are unchanged. All 394 Markdown files and whitespace checks
+pass. Six owned runtime/test roots are physically absent, including both live
+attempts; no temporary Team data or credentials are retained in the evidence.
