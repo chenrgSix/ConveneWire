@@ -79,3 +79,13 @@ removed. Quota exhaustion at 12/30 and unsupported limits start no provider
 process. The packet tests verify pair identity, balanced categories, no rubric
 leakage and the offline fallback coverage result. Full workspace build and
 392 maintained Markdown files pass. These are synthetic/runtime checks only.
+
+The real invocation exposed a report bug on a failed Finalizer: the source
+runner used the last Agent message as `finalAnswer`, which was actually the
+Reviewer's contribution. The repaired runner requires an exact completed
+finalization Turn, completed Run and matching author-bound output Message.
+Missing or failed finalization produces null, never a substitute contribution.
+Two added regressions cover failure, absent output, mismatched author, unknown
+Run outcome and later unrelated messages. The final offline gate passes eleven
+checks, including both complete synthetic suites, and removes its owned root.
+This report repair does not change or rerun the real model invocation.

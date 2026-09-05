@@ -12,6 +12,7 @@ import type { RunRecord } from "../../apps/server/src/run/run-repository.js";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 import { cases } from "./discussion-cases.mjs";
+import { completedFinalAnswer } from "./discussion-answer.js";
 import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
   type Criterion } from "./discussion-review-packet.js";
 const exec = promisify(execFile);
@@ -52,7 +53,8 @@ test("bounded real single-Agent and Discussion task pairs", {
     fallbackCoverage: reviewing ? fallbackCoverageProbe() : undefined,
     reservedInvocations: 0, cases: samples, results: [] as Array<Record<string, unknown>>, error: null as string | null };
   const sourcePaths = ["scripts/bench/discussion-cases.mjs", "scripts/bench/codex-answer.mjs",
-    "scripts/bench/discussion-benchmark.test.ts", "apps/server/src/discussion/discussion-evidence-service.ts",
+    "scripts/bench/discussion-benchmark.test.ts", "scripts/bench/discussion-answer.ts",
+    "apps/server/src/discussion/discussion-evidence-service.ts",
     ...(reviewing ? ["scripts/bench/discussion-review-packet.ts", reviewPacketPath,
       "apps/server/src/discussion/finalization-instructions.ts",
       "docs/adr/0044-review-final-answers-and-test-discussion-value.md"] : [])];
@@ -221,7 +223,10 @@ test("bounded real single-Agent and Discussion task pairs", {
         const messages = await request("GET", `/api/rooms/${room.roomId}/messages?limit=100`);
         const answers = messages.items.filter((message: any) => message.senderType === "agent")
           .map(({ senderId, content }: any) => ({ agent: agents.find(({ agentId }) => agentId === senderId)?.name, content }));
-        const success = runs.every(({ state }) => state === "completed") && answers.length > 0 &&
+        const finalAnswer = arm === "discussion"
+          ? completedFinalAnswer({ turns: discussion!.turns, runs, messages: messages.items })
+          : runs.every(({ state }) => state === "completed") ? answers.at(-1)?.content ?? null : null;
+        const success = runs.every(({ state }) => state === "completed") && finalAnswer !== null &&
           (arm === "single_agent" || discussion?.discussion.state === "completed");
         Object.assign(currentAttempt, { caseId: sample.id, arm, promptSha256: createHash("sha256").update(goal).digest("hex"),
           elapsedMilliseconds: Date.now() - startedAt, runCount: runIds.length,
@@ -229,8 +234,10 @@ test("bounded real single-Agent and Discussion task pairs", {
           instructions: reviewing ? runs.map(({ targetAgentId, instruction }) => ({
             agent: agents.find(({ agentId }) => agentId === targetAgentId)?.name, instruction })) : undefined,
           discussionUsage: discussion?.observedUsage ?? null,
+          finalization: discussion?.turns.filter(({ kind }) => kind === "finalization").map(
+            ({ turnId, runId, outputMessageId, state }) => ({ turnId, runId, outputMessageId, state })) ?? null,
           selection: discussion?.waves.map(({ selection }) => selection) ?? null,
-          answers, finalAnswer: answers.at(-1)?.content ?? null, runtimeSucceeded: success,
+          answers, finalAnswer, runtimeSucceeded: success,
           manualRubric: pendingRubric(sample.rubric) });
         await persist();
         console.log(`${sample.id} ${arm}: ${runs.length} Runs, ${Date.now() - startedAt}ms, runtime ${success ? "completed" : "failed"}`);
