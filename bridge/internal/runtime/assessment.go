@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	contracts "convenewire.dev/contracts/generated/go"
+	runtimecontracts "convenewire.dev/contracts/generated/go/runtime"
 )
 
 const (
@@ -33,6 +34,17 @@ func parseAssessmentEnvelope(source string) (string, *contracts.Assessment) {
 	}
 	var trailing any
 	if err := decoder.Decode(&trailing); err != io.EOF {
+		return trimmed, nil
+	}
+	// Decode alone accepts unknown enum values and ignores schema bounds.
+	// Validate the original JSON in a fixed, never-emitted reply envelope so
+	// the generated wire schema remains the only assessment constraint source.
+	validationEnvelope := `{"protocolVersion":"1.0","messageId":"msg_assessment_check",` +
+		`"timestamp":"2026-09-06T00:00:00Z","type":"run.reply","payload":{` +
+		`"agentId":"agent_assessment_check","runId":"run_assessment_check",` +
+		`"traceId":"trace_assessment_check","sequence":1,"content":"validation",` +
+		`"assessment":` + trimmed[jsonStart:jsonEnd] + `}}`
+	if runtimecontracts.ValidateBridgeMessage([]byte(validationEnvelope)) != nil {
 		return trimmed, nil
 	}
 	visible := strings.TrimSpace(trimmed[:start])

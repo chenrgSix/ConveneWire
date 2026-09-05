@@ -1,0 +1,78 @@
+{
+  "observedAt": "2026-09-05T17:22:47.706Z",
+  "runId": "run_uAFmrGHCXLMIucIwYppCjg",
+  "bridgeState": "completed",
+  "bridgeUpdatedAt": "2026-09-05T17:19:20.578811Z",
+  "bridgeEvents": [
+    {
+      "messageId": "msg_h7-G_rGvCgYB2P3tNgkHXg",
+      "payload": {
+        "agentId": "agent_zj9Hk5iza3dlVmx7NNcdTg",
+        "runId": "run_uAFmrGHCXLMIucIwYppCjg",
+        "sequence": 2,
+        "traceId": "trace_kD5OmSvEUY9XsYGyYIsNWg",
+        "status": "working"
+      },
+      "protocolVersion": "1.0",
+      "timestamp": "2026-09-05T17:19:01.579473Z",
+      "type": "run.status"
+    },
+    {
+      "messageId": "msg_3t5kvR25B2suxhFNp9lT6g",
+      "payload": {
+        "agentId": "agent_zj9Hk5iza3dlVmx7NNcdTg",
+        "runId": "run_uAFmrGHCXLMIucIwYppCjg",
+        "sequence": 3,
+        "traceId": "trace_kD5OmSvEUY9XsYGyYIsNWg",
+        "assessment": {
+          "confidence": 0.98,
+          "goalSatisfied": true,
+          "newInformationAdded": false,
+          "recommendation": "stop",
+          "resolvedQuestionIds": [
+            "q1"
+          ],
+          "reviewerApproved": true
+        },
+        "content": "The supported answer is correct.\n\n- Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \"primary\") ?? candidates[0]`\n- Selected ID in the given fixture: `P`\n- If `P` is removed, the result falls back to `C`\n- A primary outside the frozen participants cannot be selected, because `candidates` contains only currently eligible frozen Discussion participants\n\nNo material correction is needed; the only nuance is that the fallback to `C` is specifically the first remaining candidate by frozen ordinal once `P` is unavailable."
+      },
+      "protocolVersion": "1.0",
+      "timestamp": "2026-09-05T17:19:20.568166Z",
+      "type": "run.reply"
+    },
+    {
+      "messageId": "msg_vW7OfmEaDn0X7AILWuSQMw",
+      "payload": {
+        "agentId": "agent_zj9Hk5iza3dlVmx7NNcdTg",
+        "runId": "run_uAFmrGHCXLMIucIwYppCjg",
+        "sequence": 4,
+        "traceId": "trace_kD5OmSvEUY9XsYGyYIsNWg",
+        "status": "completed"
+      },
+      "protocolVersion": "1.0",
+      "timestamp": "2026-09-05T17:19:20.578811Z",
+      "type": "run.status"
+    }
+  ],
+  "centralRun": {
+    "state": "working",
+    "last_sequence": 2,
+    "created_at": "2026-09-05T17:19:01.547Z",
+    "updated_at": "2026-09-05T17:19:01.587Z"
+  },
+  "centralEvents": [
+    {
+      "sequence": 1,
+      "event_type": "status",
+      "status": "delivered",
+      "created_at": "2026-09-05T17:19:01.579Z"
+    },
+    {
+      "sequence": 2,
+      "event_type": "status",
+      "status": "working",
+      "created_at": "2026-09-05T17:19:01.587Z"
+    }
+  ],
+  "projectionFailures": []
+}

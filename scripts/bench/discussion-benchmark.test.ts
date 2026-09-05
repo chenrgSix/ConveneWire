@@ -58,6 +58,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     reservedInvocations: 0, cases: samples, results: [] as Array<Record<string, unknown>>, error: null as string | null };
   const sourcePaths = ["scripts/bench/discussion-cases.mjs", "scripts/bench/codex-answer.mjs",
     "scripts/bench/discussion-benchmark.test.ts", "scripts/bench/discussion-answer.ts",
+    "bridge/internal/runtime/assessment.go",
     "apps/server/src/discussion/discussion-evidence-service.ts",
     ...(reviewing ? ["scripts/bench/discussion-review-packet.ts", reviewPacketPath,
       "apps/server/src/discussion/finalization-instructions.ts",
@@ -98,7 +99,9 @@ test("bounded real single-Agent and Discussion task pairs", {
         'process.stdin.on("end", () => console.log(JSON.stringify({type:"item.completed", item:{type:"agent_message", text:',
         JSON.stringify('Synthetic plumbing check only.\n<agentroom-assessment>\n' + JSON.stringify({
           goalSatisfied: false, confidence: 0.5, newInformationAdded: true,
-          disagreementRemaining: "none", recommendation: "continue", reviewerApproved: true
+          // The continuation also regresses the real invalid-enum failure:
+          // optional bad metadata must not prevent final reply/completion.
+          disagreementRemaining: "none", recommendation: continuation ? "stop" : "continue", reviewerApproved: true
         }) + '\n</agentroom-assessment>'),
         '}})));'
       ].join("\n"));
@@ -257,6 +260,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     assert.equal(Object.hasOwn(report, "tokens"), false);
     assert.equal(Object.hasOwn(report, "cost"), false);
     for (const result of report.results) {
+      if (synthetic && continuation) assert.match(String(result.finalAnswer), /<agentroom-assessment>/u);
       if (result.discussionUsage) {
         assert.equal(Object.hasOwn(result.discussionUsage, "tokens"), false);
         assert.equal(Object.hasOwn(result.discussionUsage, "estimatedCostMicros"), false);

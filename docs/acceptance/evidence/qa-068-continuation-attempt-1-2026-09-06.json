@@ -1,0 +1,481 @@
+{
+  "version": 4,
+  "synthetic": false,
+  "sourceCommit": "196032b8877be460ea1806065f2e81bd4949e117",
+  "model": "gpt-5.4-mini",
+  "observedProviderModel": null,
+  "reasoningEffort": "low",
+  "runtime": "codex exec via generic Bridge adapter",
+  "runtimeVersion": "codex-cli 0.153.3",
+  "maximumRuns": 20,
+  "maximumInvocations": 20,
+  "maximumModelWorkSeconds": 1200,
+  "suite": "continuation",
+  "packetIdentity": "qa-067-review-value-2026-09-06",
+  "continuation": {
+    "version": 1,
+    "identity": "qa-068-balanced-continuation-2026-09-06",
+    "packetIdentity": "qa-067-review-value-2026-09-06",
+    "packetSha256": "399a354984cc63c92eab6f6aba7c1031604ecdd8c3342f7f53564f756cc2a212",
+    "priorEvidencePath": "docs/acceptance/evidence/qa-067-discussion-review-2026-09-06.json",
+    "priorEvidenceSha256": "cc2c455a7237b1c252b6e333ca3365b2991b643032aa29d9dc9278cd555dc847",
+    "retainedCompleteCaseIds": [
+      "grant-review-cross-domain"
+    ],
+    "caseIds": [
+      "selector-review-simple-v2",
+      "restart-diagnosis-cross-domain",
+      "usage-diagnosis-simple",
+      "transport-comparison-cross-domain",
+      "schedule-comparison-simple"
+    ],
+    "model": "gpt-5.4-mini",
+    "reasoningEffort": "low",
+    "maximumInvocations": 20,
+    "maximumModelWorkSeconds": 1200,
+    "maximumProcessSeconds": 300,
+    "stopOnFirstRuntimeFailure": true
+  },
+  "replayResults": [],
+  "fallbackCoverage": [
+    {
+      "id": "unmatched-late-expertise",
+      "eligible": [
+        "Implementation",
+        "Docs",
+        "Security",
+        "Reviewer"
+      ],
+      "requiredReviewer": "Reviewer",
+      "limit": 2,
+      "neededExpertise": [
+        "Security",
+        "Reviewer"
+      ],
+      "reason": "Unmatched wording can hide an essential specialist at a later ordinal.",
+      "broad": [
+        "Implementation",
+        "Docs",
+        "Security",
+        "Reviewer"
+      ],
+      "topN": [
+        "Implementation",
+        "Reviewer"
+      ],
+      "broadMissingExpertise": [],
+      "topNMissingExpertise": [
+        "Security"
+      ],
+      "actualRuns": 0,
+      "modelInvocations": 0,
+      "answerQualityMeasured": false
+    },
+    {
+      "id": "unmatched-early-expertise",
+      "eligible": [
+        "Security",
+        "Docs",
+        "Operations",
+        "Reviewer"
+      ],
+      "requiredReviewer": "Reviewer",
+      "limit": 2,
+      "neededExpertise": [
+        "Security",
+        "Reviewer"
+      ],
+      "reason": "Ordinal fallback retains the specialist when it happens to be first.",
+      "broad": [
+        "Security",
+        "Docs",
+        "Operations",
+        "Reviewer"
+      ],
+      "topN": [
+        "Security",
+        "Reviewer"
+      ],
+      "broadMissingExpertise": [],
+      "topNMissingExpertise": [],
+      "actualRuns": 0,
+      "modelInvocations": 0,
+      "answerQualityMeasured": false
+    }
+  ],
+  "reservedInvocations": 3,
+  "cases": [
+    {
+      "id": "selector-review-simple-v2",
+      "category": "code_review",
+      "complexity": "simple_control",
+      "prompt": "Review one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.",
+      "rubric": [
+        {
+          "id": "expression",
+          "kind": "correctness",
+          "text": "Adds candidates.find(c => c.taskRole === \"primary\") between reviewer and candidates[0]."
+        },
+        {
+          "id": "primary",
+          "kind": "correctness",
+          "text": "Selects P for the supplied fixture."
+        },
+        {
+          "id": "fallback",
+          "kind": "correctness",
+          "text": "Selects C when P is unavailable and removed."
+        },
+        {
+          "id": "membership",
+          "kind": "correctness",
+          "text": "Excludes a primary outside the frozen participants without expanding the candidate set."
+        }
+      ]
+    },
+    {
+      "id": "restart-diagnosis-cross-domain",
+      "category": "problem_diagnosis",
+      "complexity": "multi_perspective",
+      "prompt": "Diagnose an interrupted write Run using only these retained facts. At 10:00 Central delivered Run R under Bridge epoch 5. At 10:01 the socket disconnected after the external service accepted a request but before a response was retained. At 10:02 Bridge restarted at epoch 6; Central still shows R working with cancellation pending. The local journal says external commit outcome UNKNOWN. The external service supports a read-only lookup by retained operation ID; repeating the request without checking can apply the write twice. A later epoch-5 completion callback arrives. Rules: Central owns canonical Run state and rejects stale-epoch callbacks; transport loss is not evidence that an external write did not commit. Deliver: distinguish transport, Run and external-effect states; the safe next diagnostic action and retry boundary; handling of the late callback; the truthful owner-facing status and an acceptance test for duplicate-effect prevention.",
+      "rubric": [
+        {
+          "id": "separation",
+          "kind": "correctness",
+          "text": "Distinguishes disconnection, still-working/cancellation-pending Run and unknown external commit; does not equate UNKNOWN with not committed."
+        },
+        {
+          "id": "reconcile",
+          "kind": "correctness",
+          "text": "Uses the retained operation ID for read-only reconciliation before any retry and avoids blindly repeating the write."
+        },
+        {
+          "id": "epoch",
+          "kind": "correctness",
+          "text": "Rejects the stale epoch-5 callback as a current lifecycle transition while recognizing that this does not prove no external effect."
+        },
+        {
+          "id": "owner-test",
+          "kind": "coverage",
+          "text": "Shows pending/unknown status without success or zero-effect claims and proposes a test preventing duplicate writes across the disconnect/restart."
+        }
+      ]
+    },
+    {
+      "id": "usage-diagnosis-simple",
+      "category": "problem_diagnosis",
+      "complexity": "simple_control",
+      "prompt": "Correct one Discussion status panel. createdAt=10:00:00, terminalAt=10:00:30, observedAt=10:02:00. Three member slots were debited. One Run completed; a second Run is still working under cancellation; the third member failed before any Run was created. The panel currently says \"3 completed Runs, 120 seconds Discussion elapsed\". Give created/completed/working Run counts, unbound/debited slot counts, the correct Discussion wall duration including waits, and what changes if the second Run later completes. The terminalAt timestamp remains 10:00:30. No other metrics are requested.",
+      "rubric": [
+        {
+          "id": "runs",
+          "kind": "correctness",
+          "text": "Reports two created Runs, one completed and one still working."
+        },
+        {
+          "id": "slots",
+          "kind": "correctness",
+          "text": "Reports one unbound slot and three debited budget slots."
+        },
+        {
+          "id": "duration",
+          "kind": "correctness",
+          "text": "Reports 30 seconds of Discussion wall time including waits."
+        },
+        {
+          "id": "late",
+          "kind": "correctness",
+          "text": "Later completion changes completed to two and working to zero while wall duration remains 30 seconds."
+        }
+      ]
+    },
+    {
+      "id": "transport-comparison-cross-domain",
+      "category": "solution_comparison",
+      "complexity": "multi_perspective",
+      "prompt": "Compare deployment choices through transport security, operations and user experience. Supplied constraints: a trusted LAN installation has no public domain or Internet; browsers must work without installing a private CA; Bridge must keep a pinned private-CA HTTPS channel; existing data and Device credentials must survive transport changes. Plain LAN browser HTTP is allowed only with explicit owner acceptance of unencrypted browser traffic. A uses HTTP for both browser and Bridge. B uses owner-approved LAN browser HTTP and a separate pinned HTTPS Bridge endpoint. C requires public-CA HTTPS using a public domain and Internet. Choose the feasible option, explain why the other two fail, describe the owner-facing tradeoff without claiming encryption for browser HTTP, and propose validation for browser access, wrong-CA rejection and preserved data/Device credentials. Do not change any installation.",
+      "rubric": [
+        {
+          "id": "choice",
+          "kind": "correctness",
+          "text": "Chooses B with separate LAN browser HTTP and pinned Bridge HTTPS under explicit owner acceptance."
+        },
+        {
+          "id": "alternatives",
+          "kind": "correctness",
+          "text": "Rejects A for losing Bridge HTTPS pinning and C for unavailable public domain/Internet."
+        },
+        {
+          "id": "tradeoff",
+          "kind": "correctness",
+          "text": "Clearly states browser traffic remains unencrypted and requires owner acceptance; does not claim end-to-end HTTPS."
+        },
+        {
+          "id": "validation",
+          "kind": "coverage",
+          "text": "Covers CA-free browser access, wrong-CA Bridge rejection and preservation of data and Device credentials."
+        }
+      ]
+    },
+    {
+      "id": "schedule-comparison-simple",
+      "category": "solution_comparison",
+      "complexity": "simple_control",
+      "prompt": "Compare two fixed schedules. Job A takes 8 seconds; independent Job B takes 13 seconds. A required finalizer starts only after both jobs finish and takes 4 seconds. There is no overhead, contention or failure. Option S runs A then B then finalizer. Option P starts A and B together then runs finalizer. Compute both wall times, choose the schedule meeting a 20-second deadline, and explain whether this timing comparison proves better answer quality. Use the supplied assumptions; no new agents or routing algorithm are needed.",
+      "rubric": [
+        {
+          "id": "sequential",
+          "kind": "correctness",
+          "text": "Calculates sequential wall time as 25 seconds."
+        },
+        {
+          "id": "parallel",
+          "kind": "correctness",
+          "text": "Calculates parallel wall time as 17 seconds, including the finalizer."
+        },
+        {
+          "id": "deadline",
+          "kind": "correctness",
+          "text": "Chooses P as the only option meeting the 20-second deadline."
+        },
+        {
+          "id": "quality",
+          "kind": "correctness",
+          "text": "Does not infer better answer quality from wall time or invent additional overhead contrary to the premise."
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "caseId": "selector-review-simple-v2",
+      "arm": "discussion",
+      "promptSha256": "b45d4c790011682dc6e1e00daf1ada5f395d6cf695ee99fbcd817144a2610ed5",
+      "runCount": 3,
+      "runtimeSucceeded": false,
+      "finalAnswer": null,
+      "answers": [
+        {
+          "agent": "Reviewer",
+          "content": "Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \"primary\") ?? candidates[0]`\n\nSelected ID in the given fixture: `P`\n\nIf `P` becomes unavailable and is removed, the selected ID falls back to `C`\n\nA primary outside the frozen participants cannot be selected, because `candidates` contains only currently eligible frozen Discussion participants."
+        },
+        {
+          "agent": "Solver",
+          "content": "Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \"primary\") ?? candidates[0]`\n\nSelected ID in the given fixture: `P`\n\nIf `P` becomes unavailable and is removed, the result falls back to `C`.\n\nA primary outside the frozen participants cannot be selected, because `candidates` is limited to currently eligible frozen Discussion participants."
+        }
+      ],
+      "taskInput": "Closed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.",
+      "manualRubric": [
+        {
+          "id": "expression",
+          "kind": "correctness",
+          "criterion": "Adds candidates.find(c => c.taskRole === \"primary\") between reviewer and candidates[0].",
+          "passed": null,
+          "evidence": null
+        },
+        {
+          "id": "primary",
+          "kind": "correctness",
+          "criterion": "Selects P for the supplied fixture.",
+          "passed": null,
+          "evidence": null
+        },
+        {
+          "id": "fallback",
+          "kind": "correctness",
+          "criterion": "Selects C when P is unavailable and removed.",
+          "passed": null,
+          "evidence": null
+        },
+        {
+          "id": "membership",
+          "kind": "correctness",
+          "criterion": "Excludes a primary outside the frozen participants without expanding the candidate set.",
+          "passed": null,
+          "evidence": null
+        }
+      ],
+      "elapsedMilliseconds": 317500,
+      "runs": [
+        {
+          "state": "completed",
+          "createdAt": "2026-09-05T17:18:44.270Z",
+          "terminalAt": "2026-09-05T17:19:01.402Z"
+        },
+        {
+          "state": "completed",
+          "createdAt": "2026-09-05T17:18:44.274Z",
+          "terminalAt": "2026-09-05T17:18:57.937Z"
+        },
+        {
+          "state": "outcome_unknown",
+          "createdAt": "2026-09-05T17:19:01.547Z",
+          "terminalAt": "2026-09-05T17:24:01.547Z"
+        }
+      ],
+      "instructions": [
+        {
+          "agent": "Solver",
+          "instruction": "# ConveneWire Discussion Context\nDiscussion ID: discussion_fzslmJBLZLl1q8xphCrFXQ\nTask ID: task_default_uZe8VAt_OLqY0NEEI4k2rg\nWave: 1\nWave member: 1/2\nMode: review\nCurrent Agent: Solver (participant)\nParticipants: Solver (participant), Reviewer (reviewer)\n\n## Goal\nClosed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n\n## Progress\nConfidence: unknown\nDisagreement: unknown\nPlateau count: 0\nVerified evidence references: None\nImportant unresolved questions:\nNone recorded\n\n## Remaining Lease\n1 ordinary waves.\n\n## Recent Room Transcript\n[msg_b36yahgoChs50C0AwQLQaQ | Benchmark Owner] Closed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n\n## Your Task\nMake an independent, useful contribution for this Wave. Resolve a question, add evidence, or challenge the current conclusion; do not merely repeat agreement.\nOther participants in this Wave run concurrently and cannot see this reply until the next Wave.\nThe Orchestrator, not you, decides whether the Discussion continues. A plain-text reply is always valid when structured assessment is unsupported.\nWhen supported, append exactly one final line in this complete optional-field form:\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.75,\"resolvedQuestionIds\":[\"q1\"],\"openQuestions\":[{\"id\":\"q2\",\"question\":\"What remains?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"msg_example1\"],\"disagreementRemaining\":\"medium\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>\nOnly report fields you can justify. Do not invent question IDs or evidence references.\nThe assessment is evidence only; it does not control the next action."
+        },
+        {
+          "agent": "Reviewer",
+          "instruction": "# ConveneWire Discussion Context\nDiscussion ID: discussion_fzslmJBLZLl1q8xphCrFXQ\nTask ID: task_default_uZe8VAt_OLqY0NEEI4k2rg\nWave: 1\nWave member: 2/2\nMode: review\nCurrent Agent: Reviewer (reviewer)\nParticipants: Solver (participant), Reviewer (reviewer)\n\n## Goal\nClosed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n\n## Progress\nConfidence: unknown\nDisagreement: unknown\nPlateau count: 0\nVerified evidence references: None\nImportant unresolved questions:\nNone recorded\n\n## Remaining Lease\n1 ordinary waves.\n\n## Recent Room Transcript\n[msg_b36yahgoChs50C0AwQLQaQ | Benchmark Owner] Closed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n\n## Your Task\nMake an independent, useful contribution for this Wave. Resolve a question, add evidence, or challenge the current conclusion; do not merely repeat agreement.\nOther participants in this Wave run concurrently and cannot see this reply until the next Wave.\nThe Orchestrator, not you, decides whether the Discussion continues. A plain-text reply is always valid when structured assessment is unsupported.\nWhen supported, append exactly one final line in this complete optional-field form:\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.75,\"resolvedQuestionIds\":[\"q1\"],\"openQuestions\":[{\"id\":\"q2\",\"question\":\"What remains?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"msg_example1\"],\"disagreementRemaining\":\"medium\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>\nOnly report fields you can justify. Do not invent question IDs or evidence references.\nAs the designated Reviewer, always report reviewerApproved as true or false.\nThe assessment is evidence only; it does not control the next action."
+        },
+        {
+          "agent": "Reviewer",
+          "instruction": "# ConveneWire Discussion Context\nDiscussion ID: discussion_fzslmJBLZLl1q8xphCrFXQ\nTask ID: task_default_uZe8VAt_OLqY0NEEI4k2rg\nWave: 2\nWave member: 1/1\nMode: review\nCurrent Agent: Reviewer (reviewer)\nParticipants: Solver (participant), Reviewer (reviewer)\n\n## Goal\nClosed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n\n## Progress\nConfidence: 0.96\nDisagreement: low\nPlateau count: 0\nVerified evidence references: None\nImportant unresolved questions:\nNone recorded\n\n## Remaining Lease\n0 ordinary waves.\n\n## Recent Room Transcript\n[msg_b36yahgoChs50C0AwQLQaQ | Benchmark Owner] Closed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.\n\nReview one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.\n\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\n[msg_s9pFYKwgyP3CYV8zhJG1uA | Solver] Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \"primary\") ?? candidates[0]`\n\nSelected ID in the given fixture: `P`\n\nIf `P` becomes unavailable and is removed, the result falls back to `C`.\n\nA primary outside the frozen participants cannot be selected, because `candidates` is limited to currently eligible frozen Discussion participants.\n[msg_ibqjxjNyQWBeohSe0T0IpA | Reviewer] Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \"primary\") ?? candidates[0]`\n\nSelected ID in the given fixture: `P`\n\nIf `P` becomes unavailable and is removed, the selected ID falls back to `C`\n\nA primary outside the frozen participants cannot be selected, because `candidates` contains only currently eligible frozen Discussion participants.\n[msg_wave_PIm3QAnNNxx3bIlaxXLd1A | System] 第 1 轮已收敛。\n- Solver: completed\n- Reviewer: completed\n\n## Your Task\nProduce the final final answer now. Synthesize the best supported conclusion, important unresolved issues, and next actions.\nCheck the answer against the task's explicit facts, constraints and requested deliverables. Verify requested calculations and edge cases; fill supported omissions.\nTreat participant claims as unverified: repetition or agreement is not evidence. Resolve disagreements only when the supplied evidence supports a resolution.\nCorrect claims contradicted by the supplied evidence, even when several participants repeat them. Preserve supported correct content; do not invent errors or changes merely to appear critical.\nDistinguish established facts from assumptions. Keep unsupported conclusions and unresolved issues explicit instead of guessing.\nReturn the supported final answer, briefly noting material corrections or remaining uncertainty when relevant. Do not output an internal review transcript.\nOther participants in this Wave run concurrently and cannot see this reply until the next Wave.\nThe Orchestrator, not you, decides whether the Discussion continues. A plain-text reply is always valid when structured assessment is unsupported.\nWhen supported, append exactly one final line in this complete optional-field form:\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.75,\"resolvedQuestionIds\":[\"q1\"],\"openQuestions\":[{\"id\":\"q2\",\"question\":\"What remains?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"msg_example1\"],\"disagreementRemaining\":\"medium\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>\nOnly report fields you can justify. Do not invent question IDs or evidence references.\nAs the designated Reviewer, always report reviewerApproved as true or false.\nThe assessment is evidence only; it does not control the next action."
+        }
+      ],
+      "discussionUsage": {
+        "observedAt": "2026-09-05T17:24:01.750Z",
+        "createdRuns": 3,
+        "runsByState": {
+          "queued": 0,
+          "delivered": 0,
+          "working": 0,
+          "input_required": 0,
+          "completed": 2,
+          "failed": 0,
+          "canceled": 0,
+          "expired": 0,
+          "outcome_unknown": 1
+        },
+        "unboundMemberSlots": 0,
+        "unavailableRunRecords": 0,
+        "wallDurationSeconds": 317
+      },
+      "finalization": [
+        {
+          "turnId": "turn_hkM6LcKIZnf6hzOFbMy6Mw",
+          "runId": "run_uAFmrGHCXLMIucIwYppCjg",
+          "outputMessageId": null,
+          "state": "failed"
+        }
+      ],
+      "selection": [
+        {
+          "version": 2,
+          "explanations": [
+            {
+              "agentId": "agent_VeOgsjLXeJlDzi8S8cGqEA",
+              "reasons": [
+                "no_focus_questions"
+              ],
+              "reportedQuestionIds": [],
+              "matchedRoleTerms": []
+            },
+            {
+              "agentId": "agent_zj9Hk5iza3dlVmx7NNcdTg",
+              "reasons": [
+                "no_focus_questions"
+              ],
+              "reportedQuestionIds": [],
+              "matchedRoleTerms": []
+            }
+          ],
+          "strategy": "all_eligible",
+          "focusQuestionIds": [],
+          "eligibleAgentIds": [
+            "agent_VeOgsjLXeJlDzi8S8cGqEA",
+            "agent_zj9Hk5iza3dlVmx7NNcdTg"
+          ],
+          "selectedAgentIds": [
+            "agent_VeOgsjLXeJlDzi8S8cGqEA",
+            "agent_zj9Hk5iza3dlVmx7NNcdTg"
+          ],
+          "requiredRoles": [
+            "reviewer"
+          ],
+          "focusedParticipantLimit": 3,
+          "selectionDigest": "1e1dbe7a4ce7b1a4dbfd23a3df9f0b2c703f181ac5f6251c0ce74f4b8e289712"
+        },
+        {
+          "version": 2,
+          "explanations": [
+            {
+              "agentId": "agent_zj9Hk5iza3dlVmx7NNcdTg",
+              "reasons": [
+                "finalizer_reviewer"
+              ],
+              "reportedQuestionIds": [],
+              "matchedRoleTerms": []
+            }
+          ],
+          "strategy": "finalizer",
+          "focusQuestionIds": [],
+          "eligibleAgentIds": [
+            "agent_VeOgsjLXeJlDzi8S8cGqEA",
+            "agent_zj9Hk5iza3dlVmx7NNcdTg"
+          ],
+          "selectedAgentIds": [
+            "agent_zj9Hk5iza3dlVmx7NNcdTg"
+          ],
+          "requiredRoles": [
+            "reviewer"
+          ],
+          "focusedParticipantLimit": 3,
+          "selectionDigest": "03de0aaf9c7b23b073985c10bac9dc7736bc09858549452ab8910722b89a0e07"
+        }
+      ],
+      "error": "Runtime failure retained in report; remaining paid runs were not started",
+      "observationIncomplete": false
+    }
+  ],
+  "error": "Runtime failure retained in report; remaining paid runs were not started",
+  "benchmarkSources": [
+    {
+      "name": "scripts/bench/discussion-cases.mjs",
+      "sha256": "58de7d3f4649ba0b08cded0fa633559e8ec56f39fef0d49fe4698844e8918cf7"
+    },
+    {
+      "name": "scripts/bench/codex-answer.mjs",
+      "sha256": "7ed1c060af3ada9c70e40e22204fe066c5944107b4c6c0ce092e7856cf36a76d"
+    },
+    {
+      "name": "scripts/bench/discussion-benchmark.test.ts",
+      "sha256": "b4827859b926f1eecc310e35cd1656715323302b5747f70e68b58734de876cb8"
+    },
+    {
+      "name": "scripts/bench/discussion-answer.ts",
+      "sha256": "03b3731d020daaf152c1d0a5fee457de8473ab4b31dc8dbb8d1454a7e4e45e97"
+    },
+    {
+      "name": "apps/server/src/discussion/discussion-evidence-service.ts",
+      "sha256": "a735bcd1215272d7507aca04d6f1062113c6f9d74254044ef0a21c27645d3d3a"
+    },
+    {
+      "name": "scripts/bench/discussion-review-packet.ts",
+      "sha256": "b5366ca4a30bfcd81dc94d6e141f24edfacbba4c8f444549ad038b941b5b55c5"
+    },
+    {
+      "name": "docs/acceptance/fixtures/qa-067-discussion-cases.json",
+      "sha256": "399a354984cc63c92eab6f6aba7c1031604ecdd8c3342f7f53564f756cc2a212"
+    },
+    {
+      "name": "apps/server/src/discussion/finalization-instructions.ts",
+      "sha256": "626aff88fabfb7c4ac5cb859dbea11ec5c3787a761e08e061a65c5c41c070971"
+    },
+    {
+      "name": "docs/adr/0044-review-final-answers-and-test-discussion-value.md",
+      "sha256": "c6eff30b3f3a105f7317c22239e38b6030afe4f4bb8438211d32f6a0850403b9"
+    },
+    {
+      "name": "scripts/bench/discussion-continuation.ts",
+      "sha256": "33dfd7706706240d9d6e99a032722d164a9c497822d33295708ebedef013ddde"
+    },
+    {
+      "name": "docs/acceptance/fixtures/qa-068-discussion-continuation.json",
+      "sha256": "ff046cac37f42b8bf23a84f5775eb43e05eb158150df4f7a0046f8a6bf649696"
+    },
+    {
+      "name": "docs/acceptance/evidence/qa-067-discussion-review-2026-09-06.json",
+      "sha256": "cc2c455a7237b1c252b6e333ca3365b2991b643032aa29d9dc9278cd555dc847"
+    },
+    {
+      "name": "docs/acceptance/qa-068-discussion-continuation.md",
+      "sha256": "6c8506ca23caa8573fa715252fe6e16043ad4ee0287c9d8fd79f1be43140f5f3"
+    }
+  ],
+  "workingTreeDirty": false
+}

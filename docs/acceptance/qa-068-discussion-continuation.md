@@ -6,7 +6,8 @@ The Owner requested continuation after reviewing QA-067's incomplete real
 comparison. [ADR-0044](../adr/0044-review-final-answers-and-test-discussion-value.md)
 continues to own the production prompt and evaluation boundaries. This record
 owns the separately authorized continuation; TASKS.md alone tracks delivery.
-No production behavior, task wording, rubric or provider configuration changes.
+Task wording, rubric and provider configuration remain fixed. The reproduced
+Runtime defect and its necessary ADP-019 repair are recorded below.
 
 The [continuation manifest](fixtures/qa-068-discussion-continuation.json) pins
 the original task packet and reviewed evidence by SHA-256. It selects the five
@@ -64,3 +65,47 @@ Runs in original arm order. Changed input/evidence pins, omitted cases, changed
 model and expanded quota are rejected before Runtime setup; exhausted 12/20/30
 quotas start no provider process. Its owned temporary root is physically absent.
 All 394 maintained Markdown files and whitespace checks pass.
+
+## Retained first continuation failure and repair
+
+The [first raw continuation report](evidence/qa-068-continuation-attempt-1-2026-09-06.json)
+retains clean source `196032b8877be460ea1806065f2e81bd4949e117`, three invocations
+and the selector Discussion's unknown Finalizer outcome. The command stopped
+at its first failure after 327.5 seconds; no later arm was started. Its owned
+temporary root was removed. This failed attempt is never scored as a complete
+pair or replaced by the next run.
+
+A [read-only observation before cleanup](evidence/qa-068-finalizer-assessment-failure-2026-09-06.json)
+establishes the local/central split. The Bridge retained the Finalizer reply
+and local completion at 17:19:20 UTC, about 19 seconds after startup; Central
+remained working at sequence 2. The reply's optional assessment contains
+`recommendation: "stop"`, while the authoritative wire enum allows only
+`continue`, `finish` and `wait_human`. The generated TypeScript validator rejects
+that exact retained reply; changing only that enum to `finish` validates it.
+This diagnostic comparison does not alter any stored answer or retry a write.
+The following completion cannot bridge the missing reply sequence. Thus this
+attempt's 300-second wait was not a model generation timeout. QA-067 lacks this
+local observation, so its similar symptom alone does not establish the same cause.
+
+ADP-019 validates optional assessment JSON against the existing generated Go
+wire validator before emitting it. JSON decoding alone accepted unsupported
+enums and omitted other schema bounds. Invalid metadata retains the existing
+reply-only fallback; it never becomes structured approval and is never changed
+from `stop` to `finish`. Valid metadata and canonical Server validation remain
+unchanged. Runtime tests cover enum, range, uniqueness, size, null and nested
+field failures plus valid boundaries. The complete synthetic continuation now
+deliberately returns `stop` metadata and must complete all 20 Runs through real
+Server/Bridge components without structured invalid evidence.
+
+Under the Owner's request to continue through completion, one further run is
+authorized after this reproduced defect is repaired and verified. It has a new
+report/source identity and the same per-invocation 20-call/20-minute ceiling,
+same five pairs, model, prompts and rubric. Combined with the three calls in
+the retained failed attempt, this continuation phase is capped at 23 calls.
+There is no automatic retry or unbounded loop. The prior failure, partial local
+answer and failed lifecycle remain separately retained and unscored.
+
+The repair passes the Runtime package and all 14 benchmark checks, including
+the complete 20-Run invalid-metadata synthetic continuation. Their owned roots
+are physically removed. Full Bridge tests, vet and Runtime race checks are
+also being run; their results remain separate from real answer quality.

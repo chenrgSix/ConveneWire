@@ -299,8 +299,14 @@ owner-only binding. Status reports return the opaque scope hash and exact
 failed cut, or replay cannot silently skip evidence.
 
 Codex and Generic CLI adapters also recognize an optional final
-`agentroom-assessment` XML-style envelope containing JSON. A valid envelope is
-removed from the visible reply and sent as structured evidence; malformed or
+`agentroom-assessment` XML-style envelope containing JSON. The envelope is
+validated against the existing generated Bridge wire contract, including enum,
+range, length, uniqueness and nested required-field constraints; decoding a Go
+struct alone does not establish validity. Invalid optional metadata follows the
+existing reply-only degradation behavior and cannot become structured evidence
+or prevent delivery of subsequent completion. No invalid recommendation is
+coerced into an approval or finish decision. A valid envelope is removed from
+the visible reply and sent as structured evidence; malformed or
 unsupported output remains a normal reply. The Orchestrator, not the Adapter or
 Runtime, owns the resulting continue/finish decision.
 
