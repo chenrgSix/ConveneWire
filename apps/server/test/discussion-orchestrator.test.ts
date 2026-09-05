@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import test, { type TestContext } from "node:test";
+import { finalAnswerReviewChecklist } from "../src/discussion/finalization-instructions.js";
 
 import { createTestResources } from "../../../scripts/test/resources.mjs";
 
@@ -1452,6 +1453,7 @@ test("automatic completion waits for the Wave barrier then schedules one finaliz
     assert.ok(finalRun);
     assert.ok([...finalRun.instruction].length <= 20_000);
     assert.match(finalRun.instruction, /Produce the final decision record/);
+    assert.ok(finalRun.instruction.includes(finalAnswerReviewChecklist));
     assert.match(finalRun.instruction, /<convenewire-plan-proposal>/u);
     assert.match(finalRun.instruction, /If you cannot produce a complete closed-schema draft/u);
     assert.match(finalRun.instruction, /"resolvedQuestionIds"/u);
@@ -1491,6 +1493,7 @@ test("bounded instructions preserve identity, task and assessment guidance", asy
       assert.match(run.instruction, new RegExp(`Task ID: ${result.discussion.taskId}`, "u"));
       assert.match(run.instruction, /Current Agent:/u);
       assert.match(run.instruction, /## Your Task/u);
+      assert.ok(!run.instruction.includes(finalAnswerReviewChecklist));
       assert.match(run.instruction, /"openQuestions"/u);
       assert.match(run.instruction, /"newEvidenceRefs"/u);
       assert.match(run.instruction, /"disagreementRemaining"/u);
@@ -2673,6 +2676,7 @@ test("actual finalization uses a later-ordinal Task primary and survives restart
     const events = value.discussions.listBudgetEvents(result.discussion.discussionId);
     assert.doesNotMatch(JSON.stringify(events), /tokens|estimatedCostMicros|TelemetryKnown/);
     const prompt = result.scheduledRuns[0]!.instruction;
+    assert.ok(prompt.includes(finalAnswerReviewChecklist));
     assert.match(prompt, /ordinary waves\./);
     assert.doesNotMatch(prompt, /token and cost telemetry/);
     const selection = result.waves.at(-1)!.selection;

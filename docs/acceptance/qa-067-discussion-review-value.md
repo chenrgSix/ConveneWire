@@ -59,3 +59,10 @@ The task packet and rubric are frozen before model execution. Results, source
 hashes, verification commands and cleanup observations will be appended here
 after they exist. Historical QA-065 results are neither rewritten nor pooled
 with this new task set.
+
+Production prompt verification passes 78 Discussion checks and Server build.
+Tests bind the exact ADR checklist, all six output modes, actual Reviewer and
+primary finalizers, existing ordinal selection, bounded/truncated instructions,
+plan-proposal restrictions and assessment framing. Ordinary contribution Runs
+do not acquire the finalization checklist. The owned test root was removed.
+These checks establish instruction delivery and compatibility, not model quality.

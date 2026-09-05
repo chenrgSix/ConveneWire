@@ -12,6 +12,7 @@ import type { ResultRepository } from "../task/result-repository.js";
 import { verifyDiscussionEvidenceReferences } from
   "./discussion-evidence-reference.js";
 import type { DiscussionRepository } from "./discussion-repository.js";
+import { finalizationTask } from "./finalization-instructions.js";
 import type {
   DiscussionParticipant,
   DiscussionRecord,
@@ -180,8 +181,7 @@ export class DiscussionEvidenceService {
         ].join("\n")
       : "";
     const task = turn.kind === "finalization"
-      ? `Produce the final ${discussion.outputMode.replaceAll("_", " ")} now. ` +
-        "Synthesize the best supported conclusion, important unresolved issues, and next actions." +
+      ? finalizationTask(discussion.outputMode) +
         (planProposalInstruction ? `\n${planProposalInstruction}` : "")
       : "Make an independent, useful contribution for this Wave. Resolve a question, add evidence, " +
         "or challenge the current conclusion; do not merely repeat agreement.";
