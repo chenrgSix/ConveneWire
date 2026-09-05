@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "identity": "qa-068-balanced-continuation-2026-09-06",
+  "packetIdentity": "qa-067-review-value-2026-09-06",
+  "packetSha256": "399a354984cc63c92eab6f6aba7c1031604ecdd8c3342f7f53564f756cc2a212",
+  "priorEvidencePath": "docs/acceptance/evidence/qa-067-discussion-review-2026-09-06.json",
+  "priorEvidenceSha256": "cc2c455a7237b1c252b6e333ca3365b2991b643032aa29d9dc9278cd555dc847",
+  "retainedCompleteCaseIds": ["grant-review-cross-domain"],
+  "caseIds": [
+    "selector-review-simple-v2",
+    "restart-diagnosis-cross-domain",
+    "usage-diagnosis-simple",
+    "transport-comparison-cross-domain",
+    "schedule-comparison-simple"
+  ],
+  "model": "gpt-5.4-mini",
+  "reasoningEffort": "low",
+  "maximumInvocations": 20,
+  "maximumModelWorkSeconds": 1200,
+  "maximumProcessSeconds": 300,
+  "stopOnFirstRuntimeFailure": true
+}

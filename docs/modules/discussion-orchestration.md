@@ -131,6 +131,10 @@ the single-Agent baseline. Startup guidance is advisory; offline fallback
 coverage is not a live answer-quality experiment or a production policy change.
 The [usage guide](../discussion-usage-guide.md) connects current behavior to
 reviewed results and explicitly identifies unmeasured startup hypotheses.
+[QA-068](../acceptance/qa-068-discussion-continuation.md) owns a separately
+authorized continuation of the five incomplete balanced pairs. It reuses the
+unchanged packet and retains QA-067's failed attempt; completing its comparison
+does not introduce a production routing or startup decision.
 
 `DISC-012` adds no generic soft barrier. Its accepted target is a separate
 `read_only_quorum` completion mode available only when every participant is a
