@@ -56,3 +56,11 @@ lint and physical cleanup before committing the result.
 
 The manifest and acceptance above are frozen before continuation model calls.
 Results will be appended after execution; prior QA-067 evidence is immutable.
+
+The preflight passes 14 checks: four adapter tests, seven packet/answer/
+continuation tests and three complete synthetic Server/Bridge suites (legacy,
+review and continuation). The new continuation executes exactly 20 synthetic
+Runs in original arm order. Changed input/evidence pins, omitted cases, changed
+model and expanded quota are rejected before Runtime setup; exhausted 12/20/30
+quotas start no provider process. Its owned temporary root is physically absent.
+All 394 maintained Markdown files and whitespace checks pass.

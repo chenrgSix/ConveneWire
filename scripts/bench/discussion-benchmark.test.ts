@@ -13,6 +13,7 @@ import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 import { cases } from "./discussion-cases.mjs";
 import { completedFinalAnswer } from "./discussion-answer.js";
+import { continuationPath, loadReviewContinuation } from "./discussion-continuation.js";
 import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
   type Criterion } from "./discussion-review-packet.js";
 const exec = promisify(execFile);
@@ -21,10 +22,12 @@ const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
 const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
-assert.ok(["legacy", "review"].includes(suite), "Unknown benchmark suite");
-const reviewing = suite === "review";
-const samples = reviewing ? reviewPacket.cases : cases;
-const maximumInvocations = reviewing ? 30 : 12;
+assert.ok(["legacy", "review", "continuation"].includes(suite), "Unknown benchmark suite");
+const reviewing = suite !== "legacy";
+const continuation = suite === "continuation" ? loadReviewContinuation() : undefined;
+if (continuation) assert.equal(model, continuation.manifest.model, "Continuation model must match prior evidence");
+const samples = continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
+const maximumInvocations = continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
 function pendingRubric(rubric: Array<string | Criterion>) {
   return rubric.map((item) => typeof item === "string"
     ? { criterion: item, passed: null, evidence: null }
@@ -44,11 +47,12 @@ test("bounded real single-Agent and Discussion task pairs", {
   await mkdir(quotaDirectory);
   const app = await createServerApp({ databasePath: path.join(directory, "server.sqlite") });
   resources.defer(() => app.close());
-  const report = { version: reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
+  const report = { version: continuation ? 4 : reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
     model, observedProviderModel: null, reasoningEffort: "low", runtime: "codex exec via generic Bridge adapter",
-    runtimeVersion: "", maximumRuns: reviewing ? 24 : 12, maximumInvocations, maximumModelWorkSeconds: 1200,
+    runtimeVersion: "", maximumRuns: samples.length * 4, maximumInvocations, maximumModelWorkSeconds: 1200,
     suite, packetIdentity: reviewing ? reviewPacket.identity : undefined,
-    fixedReplays: reviewing ? reviewPacket.replays : undefined,
+    continuation: continuation?.manifest,
+    fixedReplays: reviewing && !continuation ? reviewPacket.replays : undefined,
     replayResults: reviewing ? [] as Array<Record<string, unknown>> : undefined,
     fallbackCoverage: reviewing ? fallbackCoverageProbe() : undefined,
     reservedInvocations: 0, cases: samples, results: [] as Array<Record<string, unknown>>, error: null as string | null };
@@ -57,7 +61,9 @@ test("bounded real single-Agent and Discussion task pairs", {
     "apps/server/src/discussion/discussion-evidence-service.ts",
     ...(reviewing ? ["scripts/bench/discussion-review-packet.ts", reviewPacketPath,
       "apps/server/src/discussion/finalization-instructions.ts",
-      "docs/adr/0044-review-final-answers-and-test-discussion-value.md"] : [])];
+      "docs/adr/0044-review-final-answers-and-test-discussion-value.md"] : []),
+    ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,
+      continuation.manifest.priorEvidencePath, "docs/acceptance/qa-068-discussion-continuation.md"] : [])];
   const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
     sha256: createHash("sha256").update(await readFile(path.join(root, name))).digest("hex") })));
   const workingTreeDirty = (await exec("git", ["status", "--porcelain"], { cwd: root })).stdout.length > 0;
@@ -134,7 +140,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     const solver = agents.find(({ name }) => name === "Solver")!;
     const reviewer = agents.find(({ name }) => name === "Reviewer")!;
     deadline = Date.now() + 1_200_000;
-    if (reviewing) {
+    if (reviewing && !continuation) {
       for (const [index, sample] of reviewPacket.replays.entries()) {
         const arms = index % 2 === 0 ? ["legacy", "reviewed"] as const : ["reviewed", "legacy"] as const;
         for (const arm of arms) {
@@ -175,7 +181,8 @@ test("bounded real single-Agent and Discussion task pairs", {
     }
     for (const [index, sample] of samples.entries()) {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
-      for (const arm of index % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"]) {
+      const originalIndex = reviewing ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
+      for (const arm of originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"]) {
         assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
         const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}` });
         const goal = reviewing ? reviewedTaskInput(sample)
@@ -244,7 +251,7 @@ test("bounded real single-Agent and Discussion task pairs", {
         assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
       }
     }
-    assert.equal(scheduled, reviewing ? 24 : 12);
+    assert.equal(scheduled, samples.length * 4);
     assert.equal(replayInvocations + scheduled, maximumInvocations);
     assert.equal(report.reservedInvocations, maximumInvocations);
     assert.equal(Object.hasOwn(report, "tokens"), false);

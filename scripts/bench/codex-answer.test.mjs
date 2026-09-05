@@ -55,7 +55,7 @@ test("tool use, provider failure, malformed output and spawn failure invalidate 
 
 
 test("the shared invocation cap prevents another provider process from starting", async (t) => {
-  for (const maximum of ["12", "30"]) {
+  for (const maximum of ["12", "20", "30"]) {
     const result = await invoke(t, 'console.log("MUST_NOT_RUN");', false, true, maximum);
     assert.equal(result.code, 1);
     assert.equal(result.stdout, "");

@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 const [executable, model, quotaDirectory, maximum = "12"] = process.argv.slice(2);
 if (!executable || !model || !quotaDirectory) throw new Error("Executable, model and owned quota directory are required");
-if (!["12", "30"].includes(maximum)) throw new Error("Unsupported benchmark invocation limit");
+if (!["12", "20", "30"].includes(maximum)) throw new Error("Unsupported benchmark invocation limit");
 let reserved = false;
 for (let slot = 0; slot < Number(maximum); slot += 1) {
   try {

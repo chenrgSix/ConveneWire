@@ -48,6 +48,7 @@ Node.js 22 and Go 1.26.7 are required. Repository commands are:
 - `npm run test:e2e` — run deterministic cross-process acceptance tests.
 - `npm run test:discussion-benchmark` — verify the benchmark adapter, documentation-owned packet, 12 legacy synthetic Runs and six replay/24 review-suite synthetic invocations through an isolated Server/Bridge, without provider access or authentication.
 - `npm run bench:discussion-review` — explicitly run QA-067's six fixed Finalizer replay invocations and six balanced single-Agent/Discussion task pairs, at most 30 model invocations and 20 minutes of model work; the task packet and rubrics are owned by `docs/acceptance/fixtures/qa-067-discussion-cases.json`, and local reports retain actual answers and Run/time evidence.
+- `npm run bench:discussion-continuation` — explicitly run QA-068's five incomplete pairs using the unchanged QA-067 packet and pinned prior evidence, at most 20 new model invocations and 20 minutes; the benchmark test command also verifies the manifest and complete synthetic continuation without provider access.
 - `npm run bench:discussion` — explicitly run three closed-input real Codex task pairs (at most 12 Runs, 20 minutes of model work), retaining answers, Run outcomes and elapsed time under ignored `var/discussion-benchmark/`; use `CONVENE_WIRE_BENCH_MODEL` to pin a different model.
 - `npm run test:e2e:live` — explicitly invoke local Codex and Pi against an isolated temporary Team.
 - `npm run db:migrate` — migrate the configured central SQLite database.
