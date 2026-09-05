@@ -42,7 +42,8 @@
     "lint:docs": "markdownlint-cli2 \"**/*.md\"",
     "bench:discussion": "CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts",
     "test:discussion-benchmark": "node scripts/test/run-with-temp-root.mjs -- npm run test:discussion-benchmark:inner",
-    "test:discussion-benchmark:inner": "node --test scripts/bench/codex-answer.test.mjs && CONVENE_WIRE_BENCH_SYNTHETIC=1 tsx --test scripts/bench/discussion-benchmark.test.ts"
+    "test:discussion-benchmark:inner": "node --test scripts/bench/codex-answer.test.mjs && tsx --test scripts/bench/discussion-review-packet.test.ts && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=legacy tsx --test scripts/bench/discussion-benchmark.test.ts && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=review tsx --test scripts/bench/discussion-benchmark.test.ts",
+    "bench:discussion-review": "CONVENE_WIRE_BENCH_SUITE=review CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.2"

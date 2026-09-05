@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { promisify } from "node:util";
@@ -12,11 +12,23 @@ import type { RunRecord } from "../../apps/server/src/run/run-repository.js";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 import { cases } from "./discussion-cases.mjs";
+import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
+  type Criterion } from "./discussion-review-packet.js";
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome_unknown"]);
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
+const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
+assert.ok(["legacy", "review"].includes(suite), "Unknown benchmark suite");
+const reviewing = suite === "review";
+const samples = reviewing ? reviewPacket.cases : cases;
+const maximumInvocations = reviewing ? 30 : 12;
+function pendingRubric(rubric: Array<string | Criterion>) {
+  return rubric.map((item) => typeof item === "string"
+    ? { criterion: item, passed: null, evidence: null }
+    : { id: item.id, kind: item.kind, criterion: item.text, passed: null, evidence: null });
+}
 
 test("bounded real single-Agent and Discussion task pairs", {
   skip: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE !== "1", timeout: 1_260_000
@@ -31,19 +43,31 @@ test("bounded real single-Agent and Discussion task pairs", {
   await mkdir(quotaDirectory);
   const app = await createServerApp({ databasePath: path.join(directory, "server.sqlite") });
   resources.defer(() => app.close());
-  const report = { version: 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
+  const report = { version: reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
     model, observedProviderModel: null, reasoningEffort: "low", runtime: "codex exec via generic Bridge adapter",
-    runtimeVersion: "", maximumRuns: 12, maximumModelWorkSeconds: 1200,
-    cases, results: [] as Array<Record<string, unknown>>, error: null as string | null };
-  const sources = await Promise.all(["discussion-cases.mjs", "codex-answer.mjs", "discussion-benchmark.test.ts"]
-    .map(async (name) => ({ name, sha256: createHash("sha256").update(
-      await readFile(path.join(root, "scripts/bench", name))).digest("hex") })));
-  Object.assign(report, { benchmarkSources: sources,
-    workingTreeDirty: (await exec("git", ["status", "--porcelain"], { cwd: root })).stdout.length > 0 });
+    runtimeVersion: "", maximumRuns: reviewing ? 24 : 12, maximumInvocations, maximumModelWorkSeconds: 1200,
+    suite, packetIdentity: reviewing ? reviewPacket.identity : undefined,
+    fixedReplays: reviewing ? reviewPacket.replays : undefined,
+    replayResults: reviewing ? [] as Array<Record<string, unknown>> : undefined,
+    fallbackCoverage: reviewing ? fallbackCoverageProbe() : undefined,
+    reservedInvocations: 0, cases: samples, results: [] as Array<Record<string, unknown>>, error: null as string | null };
+  const sourcePaths = ["scripts/bench/discussion-cases.mjs", "scripts/bench/codex-answer.mjs",
+    "scripts/bench/discussion-benchmark.test.ts", "apps/server/src/discussion/discussion-evidence-service.ts",
+    ...(reviewing ? ["scripts/bench/discussion-review-packet.ts", reviewPacketPath,
+      "apps/server/src/discussion/finalization-instructions.ts",
+      "docs/adr/0044-review-final-answers-and-test-discussion-value.md"] : [])];
+  const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
+    sha256: createHash("sha256").update(await readFile(path.join(root, name))).digest("hex") })));
+  const workingTreeDirty = (await exec("git", ["status", "--porcelain"], { cwd: root })).stdout.length > 0;
+  Object.assign(report, { benchmarkSources: sources, workingTreeDirty });
   let currentAttempt: Record<string, unknown> | undefined;
   let scheduled = 0;
+  let replayInvocations = 0;
   let deadline = 0;
-  const persist = () => writeFile(path.join(output, "report.json"), JSON.stringify(report, null, 2) + "\n");
+  const persist = async () => {
+    report.reservedInvocations = (await readdir(quotaDirectory)).filter((name) => name.startsWith("invocation-")).length;
+    await writeFile(path.join(output, "report.json"), JSON.stringify(report, null, 2) + "\n");
+  };
   async function waitFor<T>(read: () => Promise<T | undefined>, timeout = 310_000): Promise<T> {
     const until = Math.min(Date.now() + timeout, deadline || Infinity);
     while (Date.now() < until) {
@@ -54,6 +78,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     throw new Error("Benchmark time limit reached; no retry was started");
   }
   try {
+    if (reviewing && !synthetic) assert.equal(workingTreeDirty, false, "Commit the documented comparison before live execution");
     let codex: string;
     if (synthetic) {
       // This branch has no path to a real provider executable or auth environment.
@@ -95,7 +120,7 @@ test("bounded real single-Agent and Discussion task pairs", {
       deviceName: "Benchmark Bridge", dataDir: path.join(directory, "bridge-data"),
       agents: ["Solver", "Reviewer"].map((name) => ({ name, role: name === "Solver" ? "Solution author" : "Decision reviewer",
         adapter: "generic", runtimeKind: "generic", workspace, sandbox: "read-only",
-        command: [process.execPath, path.join(root, "scripts/bench/codex-answer.mjs"), codex, model, quotaDirectory],
+        command: [process.execPath, path.join(root, "scripts/bench/codex-answer.mjs"), codex, model, quotaDirectory, String(maximumInvocations)],
         envAllowlist: synthetic ? ["PATH"] : ["HOME", "PATH", "CODEX_HOME"] }))
     }));
     await exec(bridge, ["pair", "--config", config, "--code", invite.code], { timeout: 30_000 });
@@ -107,17 +132,58 @@ test("bounded real single-Agent and Discussion task pairs", {
     const solver = agents.find(({ name }) => name === "Solver")!;
     const reviewer = agents.find(({ name }) => name === "Reviewer")!;
     deadline = Date.now() + 1_200_000;
-    for (const [index, sample] of cases.entries()) {
+    if (reviewing) {
+      for (const [index, sample] of reviewPacket.replays.entries()) {
+        const arms = index % 2 === 0 ? ["legacy", "reviewed"] as const : ["reviewed", "legacy"] as const;
+        for (const arm of arms) {
+          assert.ok(Date.now() < deadline);
+          const instruction = replayInput(sample, arm);
+          currentAttempt = { caseId: sample.id, arm, instruction,
+            promptSha256: createHash("sha256").update(instruction).digest("hex"),
+            actualRuns: 0, runtimeSucceeded: null, finalAnswer: null,
+            manualRubric: pendingRubric(sample.rubric) };
+          report.replayResults!.push(currentAttempt);
+          await persist();
+          const startedAt = Date.now();
+          replayInvocations += 1;
+          const environment = Object.fromEntries((synthetic ? ["PATH"] : ["HOME", "PATH", "CODEX_HOME"])
+            .flatMap((name) => process.env[name] === undefined ? [] : [[name, process.env[name]!]]));
+          const child = spawnTestProcess(resources, process.execPath,
+            [path.join(root, "scripts/bench/codex-answer.mjs"), codex, model, quotaDirectory, String(maximumInvocations)],
+            { cwd: workspace, env: environment, stdio: ["pipe", "pipe", "pipe"] });
+          let answer = "";
+          child.process.stdout!.on("data", (chunk: Buffer) => { answer += chunk.toString(); });
+          child.process.stderr!.resume();
+          child.process.stdin!.on("error", () => {});
+          child.process.stdin!.end(instruction);
+          let expired = false;
+          const timer = setTimeout(() => { expired = true; void child.stop(); },
+            Math.max(1, Math.min(300_000, deadline - Date.now())));
+          const closed = new Promise<void>((resolve) => child.process.once("close", () => resolve()));
+          let terminalResult;
+          try { terminalResult = await child.terminal; await closed; } finally { clearTimeout(timer); }
+          Object.assign(currentAttempt, { elapsedMilliseconds: Date.now() - startedAt,
+            modelInvocations: 1, finalAnswer: answer.trim(), runtimeSucceeded:
+              terminalResult.code === 0 && !expired && answer.trim().length > 0 });
+          await persist();
+          console.log(`${sample.id} ${arm}: 1 replay invocation, ${Date.now() - startedAt}ms, runtime ${currentAttempt.runtimeSucceeded ? "completed" : "failed"}`);
+          assert.ok(currentAttempt.runtimeSucceeded, "Replay failure retained; remaining model calls were not started");
+        }
+      }
+    }
+    for (const [index, sample] of samples.entries()) {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
       for (const arm of index % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"]) {
-        assert.ok(Date.now() < deadline && scheduled + (arm === "discussion" ? 3 : 1) <= 12);
+        assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
         const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}` });
-        const goal = `Closed-input benchmark: answer only from the task below. Do not use tools, read files, access the network, or modify anything. Give a concise English answer under 350 words. Do not propose execution plans.\n\n${sample.prompt}`;
+        const goal = reviewing ? reviewedTaskInput(sample)
+          : `Closed-input benchmark: answer only from the task below. Do not use tools, read files, access the network, or modify anything. Give a concise English answer under 350 words. Do not propose execution plans.\n\n${sample.prompt}`;
         const startedAt = Date.now();
         currentAttempt = { caseId: sample.id, arm,
           promptSha256: createHash("sha256").update(goal).digest("hex"),
           runCount: null, runtimeSucceeded: null, finalAnswer: null, answers: [],
-          manualRubric: sample.rubric.map((criterion: string) => ({ criterion, passed: null, evidence: null })) };
+          taskInput: reviewing ? goal : undefined,
+          manualRubric: pendingRubric(sample.rubric) };
         report.results.push(currentAttempt);
         await persist();
         let discussion: DiscussionView | undefined;
@@ -160,16 +226,20 @@ test("bounded real single-Agent and Discussion task pairs", {
         Object.assign(currentAttempt, { caseId: sample.id, arm, promptSha256: createHash("sha256").update(goal).digest("hex"),
           elapsedMilliseconds: Date.now() - startedAt, runCount: runIds.length,
           runs: runs.map(({ state, createdAt, terminalAt }) => ({ state, createdAt, terminalAt })),
+          instructions: reviewing ? runs.map(({ targetAgentId, instruction }) => ({
+            agent: agents.find(({ agentId }) => agentId === targetAgentId)?.name, instruction })) : undefined,
           discussionUsage: discussion?.observedUsage ?? null,
           selection: discussion?.waves.map(({ selection }) => selection) ?? null,
           answers, finalAnswer: answers.at(-1)?.content ?? null, runtimeSucceeded: success,
-          manualRubric: sample.rubric.map((criterion: string) => ({ criterion, passed: null, evidence: null })) });
+          manualRubric: pendingRubric(sample.rubric) });
         await persist();
         console.log(`${sample.id} ${arm}: ${runs.length} Runs, ${Date.now() - startedAt}ms, runtime ${success ? "completed" : "failed"}`);
         assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
       }
     }
-    assert.equal(scheduled, 12);
+    assert.equal(scheduled, reviewing ? 24 : 12);
+    assert.equal(replayInvocations + scheduled, maximumInvocations);
+    assert.equal(report.reservedInvocations, maximumInvocations);
     assert.equal(Object.hasOwn(report, "tokens"), false);
     assert.equal(Object.hasOwn(report, "cost"), false);
     for (const result of report.results) {
@@ -181,7 +251,8 @@ test("bounded real single-Agent and Discussion task pairs", {
   } catch (error) {
     report.error = error instanceof Error ? error.message : "Benchmark failed";
     if (currentAttempt) Object.assign(currentAttempt, { error: report.error,
-      runtimeSucceeded: false, observationIncomplete: currentAttempt.runCount === null });
+      runtimeSucceeded: false, observationIncomplete: currentAttempt.actualRuns === 0
+        ? currentAttempt.modelInvocations === undefined : currentAttempt.runCount === null });
     throw error;
   } finally {
     await persist();

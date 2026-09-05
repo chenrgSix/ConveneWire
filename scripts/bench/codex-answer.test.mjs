@@ -5,11 +5,11 @@ import test from "node:test";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 
-async function invoke(t, source, missing = false, exhausted = false) {
+async function invoke(t, source, missing = false, exhausted = false, maximum = "12") {
   const resources = await createTestResources(t, "convenewire-bench-adapter-");
   const fake = path.join(resources.directory, "fake-codex");
   if (exhausted) {
-    for (let index = 0; index < 12; index += 1) {
+    for (let index = 0; index < Number(maximum); index += 1) {
       await writeFile(path.join(resources.directory, `invocation-${index}`), "");
     }
   }
@@ -18,7 +18,7 @@ async function invoke(t, source, missing = false, exhausted = false) {
     await chmod(fake, 0o700);
   }
   const child = spawnTestProcess(resources, process.execPath,
-    [path.resolve("scripts/bench/codex-answer.mjs"), fake, "synthetic-model", resources.directory],
+    [path.resolve("scripts/bench/codex-answer.mjs"), fake, "synthetic-model", resources.directory, maximum],
     { env: { PATH: process.env.PATH }, stdio: ["pipe", "pipe", "pipe"] });
   let stdout = "", stderr = "";
   child.process.stdout.on("data", (chunk) => { stdout += chunk; });
@@ -55,8 +55,18 @@ test("tool use, provider failure, malformed output and spawn failure invalidate 
 
 
 test("the shared invocation cap prevents another provider process from starting", async (t) => {
-  const result = await invoke(t, 'console.log("MUST_NOT_RUN");', false, true);
-  assert.equal(result.code, 1);
-  assert.equal(result.stdout, "");
-  assert.match(result.stderr, /invocation limit reached/u);
+  for (const maximum of ["12", "30"]) {
+    const result = await invoke(t, 'console.log("MUST_NOT_RUN");', false, true, maximum);
+    assert.equal(result.code, 1);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /invocation limit reached/u);
+  }
+});
+
+test("unsupported quotas cannot start a provider process", async (t) => {
+  for (const maximum of ["0", "31", "NaN"]) {
+    const result = await invoke(t, 'console.log("MUST_NOT_RUN");', false, false, maximum);
+    assert.equal(result.code, 1);
+    assert.equal(result.stdout, "");
+  }
 });

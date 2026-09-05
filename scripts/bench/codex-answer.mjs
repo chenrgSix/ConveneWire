@@ -3,10 +3,11 @@ import { closeSync, openSync } from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
-const [executable, model, quotaDirectory] = process.argv.slice(2);
+const [executable, model, quotaDirectory, maximum = "12"] = process.argv.slice(2);
 if (!executable || !model || !quotaDirectory) throw new Error("Executable, model and owned quota directory are required");
+if (!["12", "30"].includes(maximum)) throw new Error("Unsupported benchmark invocation limit");
 let reserved = false;
-for (let slot = 0; slot < 12; slot += 1) {
+for (let slot = 0; slot < Number(maximum); slot += 1) {
   try {
     closeSync(openSync(path.join(quotaDirectory, `invocation-${slot}`), "wx", 0o600));
     reserved = true;

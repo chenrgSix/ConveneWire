@@ -25,6 +25,10 @@ runtime success separately from rubric coverage and full-task success.
 
 ## Data transfer and execution ceiling
 
+The command is `npm run bench:discussion-review`. Its required offline gate is
+`npm run test:discussion-benchmark`; normal `npm test` invokes only synthetic
+model executables. Real review-suite execution requires a clean committed tree.
+
 The outgoing payload is limited to the fixed facts/contributions in the linked
 packet, a common English answer-under-350-words/no-tools instruction, the
 documented review checklist, generated isolated Discussion framing and earlier
@@ -66,3 +70,12 @@ primary finalizers, existing ordinal selection, bounded/truncated instructions,
 plan-proposal restrictions and assessment framing. Ordinary contribution Runs
 do not acquire the finalization checklist. The owned test root was removed.
 These checks establish instruction delivery and compatibility, not model quality.
+
+The offline benchmark gate passes nine adapter/packet/integration checks:
+four adapter checks, three document-packet checks, the original 12-Run fixture
+and the new six-replay/24-Run fixture. Both use real isolated Server/Bridge
+components with synthetic responses, and the shared owned root is physically
+removed. Quota exhaustion at 12/30 and unsupported limits start no provider
+process. The packet tests verify pair identity, balanced categories, no rubric
+leakage and the offline fallback coverage result. Full workspace build and
+392 maintained Markdown files pass. These are synthetic/runtime checks only.
