@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "identity": "qa-067-review-value-2026-09-06",
+  "source": "ADR-0044 and docs/modules/discussion-orchestration.md; constructed closed-input examples, not production incidents",
+  "commonInstruction": "Closed-input benchmark: use only the supplied facts. Do not use tools, read files, access the network or modify anything. Answer in English under 350 words. Do not emit execution-plan envelopes. Cover every requested deliverable. Consider correctness, security, operations and user impact where relevant.",
+  "legacyFinalizationTask": "Produce the final final answer now. Synthesize the best supported conclusion, important unresolved issues, and next actions.",
+  "replays": [
+    {
+      "id": "replay-consensus-boundary-v2",
+      "purpose": "Correct a repeated factual error while preserving the valid preference fix; explicitly resolves the ambiguity in QA-065.",
+      "task": "Candidates are exclusively eligible frozen Discussion participants, sorted by frozen ordinal. Each has taskRole primary/contributor/reviewer/null and participant.role participant/reviewer. The frozen Reviewer wins, otherwise prefer an eligible Task primary within that same set, otherwise first ordinal. Current code uses reviewer ?? candidates[0]. Give the smallest correction, state whether an unavailable reviewer or a primary outside the frozen participants can be selected, and give two tests: a later-ordinal primary plus an unavailable-primary/reviewer case.",
+      "contributions": [
+        "Use reviewer ?? candidates.find(c => c.taskRole === \"primary\") ?? candidates[0]. An unavailable Reviewer is excluded, but a nonparticipant Task primary can be selected because primary is preferred. Test a later-ordinal primary and Reviewer precedence.",
+        "I agree with this correction and that a nonparticipant primary may be chosen. Reviewer precedence is correct. The proposed tests are enough."
+      ],
+      "rubric": [
+        {
+          "id": "boundary",
+          "kind": "correction",
+          "text": "Rejects selecting any nonparticipant primary or unavailable Reviewer, using the explicit candidate boundary."
+        },
+        {
+          "id": "preference",
+          "kind": "preservation",
+          "text": "Preserves reviewer > candidate taskRole primary > frozen ordinal without adding candidates."
+        },
+        {
+          "id": "tests",
+          "kind": "coverage",
+          "text": "Supplies both later-ordinal primary and unavailable-primary/reviewer regression cases with expected selections."
+        }
+      ]
+    },
+    {
+      "id": "replay-wall-time-omission",
+      "purpose": "Fill a missing requested calculation without changing correct lifecycle accounting.",
+      "task": "Discussion createdAt=10:00:00, terminalAt=10:00:30, observedAt=10:02:00. Wave expectedMembers=3; three budget member slots were debited. Run A completed, Run B still works while cancellation is in flight, and the third member failed before Run creation. State actual Run counts, unbound slots, Discussion wall time including waits, and what changes when B later finishes. Discussion wall time ends at terminalAt, even if a Run remains live.",
+      "contributions": [
+        "There are two created Runs: one completed and one working, plus one unbound member slot and three debited slots. A 120-second execution claim is unsupported.",
+        "The lifecycle accounting is correct. Run B may later become canceled, completed or failed. We cannot know execution duration from these facts."
+      ],
+      "rubric": [
+        {
+          "id": "wall-time",
+          "kind": "coverage",
+          "text": "Calculates 30 seconds of Discussion wall time from createdAt to terminalAt, including waits."
+        },
+        {
+          "id": "freeze",
+          "kind": "coverage",
+          "text": "Allows later Run B outcome changes while keeping Discussion wall time at 30 seconds."
+        },
+        {
+          "id": "counts",
+          "kind": "preservation",
+          "text": "Preserves two created Runs, one completed, one working, one unbound slot and three debited slots."
+        }
+      ]
+    },
+    {
+      "id": "replay-correct-control",
+      "purpose": "Detect harmful overcorrection when all contributions are already correct.",
+      "task": "Both contributions below are correct under these supplied facts. All jobs are independent, start together and have no overhead. Job A takes 8 seconds and Job B takes 13 seconds. A required finalizer takes 4 seconds after both jobs finish. Sequential execution instead runs A then B then the finalizer. Calculate both wall times, recommend the arrangement meeting a 20-second deadline, and state whether timing alone proves answer quality. Preserve correct content; there need not be an error to fix.",
+      "contributions": [
+        "Parallel plus finalization takes max(8,13)+4 = 17 seconds. Sequential takes 8+13+4 = 25 seconds. Only the parallel arrangement meets 20 seconds.",
+        "The 17-second and 25-second calculations are correct under the zero-overhead premise. Timing alone provides no evidence about answer quality."
+      ],
+      "rubric": [
+        {
+          "id": "arithmetic",
+          "kind": "preservation",
+          "text": "Keeps parallel 17 seconds and sequential 25 seconds, with the required finalizer included."
+        },
+        {
+          "id": "decision",
+          "kind": "preservation",
+          "text": "Keeps the parallel recommendation under the 20-second deadline without inventing overhead or dependence."
+        },
+        {
+          "id": "no-fabrication",
+          "kind": "preservation",
+          "text": "Does not invent a defect in the correct contributions or infer answer quality from timing."
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "grant-review-cross-domain",
+      "category": "code_review",
+      "complexity": "multi_perspective",
+      "prompt": "Review this proposed Runtime start check through implementation, security and operations perspectives. Facts: registration only records an owner-selected repository; enabled Agent status is not Task consent; an exact current grant must match Task, Agent, repository and operation, be unexpired, and match the current binding revision. A plan approval cannot substitute for that grant. Current code: if (binding.registered && agent.enabled) return startRuntime(task); otherwise return denied. Captured fixture: binding revision is 2; the only grant pins revision 1 and is expired. Deliver: the concrete defect and decision for this fixture; the minimal validation boundary and ordering before process spawn; one stale/revoked-grant test and one valid-grant test; an actionable owner-facing denial that does not auto-issue consent or start a process.",
+      "rubric": [
+        {
+          "id": "deny",
+          "kind": "correctness",
+          "text": "Denies the captured start because the grant is expired and pins the wrong binding revision; registration/enabled status is insufficient."
+        },
+        {
+          "id": "checks",
+          "kind": "correctness",
+          "text": "Requires current exact Task/Agent/repository/operation/expiry/binding pins before spawning, without treating plan approval as Runtime consent."
+        },
+        {
+          "id": "tests",
+          "kind": "coverage",
+          "text": "Specifies a stale or revoked grant rejection test and a valid exact grant successful-start test."
+        },
+        {
+          "id": "owner",
+          "kind": "coverage",
+          "text": "Provides an actionable owner grant/binding correction without automatically issuing consent or spawning the rejected Runtime."
+        }
+      ]
+    },
+    {
+      "id": "selector-review-simple-v2",
+      "category": "code_review",
+      "complexity": "simple_control",
+      "prompt": "Review one selector expression. candidates contains only currently eligible frozen Discussion participants, ordered by frozen ordinal. Intended preference is frozen Reviewer, eligible Task primary within candidates, then first ordinal. Current code is reviewer ?? candidates[0]. In this fixture candidates=[{id:\"C\",taskRole:\"contributor\",ordinal:0},{id:\"P\",taskRole:\"primary\",ordinal:1}], with no Reviewer. Give the corrected expression and selected ID, state the result if P becomes unavailable and is removed, and state whether a primary outside frozen participants can be selected. No broader architecture proposal is requested.",
+      "rubric": [
+        {
+          "id": "expression",
+          "kind": "correctness",
+          "text": "Adds candidates.find(c => c.taskRole === \"primary\") between reviewer and candidates[0]."
+        },
+        {
+          "id": "primary",
+          "kind": "correctness",
+          "text": "Selects P for the supplied fixture."
+        },
+        {
+          "id": "fallback",
+          "kind": "correctness",
+          "text": "Selects C when P is unavailable and removed."
+        },
+        {
+          "id": "membership",
+          "kind": "correctness",
+          "text": "Excludes a primary outside the frozen participants without expanding the candidate set."
+        }
+      ]
+    },
+    {
+      "id": "restart-diagnosis-cross-domain",
+      "category": "problem_diagnosis",
+      "complexity": "multi_perspective",
+      "prompt": "Diagnose an interrupted write Run using only these retained facts. At 10:00 Central delivered Run R under Bridge epoch 5. At 10:01 the socket disconnected after the external service accepted a request but before a response was retained. At 10:02 Bridge restarted at epoch 6; Central still shows R working with cancellation pending. The local journal says external commit outcome UNKNOWN. The external service supports a read-only lookup by retained operation ID; repeating the request without checking can apply the write twice. A later epoch-5 completion callback arrives. Rules: Central owns canonical Run state and rejects stale-epoch callbacks; transport loss is not evidence that an external write did not commit. Deliver: distinguish transport, Run and external-effect states; the safe next diagnostic action and retry boundary; handling of the late callback; the truthful owner-facing status and an acceptance test for duplicate-effect prevention.",
+      "rubric": [
+        {
+          "id": "separation",
+          "kind": "correctness",
+          "text": "Distinguishes disconnection, still-working/cancellation-pending Run and unknown external commit; does not equate UNKNOWN with not committed."
+        },
+        {
+          "id": "reconcile",
+          "kind": "correctness",
+          "text": "Uses the retained operation ID for read-only reconciliation before any retry and avoids blindly repeating the write."
+        },
+        {
+          "id": "epoch",
+          "kind": "correctness",
+          "text": "Rejects the stale epoch-5 callback as a current lifecycle transition while recognizing that this does not prove no external effect."
+        },
+        {
+          "id": "owner-test",
+          "kind": "coverage",
+          "text": "Shows pending/unknown status without success or zero-effect claims and proposes a test preventing duplicate writes across the disconnect/restart."
+        }
+      ]
+    },
+    {
+      "id": "usage-diagnosis-simple",
+      "category": "problem_diagnosis",
+      "complexity": "simple_control",
+      "prompt": "Correct one Discussion status panel. createdAt=10:00:00, terminalAt=10:00:30, observedAt=10:02:00. Three member slots were debited. One Run completed; a second Run is still working under cancellation; the third member failed before any Run was created. The panel currently says \"3 completed Runs, 120 seconds Discussion elapsed\". Give created/completed/working Run counts, unbound/debited slot counts, the correct Discussion wall duration including waits, and what changes if the second Run later completes. The terminalAt timestamp remains 10:00:30. No other metrics are requested.",
+      "rubric": [
+        {
+          "id": "runs",
+          "kind": "correctness",
+          "text": "Reports two created Runs, one completed and one still working."
+        },
+        {
+          "id": "slots",
+          "kind": "correctness",
+          "text": "Reports one unbound slot and three debited budget slots."
+        },
+        {
+          "id": "duration",
+          "kind": "correctness",
+          "text": "Reports 30 seconds of Discussion wall time including waits."
+        },
+        {
+          "id": "late",
+          "kind": "correctness",
+          "text": "Later completion changes completed to two and working to zero while wall duration remains 30 seconds."
+        }
+      ]
+    },
+    {
+      "id": "transport-comparison-cross-domain",
+      "category": "solution_comparison",
+      "complexity": "multi_perspective",
+      "prompt": "Compare deployment choices through transport security, operations and user experience. Supplied constraints: a trusted LAN installation has no public domain or Internet; browsers must work without installing a private CA; Bridge must keep a pinned private-CA HTTPS channel; existing data and Device credentials must survive transport changes. Plain LAN browser HTTP is allowed only with explicit owner acceptance of unencrypted browser traffic. A uses HTTP for both browser and Bridge. B uses owner-approved LAN browser HTTP and a separate pinned HTTPS Bridge endpoint. C requires public-CA HTTPS using a public domain and Internet. Choose the feasible option, explain why the other two fail, describe the owner-facing tradeoff without claiming encryption for browser HTTP, and propose validation for browser access, wrong-CA rejection and preserved data/Device credentials. Do not change any installation.",
+      "rubric": [
+        {
+          "id": "choice",
+          "kind": "correctness",
+          "text": "Chooses B with separate LAN browser HTTP and pinned Bridge HTTPS under explicit owner acceptance."
+        },
+        {
+          "id": "alternatives",
+          "kind": "correctness",
+          "text": "Rejects A for losing Bridge HTTPS pinning and C for unavailable public domain/Internet."
+        },
+        {
+          "id": "tradeoff",
+          "kind": "correctness",
+          "text": "Clearly states browser traffic remains unencrypted and requires owner acceptance; does not claim end-to-end HTTPS."
+        },
+        {
+          "id": "validation",
+          "kind": "coverage",
+          "text": "Covers CA-free browser access, wrong-CA Bridge rejection and preservation of data and Device credentials."
+        }
+      ]
+    },
+    {
+      "id": "schedule-comparison-simple",
+      "category": "solution_comparison",
+      "complexity": "simple_control",
+      "prompt": "Compare two fixed schedules. Job A takes 8 seconds; independent Job B takes 13 seconds. A required finalizer starts only after both jobs finish and takes 4 seconds. There is no overhead, contention or failure. Option S runs A then B then finalizer. Option P starts A and B together then runs finalizer. Compute both wall times, choose the schedule meeting a 20-second deadline, and explain whether this timing comparison proves better answer quality. Use the supplied assumptions; no new agents or routing algorithm are needed.",
+      "rubric": [
+        {
+          "id": "sequential",
+          "kind": "correctness",
+          "text": "Calculates sequential wall time as 25 seconds."
+        },
+        {
+          "id": "parallel",
+          "kind": "correctness",
+          "text": "Calculates parallel wall time as 17 seconds, including the finalizer."
+        },
+        {
+          "id": "deadline",
+          "kind": "correctness",
+          "text": "Chooses P as the only option meeting the 20-second deadline."
+        },
+        {
+          "id": "quality",
+          "kind": "correctness",
+          "text": "Does not infer better answer quality from wall time or invent additional overhead contrary to the premise."
+        }
+      ]
+    }
+  ],
+  "fallbackProbes": [
+    {
+      "id": "unmatched-late-expertise",
+      "eligible": [
+        "Implementation",
+        "Docs",
+        "Security",
+        "Reviewer"
+      ],
+      "requiredReviewer": "Reviewer",
+      "limit": 2,
+      "neededExpertise": [
+        "Security",
+        "Reviewer"
+      ],
+      "reason": "Unmatched wording can hide an essential specialist at a later ordinal."
+    },
+    {
+      "id": "unmatched-early-expertise",
+      "eligible": [
+        "Security",
+        "Docs",
+        "Operations",
+        "Reviewer"
+      ],
+      "requiredReviewer": "Reviewer",
+      "limit": 2,
+      "neededExpertise": [
+        "Security",
+        "Reviewer"
+      ],
+      "reason": "Ordinal fallback retains the specialist when it happens to be first."
+    }
+  ]
+}

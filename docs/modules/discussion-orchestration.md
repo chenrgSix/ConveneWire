@@ -121,6 +121,15 @@ unbound slots and wall time; budget slots count committed execution capacity.
 and monetary-cost accounting, read fields and Web placeholders. QA-065 provides a
 bounded real-task comparison with a single-Agent baseline, not a quality claim.
 
+[ADR-0044](../adr/0044-review-final-answers-and-test-discussion-value.md) defines
+the finalization review checklist: verify supplied facts and requested items,
+correct evidenced errors, preserve correct content and keep uncertainty
+explicit. Every new finalizer gets that checklist, regardless of participant
+role; ordinary parallel contributors retain their current visibility boundary.
+QA-067 uses documentation-owned replay/task fixtures and the same checklist in
+the single-Agent baseline. Startup guidance is advisory; offline fallback
+coverage is not a live answer-quality experiment or a production policy change.
+
 `DISC-012` adds no generic soft barrier. Its accepted target is a separate
 `read_only_quorum` completion mode available only when every participant is a
 current managed, supplemental-capable, enforceably read-only Agent. The soft
