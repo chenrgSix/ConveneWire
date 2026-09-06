@@ -6,7 +6,7 @@ read-only snapshot-retention review, with new evidence and canonical criteria.
 It uses no Windows source, old Task/criterion IDs or historical answer. Two
 fixture notes are authored directly, not attributed to real Agent Runs.
 
-## Inputs and proposed arms
+## Inputs and authorized arms
 
 - [Packet](fixtures/qa-076/packet.json): Task/Criteria, source identities, frozen
   notes, shared artifact contract and the sole F instruction delta.
@@ -28,11 +28,12 @@ reference answer, private grading rubric and prior QA outcomes are unavailable
 to the reader and prompt. Both output the same proposed review manifest; neither
 may delete data, run shell commands or claim completed operational changes.
 
-The proposed order is E/F, F/E, E/F, three fresh repetitions each. Current
-external-model budget is **zero**. The proposed maximum is six sessions using
-the installed Codex CLI and OpenAI/ChatGPT service, model `gpt-5.4-mini`, low
-effort, five minutes per session, no retry or same-plan resume. A new explicit
-Owner approval and committed authorization freeze must precede live startup.
+The authorized order is E/F, F/E, E/F, three fresh repetitions each, at most
+**six** sessions using the installed Codex CLI and OpenAI/ChatGPT service, model
+`gpt-5.4-mini`, low effort, five minutes per session, no retry or same-plan
+resume. The Owner replied “是，允许” to this concrete proposal. The authorization
+record changes no model-visible input or scoring rule and is refrozen and
+committed before startup.
 
 ## Acceptance
 
@@ -86,10 +87,11 @@ legitimate unknowns, control contamination, invalid manual-review identity and
 exclusive admission. Fifty-five historical access/QA-074/QA-075 regressions also
 pass, including installed-CLI loopback without an external model. Markdown lint
 covers 409 files. The zero-budget live-entry probe fails before journal creation
-or provider startup; no QA-076 execution report or quality result exists.
+or provider startup during preparation. This zero-budget check predates the
+Owner authorization; it is not a real-model result.
 
-Run `npm run test:discussion-criterion-closure` for offline checks. The proposed
-`npm run bench:discussion-criterion-closure` remains blocked until the concrete
-six-call authorization is approved, recorded, refrozen and committed. After an
-authorized run, the audit entry exports final-only artifacts; first semantic
-judgments must be durably recorded before joining table/arm identities.
+Run `npm run test:discussion-criterion-closure` for offline checks. The one-time
+`npm run bench:discussion-criterion-closure` uses the committed six-call
+authorization. After the run, the audit entry exports final-only artifacts;
+first semantic judgments must be durably recorded before joining table/arm
+identities.

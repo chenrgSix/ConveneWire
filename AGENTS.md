@@ -56,7 +56,7 @@ Node.js 22 and Go 1.26.7 are required. Repository commands are:
 - `npm run test:discussion-claim-adjudication` — verify QA-075 common C/D inputs, returned-source claim bindings, output artifact validation and exclusive six-session admission without external models.
 - `npm run bench:discussion-claim-adjudication` — consume only QA-075's frozen C/D, D/C, C/D plan once, with no retries or same-plan resume; this is not a routine test command.
 - `npm run test:discussion-criterion-closure` — verify the new QA-076 synthetic task, full-deliverable checks, canonical criterion mapping, E/F parity, source authority and zero-budget admission without external models.
-- `npm run bench:discussion-criterion-closure` — QA-076's proposed six-session E/F plan; currently refuses startup because external-call authorization is zero. Only an Owner-approved, committed new freeze can enable this one-time entry.
+- `npm run bench:discussion-criterion-closure` — QA-076's Owner-authorized six-session E/F plan, pinned to gpt-5.4-mini / low with five minutes per call and no retry. A committed freeze and unconsumed journal are required; authorization cannot be reused.
 - `npm run test:discussion-codex-bootstrap` — installed Codex CLI checks using an auth-free loopback fixture, without an external model.
 - Historical `bench:discussion*` commands are not routine test commands or reusable execution permission. See [Discussion maintenance and evidence](docs/discussion-usage-guide.md#维护与后续验证); exercised plans stay closed and a new real experiment requires a bounded new plan.
 - `npm run test:e2e:live` — explicitly invoke local Codex and Pi against an isolated temporary Team.

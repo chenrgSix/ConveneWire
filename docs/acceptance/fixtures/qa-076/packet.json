@@ -143,12 +143,12 @@
     "providerModelAttestation": "unavailable"
   },
   "authorization": {
-    "state": "not_authorized",
-    "maximumFinalizerInvocations": 0,
-    "approvedBy": null,
-    "approvedAt": null,
-    "approvalText": null,
-    "destination": null
+    "state": "authorized",
+    "maximumFinalizerInvocations": 6,
+    "approvedBy": "Owner",
+    "approvedAt": "2026-09-06T13:53:27Z",
+    "approvalText": "是，允许",
+    "destination": "OpenAI via installed Codex CLI using existing ChatGPT authentication"
   },
   "proposedDestination": "OpenAI via installed Codex CLI using existing ChatGPT authentication",
   "order": [

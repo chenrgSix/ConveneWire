@@ -1,8 +1,8 @@
 {
   "version": 1,
   "identity": "qa-076-retention-criterion-closure-v1",
-  "frozenAt": "2026-09-06T13:40:25.441Z",
-  "authorizationState": "not_authorized",
+  "frozenAt": "2026-09-06T13:54:28.804Z",
+  "authorizationState": "authorized",
   "runtime": {
     "executableSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
     "version": "codex-cli 0.153.4",
@@ -192,7 +192,7 @@
     },
     {
       "path": "docs/acceptance/fixtures/qa-076/packet.json",
-      "sha256": "f21bc7b9585af947b811ab91591649b4081bf2ce741b521f09c60073f648ffb7"
+      "sha256": "d67665f826e2c4673494b59a671f8b030ad6c5a46dc615756ccb0d81c4eecabc"
     },
     {
       "path": "docs/acceptance/fixtures/qa-076/sources/policy.txt",
@@ -248,7 +248,7 @@
     },
     {
       "path": "docs/adr/0050-screen-full-criterion-closure.md",
-      "sha256": "b22c39f81a1d402b02c486a9d755979699c7cd4ffd4e260d51e380fdb1cb06c8"
+      "sha256": "76aee161811e7496d3f31a7569aa0e1f94a0a6ad19ea0c33d65226553e7db17b"
     }
   ]
 }

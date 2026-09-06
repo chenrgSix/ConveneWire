@@ -1,7 +1,7 @@
 # ADR-0050: Screen full criterion closure on a new task
 
 - Date: 2026-09-06
-- Status: Accepted for offline preparation; live budget requires Owner approval
+- Status: Accepted; Owner authorized one bounded six-session execution
 - Owner: Experiment tooling
 
 ## Decision
@@ -58,10 +58,10 @@ prove returned bytes only. F's consistency failures and false `satisfied` rows
 remain outcomes; never exclude them to improve its apparent performance.
 Format/full-source manipulation checks are distinct from semantic acceptance.
 
-Propose six fresh sessions, E/F, F/E, E/F, without retries or replacement slots.
-No external invocation is authorized by this preparation: admission remains
-closed until the Owner approves the concrete model/destination/count and the
-approval is recorded and committed in a new freeze. Requested common settings
+The Owner approved six fresh sessions, E/F, F/E, E/F, without retries or
+replacement slots, with the reply “是，允许” to the concrete six-call proposal.
+Authorization is recorded in the packet and committed in a new freeze before
+startup; it grants no subsequent experiment. Approved common settings
 are `gpt-5.4-mini`, low effort, 300 seconds, eight source calls, 8,192 bytes per
 return, 16,384 final-artifact bytes and 32,768 terminal bytes. No inherited
 450-word ceiling constrains this larger deliverable. Same caps are not equal

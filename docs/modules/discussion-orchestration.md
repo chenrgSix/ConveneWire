@@ -31,8 +31,9 @@ outcomes in the retained comparison; QA-072 and QA-074 stay consumed.
 [ADR-0050](../adr/0050-screen-full-criterion-closure.md) prepares QA-076 on a new
 synthetic task. E/F differ only by an all-canonical-criterion self-assessment;
 independent final-artifact acceptance owns the full-deliverable metric. This
-adds no production closure gate or claim store. Offline preparation grants zero
-external-model calls; a concrete new budget needs separate Owner authorization.
+adds no production closure gate or claim store. The Owner subsequently approved
+one six-session E/F execution through the existing Codex/OpenAI service; the
+committed authorization freeze changes no model-visible input or grading rule.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.
