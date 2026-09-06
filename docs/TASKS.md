@@ -690,4 +690,4 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | FUT-006 | PLANNED | Add an optional Relay/Tunnel network mode | direct-HTTPS onboarding metrics justify a separately accepted transport, privacy, address-ownership, credential-isolation and availability contract |
 
 | GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
-| QA-069 | ACTIVE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | QA-069 requires frozen source/rubric pins, offline and synthetic gates, bounded real pairs, reviewed retrieval/answer/Run evidence and cleanup |
+| QA-069 | ACTIVE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | Frozen 13-excerpt packet and scoped MCP reader implemented; all 19 benchmark checks, 396 Markdown files and physical cleanup pass; bounded real pairs and reviewed evidence remain required |

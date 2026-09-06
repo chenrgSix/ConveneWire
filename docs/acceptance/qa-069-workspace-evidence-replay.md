@@ -58,3 +58,25 @@ unmeasured. Runtime completion, rubric coverage and a deployed repair are
 separate states. Completion requires three paired results, reviewed evidence,
 updated guidance, relevant checks and physical temporary-root cleanup. A
 failed invocation remains incomplete rather than being promoted to success.
+
+## Implementation preflight
+
+The fixed packet contains 13 exact Git excerpts across three incidents. The
+reader persists its eight-read quota across MCP restarts; rejected calls also
+consume a slot. Model-selected paths, foreign documents and forged role fields
+are rejected without retaining those raw arguments. The separate evidence
+adapter preserves the older closed-input adapter's prohibition on all tools.
+An answer is emitted only after successful completion and at least one actual
+reader receipt; reading all assigned sources remains a reviewed coverage gate.
+
+The first offline pass verified four focused checks and all 12 synthetic Runs
+through actual MCP, Server and Bridge processes. The owned root
+`convene-wire-test-run-JvXAyw` was physically removed. Corpus excerpts were then
+trimmed to remove unrelated trailing declarations; the final committed packet
+and full legacy/review/continuation regression are verified before live calls.
+
+Final preflight passed all 19 benchmark checks, including unchanged legacy,
+review and continuation suites plus the workspace reader checks and complete
+12-Run synthetic traversal. All 396 maintained Markdown files and whitespace
+checks passed. The final preflight root `convene-wire-test-run-SjRCgj` is absent.
+No provider was invoked during either preflight.

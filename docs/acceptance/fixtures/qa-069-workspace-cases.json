@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "identity": "qa-069-historical-workspaces-v1",
+  "model": "gpt-5.4-mini",
+  "maximumInvocations": 12,
+  "maximumReads": 8,
+  "cases": [
+    {
+      "id": "delivery",
+      "category": "Bridge and wire diagnosis",
+      "prompt": "A recorded run completed locally while Central remained working at sequence 2. Inspect the historical source and observation documents. Explain the supported failure chain, propose the smallest safe repair boundary, list regression checks, and state what is still unproven. Do not assume local completion proves delivered output.",
+      "rubric": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions."
+        }
+      ],
+      "documents": [
+        {
+          "id": "delivery-parser",
+          "owner": "Solver",
+          "source": {
+            "commit": "196032b8877be460ea1806065f2e81bd4949e117",
+            "path": "bridge/internal/runtime/assessment.go",
+            "startLine": 1,
+            "endLine": 51,
+            "sha256": "2922259dc129314d908fb77b4adf847fb40af368b7243cdfff61cec4a688628c"
+          },
+          "content": "package runtime\n\nimport (\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"io\"\n\t\"strings\"\n\n\tcontracts \"convenewire.dev/contracts/generated/go\"\n)\n\nconst (\n\tassessmentOpen  = \"<agentroom-assessment>\"\n\tassessmentClose = \"</agentroom-assessment>\"\n)\n\nfunc parseAssessmentEnvelope(source string) (string, *contracts.Assessment) {\n\ttrimmed := strings.TrimSpace(source)\n\tif !strings.HasSuffix(trimmed, assessmentClose) {\n\t\treturn trimmed, nil\n\t}\n\tstart := strings.LastIndex(trimmed, assessmentOpen)\n\tif start < 0 {\n\t\treturn trimmed, nil\n\t}\n\tjsonStart := start + len(assessmentOpen)\n\tjsonEnd := len(trimmed) - len(assessmentClose)\n\tdecoder := json.NewDecoder(bytes.NewBufferString(trimmed[jsonStart:jsonEnd]))\n\tdecoder.DisallowUnknownFields()\n\tvar assessment contracts.Assessment\n\tif err := decoder.Decode(&assessment); err != nil || !hasAssessment(assessment) {\n\t\treturn trimmed, nil\n\t}\n\tvar trailing any\n\tif err := decoder.Decode(&trailing); err != io.EOF {\n\t\treturn trimmed, nil\n\t}\n\tvisible := strings.TrimSpace(trimmed[:start])\n\tif visible == \"\" {\n\t\treturn trimmed, nil\n\t}\n\treturn visible, &assessment\n}\n\nfunc hasAssessment(value contracts.Assessment) bool {\n\treturn value.Confidence != nil || value.DisagreementRemaining != nil ||\n\t\tvalue.GoalSatisfied != nil || len(value.NewEvidenceRefs) > 0 ||\n\t\tvalue.NewInformationAdded != nil || len(value.OpenQuestions) > 0 ||\n\t\tvalue.Recommendation != nil || len(value.ResolvedQuestionIDS) > 0 ||\n\t\tvalue.ReviewerApproved != nil\n}\n",
+          "sha256": "2922259dc129314d908fb77b4adf847fb40af368b7243cdfff61cec4a688628c"
+        },
+        {
+          "id": "delivery-observation",
+          "owner": "Solver",
+          "source": {
+            "commit": "cbe223b2d7dd9b61040c1b83f74b2f849658aa23",
+            "path": "docs/acceptance/evidence/qa-068-finalizer-assessment-failure-2026-09-06.json",
+            "startLine": 1,
+            "endLine": 78,
+            "sha256": "3af3c52cd2b81b547715ce71d829ef2ffa6ee5049de9b946e9f95638cb77e19b"
+          },
+          "content": "{\n  \"observedAt\": \"2026-09-05T17:22:47.706Z\",\n  \"runId\": \"run_uAFmrGHCXLMIucIwYppCjg\",\n  \"bridgeState\": \"completed\",\n  \"bridgeUpdatedAt\": \"2026-09-05T17:19:20.578811Z\",\n  \"bridgeEvents\": [\n    {\n      \"messageId\": \"msg_h7-G_rGvCgYB2P3tNgkHXg\",\n      \"payload\": {\n        \"agentId\": \"agent_zj9Hk5iza3dlVmx7NNcdTg\",\n        \"runId\": \"run_uAFmrGHCXLMIucIwYppCjg\",\n        \"sequence\": 2,\n        \"traceId\": \"trace_kD5OmSvEUY9XsYGyYIsNWg\",\n        \"status\": \"working\"\n      },\n      \"protocolVersion\": \"1.0\",\n      \"timestamp\": \"2026-09-05T17:19:01.579473Z\",\n      \"type\": \"run.status\"\n    },\n    {\n      \"messageId\": \"msg_3t5kvR25B2suxhFNp9lT6g\",\n      \"payload\": {\n        \"agentId\": \"agent_zj9Hk5iza3dlVmx7NNcdTg\",\n        \"runId\": \"run_uAFmrGHCXLMIucIwYppCjg\",\n        \"sequence\": 3,\n        \"traceId\": \"trace_kD5OmSvEUY9XsYGyYIsNWg\",\n        \"assessment\": {\n          \"confidence\": 0.98,\n          \"goalSatisfied\": true,\n          \"newInformationAdded\": false,\n          \"recommendation\": \"stop\",\n          \"resolvedQuestionIds\": [\n            \"q1\"\n          ],\n          \"reviewerApproved\": true\n        },\n        \"content\": \"The supported answer is correct.\\n\\n- Corrected expression: `reviewer ?? candidates.find(p => p.taskRole === \\\"primary\\\") ?? candidates[0]`\\n- Selected ID in the given fixture: `P`\\n- If `P` is removed, the result falls back to `C`\\n- A primary outside the frozen participants cannot be selected, because `candidates` contains only currently eligible frozen Discussion participants\\n\\nNo material correction is needed; the only nuance is that the fallback to `C` is specifically the first remaining candidate by frozen ordinal once `P` is unavailable.\"\n      },\n      \"protocolVersion\": \"1.0\",\n      \"timestamp\": \"2026-09-05T17:19:20.568166Z\",\n      \"type\": \"run.reply\"\n    },\n    {\n      \"messageId\": \"msg_vW7OfmEaDn0X7AILWuSQMw\",\n      \"payload\": {\n        \"agentId\": \"agent_zj9Hk5iza3dlVmx7NNcdTg\",\n        \"runId\": \"run_uAFmrGHCXLMIucIwYppCjg\",\n        \"sequence\": 4,\n        \"traceId\": \"trace_kD5OmSvEUY9XsYGyYIsNWg\",\n        \"status\": \"completed\"\n      },\n      \"protocolVersion\": \"1.0\",\n      \"timestamp\": \"2026-09-05T17:19:20.578811Z\",\n      \"type\": \"run.status\"\n    }\n  ],\n  \"centralRun\": {\n    \"state\": \"working\",\n    \"last_sequence\": 2,\n    \"created_at\": \"2026-09-05T17:19:01.547Z\",\n    \"updated_at\": \"2026-09-05T17:19:01.587Z\"\n  },\n  \"centralEvents\": [\n    {\n      \"sequence\": 1,\n      \"event_type\": \"status\",\n      \"status\": \"delivered\",\n      \"created_at\": \"2026-09-05T17:19:01.579Z\"\n    },\n    {\n      \"sequence\": 2,\n      \"event_type\": \"status\",\n      \"status\": \"working\",\n      \"created_at\": \"2026-09-05T17:19:01.587Z\"\n    }\n  ],\n  \"projectionFailures\": []\n}\n",
+          "sha256": "3af3c52cd2b81b547715ce71d829ef2ffa6ee5049de9b946e9f95638cb77e19b"
+        },
+        {
+          "id": "delivery-schema",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "196032b8877be460ea1806065f2e81bd4949e117",
+            "path": "packages/contracts/schemas/bridge/messages.schema.json",
+            "startLine": 2075,
+            "endLine": 2162,
+            "sha256": "b57ea48076c6cd43ccef9c59484a40a8f7d80b419729668b0903b2d4b2f02947"
+          },
+          "content": "    \"agentAssessment\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"goalSatisfied\": {\n          \"type\": \"boolean\"\n        },\n        \"confidence\": {\n          \"type\": \"number\",\n          \"minimum\": 0,\n          \"maximum\": 1\n        },\n        \"resolvedQuestionIds\": {\n          \"type\": \"array\",\n          \"maxItems\": 100,\n          \"uniqueItems\": true,\n          \"items\": {\n            \"type\": \"string\",\n            \"minLength\": 1,\n            \"maxLength\": 240\n          }\n        },\n        \"openQuestions\": {\n          \"type\": \"array\",\n          \"maxItems\": 50,\n          \"items\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"id\",\n              \"question\",\n              \"importance\"\n            ],\n            \"properties\": {\n              \"id\": {\n                \"type\": \"string\",\n                \"minLength\": 1,\n                \"maxLength\": 160\n              },\n              \"question\": {\n                \"type\": \"string\",\n                \"minLength\": 1,\n                \"maxLength\": 2000\n              },\n              \"importance\": {\n                \"enum\": [\n                  \"low\",\n                  \"medium\",\n                  \"high\"\n                ]\n              }\n            }\n          }\n        },\n        \"newEvidenceRefs\": {\n          \"type\": \"array\",\n          \"maxItems\": 100,\n          \"uniqueItems\": true,\n          \"items\": {\n            \"type\": \"string\",\n            \"minLength\": 1,\n            \"maxLength\": 240\n          }\n        },\n        \"disagreementRemaining\": {\n          \"enum\": [\n            \"none\",\n            \"low\",\n            \"medium\",\n            \"high\"\n          ]\n        },\n        \"newInformationAdded\": {\n          \"type\": \"boolean\"\n        },\n        \"reviewerApproved\": {\n          \"type\": \"boolean\"\n        },\n        \"recommendation\": {\n          \"enum\": [\n            \"continue\",\n            \"finish\",\n            \"wait_human\"\n          ]\n        }\n      },\n      \"minProperties\": 1\n    },\n",
+          "sha256": "faf6f5dec5557d55751872284a79806a3b6b6c1d92e263354ecc706809fe8a37"
+        },
+        {
+          "id": "delivery-type",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "196032b8877be460ea1806065f2e81bd4949e117",
+            "path": "packages/contracts/generated/go/bridge_messages.go",
+            "startLine": 915,
+            "endLine": 925,
+            "sha256": "b6e855f6e4f7b91760bd80d6eab4d1a9db0271ef1e80770c6d89b40141254ad8"
+          },
+          "content": "type Assessment struct {\n\tConfidence            *float64               `json:\"confidence,omitempty\"`\n\tDisagreementRemaining *DisagreementRemaining `json:\"disagreementRemaining,omitempty\"`\n\tGoalSatisfied         *bool                  `json:\"goalSatisfied,omitempty\"`\n\tNewEvidenceRefs       []string               `json:\"newEvidenceRefs,omitempty\"`\n\tNewInformationAdded   *bool                  `json:\"newInformationAdded,omitempty\"`\n\tOpenQuestions         []OpenQuestionElement  `json:\"openQuestions,omitempty\"`\n\tRecommendation        *Recommendation        `json:\"recommendation,omitempty\"`\n\tResolvedQuestionIDS   []string               `json:\"resolvedQuestionIds,omitempty\"`\n\tReviewerApproved      *bool                  `json:\"reviewerApproved,omitempty\"`\n}\n",
+          "sha256": "a23670189c49519a1daddd4dc075a94f9692be4659fbe843cca606d1ec55696f"
+        },
+        {
+          "id": "delivery-enum",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "196032b8877be460ea1806065f2e81bd4949e117",
+            "path": "packages/contracts/generated/go/bridge_messages.go",
+            "startLine": 1381,
+            "endLine": 1387,
+            "sha256": "b6e855f6e4f7b91760bd80d6eab4d1a9db0271ef1e80770c6d89b40141254ad8"
+          },
+          "content": "type Recommendation string\n\nconst (\n\tContinue  Recommendation = \"continue\"\n\tFinish    Recommendation = \"finish\"\n\tWaitHuman Recommendation = \"wait_human\"\n)\n",
+          "sha256": "001fad9e3de54f448db19095306716a0066e0d12c8367fa0ec820bc06ae38afc"
+        }
+      ]
+    },
+    {
+      "id": "cancellation",
+      "category": "CI and cancellation diagnosis",
+      "prompt": "The same commit passed main CI but its protected Release gate canceled the Hosted client-disconnect test after five seconds. Inspect the historical source and recorded CI observation. Recommend a bounded test repair that distinguishes setup delays from cancellation failures, identify what must remain a strict gate, and explain the limits of the diagnosis. A timeout alone is not proof of a production cancellation defect.",
+      "rubric": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify the five-second whole-test envelope includes setup, dispatch, cancellation and teardown, and the same-source CI difference does not prove a production defect."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Separate bounded setup/provider-start allowance from a strict five-second cancel-to-abort gate plus bounded request settlement and shutdown; do not only enlarge the whole test."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Prevent the provider 15-second deadline from being mistaken for client/shutdown cancellation; propose a negative or isolated cancellation regression for both triggers."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite test and CI/runtime evidence and preserve uncertainty about runner contention; no claim that suggested code, native CI or a Release has been verified."
+        }
+      ],
+      "documents": [
+        {
+          "id": "cancel-test",
+          "owner": "Solver",
+          "source": {
+            "commit": "1f519bddca81c9931e5354cae81a7b7476f02d51",
+            "path": "apps/server/test/hosted-agent-api.test.ts",
+            "startLine": 1047,
+            "endLine": 1133,
+            "sha256": "48366552120e92578bcb9dda871c332b6e1dd8570c534cb3864aca0a75a9d8a8"
+          },
+          "content": "for (const cancellation of [\"client disconnect\", \"Server shutdown\"] as const) {\n  test(`Hosted configuration probes abort HTTPS on ${cancellation}`, {\n    timeout: 5_000\n  }, async () => {\n    const directory = await mkdtemp(path.join(\n      os.tmpdir(),\n      \"convene-wire-hosted-probe-cancel-\"\n    ));\n    let markStarted!: () => void;\n    const started = new Promise<void>((resolve) => {\n      markStarted = resolve;\n    });\n    let markAborted!: () => void;\n    const aborted = new Promise<void>((resolve) => {\n      markAborted = resolve;\n    });\n    const hostedFetch: typeof fetch = async (_input, init) => {\n      assert.ok(init?.signal);\n      markStarted();\n      return new Promise<Response>((_resolve, reject) => {\n        const rejectAbort = () => {\n          markAborted();\n          reject(new DOMException(\"Aborted\", \"AbortError\"));\n        };\n        if (init.signal!.aborted) rejectAbort();\n        else init.signal!.addEventListener(\"abort\", rejectAbort, { once: true });\n      });\n    };\n    const app = await createServerApp({\n      databasePath: path.join(directory, \"server.sqlite\"),\n      hostedFetch,\n      clock: () => now,\n      logger: false\n    });\n    const caller = new AbortController();\n    try {\n      await app.ready();\n      const { authorization, teamId } = await bootstrap(app);\n      const address = await app.listen({ port: 0, host: \"127.0.0.1\" });\n      const request = Promise.allSettled([fetch(\n        `${address}/api/teams/${teamId}/hosted-agent-tests`,\n        {\n          method: \"POST\",\n          headers: { authorization, \"content-type\": \"application/json\" },\n          body: JSON.stringify({\n            provider: \"openai_responses\",\n            model: \"gpt-5.4-mini\",\n            apiKey\n          }),\n          signal: caller.signal\n        }\n      )]);\n      await started;\n      const closing = cancellation === \"Server shutdown\"\n        ? app.close()\n        : undefined;\n      if (cancellation === \"client disconnect\") caller.abort();\n      await aborted;\n      const [settled] = await request;\n      if (cancellation === \"client disconnect\") {\n        assert.equal(settled?.status, \"rejected\");\n      } else {\n        assert.equal(settled?.status, \"fulfilled\");\n        if (settled?.status !== \"fulfilled\") {\n          throw new Error(\"Shutdown did not settle the probe response\");\n        }\n        assert.equal(settled.value.status, 200);\n        assert.equal(settled.value.headers.get(\"cache-control\"), \"no-store\");\n        const observation = await settled.value.json() as {\n          status: string;\n          failureCode: string;\n        };\n        assert.equal(observation.status, \"failed\");\n        assert.equal(observation.failureCode, \"HOSTED_PROVIDER_PROBE_CANCELED\");\n      }\n      await closing;\n    } finally {\n      caller.abort();\n      await app.close();\n    }\n  });\n}\n",
+          "sha256": "c1e015402a487d051273ba449d3e3009615645cf7c3c14e5a8bef50978daf573"
+        },
+        {
+          "id": "cancel-provider-policy",
+          "owner": "Solver",
+          "source": {
+            "commit": "1f519bddca81c9931e5354cae81a7b7476f02d51",
+            "path": "apps/server/src/hosted/hosted-agent-configuration-service.ts",
+            "startLine": 43,
+            "endLine": 46,
+            "sha256": "ae12c35c113775103b8f9440563b514620f612bce94324be572c7cddcbe6c98d"
+          },
+          "content": "const defaultHostedProviderProbePolicy: HostedProviderProbePolicy = {\n  deadlineMilliseconds: 15_000,\n  maximumConcurrency: 2\n};\n",
+          "sha256": "0726ab56faed2c6fe56491a77b291dd5b3375b03ab2d928c7d4f5ca56e5c4c49"
+        },
+        {
+          "id": "cancel-route",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "1f519bddca81c9931e5354cae81a7b7476f02d51",
+            "path": "apps/server/src/http/hosted-agent-routes.ts",
+            "startLine": 22,
+            "endLine": 73,
+            "sha256": "f07f71e09d62a77802a6c2d82cd526dfa266d425b257507789b69f7192824773"
+          },
+          "content": "async function withRequestCancellation<Result>(\n  request: FastifyRequest,\n  reply: FastifyReply,\n  operation: (signal: AbortSignal) => Promise<Result>\n): Promise<Result> {\n  const controller = new AbortController();\n  const abort = (): void => controller.abort();\n  request.raw.once(\"aborted\", abort);\n  reply.raw.once(\"close\", abort);\n  if (request.raw.aborted || reply.raw.destroyed) abort();\n  try {\n    return await operation(controller.signal);\n  } finally {\n    request.raw.off(\"aborted\", abort);\n    reply.raw.off(\"close\", abort);\n  }\n}\n\nexport function registerHostedAgentRoutes({\n  app,\n  clock,\n  hostedAgents,\n  principal\n}: ServerRouteContext & {\n  hostedAgents: HostedAgentConfigurationService;\n}): void {\n  app.get<{ Params: { teamId: string } }>(\n    \"/api/teams/:teamId/hosted-agents\",\n    async (request, reply) => {\n      noStore(reply);\n      return hostedAgents.list(principal(request), request.params.teamId);\n    }\n  );\n\n  app.post<{ Params: { teamId: string } }>(\n    \"/api/teams/:teamId/hosted-agent-tests\",\n    async (request, reply) => {\n      noStore(reply);\n      const body = bodyObject(request);\n      rejectProviderEndpointFields(body);\n      return withRequestCancellation(request, reply, (signal) =>\n        hostedAgents.testConnection(principal(request), {\n          teamId: request.params.teamId,\n          provider: requiredString(body.provider, \"provider\", 80),\n          model: requiredString(body.model, \"model\", 160),\n          apiKey: requiredString(body.apiKey, \"apiKey\", 512),\n          now: clock(),\n          signal\n        })\n      );\n    }\n  );\n",
+          "sha256": "3daf6404f4ee82562e3de5dd458546cc639ae0782a252b72e90bd08faaf87d4f"
+        },
+        {
+          "id": "cancel-ci-observation",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "cbe223b2d7dd9b61040c1b83f74b2f849658aa23",
+            "path": "docs/acceptance/qa-059-hosted-probe-cancellation-budget.md",
+            "startLine": 14,
+            "endLine": 23,
+            "sha256": "1d5a9d873db1324d90bd008f56374be949a31efa15418bc2f6c1940ed0dd77e9"
+          },
+          "content": "Exact-source main CI run\n[33752581392](https://github.com/chenrgSix/ConveneWire/actions/runs/33752581392)\npassed all four jobs for\n`1f519bddca81c9931e5354cae81a7b7476f02d51`. Protected Release run\n[33753323037](https://github.com/chenrgSix/ConveneWire/actions/runs/33753323037)\nran the same source, but its Repository gate reported 593 passes, zero ordinary\nfailures and one canceled Server test after the five-second whole-test timeout.\nThe affected test was `Hosted configuration probes abort HTTPS on client\ndisconnect`; every asset-producing job was skipped and the Draft retained zero\nassets.\n",
+          "sha256": "da321e484f25ce1b97085ac8b84744d46d114baeab905d39efa36818c60c044b"
+        }
+      ]
+    },
+    {
+      "id": "windows",
+      "category": "Discovery and enrollment diagnosis",
+      "prompt": "Historical Windows users reported installed native launchers and an npm codex.cmd shim as missing or rejected before a Runtime probe. Use the pre-fix discovery, Console and CLI evidence to locate all relevant checks and recommend one consistent minimal policy. Preserve Unix behavior and discovery without execution; propose portable and native-platform verification separately. Do not change Runtime permissions.",
+      "rubric": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify Unix execute-bit gating in Console/discovery and CLI enrollment plus known-directory candidates trying only .exe on Windows."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Use one regular-file platform rule: Windows case-insensitive .exe/.com/.bat/.cmd, Unix execute bits; preserve PATH lookup and bounded discovery without auto-running candidates."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Propose coverage for no-execute-bit Windows launchers, unsupported .ps1/directory rejection, Unix behavior, known candidates and enrollment/preflight callers."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite discovery and independent Console/CLI evidence; separate portable tests/cross-compilation from actual native Windows launch/preflight and do not claim this replay verifies those."
+        }
+      ],
+      "documents": [
+        {
+          "id": "windows-discovery",
+          "owner": "Solver",
+          "source": {
+            "commit": "d66a004503ce0930b1586888453dbeea05866627",
+            "path": "bridge/internal/console/runtime_discovery.go",
+            "startLine": 1,
+            "endLine": 153,
+            "sha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n",
+          "sha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1"
+        },
+        {
+          "id": "windows-availability",
+          "owner": "Solver",
+          "source": {
+            "commit": "d66a004503ce0930b1586888453dbeea05866627",
+            "path": "bridge/internal/console/server.go",
+            "startLine": 1233,
+            "endLine": 1236,
+            "sha256": "9a3ba8f241a2200e31bbc19a93529d2bdb73f63512cc10ee86573e523a9f5c29"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n",
+          "sha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6"
+        },
+        {
+          "id": "windows-enrollment",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "d66a004503ce0930b1586888453dbeea05866627",
+            "path": "bridge/cmd/agentroom-bridge/main.go",
+            "startLine": 395,
+            "endLine": 409,
+            "sha256": "75c3c6ad59e495525a3707ae088b403912f3308fafd3a223ecd8ff3ccc1dc623"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n",
+          "sha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38"
+        },
+        {
+          "id": "windows-console-preflight",
+          "owner": "Reviewer",
+          "source": {
+            "commit": "d66a004503ce0930b1586888453dbeea05866627",
+            "path": "bridge/internal/console/server.go",
+            "startLine": 1142,
+            "endLine": 1172,
+            "sha256": "9a3ba8f241a2200e31bbc19a93529d2bdb73f63512cc10ee86573e523a9f5c29"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n",
+          "sha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb"
+        }
+      ]
+    }
+  ]
+}
