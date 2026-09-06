@@ -96,6 +96,7 @@ router、embedding selector 及对已评分题目的继续调参均暂停。
 - `npm run test:discussion-evidence-access`：QA-072 历史冻结校验、读取授权与回执，以及 [QA-073](acceptance/qa-073-evidence-reader-repair.md) 的工具发现、调用记录和最终答案区分；三臂 CLI 通过 HTTP / WebSocket 本地回环验证，不调用外部模型。实际模型调用计划已经关闭。
 - `npm run test:discussion-evidence-screening`：QA-074 的 manipulation gate、读取范围覆盖、单次授权和九次留存结果审计；不调用外部模型，QA-074 实验入口已消耗。
 - `npm run test:discussion-claim-adjudication`：QA-075 的 C/D 公共输入、结论表格式、实际来源返回绑定、六次上限和留存评分/摘要审计；不调用外部模型。[QA-075](acceptance/qa-075-claim-adjudication.md) 只研究 Evidence → Claim → Final，语义矛盾单独评分并保留，不改变生产 Discussion；实验入口已消耗。
+- `npm run test:discussion-criterion-closure`：[QA-076](acceptance/qa-076-criterion-closure.md) 新合成任务的完整交付判定、逐项 criterion 映射、E/F 输入一致性与零预算阻断检查。当前只有离线准备，真实调用授权为零；不会把 F 自报 `satisfied` 当成验收通过，也不重新调 Windows 历史题。
 
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。

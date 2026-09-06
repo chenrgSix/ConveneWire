@@ -1,0 +1,10 @@
+Synthetic retention review policy v1. No real storage or customer data exists in this packet.
+As of 2026-09-06T12:00:00Z, prepare a proposal only. Do not execute deletion or invent approval.
+Inventory is the complete object universe for this review. Object IDs are unique and bytes are exact integers.
+A restore point is eligible for the newest-two rule only if inventory state is complete and the separate verification observation is passed. Select the two most recent eligible objects per tenant by normalized UTC completedAt, breaking ties by ascending objectId. Active pins are additional unconditional protection.
+Protect every direct and transitive base of a protected object. Follow baseObjectId within its tenant; the base is itself an inventory object. No object required by a protected restore point is a deletion candidate.
+An object with failed or missing verification is held, never counted among the newest two and never proposed for deletion. Record the missing successful attestation; a missing observation does not imply failure or success. Do not infer a failure's cause.
+An otherwise unprotected, complete, passed object is a deletion candidate only when completedAt is strictly before asOf minus seven days. Exactly seven days old is retained. Normalize offsets before comparing; do not round dates to calendar days.
+Decision priority for this complete packet: failed/missing verification -> hold; otherwise newest-two, active pin, transitive dependency or not strictly old enough -> retain; otherwise -> delete_candidate. All timestamps/base IDs needed for the passed objects are present.
+Count each object's bytes exactly once in its final decision category. Sum categories to the inventory byte total; report all three category totals.
+For held objects request the exact object-bound successful verification evidence before a later separately authorized reconsideration. This proposal does not perform verification, repair or removal.

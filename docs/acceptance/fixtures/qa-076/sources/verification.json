@@ -1,0 +1,50 @@
+{
+  "synthetic": true,
+  "observedAt": "2026-09-06T11:55:00Z",
+  "observations": [
+    {
+      "objectId": "lime-base-01",
+      "status": "passed"
+    },
+    {
+      "objectId": "lime-delta-02",
+      "status": "passed"
+    },
+    {
+      "objectId": "lime-delta-03",
+      "status": "passed"
+    },
+    {
+      "objectId": "lime-full-04",
+      "status": "passed"
+    },
+    {
+      "objectId": "lime-full-05",
+      "status": "passed"
+    },
+    {
+      "objectId": "lime-full-06",
+      "status": "passed"
+    },
+    {
+      "objectId": "slate-full-01",
+      "status": "passed"
+    },
+    {
+      "objectId": "slate-full-02",
+      "status": "passed"
+    },
+    {
+      "objectId": "slate-full-03",
+      "status": "passed"
+    },
+    {
+      "objectId": "slate-delta-04",
+      "status": "passed"
+    },
+    {
+      "objectId": "slate-full-05",
+      "status": "failed"
+    }
+  ]
+}

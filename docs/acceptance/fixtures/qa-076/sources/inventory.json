@@ -1,0 +1,102 @@
+{
+  "synthetic": true,
+  "asOf": "2026-09-06T12:00:00Z",
+  "objects": [
+    {
+      "objectId": "lime-base-01",
+      "tenant": "lime",
+      "completedAt": "2026-08-01T12:00:00Z",
+      "bytes": 1000,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "lime-delta-02",
+      "tenant": "lime",
+      "completedAt": "2026-08-10T12:00:00Z",
+      "bytes": 300,
+      "state": "complete",
+      "baseObjectId": "lime-base-01"
+    },
+    {
+      "objectId": "lime-delta-03",
+      "tenant": "lime",
+      "completedAt": "2026-09-04T12:00:00Z",
+      "bytes": 200,
+      "state": "complete",
+      "baseObjectId": "lime-delta-02"
+    },
+    {
+      "objectId": "lime-full-04",
+      "tenant": "lime",
+      "completedAt": "2026-09-05T12:00:00Z",
+      "bytes": 1200,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "lime-full-05",
+      "tenant": "lime",
+      "completedAt": "2026-08-02T12:00:00Z",
+      "bytes": 800,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "lime-full-06",
+      "tenant": "lime",
+      "completedAt": "2026-08-03T12:00:00Z",
+      "bytes": 900,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "slate-full-01",
+      "tenant": "slate",
+      "completedAt": "2026-08-01T12:00:00Z",
+      "bytes": 1500,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "slate-full-02",
+      "tenant": "slate",
+      "completedAt": "2026-08-30T20:00:00+08:00",
+      "bytes": 600,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "slate-full-03",
+      "tenant": "slate",
+      "completedAt": "2026-09-02T12:00:00Z",
+      "bytes": 1700,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "slate-delta-04",
+      "tenant": "slate",
+      "completedAt": "2026-09-03T12:00:00Z",
+      "bytes": 400,
+      "state": "complete",
+      "baseObjectId": "slate-full-03"
+    },
+    {
+      "objectId": "slate-full-05",
+      "tenant": "slate",
+      "completedAt": "2026-08-20T12:00:00Z",
+      "bytes": 1000,
+      "state": "complete",
+      "baseObjectId": null
+    },
+    {
+      "objectId": "slate-full-06",
+      "tenant": "slate",
+      "completedAt": "2026-08-21T12:00:00Z",
+      "bytes": 1100,
+      "state": "complete",
+      "baseObjectId": null
+    }
+  ]
+}

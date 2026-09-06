@@ -1,0 +1,210 @@
+{
+  "asOf": "2026-09-06T12:00:00Z",
+  "mode": "proposal_only",
+  "decisions": [
+    {
+      "objectId": "lime-base-01",
+      "decision": "retain",
+      "reason": "Retain as the transitive base of protected lime-delta-03 through lime-delta-02.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "lime-delta-02",
+      "decision": "retain",
+      "reason": "Retain as the direct base of protected lime-delta-03; its base is lime-base-01.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "lime-delta-03",
+      "decision": "retain",
+      "reason": "Retain as one of the newest two passed complete lime restore points; base lime-delta-02 remains protected.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "lime-full-04",
+      "decision": "retain",
+      "reason": "Retain as the newest passed complete lime restore point.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "lime-full-05",
+      "decision": "delete_candidate",
+      "reason": "Passed and complete, strictly older than the cutoff, outside newest-two, pins and protected dependencies.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "lime-full-06",
+      "decision": "retain",
+      "reason": "Retain because active-pins explicitly protects lime-full-06 regardless of age.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "slate-full-01",
+      "decision": "delete_candidate",
+      "reason": "Passed and complete, strictly older than the cutoff, outside newest-two, pins and protected dependencies.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "slate-full-02",
+      "decision": "retain",
+      "reason": "2026-08-30T20:00:00+08:00 equals the seven-day UTC cutoff 2026-08-30T12:00:00Z; strict age test retains the boundary.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "slate-full-03",
+      "decision": "retain",
+      "reason": "Retain as one of the newest two passed complete slate restore points and base of slate-delta-04.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "slate-delta-04",
+      "decision": "retain",
+      "reason": "Retain as the newest passed complete slate restore point; baseObjectId slate-full-03 remains protected.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ]
+    },
+    {
+      "objectId": "slate-full-05",
+      "decision": "hold",
+      "reason": "Verification is failed. Hold; no successful attestation is supplied and the failure cause is unknown.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations"
+      ]
+    },
+    {
+      "objectId": "slate-full-06",
+      "decision": "hold",
+      "reason": "Verification observation is missing. Hold; absence establishes neither pass nor failure.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations"
+      ]
+    }
+  ],
+  "totals": {
+    "retainBytes": 6300,
+    "deleteCandidateBytes": 2300,
+    "holdBytes": 2100
+  },
+  "unresolved": [
+    {
+      "objectId": "slate-full-05",
+      "missing": "Successful verification attestation is not available; current observation is failed.",
+      "requiredEvidence": "A successful verification attestation bound to slate-full-05 before a later separately authorized reconsideration.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations"
+      ]
+    },
+    {
+      "objectId": "slate-full-06",
+      "missing": "Successful verification attestation is not available; current observation is missing.",
+      "requiredEvidence": "A successful verification attestation bound to slate-full-06 before a later separately authorized reconsideration.",
+      "evidenceRefs": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "caseKey": "newest_two",
+      "input": "Use the baseline inventory and passed observations for both tenants.",
+      "expected": "Retain lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03 regardless of age."
+    },
+    {
+      "caseKey": "active_pin",
+      "input": "Use old passed lime-full-06 with its active pin.",
+      "expected": "Retain lime-full-06 even though it is outside newest-two."
+    },
+    {
+      "caseKey": "transitive_dependency",
+      "input": "Protected lime-delta-03 -> lime-delta-02 -> lime-base-01, with both bases old.",
+      "expected": "Retain both direct and transitive bases; neither is a deletion candidate."
+    },
+    {
+      "caseKey": "exact_age_boundary",
+      "input": "Use unprotected slate-full-02 at 2026-08-30T20:00:00+08:00, equal to 2026-08-30T12:00:00Z.",
+      "expected": "Retain at exactly seven days; timezone representation does not change the decision."
+    },
+    {
+      "caseKey": "strictly_older",
+      "input": "Move otherwise unprotected passed slate-full-02 to 2026-08-30T11:59:59.999Z.",
+      "expected": "Mark delete_candidate, one millisecond strictly older than the cutoff."
+    },
+    {
+      "caseKey": "failed_verification",
+      "input": "Use slate-full-05 with failed verification.",
+      "expected": "Hold, exclude it from newest-two eligibility, request successful object-bound evidence without inferring cause."
+    },
+    {
+      "caseKey": "missing_verification",
+      "input": "Use slate-full-06 absent from verification observations.",
+      "expected": "Hold, distinguish missing from failed, and request its successful object-bound attestation."
+    },
+    {
+      "caseKey": "byte_accounting",
+      "input": "Use baseline inventory with each object exactly once.",
+      "expected": "retainBytes=6300, deleteCandidateBytes=2300, holdBytes=2100; sum=10700."
+    },
+    {
+      "caseKey": "duplicate_identity",
+      "input": "Inject a second inventory row with objectId lime-full-05.",
+      "expected": "Reject the duplicate-identity manifest; do not double-count or silently discard it."
+    }
+  ]
+}

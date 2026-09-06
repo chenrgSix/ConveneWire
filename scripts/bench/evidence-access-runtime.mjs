@@ -17,7 +17,7 @@ export function runtimeConfig(treatment, bundlePath, controlPath, receiptDirecto
 
 export function makeAccess(replay, scheduled, observedAt) {
   const { fixture, documents } = replay;
-  const scope = { experimentId: fixture.identity, authorityId: "authority_qa072_owner_excerpts_v1",
+  const scope = { experimentId: fixture.identity, authorityId: fixture.authorityId ?? "authority_qa072_owner_excerpts_v1",
     taskId: fixture.task.taskId, roomId: fixture.task.roomId, runId: scheduled.runId };
   const grant = scheduled.treatment === "A" ? null : { ...scope,
     expiresAt: new Date(Date.parse(observedAt) + fixture.runtime.timeoutMilliseconds).toISOString(),

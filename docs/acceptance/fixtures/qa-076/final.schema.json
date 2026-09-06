@@ -1,0 +1,176 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asOf",
+    "mode",
+    "decisions",
+    "totals",
+    "unresolved",
+    "tests"
+  ],
+  "properties": {
+    "asOf": {
+      "const": "2026-09-06T12:00:00Z"
+    },
+    "mode": {
+      "const": "proposal_only"
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "objectId",
+          "decision",
+          "reason",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "decision": {
+            "enum": [
+              "retain",
+              "delete_candidate",
+              "hold"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "retention-policy",
+                "snapshot-inventory",
+                "verification-observations",
+                "active-pins"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retainBytes",
+        "deleteCandidateBytes",
+        "holdBytes"
+      ],
+      "properties": {
+        "retainBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deleteCandidateBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holdBytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "objectId",
+          "missing",
+          "requiredEvidence",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "missing": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "requiredEvidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "retention-policy",
+                "snapshot-inventory",
+                "verification-observations",
+                "active-pins"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 18,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "caseKey",
+          "input",
+          "expected"
+        ],
+        "properties": {
+          "caseKey": {
+            "enum": [
+              "newest_two",
+              "active_pin",
+              "transitive_dependency",
+              "exact_age_boundary",
+              "strictly_older",
+              "failed_verification",
+              "missing_verification",
+              "byte_accounting",
+              "duplicate_identity"
+            ]
+          },
+          "input": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "expected": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "identity": "qa-076-retention-criterion-closure-v1",
+  "frozenAt": "2026-09-06T13:40:25.441Z",
+  "authorizationState": "not_authorized",
+  "runtime": {
+    "executableSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
+    "version": "codex-cli 0.153.4",
+    "nodeVersion": "v22.23.1"
+  },
+  "instructionSha256": {
+    "E": "12a9186d4618d140420e0a72e7e4250c2fe7a01ddc10af40c36638f8ed483ecd",
+    "F": "4508927b91e58d2909e1fe5ed492a88ad9f68ffbba440aee11caeeee4eadbeff"
+  },
+  "catalogDefinitionSha256": "f3b8c18573f805a1e1d9c7b9b5ebf7884e5ab06978bf1df84adb78d722391fc0",
+  "configSha256": {
+    "E": "72176321b4696a65b7c48d59e7c4fc8190d17f584fbc68a33fe8ef83888bc7ce",
+    "F": "72176321b4696a65b7c48d59e7c4fc8190d17f584fbc68a33fe8ef83888bc7ce"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/fixtures/qa-072-evidence-access-use.json",
+      "sha256": "6a21e9eedef9ad03e4cc83da81b810d5e48b96d1e40d30c95a5cc06b380d020e"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-read-receipt.schema.json",
+      "sha256": "850dd4e261ce06d9d0dcca6bbc59274be4e178ce92d9a753923c4f9542ddbe99"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-scoring.json",
+      "sha256": "40ee06473f07f29e20fdae86819a6b0b2aa5191ce1b850e3d3e0316fd0d84d34"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-base-instruction.txt",
+      "sha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6"
+    },
+    {
+      "path": "docs/adr/0047-screen-evidence-access-and-use.md",
+      "sha256": "2d179521b9225adc762b2c2fc87be815f94de2294df27c1c0bbcdc930e14d98a"
+    },
+    {
+      "path": "scripts/bench/evidence-access-replay.ts",
+      "sha256": "9a9a5b909beb561dcdb88b70f6d1ede256ea23e0f889b79354122730487f55b8"
+    },
+    {
+      "path": "scripts/bench/evidence-access-reader.mjs",
+      "sha256": "ef8526f136128b5c4ebe6d9619e7e78befc472192d01239c166cbb2481acc0de"
+    },
+    {
+      "path": "scripts/bench/evidence-access-runtime.mjs",
+      "sha256": "1570dc6b9835cb191e2d4e4bd286f865863f3afb026b7fd81feed86ef16d32e6"
+    },
+    {
+      "path": "scripts/bench/evidence-access-execute.ts",
+      "sha256": "045d4ea3b47fe79b144e71bb3e6d9e5e0dad18ce7679c7be3277f1351eb53f31"
+    },
+    {
+      "path": "scripts/bench/evidence-access.test.ts",
+      "sha256": "675f8b43d628bb90aad4b1bbe1bb97eea00b1a24df8c213a3b5435bc88d1dc78"
+    },
+    {
+      "path": "scripts/bench/evidence-codex-config.mjs",
+      "sha256": "2c991690e4e8d5bfcdf8fa9688f2617d4e7fcabfdd1f48ec1f6e66cc6615d7dc"
+    },
+    {
+      "path": "scripts/test/child-process.mjs",
+      "sha256": "b052c595a3262137e294cd6dd672bc2f15e0d40d3d213a884d221d6866ed0fe1"
+    },
+    {
+      "path": "scripts/test/resources.mjs",
+      "sha256": "612859696aa28fced956a4099a733b8d0bcab8c79f481f41b68de61c645cbcbb"
+    },
+    {
+      "path": "scripts/test/run-with-temp-root.mjs",
+      "sha256": "68ad727a8f716456e5488755abb0278011267de02fbc48bf6ae34710c657880e"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-service.ts",
+      "sha256": "44027a90ae43b50540160995dd837082b99717b009477568361b742f230e6f8a"
+    },
+    {
+      "path": "apps/server/src/discussion/acceptance-evidence-instructions.ts",
+      "sha256": "c267f490fc522e4ebe2569b78f4ab98f4f4b6af8114c32b8ffd20bbf4a327c51"
+    },
+    {
+      "path": "apps/server/src/discussion/finalization-instructions.ts",
+      "sha256": "626aff88fabfb7c4ac5cb859dbea11ec5c3787a761e08e061a65c5c41c070971"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-reference.ts",
+      "sha256": "542c717f2cc5bcdd0f0a811348399bbadfb6221a29b81b701fcb8d8658c9f879"
+    },
+    {
+      "path": "apps/server/src/domain/identifiers.ts",
+      "sha256": "a4f6935dc83d9359ed6deaec1befbc9ac559182f1a50c116332e3f662c447f40"
+    },
+    {
+      "path": "apps/server/src/domain/unicode-length.ts",
+      "sha256": "1db81e4bf7aea22489bd5bb93c3105e419be87bc895618b7c7239343b8c3ff48"
+    },
+    {
+      "path": "apps/server/src/security/redaction.ts",
+      "sha256": "e138c1dc9d88908dcd7915fb192e3f5fbaaa9dd4aaee218790eb26aeb745eb93"
+    },
+    {
+      "path": "package.json",
+      "sha256": "fd25378ec660689d51da07374960000cda5e58e57ae83dad69dd665f2be38755"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7d2b2f7af71c5dfdb256d89e881be8f95d1f606f520c575c950c3678bdff9a1b"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-evidence-access-use.json",
+      "sha256": "78c9dc2625313a53d15745f460751f46b4c7906a61f8eddc2977eb3688297587"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-base-instruction.txt",
+      "sha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-scoring.json",
+      "sha256": "5913055b39d31668c587d572927868bfa3c5f94f92563719a28fd2b0f38787b0"
+    },
+    {
+      "path": "docs/adr/0048-repeat-evidence-screening-with-manipulation-checks.md",
+      "sha256": "02f17fe37ea85e21ced59f6a1b897b355cbf2fc206dd6f57671b0ad92be38778"
+    },
+    {
+      "path": "scripts/bench/evidence-screening.ts",
+      "sha256": "0a5f325b9b2bd68af8c57a828ea7043cf2235a62d2a43e48c0710cd747ddf940"
+    },
+    {
+      "path": "scripts/bench/evidence-screening-audit.ts",
+      "sha256": "bd58b1cdefa6d735a9015ddc9156c5729356f24545b139634c9f1f1f0cc666e0"
+    },
+    {
+      "path": "scripts/bench/evidence-screening.test.ts",
+      "sha256": "48e6dbd86b3b54947cd73d148f9949502feaab9b75eddbc3587cdda17c246590"
+    },
+    {
+      "path": "scripts/bench/evidence-invocation-observer.mjs",
+      "sha256": "44f010b7a16fdf33c5db81211de2813bef6101ac5a1e3270e2612a09490ccf6d"
+    },
+    {
+      "path": "scripts/bench/evidence-invocation-observer.test.mjs",
+      "sha256": "3b3633da0848e6711d80c815d3d2c09c3218e4619e40da3257dd7314004ef695"
+    },
+    {
+      "path": "scripts/bench/evidence-visibility.test.ts",
+      "sha256": "6ddea71aba1649517587976b73f5d3b0aef7bebab45f3aab50d8cd4c3d5cb6d9"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-069-workspace-cases.json",
+      "sha256": "421ed769d57717f6b87bca23a5bf68fb672a0fb27148fd6643e8dc12ef070241"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "sha256": "c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-075-claim-adjudication.json",
+      "sha256": "f7a32858d31fc3cbef9a9e33fc14f9fd10054deb7d0aabee7d1f1b0cdad4c510"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-075-base-instruction.txt",
+      "sha256": "280b1b727df891dd11eeae004223ceba3efb676aa9afbaf6279f781e59a6717f"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-075-scoring.json",
+      "sha256": "507f610111262b86b3338f91937b39f71043359a9ebaef524b2e39930f4b5d25"
+    },
+    {
+      "path": "docs/adr/0049-screen-evidence-to-claim-adjudication.md",
+      "sha256": "dbb25b215522bd7c3fc6a03d62e6e790fac94658a4cf8fab75c946fb25c8c38a"
+    },
+    {
+      "path": "scripts/bench/claim-adjudication.ts",
+      "sha256": "c63593ddc8e170f0b5d1577b979fb0ccd54e1b121ff40a7165ec2e617726e5fc"
+    },
+    {
+      "path": "scripts/bench/claim-adjudication-audit.ts",
+      "sha256": "0a37833fe1b1cfcb907b39b9742fc0b1ece4b69f51a90a5d48f101c6e769b148"
+    },
+    {
+      "path": "scripts/bench/claim-adjudication.test.ts",
+      "sha256": "820ca25841a794a7370435a1584748e71a257a09e453f76b210aa02f744498b5"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-075-disposition.schema.json",
+      "sha256": "bcf41903f72bc0b8314d6ee6f0904777bafa25f1d1294cd4f131d5d81078d3fa"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/packet.json",
+      "sha256": "f21bc7b9585af947b811ab91591649b4081bf2ce741b521f09c60073f648ffb7"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/sources/policy.txt",
+      "sha256": "db96f28d45394239ccaab2ee7d0bf2b5bd63f07e0438df0e6d9998b476a5caf5"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/sources/inventory.json",
+      "sha256": "1e172f955c4e7431ba53901961458d91b5de5670eaeeefcdb2d3b9920680b1f2"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/sources/verification.json",
+      "sha256": "64583b50841f66d2a727643daa6084a3fcd6dfc970fcea67926ece01dcdb90a6"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/sources/pins.json",
+      "sha256": "2b421214a4d7d2a470dd29ac5dacfb056017085c8166ffc95fc70b26f79b577f"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/final.schema.json",
+      "sha256": "294bdfaca0e21ca3121737e1231ee4d9f6092e93b6b154a43484ea1e702da364"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/closure.schema.json",
+      "sha256": "743a138aa01ac592c9074db53def553df647be4d49c79dc57258a2cd2afc2cb6"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/scoring.json",
+      "sha256": "897194a6241aee6907d5c7f067bf3d79578ff7c7faf8716c91fdd14d32cde01a"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/reference.json",
+      "sha256": "8c561b5664a2f90a885ad180563d327005930551cf3004b9fe98822077be715a"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/base-instruction.txt",
+      "sha256": "12a9186d4618d140420e0a72e7e4250c2fe7a01ddc10af40c36638f8ed483ecd"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-076/F-instruction.txt",
+      "sha256": "4508927b91e58d2909e1fe5ed492a88ad9f68ffbba440aee11caeeee4eadbeff"
+    },
+    {
+      "path": "scripts/bench/criterion-closure.mjs",
+      "sha256": "bd96c7a5dcb612684afd0e9e2be8a471ddb62c8380d44d863f15919a04631dc6"
+    },
+    {
+      "path": "scripts/bench/criterion-closure-run.mjs",
+      "sha256": "b6fd0b6f96dfb0e3c52449c28fdb830deb4d6cecd23a828e2d153edaa3e56ef2"
+    },
+    {
+      "path": "scripts/bench/criterion-closure.test.mjs",
+      "sha256": "8f7d30e3b4e7ea9a00e374999fb95df8668737cfe199683d8bedcb64a15ec3c1"
+    },
+    {
+      "path": "docs/adr/0050-screen-full-criterion-closure.md",
+      "sha256": "b22c39f81a1d402b02c486a9d755979699c7cd4ffd4e260d51e380fdb1cb06c8"
+    }
+  ]
+}

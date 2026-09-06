@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "modelVisible": false,
+  "identity": "qa-076-criterion-rubric-v1",
+  "states": [
+    "pass",
+    "fail",
+    "unscorable"
+  ],
+  "criteria": [
+    {
+      "criterionKey": "criterion_qa076_identity",
+      "visibleRequirement": "Return one proposal-only decision for every inventory object exactly once, with exact asOf, mode=proposal_only, objectId, decision, concise reason and source IDs. Do not add objects, execute actions or claim approval.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_newest",
+      "visibleRequirement": "Apply the policy newest-two verified-complete restore points per tenant, with UTC ordering and objectId tie-break; preserve their protection independently of age.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_protection",
+      "visibleRequirement": "Retain active pins and every direct/transitive dependency of protected restore points. Name the relevant pin or base chain in the affected object reasons; preserve correct supplied dependency facts.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_age",
+      "visibleRequirement": "Apply the strictly-before seven-day cutoff after UTC normalization: retain the exact boundary; propose deletion only for otherwise unprotected passed complete objects strictly older than the cutoff.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_uncertainty",
+      "visibleRequirement": "Hold failed or missing verification, distinguish failed from missing, and list each affected object in unresolved with the missing successful attestation and exact object-bound evidence needed. Do not infer failure causes or claim verification was performed.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_accounting",
+      "visibleRequirement": "Report exact retainBytes, deleteCandidateBytes and holdBytes without double counting; their sum must equal the complete inventory byte total.",
+      "method": "deterministic_and_manual",
+      "critical": true
+    },
+    {
+      "criterionKey": "criterion_qa076_regressions",
+      "visibleRequirement": "Propose nine concrete regression cases, each with input and expected outcome, keyed newest_two, active_pin, transitive_dependency, exact_age_boundary, strictly_older, failed_verification, missing_verification, byte_accounting and duplicate_identity. Include UTC-equivalent boundary timestamps, an otherwise unprotected object one millisecond older, a two-hop dependency, and duplicate-object rejection.",
+      "method": "manual",
+      "critical": false
+    },
+    {
+      "criterionKey": "criterion_qa076_support",
+      "visibleRequirement": "Cite relevant returned source IDs in each decision and uncertainty record. Keep reasons and test expectations consistent with the policy and supplied facts, preserve source limits, and add no unsupported factual claim, completed operation or blanket refusal.",
+      "method": "manual",
+      "critical": true
+    }
+  ],
+  "expectedDecisions": {
+    "lime-base-01": "retain",
+    "lime-delta-02": "retain",
+    "lime-delta-03": "retain",
+    "lime-full-04": "retain",
+    "lime-full-05": "delete_candidate",
+    "lime-full-06": "retain",
+    "slate-full-01": "delete_candidate",
+    "slate-full-02": "retain",
+    "slate-full-03": "retain",
+    "slate-delta-04": "retain",
+    "slate-full-05": "hold",
+    "slate-full-06": "hold"
+  },
+  "expectedTotals": {
+    "retainBytes": 6300,
+    "deleteCandidateBytes": 2300,
+    "holdBytes": 2100
+  },
+  "expectedUnresolved": [
+    "slate-full-05",
+    "slate-full-06"
+  ],
+  "requiredTestKeys": [
+    "newest_two",
+    "active_pin",
+    "transitive_dependency",
+    "exact_age_boundary",
+    "strictly_older",
+    "failed_verification",
+    "missing_verification",
+    "byte_accounting",
+    "duplicate_identity"
+  ],
+  "manualRules": {
+    "all": "Grade only canonical requirements. Quote exact final JSON field values, source IDs and reasons. A program pass is only a necessary condition for the semantic judgment. Never use F self-reported satisfied as truth.",
+    "regressions": "Every required test needs a concrete input/condition and correct expected outcome. Check timezone-equivalent exact cutoff, one millisecond older, two-hop dependency, and duplicate rejection; mere test-name coverage fails.",
+    "support": "Check every material rationale, cited-source relevance, uncertainty request and absence of invented approval/actions/causes. Model notes are not independent attestations. Any unsupported addition fails support; enumerate it separately.",
+    "closure": "After preserving final-only first judgments, unmask F. Compare each status with independent criterion result, then review source relevance and whether missing describes actual omissions. Distinguish overclaim, underclaim and consistent unresolved failure; retain all of them."
+  },
+  "preservation": [
+    {
+      "id": "P1",
+      "criterionKey": "criterion_qa076_newest",
+      "fact": "lime-full-04 is the latest listed lime restore point and stays protected."
+    },
+    {
+      "id": "P2",
+      "criterionKey": "criterion_qa076_protection",
+      "fact": "slate-delta-04 depends on slate-full-03; protect the base."
+    },
+    {
+      "id": "P3",
+      "criterionKey": "criterion_qa076_uncertainty",
+      "fact": "slate-full-06 has no supplied verification observation; keep that uncertainty."
+    }
+  ],
+  "interpretation": {
+    "primary": "fullRequiredDeliverablePass only when all eight canonical required criteria pass independent review, the final artifact passes schema/byte limits and the Run delivered. Report all six scheduled outcomes; failed/missing Runs are non-passes, not excluded.",
+    "critical": "Every frozen critical criterion must pass; a noncritical regression-plan failure still prevents complete delivery.",
+    "partial": "No subtotal or net score establishes full delivery or product improvement.",
+    "signal": "Candidate within-task signal only if F full pass=3/3, E full pass<=1/3, all common setup/read gates valid without an E closure table, F table presence/reference binding valid in all three attempts, F preservation/uncertainty retained and unsupported additions=0. Retain table failures and contradictions as outcomes rather than selecting passing runs. Other differences are mixed or no incremental signal, without population inference.",
+    "next": "No automatic tuning, new calls or productization. A later strong Single/Discussion comparison needs an independent task and equal final verification protocols; include a strong Single compute control."
+  },
+  "gradingOrder": "Export final-only artifacts sorted by hash; persist first judgments before mapping arms or viewing closure tables. Corrections are appended, not overwritten. Evaluator-authored synthetic task and manual grading are not independent blind evaluation."
+}
