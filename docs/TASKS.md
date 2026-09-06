@@ -713,6 +713,8 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | GOV-040 | DONE | Prepare independent full-criterion closure screening | QA-075 | [QA-076 preparation](acceptance/qa-076-criterion-closure.md), ADR-0050, new four-source/twelve-object task and eight canonical criteria; 58 file pins, reference fits output caps, independent full-deliverable checks and zero-call admission; 14 new offline checks and 55 historical/CLI regressions pass, 409 Markdown files lint clean; no real QA-076 call or quality result |
 | QA-076 | DONE | Compare evidence use with full criterion closure | GOV-040 | [Retained screening](acceptance/qa-076-criterion-closure.md#retained-six-session-screening): six authorized calls consumed, all 24 sources returned; E/F full pass 0/3, critical 1/3 vs 0/3, F 12/24 overclaims and one E framing failure; immutable first final-only judgments, all-row closure review and reproducible audit; 20 focused and 55 historical regressions pass; no production change or incremental mechanism signal |
 
+| QA-077 | ACTIVE | Repeat criterion closure screening with GPT-5.5 | QA-076 | Owner requested “你把模型换成5.5测”; six fresh E/F, F/E, E/F sessions, gpt-5.5 / low, identical QA-076 task/evidence/instructions/rubric and existing provider destination; five minutes per session, no retry; new experiment and Run identities, frozen before execution |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

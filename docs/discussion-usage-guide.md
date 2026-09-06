@@ -98,5 +98,7 @@ router、embedding selector 及对已评分题目的继续调参均暂停。
 - `npm run test:discussion-claim-adjudication`：QA-075 的 C/D 公共输入、结论表格式、实际来源返回绑定、六次上限和留存评分/摘要审计；不调用外部模型。[QA-075](acceptance/qa-075-claim-adjudication.md) 只研究 Evidence → Claim → Final，语义矛盾单独评分并保留，不改变生产 Discussion；实验入口已消耗。
 - `npm run test:discussion-criterion-closure`：[QA-076](acceptance/qa-076-criterion-closure.md) 新合成任务的完整交付判定、逐项 criterion 映射、E/F 输入一致性与六次留存审计。E/F 完整交付均为 0/3；F 三张表全部自报 `satisfied`，其中 12/24 项与验收不符，未达到预设机制信号。授权已消耗；测试不调用外部模型，也不重新调 Windows 历史题。
 
+- `npm run test:discussion-gpt55`：[QA-077](acceptance/qa-077-gpt55-criterion-closure.md) 将同一实验换成 `gpt-5.5 / low`，验证提示、资料和评分不变、新 Run 权限与六次上限；离线测试不调用外部模型。新的固定六次实验由 Owner 本轮明确要求执行，不复用 QA-076 的已消耗授权。
+
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。

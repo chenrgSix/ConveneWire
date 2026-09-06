@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "identity": "qa-077-retention-gpt55-v1",
+  "baselinePacketSha256": "d67665f826e2c4673494b59a671f8b030ad6c5a46dc615756ccb0d81c4eecabc",
+  "baselineFreezeSha256": "3066a3c2c48eeceef69390050986a9b431194d4953b1a7703a9a4aa26a2a2b6f",
+  "model": "gpt-5.5",
+  "authorization": {
+    "state": "authorized",
+    "maximumFinalizerInvocations": 6,
+    "approvedBy": "Owner",
+    "approvedAt": "2026-09-06T14:20:28Z",
+    "approvalText": "你把模型换成5.5测",
+    "destination": "OpenAI via installed Codex CLI using existing ChatGPT authentication"
+  },
+  "order": [
+    {
+      "slot": 0,
+      "treatment": "E",
+      "repetition": 1,
+      "runId": "run_qa077_retention_1"
+    },
+    {
+      "slot": 1,
+      "treatment": "F",
+      "repetition": 1,
+      "runId": "run_qa077_retention_2"
+    },
+    {
+      "slot": 2,
+      "treatment": "F",
+      "repetition": 2,
+      "runId": "run_qa077_retention_3"
+    },
+    {
+      "slot": 3,
+      "treatment": "E",
+      "repetition": 2,
+      "runId": "run_qa077_retention_4"
+    },
+    {
+      "slot": 4,
+      "treatment": "E",
+      "repetition": 3,
+      "runId": "run_qa077_retention_5"
+    },
+    {
+      "slot": 5,
+      "treatment": "F",
+      "repetition": 3,
+      "runId": "run_qa077_retention_6"
+    }
+  ],
+  "interpretation": "Same known task, new requested model; all QA-076 scoring and within-task candidate rules retained. Historical cross-model differences are descriptive, not randomized causal evidence. No new prompts, repaired outputs, calls or productization."
+}

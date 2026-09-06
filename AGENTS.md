@@ -57,6 +57,8 @@ Node.js 22 and Go 1.26.7 are required. Repository commands are:
 - `npm run bench:discussion-claim-adjudication` — consume only QA-075's frozen C/D, D/C, C/D plan once, with no retries or same-plan resume; this is not a routine test command.
 - `npm run test:discussion-criterion-closure` — verify the QA-076 synthetic task, full-deliverable checks, canonical criterion mapping, E/F parity, source authority, closed admission and retained six-run grading/receipt audit without external models.
 - `npm run bench:discussion-criterion-closure` — QA-076's consumed six-session E/F plan. Its journal blocks repeat execution before provider startup; use the provider-free test command for maintenance. A new experiment needs a separately bounded Owner-approved plan.
+- `npm run test:discussion-gpt55` — verify QA-077 model-only parity, fresh source scopes, six-slot admission and frozen/retained evidence without external models.
+- `npm run bench:discussion-gpt55` — the Owner-authorized one-time QA-077 gpt-5.5 / low plan: six E/F sessions, five minutes each, no retry, committed freeze required; never a routine test.
 - `npm run test:discussion-codex-bootstrap` — installed Codex CLI checks using an auth-free loopback fixture, without an external model.
 - Historical `bench:discussion*` commands are not routine test commands or reusable execution permission. See [Discussion maintenance and evidence](docs/discussion-usage-guide.md#维护与后续验证); exercised plans stay closed and a new real experiment requires a bounded new plan.
 - `npm run test:e2e:live` — explicitly invoke local Codex and Pi against an isolated temporary Team.
