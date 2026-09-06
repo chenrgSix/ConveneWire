@@ -44,7 +44,10 @@ Missing source reads are a separate quality observation, not a fabricated
 Runtime failure; Finalizers may work from the accepted contribution transcript.
 After the first one-invocation failure and offline CLI repair, the Owner
 authorized QA-069 to use 12 new invocations, at most 13 across the phase
-including the retained failure. No automatic retry is added.
+including the retained failure. After those 13 calls, the Owner explicitly
+authorized three new calls for only the missing delivery Discussion, at most
+16 across the phase, reusing the completed Single Agent baseline. Failed
+evidence remains immutable; no further automatic retry is added.
 Non-blind task-agent grading is separate from runtime success. Real user
 rework and task success rates are not measured by this historical replay.
 

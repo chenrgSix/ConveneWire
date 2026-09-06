@@ -290,13 +290,13 @@ maintenance freeze; do not tune routing or prompts against this scored packet.
 
 The frozen three-complete-pair gate remains open. A fresh delivery Discussion
 would need three calls (two contributors and a Finalizer), reusing the completed
-Single baseline. That would raise the phase total from 13 to 16. No such increase
-or extra model execution is authorized by the current record.
+Single baseline. That would raise the phase total from 13 to 16. At that checkpoint no increase or extra model execution was authorized;
+the subsequent explicit authorization is recorded below.
 
 ## Prepared missing-pair completion
 
-The [delivery-only manifest](fixtures/qa-069-workspace-delivery.json) is a
-proposal, not authorization. It pins all three existing reports, their 13
+The [delivery-only manifest](fixtures/qa-069-workspace-delivery.json) was prepared as a
+proposal before the explicit authorization below. It pins all three existing reports, their 13
 invocations and the already completed delivery Single Agent answer.
 `npm run bench:discussion-workspace-delivery` would start only a fresh delivery
 Discussion, with two contributors and one Finalizer, an atomic three-call quota,
@@ -314,5 +314,16 @@ Preparation passed all 24 benchmark checks and two installed-CLI loopback
 checks without a provider, including the exact baseline-input equality and
 complete three-Run synthetic Discussion. The roots
 `convene-wire-test-run-m6U32x` and `convene-wire-test-run-npMhNR` are absent.
-All 396 maintained Markdown files and whitespace checks pass. There have been
-no further external invocations after the 13-call authorized phase.
+All 396 maintained Markdown files and whitespace checks pass. No further external invocations were made during this preparation.
+
+## Explicit delivery completion authorization
+
+On 2026-09-06 the Owner replied “允许” to the exact request to raise the phase
+cap from 13 to 16 and use three new calls to complete the missing delivery
+Discussion. The fixed manifest now records that approval. Execute only
+`npm run bench:discussion-workspace-delivery`, reusing the pinned completed
+Single Agent baseline; the same task/source/rubric bytes, model and material
+export consent apply. The 24 benchmark and two installed-CLI offline checks
+passed for the unchanged implementation. No further retry or cap increase is
+included. Completion still requires a delivered final answer and direct rubric
+review, updated authority documents and physical temporary-root cleanup.
