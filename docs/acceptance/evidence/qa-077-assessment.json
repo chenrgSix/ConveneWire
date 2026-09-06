@@ -1,0 +1,893 @@
+{
+  "version": 1,
+  "identity": "qa-077-gpt55-assessment-v1",
+  "sourceCommit": "3a51678ce97aeea634229d3b2cb65a61fc184507",
+  "reportSha256": "9f85dd1b8893f02a5aaa2dd3b6bec714767dff3ded0b08851873a35a4593362c",
+  "firstAssessmentSha256": "37b54fde60cfc05138cc7c2d7675778a81c31f156d211198d3366423284cbc8e",
+  "closureReviewSha256": "208ee14ccd0e69aa77270dec9e1d2b9da82e6020544cb9eeecb8915df53f06a6",
+  "consumedInvocations": 6,
+  "results": [
+    {
+      "slot": 0,
+      "runId": "run_qa077_retention_1",
+      "treatment": "E",
+      "repetition": 1,
+      "blindId": "answer-1",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "58a0799e380a42a454e2061ff9b6f9507fcffb2d59520ec85d4745d8f5fc6699",
+      "finalArtifactSha256": "0d0ef08c8104d09dc2ab92c016f913c6164d2cd45e89a06f57cde81e6acb193b",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 49677,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": true,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 6069,
+      "closureBytes": 0,
+      "terminalBytes": 6098
+    },
+    {
+      "slot": 1,
+      "runId": "run_qa077_retention_2",
+      "treatment": "F",
+      "repetition": 1,
+      "blindId": "answer-5",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "01dfee1a62f259eedeef28632b0ed58572ad6f7a2f5fb8bb1bc3d7e15ee25d59",
+      "finalArtifactSha256": "eeb538d4bbc8f380a47ce0c12c8a0dab6b4cbb41b6c704ab10681d8883d0a0a1",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 56027,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa077_closure_review",
+      "finalArtifactBytes": 5966,
+      "closureBytes": 1327,
+      "terminalBytes": 7362
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa077_retention_3",
+      "treatment": "F",
+      "repetition": 2,
+      "blindId": "answer-3",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "e652d67ba320efc7d9bdc79fde1865c0f53803056ed1f22089f3a8a9a3acc3b8",
+      "finalArtifactSha256": "5a20a2c0ab4d721e0118848e1440119909461e2275bfea92aa41a1ffcb1b17df",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 54927,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": true,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa077_closure_review",
+      "finalArtifactBytes": 6003,
+      "closureBytes": 1327,
+      "terminalBytes": 7398
+    },
+    {
+      "slot": 3,
+      "runId": "run_qa077_retention_4",
+      "treatment": "E",
+      "repetition": 2,
+      "blindId": "answer-2",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "b11136acc4744a1802c0f3847ae7d1724b4c51cf4063d25893ecaf94b9f6cd5c",
+      "finalArtifactSha256": "38ecc2c67a4ddb36803e2984a3a2d8e2fed1055ebbac27f8be9381a914f574d8",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 52423,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": true,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 6102,
+      "closureBytes": 0,
+      "terminalBytes": 6131
+    },
+    {
+      "slot": 4,
+      "runId": "run_qa077_retention_5",
+      "treatment": "E",
+      "repetition": 3,
+      "blindId": "answer-4",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "d65d4d33c2edb6e6d6b22fed07628450a282647830bf2195b2cc910c8954421a",
+      "finalArtifactSha256": "b05d079a7b8f6f22ce2d5d2c6c1c88a52e8e8d6833b053512f36a87a0a17482a",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 48469,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": true,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 6052,
+      "closureBytes": 0,
+      "terminalBytes": 6081
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa077_retention_6",
+      "treatment": "F",
+      "repetition": 3,
+      "blindId": "answer-6",
+      "requestedModel": "gpt-5.5",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "answerSha256": "07ef056f0c3c7ba1eccb5e5f1c2196c1f4b5963e7401341e678fd87ae42e2863",
+      "finalArtifactSha256": "f961e745d850fd70b22b2a73bbaf41661b1bd913b50d00225ac030a2339c5ecd",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 53118,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "requiredReading": "complete",
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa077_closure_review",
+      "finalArtifactBytes": 5932,
+      "closureBytes": 1327,
+      "terminalBytes": 7327
+    }
+  ],
+  "arms": {
+    "E": {
+      "scheduled": 3,
+      "delivered": 3,
+      "fullPass": 3,
+      "criticalPass": 3,
+      "allSourceReturns": 3,
+      "finalSchemaPass": 3,
+      "commonManipulationPass": 3,
+      "unsupportedClaimsAssessed": 0,
+      "unsupportedUnscorableRuns": 0,
+      "overclaimedCriteria": 0,
+      "meanElapsedMilliseconds": 50189.666666666664,
+      "medianElapsedMilliseconds": 49677,
+      "meanClosureBytes": 0,
+      "meanTerminalBytes": 6103.333333333333
+    },
+    "F": {
+      "scheduled": 3,
+      "delivered": 3,
+      "fullPass": 1,
+      "criticalPass": 3,
+      "allSourceReturns": 3,
+      "finalSchemaPass": 3,
+      "commonManipulationPass": 3,
+      "unsupportedClaimsAssessed": 0,
+      "unsupportedUnscorableRuns": 0,
+      "overclaimedCriteria": 2,
+      "meanElapsedMilliseconds": 54690.666666666664,
+      "medianElapsedMilliseconds": 54927,
+      "meanClosureBytes": 1327,
+      "meanTerminalBytes": 7362.333333333333
+    }
+  },
+  "candidateWithinTaskSignal": false,
+  "interpretation": "no_prespecified_incremental_signal",
+  "limitations": [
+    "Same known evaluator-authored task, three runs per arm. Prior GPT-5.4-mini comparison is historical/descriptive, not randomized causal model evidence.",
+    "Implementation-assistant semantic grading hides arm/table until first judgments persist; it is not independent human evaluation.",
+    "Two full-delivery failures concern duplicate-test rejection versus unresolved wording. They are not unsafe deletion, wrong byte totals or lost uncertainty.",
+    "Accounting conservation over the fully specified inventory is accepted without requiring a new literal numeric test vector; this interpretation is explicit in first judgments.",
+    "Preservation metrics retain the frozen whole-criterion projection; no literal fact-loss rate is inferred.",
+    "Returns prove bytes, not comprehension; requested model and effort are pinned but provider model/compute are not independently attested.",
+    "No productization, follow-on calls, retry or same-case prompt tuning follows from this consumed plan."
+  ]
+}

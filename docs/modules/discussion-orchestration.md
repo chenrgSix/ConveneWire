@@ -40,7 +40,10 @@ justified by this screening. The consumed journal prevents same-plan retries.
 [ADR-0051](../adr/0051-repeat-criterion-screening-with-gpt55.md) permits one
 Owner-requested QA-077 model-only repeat using GPT-5.5, with identical input
 bytes and scoring, fresh Run scopes and a separate six-call budget. It adds no
-production behavior and does not reopen QA-076.
+production behavior and does not reopen QA-076. The retained QA-077 result
+has complete E=3/3 and F=1/3, critical=3/3 in both arms and two F regression
+expectation overclaims; the six-call budget is consumed. This historical model
+repeat establishes no incremental F mechanism or production quality claim.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.

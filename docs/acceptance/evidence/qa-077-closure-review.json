@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "identity": "qa-077-unmasked-closure-review-v1",
+  "recordedAt": "2026-09-06T14:37:14.457122+00:00",
+  "firstAssessmentSha256": "37b54fde60cfc05138cc7c2d7675778a81c31f156d211198d3366423284cbc8e",
+  "reportSha256": "9f85dd1b8893f02a5aaa2dd3b6bec714767dff3ded0b08851873a35a4593362c",
+  "protocol": "All 24 F table rows reviewed after first judgments were durably recorded; actual references are relevant returned sources. Two empty missing lists conceal the frozen duplicate-object rejection test gap. No first judgment changed and no additional model call.",
+  "rows": [
+    {
+      "slot": 1,
+      "runId": "run_qa077_retention_2",
+      "answerSha256": "01dfee1a62f259eedeef28632b0ed58572ad6f7a2f5fb8bb1bc3d7e15ee25d59",
+      "closureSha256": "a8dde7ef4045a86fe34c838d2343f7e2a17584f66899878a010aba4a52ba1261",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four sources establish proposal scope, full object identities and decision inputs.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines eligibility and ordering; inventory gives completion state/timestamps; observations give verification eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines base closure, inventory provides the direct and transitive relations, and active-pins identifies the pinned object.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines the strict cutoff and protection priority; inventory gives timestamps; observations establish passed eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires holding failed/missing observations and requesting exact successful evidence; inventory and observations identify both held objects and distinguish failure from absence.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory gives exact object bytes and policy defines once-per-object category accounting. Returned references remain separate from actual arithmetic verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four sources are relevant to the nine canonical regression conditions. Relevant source references do not prove that the proposed duplicate-input expectation guarantees rejection.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits the duplicate rejection expectation gap: The two-hop dependency, UTC-equivalent exact boundary, one-millisecond-before-cutoff and the other named cases are present. However, duplicate_identity permits either rejection or marking unresolved instead of requiring rejection of the invalid duplicate inventory. This alternative does not guarantee the frozen canonical duplicate-object rejection outcome. It is a test acceptance gap, not an invented source fact."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four returned task sources are relevant to checking claims and preserving their limits; source relevance alone is not claim verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa077_retention_3",
+      "answerSha256": "e652d67ba320efc7d9bdc79fde1865c0f53803056ed1f22089f3a8a9a3acc3b8",
+      "closureSha256": "a8dde7ef4045a86fe34c838d2343f7e2a17584f66899878a010aba4a52ba1261",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four sources establish proposal scope, full object identities and decision inputs.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines eligibility and ordering; inventory gives completion state/timestamps; observations give verification eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines base closure, inventory provides the direct and transitive relations, and active-pins identifies the pinned object.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines the strict cutoff and protection priority; inventory gives timestamps; observations establish passed eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires holding failed/missing observations and requesting exact successful evidence; inventory and observations identify both held objects and distinguish failure from absence.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory gives exact object bytes and policy defines once-per-object category accounting. Returned references remain separate from actual arithmetic verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four sources are relevant to the nine canonical regression conditions. Relevant source references do not prove that the proposed duplicate-input expectation guarantees rejection.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four returned task sources are relevant to checking claims and preserving their limits; source relevance alone is not claim verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        }
+      ]
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa077_retention_6",
+      "answerSha256": "07ef056f0c3c7ba1eccb5e5f1c2196c1f4b5963e7401341e678fd87ae42e2863",
+      "closureSha256": "a8dde7ef4045a86fe34c838d2343f7e2a17584f66899878a010aba4a52ba1261",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four sources establish proposal scope, full object identities and decision inputs.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines eligibility and ordering; inventory gives completion state/timestamps; observations give verification eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines base closure, inventory provides the direct and transitive relations, and active-pins identifies the pinned object.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines the strict cutoff and protection priority; inventory gives timestamps; observations establish passed eligibility.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires holding failed/missing observations and requesting exact successful evidence; inventory and observations identify both held objects and distinguish failure from absence.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory gives exact object bytes and policy defines once-per-object category accounting. Returned references remain separate from actual arithmetic verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four sources are relevant to the nine canonical regression conditions. Relevant source references do not prove that the proposed duplicate-input expectation guarantees rejection.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits the duplicate rejection expectation gap: The two-hop dependency, UTC-equivalent exact boundary, one-millisecond-before-cutoff and the other named cases are present. However, duplicate_identity permits either rejection or marking unresolved instead of requiring rejection of the invalid duplicate inventory. This alternative does not guarantee the frozen canonical duplicate-object rejection outcome. It is a test acceptance gap, not an invented source fact."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four returned task sources are relevant to checking claims and preserving their limits; source relevance alone is not claim verification.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the final-artifact criterion judgment."
+        }
+      ]
+    }
+  ]
+}

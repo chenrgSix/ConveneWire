@@ -1,0 +1,803 @@
+{
+  "version": 1,
+  "identity": "qa-077-final-only-first-assessment-v1",
+  "recordedAt": "2026-09-06T14:34:51.848758+00:00",
+  "reportSha256": "9f85dd1b8893f02a5aaa2dd3b6bec714767dff3ded0b08851873a35a4593362c",
+  "finalOnlyExportSha256": "85ed55d93e8d095a270690d694221e6b8e9cdb7129a2a766b8a232d863105452",
+  "scoringSha256": "897194a6241aee6907d5c7f067bf3d79578ff7c7faf8716c91fdd14d32cde01a",
+  "grader": "Implementation assistant; evaluator knows the synthetic reference; no independent human or extra model grading call",
+  "protocol": "All six final-only artifacts assessed in hash order before any QA-077 arm mapping or closure table was opened. These first judgments are immutable; later corrections must be appended separately. No schema relaxation or repaired output is used.",
+  "gradingInterpretations": [
+    "Concrete input/condition does not require every case to repeat literal byte values: the supplied inventory and emitted decision partition support a checkable conservation/one-count-per-object property. The frozen criterion did explicitly require concrete two-hop, offset-equivalent and one-millisecond cases; each is present here.",
+    "Duplicate rejection is explicit in the frozen canonical criterion. An expected outcome allowing rejection OR unresolved does not guarantee rejection, so that regression criterion fails; no newly invented factual addition is inferred.",
+    "Newest-two test wording is interpreted in the context of newest-two protection, not as deleting every unselected recent object. Current final decisions obey all age/protection rules."
+  ],
+  "reviews": [
+    {
+      "blindId": "answer-1",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "0d0ef08c8104d09dc2ab92c016f913c6164d2cd45e89a06f57cde81e6acb193b",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Retain as one of the newest two verified-complete lime restore points by UTC completedAt.",
+              "Retain as one of the newest two verified-complete lime restore points by UTC completedAt.",
+              "Retain as one of the newest two verified-complete slate restore points and as direct base for slate-delta-04.",
+              "Retain as one of the newest two verified-complete slate restore points by UTC completedAt; baseObjectId is slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two lime-delta-03 via lime-delta-02.",
+              "Retain as direct base in base chain for protected newest-two lime-delta-03.",
+              "Retain due to active pin on lime-full-06.",
+              "Retain as one of the newest two verified-complete slate restore points and as direct base for slate-delta-04.",
+              "Retain as one of the newest two verified-complete slate restore points by UTC completedAt; baseObjectId is slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because 2026-08-30T20:00:00+08:00 normalizes to the exact 2026-08-30T12:00:00Z boundary, not strictly older."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Hold because verification status is failed; do not count among newest two or propose deletion.",
+              "Hold because verification observation is missing; missing does not imply success or failure.",
+              "Successful verification attestation is absent; supplied observation is failed.",
+              "Object-bound successful verification observation for slate-full-05 before any later authorized reconsideration.",
+              "Successful verification attestation is absent; no verification observation entry is supplied.",
+              "Object-bound successful verification observation for slate-full-06 before any later authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "pass",
+            "reason": "All nine cases specify a policy-relevant input/condition and a correct expectation, including the concrete two-hop base relation, offset-equivalent exact cutoff, otherwise unprotected one-millisecond-older object, and unambiguous duplicate-identity rejection. The accounting case checks the given inventory/decision partition for one-time counting and sum conservation; an additional literal numeric test vector was not a separate frozen requirement.",
+            "quotes": [
+              "Tenant with three complete passed objects at 2026-09-03T12:00:00Z id c, 2026-09-04T12:00:00Z id b, and 2026-09-04T12:00:00Z id a.",
+              "Retain only the two newest eligible objects, using UTC completedAt and ascending objectId tie-break: a and b are newest-two protected.",
+              "Complete passed object older than cutoff with activeObjectIds containing that objectId.",
+              "Decision is retain with reason naming the active pin, independent of age.",
+              "Protected restore point delta-03 has baseObjectId delta-02, and delta-02 has baseObjectId base-01 in the same tenant.",
+              "Retain delta-02 and base-01 as direct and transitive dependencies; neither is a delete candidate.",
+              "asOf 2026-09-06T12:00:00Z and object completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Retain because the timestamp is exactly seven days old, not strictly before the cutoff.",
+              "asOf 2026-09-06T12:00:00Z and otherwise unprotected complete passed object completedAt 2026-08-30T11:59:59.999Z.",
+              "Decision is delete_candidate because it is one millisecond strictly older than the cutoff.",
+              "Inventory object is complete but verification observation status is failed.",
+              "Decision is hold; record missing successful attestation and do not infer a cause.",
+              "Inventory object is complete and has no verification observation entry.",
+              "Decision is hold; record missing successful attestation and distinguish missing from failed.",
+              "Inventory bytes are categorized into retain, delete_candidate and hold decisions, one decision per object.",
+              "Each object's bytes are counted once; retainBytes plus deleteCandidateBytes plus holdBytes equals the complete inventory byte total.",
+              "Inventory contains duplicate objectId values or final decisions contain the same objectId twice.",
+              "Reject the manifest because every inventory object must appear exactly once and object identity must not be duplicated."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two lime-delta-03 via lime-delta-02.",
+              "Retain as direct base in base chain for protected newest-two lime-delta-03.",
+              "Retain as one of the newest two verified-complete lime restore points by UTC completedAt.",
+              "Retain as one of the newest two verified-complete lime restore points by UTC completedAt.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain due to active pin on lime-full-06.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because 2026-08-30T20:00:00+08:00 normalizes to the exact 2026-08-30T12:00:00Z boundary, not strictly older.",
+              "Retain as one of the newest two verified-complete slate restore points and as direct base for slate-delta-04.",
+              "Retain as one of the newest two verified-complete slate restore points by UTC completedAt; baseObjectId is slate-full-03.",
+              "Hold because verification status is failed; do not count among newest two or propose deletion.",
+              "Hold because verification observation is missing; missing does not imply success or failure.",
+              "Object-bound successful verification observation for slate-full-05 before any later authorized reconsideration.",
+              "Object-bound successful verification observation for slate-full-06 before any later authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    },
+    {
+      "blindId": "answer-2",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "38ecc2c67a4ddb36803e2984a3a2d8e2fed1055ebbac27f8be9381a914f574d8",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Retain as one of tenant lime's newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant lime's newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant slate's newest two verified-complete restore points and base chain for slate-delta-04.",
+              "Retain as one of tenant slate's newest two verified-complete restore points by UTC completedAt; baseObjectId is slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base chain dependency of protected newest-two restore point lime-delta-03.",
+              "Retain because active pin protects lime-full-06 independently of age.",
+              "Retain as one of tenant slate's newest two verified-complete restore points and base chain for slate-delta-04.",
+              "Retain as one of tenant slate's newest two verified-complete restore points by UTC completedAt; baseObjectId is slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Passed complete object is otherwise unprotected and completedAt is strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Passed complete object is otherwise unprotected and completedAt is strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because completedAt normalizes to the exact seven-day boundary 2026-08-30T12:00:00Z, not strictly older."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Hold because verification observation is failed; no failure cause is inferred.",
+              "Hold because successful verification observation is missing; absence does not imply success or failure.",
+              "successful verification attestation; current observation is failed",
+              "Object-bound successful verification evidence for slate-full-05 before any later separately authorized reconsideration.",
+              "successful verification attestation; no verification observation is present",
+              "Object-bound successful verification evidence for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "pass",
+            "reason": "All nine cases specify a policy-relevant input/condition and a correct expectation, including the concrete two-hop base relation, offset-equivalent exact cutoff, otherwise unprotected one-millisecond-older object, and unambiguous duplicate-identity rejection. The accounting case checks the given inventory/decision partition for one-time counting and sum conservation; an additional literal numeric test vector was not a separate frozen requirement.",
+            "quotes": [
+              "Tenant has three complete passed objects at 2026-09-05T12:00:00Z, 2026-09-04T12:00:00Z and 2026-08-10T12:00:00Z.",
+              "Only the two most recent verified-complete objects are retained by newest-two; older objects need another protection or age outcome.",
+              "Complete passed object lime-full-06 is older than cutoff but listed in activeObjectIds.",
+              "Decision is retain with reason naming the active pin, independent of age.",
+              "Protected object A has baseObjectId B and B has baseObjectId C in the same tenant, with B and C complete passed.",
+              "A, B and C are retained; B is direct dependency and C is transitive two-hop dependency.",
+              "asOf 2026-09-06T12:00:00Z and completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Retain because the timestamp is exactly seven days old, not strictly before the cutoff.",
+              "Otherwise unprotected complete passed object completedAt 2026-08-30T11:59:59.999Z, one millisecond older than cutoff.",
+              "Decision is delete_candidate because completedAt is strictly before 2026-08-30T12:00:00Z.",
+              "Complete inventory object has verification observation status failed.",
+              "Decision is hold, object is excluded from newest-two and deletion, unresolved requests object-bound successful verification without inferring cause.",
+              "Complete inventory object has no verification observation entry.",
+              "Decision is hold, object is excluded from newest-two and deletion, unresolved distinguishes missing observation from failure.",
+              "Inventory bytes are 10700 total with final decisions retain 6300, delete_candidate 2300 and hold 2100.",
+              "Each object is counted once and category totals sum exactly to 10700.",
+              "Inventory contains duplicate objectId values for a review packet.",
+              "Reject the manifest as invalid for identity because every inventory object must appear exactly once with unique objectId."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base chain dependency of protected newest-two restore point lime-delta-03.",
+              "Retain as one of tenant lime's newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant lime's newest two verified-complete restore points by UTC completedAt.",
+              "Passed complete object is otherwise unprotected and completedAt is strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because active pin protects lime-full-06 independently of age.",
+              "Passed complete object is otherwise unprotected and completedAt is strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because completedAt normalizes to the exact seven-day boundary 2026-08-30T12:00:00Z, not strictly older.",
+              "Retain as one of tenant slate's newest two verified-complete restore points and base chain for slate-delta-04.",
+              "Retain as one of tenant slate's newest two verified-complete restore points by UTC completedAt; baseObjectId is slate-full-03.",
+              "Hold because verification observation is failed; no failure cause is inferred.",
+              "Hold because successful verification observation is missing; absence does not imply success or failure.",
+              "Object-bound successful verification evidence for slate-full-05 before any later separately authorized reconsideration.",
+              "Object-bound successful verification evidence for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    },
+    {
+      "blindId": "answer-3",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "5a20a2c0ab4d721e0118848e1440119909461e2275bfea92aa41a1ffcb1b17df",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Verified complete and one of lime tenant newest two restore points by UTC completedAt.",
+              "Verified complete and one of lime tenant newest two restore points by UTC completedAt.",
+              "Verified complete and one of slate tenant newest two restore points; also base of slate-delta-04.",
+              "Verified complete and one of slate tenant newest two restore points by UTC completedAt."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Transitive base of protected newest-two restore point lime-delta-03 through lime-delta-02.",
+              "Direct base of protected newest-two restore point lime-delta-03.",
+              "Active pin protects lime-full-06 independently of age.",
+              "Verified complete and one of slate tenant newest two restore points; also base of slate-delta-04.",
+              "Verified complete and one of slate tenant newest two restore points by UTC completedAt."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Verified complete, unprotected, and completed before 2026-08-30T12:00:00Z cutoff.",
+              "Verified complete, unprotected, and completed before 2026-08-30T12:00:00Z cutoff.",
+              "Verified complete and exactly at seven-day UTC boundary 2026-08-30T12:00:00Z, not strictly older."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Verification observation is failed; held and not eligible for newest-two or deletion.",
+              "Verification observation is missing; held and not eligible for newest-two or deletion.",
+              "Successful verification attestation is missing because the supplied observation status is failed.",
+              "Object-bound successful verification observation for slate-full-05 before any later separately authorized reconsideration.",
+              "Successful verification attestation is missing because no supplied verification observation exists for this object.",
+              "Object-bound successful verification observation for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "pass",
+            "reason": "All nine cases specify a policy-relevant input/condition and a correct expectation, including the concrete two-hop base relation, offset-equivalent exact cutoff, otherwise unprotected one-millisecond-older object, and unambiguous duplicate-identity rejection. The accounting case checks the given inventory/decision partition for one-time counting and sum conservation; an additional literal numeric test vector was not a separate frozen requirement.",
+            "quotes": [
+              "Tenant has three passed complete objects at 2026-09-05T12:00:00Z, 2026-09-04T12:00:00Z, and 2026-08-03T12:00:00Z with no pins.",
+              "Retain only the two most recent eligible objects under newest-two; the older object is evaluated by other protection and age rules.",
+              "Passed complete object lime-full-06 is older than cutoff but appears in activeObjectIds.",
+              "Retain lime-full-06 because active pin protection is unconditional.",
+              "Protected restore point C has baseObjectId B and B has baseObjectId A within the same tenant.",
+              "Retain C, direct base B, and transitive base A; none is a delete candidate.",
+              "Passed complete unprotected object completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Retain because it is exactly seven days old at asOf 2026-09-06T12:00:00Z, not strictly before the cutoff.",
+              "Passed complete unprotected object completedAt 2026-08-30T11:59:59.999Z, one millisecond older than cutoff.",
+              "Mark delete_candidate because it is strictly before 2026-08-30T12:00:00Z.",
+              "Complete object has verification observation status failed.",
+              "Hold it, exclude from newest-two, do not propose deletion, and request object-bound successful verification evidence without inferring cause.",
+              "Complete object appears in inventory but has no verification observation entry.",
+              "Hold it, exclude from newest-two, do not propose deletion, and request object-bound successful verification evidence while preserving missing as unknown.",
+              "Inventory bytes are assigned once by final decision: retain, delete_candidate, or hold.",
+              "retainBytes plus deleteCandidateBytes plus holdBytes equals complete inventory total with no double counting.",
+              "Inventory contains duplicate objectId values for the same review.",
+              "Reject the manifest as invalid for decision production because every inventory object must be returned exactly once by unique objectId."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Transitive base of protected newest-two restore point lime-delta-03 through lime-delta-02.",
+              "Direct base of protected newest-two restore point lime-delta-03.",
+              "Verified complete and one of lime tenant newest two restore points by UTC completedAt.",
+              "Verified complete and one of lime tenant newest two restore points by UTC completedAt.",
+              "Verified complete, unprotected, and completed before 2026-08-30T12:00:00Z cutoff.",
+              "Active pin protects lime-full-06 independently of age.",
+              "Verified complete, unprotected, and completed before 2026-08-30T12:00:00Z cutoff.",
+              "Verified complete and exactly at seven-day UTC boundary 2026-08-30T12:00:00Z, not strictly older.",
+              "Verified complete and one of slate tenant newest two restore points; also base of slate-delta-04.",
+              "Verified complete and one of slate tenant newest two restore points by UTC completedAt.",
+              "Verification observation is failed; held and not eligible for newest-two or deletion.",
+              "Verification observation is missing; held and not eligible for newest-two or deletion.",
+              "Object-bound successful verification observation for slate-full-05 before any later separately authorized reconsideration.",
+              "Object-bound successful verification observation for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    },
+    {
+      "blindId": "answer-4",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "b05d079a7b8f6f22ce2d5d2c6c1c88a52e8e8d6833b053512f36a87a0a17482a",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Retain as one of tenant lime newest-two verified-complete restore points.",
+              "Retain as one of tenant lime newest-two verified-complete restore points.",
+              "Retain as one of tenant slate newest-two verified-complete restore points and direct base chain for slate-delta-04.",
+              "Retain as one of tenant slate newest-two verified-complete restore points."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base chain for protected newest-two restore point lime-delta-03.",
+              "Retain because active pin protects lime-full-06 independently of age.",
+              "Retain as one of tenant slate newest-two verified-complete restore points and direct base chain for slate-delta-04.",
+              "Retain as one of tenant slate newest-two verified-complete restore points."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Passed complete object is otherwise unprotected and completed strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Passed complete object is otherwise unprotected and completed strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because completedAt normalizes to the exact seven-day boundary 2026-08-30T12:00:00Z, not strictly older."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Hold because verification observation is failed; failed objects are not newest-two eligible and are never deletion candidates.",
+              "Hold because successful verification observation is missing; missing observations do not imply success or failure.",
+              "successful verification attestation; current observation is failed",
+              "Object-bound successful verification evidence for slate-full-05 before any later separately authorized reconsideration.",
+              "successful verification attestation; no verification observation is present",
+              "Object-bound successful verification evidence for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "pass",
+            "reason": "All nine cases specify a policy-relevant input/condition and a correct expectation, including the concrete two-hop base relation, offset-equivalent exact cutoff, otherwise unprotected one-millisecond-older object, and unambiguous duplicate-identity rejection. The accounting case checks the given inventory/decision partition for one-time counting and sum conservation; an additional literal numeric test vector was not a separate frozen requirement.",
+            "quotes": [
+              "Tenant has three complete passed objects at 2026-09-05T12:00:00Z, 2026-09-04T12:00:00Z, and 2026-08-02T12:00:00Z.",
+              "The two most recent by normalized UTC are retained independently of age; the older object needs another protection or age reason.",
+              "Complete passed object lime-full-06 is older than the cutoff and appears in activeObjectIds.",
+              "Object is retained because active pin protection is unconditional and independent of age.",
+              "Protected restore point C has baseObjectId B, and B has baseObjectId A in the same tenant.",
+              "C, B, and A are retained; B is a direct dependency and A is a transitive dependency.",
+              "asOf 2026-09-06T12:00:00Z with object completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Object is retained because it is exactly seven days old, not strictly before the cutoff.",
+              "asOf 2026-09-06T12:00:00Z with otherwise unprotected complete passed object completedAt 2026-08-30T11:59:59.999Z.",
+              "Object is a delete_candidate because it is one millisecond strictly older than the cutoff.",
+              "Complete inventory object has verification status failed.",
+              "Object is held, excluded from newest-two selection, and unresolved asks for object-bound successful verification without inferring a cause.",
+              "Complete inventory object has no verification observation entry.",
+              "Object is held, excluded from newest-two selection, and unresolved asks for object-bound successful verification while distinguishing missing from failed.",
+              "Inventory byte totals are partitioned across retain, delete_candidate, and hold decisions.",
+              "Each object is counted exactly once and category totals sum to the complete inventory byte total.",
+              "Inventory contains the same objectId more than once.",
+              "Manifest generation rejects duplicate identity rather than returning multiple decisions for the same objectId."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Retain as transitive base chain for protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base chain for protected newest-two restore point lime-delta-03.",
+              "Retain as one of tenant lime newest-two verified-complete restore points.",
+              "Retain as one of tenant lime newest-two verified-complete restore points.",
+              "Passed complete object is otherwise unprotected and completed strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because active pin protects lime-full-06 independently of age.",
+              "Passed complete object is otherwise unprotected and completed strictly before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because completedAt normalizes to the exact seven-day boundary 2026-08-30T12:00:00Z, not strictly older.",
+              "Retain as one of tenant slate newest-two verified-complete restore points and direct base chain for slate-delta-04.",
+              "Retain as one of tenant slate newest-two verified-complete restore points.",
+              "Hold because verification observation is failed; failed objects are not newest-two eligible and are never deletion candidates.",
+              "Hold because successful verification observation is missing; missing observations do not imply success or failure.",
+              "Object-bound successful verification evidence for slate-full-05 before any later separately authorized reconsideration.",
+              "Object-bound successful verification evidence for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    },
+    {
+      "blindId": "answer-5",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "eeb538d4bbc8f380a47ce0c12c8a0dab6b4cbb41b6c704ab10681d8883d0a0a1",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Lime tenant newest-two verified-complete restore point by UTC completedAt.",
+              "Lime tenant newest-two verified-complete restore point by UTC completedAt.",
+              "Slate tenant newest-two verified-complete restore point and direct base of protected slate-delta-04.",
+              "Slate tenant newest-two verified-complete restore point; base chain includes slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Transitive base of protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Direct base of protected newest-two restore point lime-delta-03.",
+              "Active pin protects this passed complete object independently of age.",
+              "Slate tenant newest-two verified-complete restore point and direct base of protected slate-delta-04.",
+              "Slate tenant newest-two verified-complete restore point; base chain includes slate-full-03."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Passed complete object is unprotected and completed strictly before 2026-08-30T12:00:00Z cutoff.",
+              "Passed complete object is unprotected and completed strictly before 2026-08-30T12:00:00Z cutoff.",
+              "Completed at 2026-08-30T20:00:00+08:00, equal to UTC cutoff 2026-08-30T12:00:00Z, so not strictly older."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Verification observation is failed; policy requires hold and no deletion proposal.",
+              "Verification observation is missing; policy requires hold and no deletion proposal.",
+              "successful verification attestation; current observation is failed",
+              "Object-bound successful verification observation for slate-full-05 before any later separately authorized reconsideration.",
+              "successful verification attestation; no observation entry returned",
+              "Object-bound successful verification observation for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "fail",
+            "reason": "The two-hop dependency, UTC-equivalent exact boundary, one-millisecond-before-cutoff and the other named cases are present. However, duplicate_identity permits either rejection or marking unresolved instead of requiring rejection of the invalid duplicate inventory. This alternative does not guarantee the frozen canonical duplicate-object rejection outcome. It is a test acceptance gap, not an invented source fact.",
+            "quotes": [
+              "Tenant has three complete passed restore points ordered by normalized UTC completedAt, with objectId ascending as tie-break for equal timestamps.",
+              "Retain exactly the two most recent eligible objects; exclude failed or missing verification from newest-two selection.",
+              "Complete passed object older than cutoff appears in activeObjectIds, such as lime-full-06.",
+              "Retain due to active pin regardless of age and do not count as delete_candidate.",
+              "Protected object C has baseObjectId B and B has baseObjectId A within the same tenant, matching lime-delta-03 -> lime-delta-02 -> lime-base-01.",
+              "Retain C, B and A; reasons for B and A name the base-chain dependency.",
+              "asOf 2026-09-06T12:00:00Z and object completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Retain because the timestamp is exactly seven days old, not strictly before the cutoff.",
+              "Otherwise unprotected complete passed object completedAt 2026-08-30T11:59:59.999Z, one millisecond before cutoff.",
+              "Classify as delete_candidate because it is strictly older than seven days.",
+              "Inventory object has verification status failed, such as slate-full-05.",
+              "Hold the object, list unresolved as missing successful attestation, and do not infer a failure cause.",
+              "Inventory object has no verification observation entry, such as slate-full-06.",
+              "Hold the object, list unresolved as missing successful attestation with object-bound evidence needed, and do not infer success or failure.",
+              "Complete inventory bytes are 10700 with final decisions retain 6300, delete_candidate 2300 and hold 2100.",
+              "Report exact category totals once per object; retainBytes + deleteCandidateBytes + holdBytes equals 10700.",
+              "Inventory contains a duplicate objectId appearing more than once.",
+              "Reject or mark the manifest unresolved for duplicate identity rather than returning multiple decisions for the same objectId."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Transitive base of protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Direct base of protected newest-two restore point lime-delta-03.",
+              "Lime tenant newest-two verified-complete restore point by UTC completedAt.",
+              "Lime tenant newest-two verified-complete restore point by UTC completedAt.",
+              "Passed complete object is unprotected and completed strictly before 2026-08-30T12:00:00Z cutoff.",
+              "Active pin protects this passed complete object independently of age.",
+              "Passed complete object is unprotected and completed strictly before 2026-08-30T12:00:00Z cutoff.",
+              "Completed at 2026-08-30T20:00:00+08:00, equal to UTC cutoff 2026-08-30T12:00:00Z, so not strictly older.",
+              "Slate tenant newest-two verified-complete restore point and direct base of protected slate-delta-04.",
+              "Slate tenant newest-two verified-complete restore point; base chain includes slate-full-03.",
+              "Verification observation is failed; policy requires hold and no deletion proposal.",
+              "Verification observation is missing; policy requires hold and no deletion proposal.",
+              "Object-bound successful verification observation for slate-full-05 before any later separately authorized reconsideration.",
+              "Object-bound successful verification observation for slate-full-06 before any later separately authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    },
+    {
+      "blindId": "answer-6",
+      "unsupportedReviewStatus": "assessed",
+      "review": {
+        "finalArtifactSha256": "f961e745d850fd70b22b2a73bbaf41661b1bd913b50d00225ac030a2339c5ecd",
+        "criteria": [
+          {
+            "criterionKey": "criterion_qa076_identity",
+            "status": "pass",
+            "reason": "All twelve original inventory objects appear exactly once with exact asOf, proposal_only, valid decision, concise reason and relevant source IDs. No approval or executed operation is claimed.",
+            "quotes": [
+              "2026-09-06T12:00:00Z",
+              "proposal_only",
+              "lime-base-01",
+              "lime-delta-02",
+              "lime-delta-03",
+              "lime-full-04",
+              "lime-full-05",
+              "lime-full-06",
+              "slate-full-01",
+              "slate-full-02",
+              "slate-full-03",
+              "slate-delta-04",
+              "slate-full-05",
+              "slate-full-06"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_newest",
+            "status": "pass",
+            "reason": "The correct newest two verified-complete restore points per tenant are retained: lime-full-04/lime-delta-03 and slate-delta-04/slate-full-03. Ordering agrees with UTC timestamps, and no extra newest-two membership is asserted. The actual inventory has no equal eligible timestamp requiring a tie-break decision.",
+            "quotes": [
+              "Retain as one of tenant lime newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant lime newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant slate newest two verified-complete restore points and as direct base of slate-delta-04.",
+              "Retain as one of tenant slate newest two verified-complete restore points by UTC completedAt."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_protection",
+            "status": "pass",
+            "reason": "The affected lime base reasons name the protected lime-delta-03 -> lime-delta-02 -> lime-base-01 chain, slate-full-03 is named as the base of slate-delta-04, and lime-full-06 is retained under its active pin. All required dependency facts and protections are preserved.",
+            "quotes": [
+              "Retain as transitive base chain dependency of protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base dependency of protected newest-two restore point lime-delta-03.",
+              "Retain due to active pin on lime-full-06.",
+              "Retain as one of tenant slate newest two verified-complete restore points and as direct base of slate-delta-04.",
+              "Retain as one of tenant slate newest two verified-complete restore points by UTC completedAt."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_age",
+            "status": "pass",
+            "reason": "Only lime-full-05 and slate-full-01 are deletion candidates. The strict cutoff is 2026-08-30T12:00:00Z; the offset-equivalent exact boundary slate-full-02 is retained and all protected objects remain retained.",
+            "quotes": [
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because UTC-normalized completedAt is exactly the seven-day boundary, 2026-08-30T12:00:00Z."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_uncertainty",
+            "status": "pass",
+            "reason": "slate-full-05 remains held for an observed failure, while slate-full-06 remains held for an absent observation. Both unresolved records ask for exact object-bound successful verification before separately authorized reconsideration, without claiming verification or inventing failure causes.",
+            "quotes": [
+              "Hold because verification observation is failed; no failure cause is inferred.",
+              "Hold because successful verification observation is missing; missing does not imply success or failure.",
+              "Successful verification attestation is absent; current observation is failed.",
+              "Object-bound successful verification evidence for slate-full-05 before any separately authorized reconsideration.",
+              "Successful verification attestation is missing; no verification observation entry is supplied.",
+              "Object-bound successful verification evidence for slate-full-06 before any separately authorized reconsideration."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_accounting",
+            "status": "pass",
+            "reason": "All twelve emitted classifications agree with policy. Retain 6300, delete_candidate 2300 and hold 2100 match those actual object decisions and sum exactly to the complete inventory 10700 bytes.",
+            "quotes": [
+              "{\"retainBytes\":6300,\"deleteCandidateBytes\":2300,\"holdBytes\":2100}"
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_regressions",
+            "status": "fail",
+            "reason": "The two-hop dependency, UTC-equivalent exact boundary, one-millisecond-before-cutoff and the other named cases are present. However, duplicate_identity permits either rejection or marking unresolved instead of requiring rejection of the invalid duplicate inventory. This alternative does not guarantee the frozen canonical duplicate-object rejection outcome. It is a test acceptance gap, not an invented source fact.",
+            "quotes": [
+              "Tenant has three passed complete restore points at 2026-09-05T12:00:00Z, 2026-09-04T12:00:00Z, and 2026-08-02T12:00:00Z.",
+              "Only the two most recent by normalized UTC are protected by newest-two; the older object needs another protection or age outcome.",
+              "lime-full-06 is passed complete, older than cutoff, and listed in activeObjectIds.",
+              "Decision is retain due to active pin, independent of age.",
+              "Protected object C has base B, and B has base A within the same tenant.",
+              "C, B, and A are retained; B is direct dependency and A is transitive dependency.",
+              "Passed complete otherwise unprotected object completedAt 2026-08-30T20:00:00+08:00, UTC-equivalent 2026-08-30T12:00:00Z.",
+              "Decision is retain because exactly seven days old is not strictly before cutoff.",
+              "Passed complete otherwise unprotected object completedAt 2026-08-30T11:59:59.999Z, one millisecond before cutoff.",
+              "Decision is delete_candidate because it is strictly older than seven days.",
+              "Complete object has verification status failed.",
+              "Decision is hold, excluded from newest-two and deletion; unresolved requests object-bound successful verification without inferring cause.",
+              "Complete object has no verification observation entry.",
+              "Decision is hold, excluded from newest-two and deletion; unresolved requests object-bound successful verification and distinguishes missing from failed.",
+              "Inventory bytes are partitioned by final decisions retain, delete_candidate, and hold.",
+              "Each object is counted once; retainBytes plus deleteCandidateBytes plus holdBytes equals complete inventory total.",
+              "Inventory contains the same objectId more than once.",
+              "Reject or mark unresolved for duplicate identity rather than returning duplicate decisions for one objectId."
+            ]
+          },
+          {
+            "criterionKey": "criterion_qa076_support",
+            "status": "pass",
+            "reason": "Every decision and uncertainty record cites relevant provided sources; material reasons and test properties agree with the policy and fixture. No unsupported factual addition, completed operation, failure cause or approval is asserted. Current-Run source-return binding is checked separately after unmasking.",
+            "quotes": [
+              "Retain as transitive base chain dependency of protected newest-two restore point lime-delta-03 via lime-delta-02.",
+              "Retain as direct base dependency of protected newest-two restore point lime-delta-03.",
+              "Retain as one of tenant lime newest two verified-complete restore points by UTC completedAt.",
+              "Retain as one of tenant lime newest two verified-complete restore points by UTC completedAt.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain due to active pin on lime-full-06.",
+              "Passed complete object is otherwise unprotected and completed before the 2026-08-30T12:00:00Z cutoff.",
+              "Retain because UTC-normalized completedAt is exactly the seven-day boundary, 2026-08-30T12:00:00Z.",
+              "Retain as one of tenant slate newest two verified-complete restore points and as direct base of slate-delta-04.",
+              "Retain as one of tenant slate newest two verified-complete restore points by UTC completedAt.",
+              "Hold because verification observation is failed; no failure cause is inferred.",
+              "Hold because successful verification observation is missing; missing does not imply success or failure.",
+              "Object-bound successful verification evidence for slate-full-05 before any separately authorized reconsideration.",
+              "Object-bound successful verification evidence for slate-full-06 before any separately authorized reconsideration."
+            ]
+          }
+        ],
+        "unsupportedAdditions": []
+      }
+    }
+  ]
+}
