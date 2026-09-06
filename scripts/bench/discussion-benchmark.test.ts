@@ -20,17 +20,19 @@ import { workspacePacket, workspaceExecutionIdentity, workspaceRemainingPath, lo
   workspaceDeliveryPath, loadWorkspaceDelivery,
   packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
 import { finalAnswerReviewChecklist } from "../../apps/server/src/discussion/finalization-instructions.js";
-import { complexPacket, complexPacketPath, complexPlanPath, complexExecutionIdentity,
-  loadComplexExperiment, complexTaskInput } from "./complex-evidence.mjs";
+import { complexPacket, complexPacketPath, complexPlanPath, complexExecutionIdentity, complexRemainingPath,
+  loadComplexExperiment, loadComplexRemaining, complexTaskInput } from "./complex-evidence.mjs";
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome_unknown"]);
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
 const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
-assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery", "complex"].includes(suite), "Unknown benchmark suite");
-const complex = suite === "complex" ? loadComplexExperiment(undefined,
+assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery", "complex", "complex-remaining"].includes(suite), "Unknown benchmark suite");
+const complexRemaining = suite === "complex-remaining" ? loadComplexRemaining(undefined,
   { requireAuthorization: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE === "1" }) : undefined;
+const complex = complexRemaining ?? (suite === "complex" ? loadComplexExperiment(undefined,
+  { requireAuthorization: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE === "1" }) : undefined);
 const workspaceReplay = suite.startsWith("workspace") || Boolean(complex);
 const activeWorkspacePacket = complex ? complexPacket : workspacePacket;
 const workspaceRemaining = suite === "workspace-remaining" ? loadWorkspaceRemaining() : undefined;
@@ -42,8 +44,9 @@ if (continuation) assert.equal(model, continuation.manifest.model, "Continuation
 const samples = complex?.samples ?? (workspaceReplay ? workspaceDelivery?.samples ?? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases));
 if (workspaceReplay) assert.equal(model, activeWorkspacePacket.model);
 const maximumInvocations = complex?.plan.maximumInvocations ?? (workspaceReplay ? workspaceDelivery?.manifest.maximumNewInvocations ?? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12));
-const maximumRuns = workspaceDelivery ? 3 : samples.length * 4;
-const maximumModelWorkSeconds = complex ? 1800 : 1200;
+const maximumRuns = complexRemaining ? complexRemaining.plan.maximumNewInvocations : workspaceDelivery ? 3 : samples.length * 4;
+const maximumModelWorkSeconds = complexRemaining?.plan.maximumModelWorkSeconds ?? (complex ? 1800 : 1200);
+const syntheticFirstFailure = synthetic && complexRemaining && process.env.CONVENE_WIRE_BENCH_SYNTHETIC_FAIL_FIRST === "1";
 function pendingRubric(rubric: Array<string | Criterion>) {
   return rubric.map((item) => typeof item === "string"
     ? { criterion: item, passed: null, evidence: null }
@@ -91,6 +94,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     ...(workspaceDelivery ? [workspaceDeliveryPath, ...workspaceDelivery.manifest.priorReports.map((source: any) => source.path)] : []),
     ...(complex ? [complexPacketPath, complexPlanPath, "scripts/bench/complex-evidence.mjs",
       "docs/acceptance/qa-070-complex-discussion-comparison.md"] : []),
+    ...(complexRemaining ? [complexRemainingPath, complexRemaining.plan.priorReport.path] : []),
     ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,
       continuation.manifest.priorEvidencePath, "docs/acceptance/qa-068-discussion-continuation.md"] : [])];
   const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
@@ -144,7 +148,9 @@ test("bounded real single-Agent and Discussion task pairs", {
         }) + '\n</agentroom-assessment>'),
         '}})));'
       ].join("\n"));
-      if (workspaceReplay) await writeFile(codex, `#!${process.execPath}\nimport ${JSON.stringify(path.join(root, "scripts/bench/synthetic-evidence-codex.mjs"))};\n`);
+      if (workspaceReplay) await writeFile(codex, `#!${process.execPath}\n` +
+        (syntheticFirstFailure ? 'if (process.argv.some((arg) => arg.includes("receipt-0"))) { for await (const _ of process.stdin) {} console.log(JSON.stringify({type:"turn.failed"})); process.exit(1); }\n' : "") +
+        `await import(${JSON.stringify(path.join(root, "scripts/bench/synthetic-evidence-codex.mjs"))});\n`);
       await chmod(codex, 0o700);
     } else {
       codex = process.env.CONVENE_WIRE_CODEX_BIN ?? (await exec("which", ["codex"])).stdout.trim();
@@ -227,7 +233,7 @@ test("bounded real single-Agent and Discussion task pairs", {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
       const originalIndex = complex ? index : workspaceReplay ? workspacePacket.cases.findIndex((item: any) => item.id === sample.id)
         : reviewing ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
-      const arms = workspaceDelivery ? ["discussion"] : originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"];
+      const arms = complexRemaining ? sample.arms : workspaceDelivery ? ["discussion"] : originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"];
       for (const arm of arms) {
         assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
         const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}${complex ? `-r${sample.repetition}` : ""}` });
@@ -298,17 +304,31 @@ test("bounded real single-Agent and Discussion task pairs", {
           manualRubric: pendingRubric(sample.rubric) });
         await persist();
         console.log(`${sample.id}${complex ? ` r${sample.repetition}` : ""} ${arm}: ${runs.length} Runs, ${Date.now() - startedAt}ms, runtime ${success ? "completed" : "failed"}`);
-        assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
+        if (!complexRemaining) assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
       }
     }
-    assert.equal(scheduled, maximumRuns);
-    assert.equal(replayInvocations + scheduled, maximumInvocations);
-    assert.equal(report.reservedInvocations, maximumInvocations);
+    if (complexRemaining) {
+      assert.ok(scheduled <= maximumRuns && report.reservedInvocations <= maximumInvocations);
+      assert.equal(report.results.length, samples.flatMap((sample: any) => sample.arms).length);
+      if (report.results.some((result) => !result.runtimeSucceeded)) report.error = "Scheduled arm failures retained; no retries";
+    } else {
+      assert.equal(scheduled, maximumRuns);
+      assert.equal(replayInvocations + scheduled, maximumInvocations);
+      assert.equal(report.reservedInvocations, maximumInvocations);
+    }
     assert.equal(Object.hasOwn(report, "tokens"), false);
     assert.equal(Object.hasOwn(report, "cost"), false);
     for (const result of report.results) {
       if (synthetic && workspaceReplay) {
         const invocations = (report as any).evidenceInvocations.slice(Number(result.firstInvocationSlot), Number(result.nextInvocationSlot));
+        if (syntheticFirstFailure && result === report.results[0]) {
+          assert.equal(result.runtimeSucceeded, false);
+          assert.equal(result.finalAnswer, null);
+          assert.equal(invocations.length, 1);
+          assert.equal(invocations[0].runtimeSucceeded, false);
+          assert.equal(invocations[0].reads.length, 0);
+          continue;
+        }
         assert.equal(invocations.length, result.arm === "single_agent" ? 1 : 3);
         for (const invocation of invocations) {
           assert.equal(invocation.runtimeSucceeded, true);
@@ -324,6 +344,11 @@ test("bounded real single-Agent and Discussion task pairs", {
         assert.equal(Object.hasOwn(result.discussionUsage, "tokens"), false);
         assert.equal(Object.hasOwn(result.discussionUsage, "estimatedCostMicros"), false);
       }
+    }
+    if (syntheticFirstFailure) {
+      assert.equal(report.results.filter((result) => !result.runtimeSucceeded).length, 1);
+      assert.equal(report.results.filter((result) => result.runtimeSucceeded).length, 8);
+      assert.equal(report.reservedInvocations, 17);
     }
   } catch (error) {
     report.error = error instanceof Error ? error.message : "Benchmark failed";

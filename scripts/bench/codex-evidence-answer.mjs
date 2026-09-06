@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import { evidenceCodexConfig } from "./evidence-codex-config.mjs";
 const [executable, model, quotaDirectory, maximum, role] = process.argv.slice(2);
-if (!executable || model !== "gpt-5.4-mini" || !["3", "8", "12", "24"].includes(maximum) || !["Baseline", "Solver", "Reviewer"].includes(role)) {
+if (!executable || model !== "gpt-5.4-mini" || !["3", "8", "12", "17", "24"].includes(maximum) || !["Baseline", "Solver", "Reviewer"].includes(role)) {
   throw new Error("Invalid fixed workspace benchmark configuration");
 }
 let instruction = "";

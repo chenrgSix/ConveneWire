@@ -56,6 +56,11 @@ The new packet expands answer space and task complexity without changing
 production routing or finalization. Its non-blind task-result rubric, repeated
 answers and Run/time evidence remain separate from previous benchmarks and
 real customer success. No Discussion removal is authorized by that experiment.
+After QA-070's initial tool-use failure, its separately pinned remainder only
+schedules never-started arms within the original 24-call phase cap. It retains
+arm failures and continues the original schedule without retries; setup and
+observation failures still stop. The failed arm remains unscored/incomplete,
+and production Discussion behavior and tool permissions are unchanged.
 
 ## Purpose
 

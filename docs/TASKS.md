@@ -683,7 +683,7 @@ broad fallbacks intact while making selection and real task outcomes visible.
 
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
-| QA-070 | ACTIVE | Compare complex engineering task results before a Discussion retirement decision | QA-069, ADP-019 | [Frozen design and preflight](acceptance/qa-070-complex-discussion-comparison.md): three new eight-document cases, two repetitions, 24-call cap, unchanged model, equal source access and 20-point rubrics pinned before answers at ebe5e74; 31 benchmark checks including all 24 synthetic Runs, two installed-CLI loopback checks, 397-file docs lint and physical cleanup pass; real execution and detailed result review remain required |
+| QA-070 | ACTIVE | Compare complex engineering task results before a Discussion retirement decision | QA-069, ADP-019 | [Design and retained execution](acceptance/qa-070-complex-discussion-comparison.md): fixed new packet at ebe5e74; initial six calls retain one completed review pair and an unscored incident Discussion failure on codex.list_mcp_resources; initial plan consumed/root removed; separate pinned remainder schedules only nine never-started arms, at most 17 new/23 cumulative calls within cap 24, no retry or rubric/model/tool change; 34 benchmark checks including complete remainder and failure/continue paths, 397-file docs lint and physical cleanup pass; remainder execution and detailed all-result evaluation remain required |
 
 ## Deferred Beyond MVP
 

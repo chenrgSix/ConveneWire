@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "identity": "qa-070-complex-remaining-v1",
+  "packetPath": "docs/acceptance/fixtures/qa-070-complex-cases.json",
+  "packetSha256": "a20930527f86484503764dbd17a79117910a71830c21881e64ce6ef45c63043e",
+  "priorReport": {
+    "path": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+    "sha256": "fa57b0eb46ddbbc1a1c7e5a22088f66a442c6dd9ccd27ec0a4eeb2159f3d5df8"
+  },
+  "priorInvocations": 6,
+  "maximumNewInvocations": 17,
+  "maximumPhaseInvocations": 24,
+  "authorization": "owner-requested-within-original-cap",
+  "retryFailedArms": false,
+  "onArmFailure": "retain-and-continue-never-started-arms",
+  "authorizationBasis": "Continue only original never-started arms requested by Owner, within the already announced 24-call phase cap; no failed arm is retried.",
+  "maximumModelWorkSeconds": 1667
+}

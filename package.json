@@ -53,7 +53,8 @@
     "bench:discussion-workspace-delivery": "CONVENE_WIRE_BENCH_SUITE=workspace-delivery CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts",
     "bench:discussion-complex": "CONVENE_WIRE_BENCH_SUITE=complex CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 2160000 -- tsx --test scripts/bench/discussion-benchmark.test.ts",
     "test:discussion-complex": "node scripts/test/run-with-temp-root.mjs -- npm run test:discussion-complex:inner",
-    "test:discussion-complex:inner": "node --test scripts/bench/complex-evidence.test.mjs && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=complex tsx --test scripts/bench/discussion-benchmark.test.ts"
+    "test:discussion-complex:inner": "node --test scripts/bench/complex-evidence.test.mjs && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=complex tsx --test scripts/bench/discussion-benchmark.test.ts && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=complex-remaining tsx --test scripts/bench/discussion-benchmark.test.ts && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=complex-remaining CONVENE_WIRE_BENCH_SYNTHETIC_FAIL_FIRST=1 tsx --test scripts/bench/discussion-benchmark.test.ts",
+    "bench:discussion-complex-remaining": "CONVENE_WIRE_BENCH_SUITE=complex-remaining CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 2160000 -- tsx --test scripts/bench/discussion-benchmark.test.ts"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.2"

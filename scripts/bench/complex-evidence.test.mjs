@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { createTestResources } from "../test/resources.mjs";
 import { documentsFor, prepareWorkspaces, sha256 } from "./workspace-evidence.mjs";
-import { complexPacket, complexTaskInput, loadComplexExperiment } from "./complex-evidence.mjs";
+import { complexPacket, complexTaskInput, loadComplexExperiment, loadComplexRemaining } from "./complex-evidence.mjs";
 
 test("complex packet freezes six paired attempts, criterion identity and bounded admission", () => {
   const { plan, samples } = loadComplexExperiment();
@@ -90,4 +90,22 @@ test("incident reference preserves clock, watermark and ambiguous-effect distinc
   assert.ok(seconds("10:00:50") < seconds("10:01:02"));
   assert.equal(seconds("10:01:20") - seconds("10:00:00"), 80);
   assert.equal(seconds("10:00:20") - seconds("10:00:15"), 5);
+});
+
+test("remaining complex plan retains failure and excludes every started arm within the original phase cap", () => {
+  const { plan, samples } = loadComplexRemaining();
+  const keys = samples.flatMap((sample) => sample.arms.map((arm) => `${sample.id}:${sample.repetition}:${arm}`));
+  assert.equal(keys.length, 9);
+  assert.equal(new Set(keys).size, 9);
+  assert.equal(keys[0], "incident:1:single_agent");
+  assert.ok(!keys.includes("incident:1:discussion"));
+  assert.ok(!keys.some((key) => key.startsWith("review:1:")));
+  assert.equal(plan.priorInvocations + plan.maximumNewInvocations, 23);
+  assert.equal(plan.maximumModelWorkSeconds, 1667);
+  for (const change of [{ priorInvocations: 0 }, { maximumNewInvocations: 18 },
+    { maximumPhaseInvocations: 25 }, { maximumModelWorkSeconds: 1800 }, { retryFailedArms: true },
+    { priorReport: { ...plan.priorReport, sha256: "0".repeat(64) } }]) {
+    assert.throws(() => loadComplexRemaining({ ...plan, ...change }));
+  }
+  assert.throws(() => loadComplexRemaining({ ...plan, authorization: "consumed" }, { requireAuthorization: true }));
 });

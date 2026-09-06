@@ -100,3 +100,44 @@ claim that 13 minutes is globally optimal. The fixed rubric accepts any
 auditable feasible job schedule within 14 minutes. Backlog is 4800 jobs, peak
 queue delay about 26.667 seconds and drain time 120 seconds. These references
 remain outside model inputs, together with all full/partial-credit criteria.
+
+## Initial real execution and unstarted remainder
+
+The initial batch used six invocations at clean source `20bfdab` and stopped at
+its first failure, as declared. The [raw report](evidence/qa-070-complex-initial-2026-09-06.json)
+has SHA-256 `fa57b0eb46ddbbc1a1c7e5a22088f66a442c6dd9ccd27ec0a4eeb2159f3d5df8`.
+Review repetition 1 completed both arms. Incident repetition 1's Solver
+reported `codex.list_mcp_resources`, which the fixed-reader experiment does not
+permit; it read no assigned source. Reviewer completed four reads, but no
+Finalizer was created. The failed Discussion has no final answer and is
+unscored. Its completed contribution is not substituted for a final. This
+is observed tool-use failure, not evidence that Discussion produced a wrong
+final answer or that a specific production defect has been established.
+The owned root `convene-wire-test-run-urtkkt` is physically absent.
+
+The initial plan is consumed. The Owner's request to test the fixed complex
+tasks still covers the never-started arms within the announced 24-call cap.
+The [remainder plan](fixtures/qa-070-complex-remaining.json) pins the initial
+report and excludes every started `(case, repetition, arm)`, including the
+failed arm. It contains nine never-started arms, at most 17 new calls and 23
+including the first six. No retry, new task, new model, source, rubric or
+tool permission is added. The remaining model-work deadline is 1667 seconds,
+deducting the rounded-up 132.480 seconds of initial arm elapsed time from the
+original 1800-second allowance. It does not reset the phase budget.
+
+Before resuming, failure handling for this separate remainder is made explicit:
+retain a failed scheduled arm and proceed to the next never-started arm, without
+retrying the failure. Setup, deadline, quota or observation failures still stop
+execution. This changes batch scheduling only; tool rejection and answer
+classification remain unchanged. It prevents one failed call from discarding
+the rest of the already requested comparison. A synthetic first-arm failure
+must prove eight later arms still run exactly once. A completed remainder can
+provide at most five complete pairs and one unpaired Single answer; it cannot
+retroactively make this a six-complete-pair study. Final reporting must include
+the missing Discussion and all failures, rather than selecting only successes.
+
+The remainder passed all 34 benchmark checks, including a complete 17-Run
+synthetic remainder and a first-arm failure followed by eight exactly-once
+successful arms. The root `convene-wire-test-run-fXyHQJ` is physically absent;
+397-file documentation lint and whitespace checks pass. Tool permissions and
+installed-CLI configuration are unchanged from the two passing loopback checks.

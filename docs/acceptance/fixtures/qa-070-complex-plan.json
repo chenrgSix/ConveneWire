@@ -4,7 +4,11 @@
   "packetPath": "docs/acceptance/fixtures/qa-070-complex-cases.json",
   "packetSha256": "a20930527f86484503764dbd17a79117910a71830c21881e64ce6ef45c63043e",
   "maximumInvocations": 24,
-  "authorization": "owner-requested",
+  "authorization": "consumed",
   "requestedOn": "2026-09-06",
-  "authorizationBasis": "Owner requested harder tasks, another test and detailed task-result comparison on 2026-09-06."
+  "authorizationBasis": "Owner requested harder tasks, another test and detailed task-result comparison on 2026-09-06.",
+  "consumedBy": {
+    "path": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+    "sha256": "fa57b0eb46ddbbc1a1c7e5a22088f66a442c6dd9ccd27ec0a4eeb2159f3d5df8"
+  }
 }
