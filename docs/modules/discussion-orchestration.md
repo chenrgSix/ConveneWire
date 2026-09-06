@@ -19,69 +19,24 @@ record are retained in
 
 ## Maintenance boundary
 
-[ADR-0045](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md)
-freezes v1 feature expansion while retaining reliability fixes and existing
-explicit controls. Everyday use starts with Single Agent as documented advice;
-no automatic startup gate or routing default changes. QA-069 separately checks
-historical workspace evidence retrieval with a fair union-access baseline.
-Its Owner-authorized continuation allows 12 new model invocations after the
-retained startup failure, at most 13 across the phase; this does not change
-production Discussion budgets or routing. Benchmark Runtime completion and
-source-read coverage are separate observations: a Finalizer using an accepted
-transcript must not become a failed Run solely for not rereading source files.
-The Owner subsequently approved three calls for only the missing delivery
-Discussion, at most 16 across QA-069, reusing its completed Single Agent baseline.
-This does not change the task packet, acceptance criteria or production policy.
-Benchmark denied-tool diagnostics retain only bounded kind/server/tool identity
-names, never arguments, output or executable text; they do not grant tools or
-change failure classification. The final Owner-approved QA-069 replacement plan
-completed the missing Discussion with three calls, using all 18 authorized phase
-invocations. Its manifest is now consumed; real delivery startup rejects before
-starting Runtime resources. The approval grants no additional retry.
+[ADR-0045](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md#post-comparison-adoption)
+freezes v1 feature expansion. Maintain correctness, security, recovery,
+final-answer evidence, explicit controls and actual Run lifecycle. Recommend
+Single Agent first for everyday tasks with explicit acceptance criteria;
+collaboration is an explicit choice for independent evidence or responsibilities.
+This does not change routing, UI defaults or authorization.
 
-[Completed QA-069 evidence](../acceptance/qa-069-workspace-evidence-replay.md)
-retains all three historical pairs and failed attempts. Single Agent covers
-4/12 rubric criteria with 3 Runs and 78.068 seconds; Discussion covers 2/12 with
-9 Runs and 134.604 seconds. These are non-blind replay observations, not user
-success rates. Complete contributor transcripts did not prevent Finalizers
-from dropping available evidence. Maintain Single Agent first guidance and
-explicit collaboration controls; no model, prompt or routing tuning against
-this scored packet is authorized by experiment completion.
+The [usage guide](../discussion-usage-guide.md) owns practical task selection
+and acceptance. [QA-069](../acceptance/qa-069-workspace-evidence-replay.md) and
+[QA-070](../acceptance/qa-070-complex-discussion-results.md) retain comparisons,
+raw evidence and limitations. They do not establish general quality gains;
+source retrieval, transcript delivery and correct finalization are distinct.
+Finalizers may use accepted contributions without rereading every source.
 
-[QA-070](../acceptance/qa-070-complex-discussion-comparison.md) is the Owner's
-subsequent request for harder tasks and detailed result comparison before a
-retirement decision. It uses new constructed evidence, three cases repeated
-twice, at most 24 calls, the same requested model and equal total source access.
-The new packet expands answer space and task complexity without changing
-production routing or finalization. Its non-blind task-result rubric, repeated
-answers and Run/time evidence remain separate from previous benchmarks and
-real customer success. No Discussion removal is authorized by that experiment.
-After QA-070's initial tool-use failure, its separately pinned remainder only
-schedules never-started arms within the original 24-call phase cap. It retains
-arm failures and continues the original schedule without retries; setup and
-observation failures still stop. The failed arm remains unscored/incomplete,
-and production Discussion behavior and tool permissions are unchanged.
-
-The [completed complex-task evaluation](../acceptance/qa-070-complex-discussion-results.md)
-retains all 12 attempted arms, 22 invocations/Runs, nine final answers and three
-tool-rejected arms without retries. Three complete pairs score 45/60 for Single
-and 22/60 for Discussion, using three/nine Runs and 140.228/202.479 seconds;
-all nine answers fail critical task acceptance. Both manifests are consumed.
-The Finalizer's restricted direct source access and dependence on potentially
-incomplete contributions are treatment differences, even though all four
-completed Finalizers received both entire contributions. These results do not
-isolate orchestration from information allocation/compression, establish real
-user success rates or authorize retirement. Preserve the maintenance boundary
-and Single-first advice; task complexity alone does not establish a benefit.
-
-The Owner subsequently adopted this recommendation under
-[ADR-0045's post-comparison decision](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md#post-comparison-adoption).
-Everyday work uses explicit acceptance criteria with Single Agent as the
-recommended starting point. Maintain demonstrated reliability and evidence
-defects; retain explicit collaboration for distinct inputs or responsibilities.
 New expansion or value experiments need independent task evidence and a bounded
-plan. Adoption does not reopen consumed experiments, alter routing defaults,
-collect new telemetry or retire existing workflows.
+plan. Consumed experiments stay closed. Existing collaboration workflows and
+data remain; retirement is a separate product decision. ADR-0043 continues to
+exclude token and monetary accounting. TASKS.md alone tracks delivery.
 
 ## Purpose
 

@@ -273,14 +273,12 @@ A 只安排了 4–7 共 3 分钟，而要求为 6 分钟。因此“作业 12 �
 
 ## 证据包与后续决策
 
-- [原始最终答案可读导出](evidence/qa-070-complex-answers-2026-09-06.txt)：
-  九份答案和三处无最终答案标记；仅移除行尾空格以符合仓库格式。来源索引和
-  答案 SHA-256 对应原始 JSON 中完整未改写的模型文本。
 - [逐项评分与核验 JSON](evidence/qa-070-complex-review-2026-09-06.json)：
   每项冻结标准、分数、中文理由、关键验收、来源和上下文核验。
 - [初批完整原报告](evidence/qa-070-complex-initial-2026-09-06.json) 与
   [续批完整原报告](evidence/qa-070-complex-remaining-2026-09-06.json)：
-  原始贡献、最终答案、指令、读取、工具诊断和 Run 状态；原采集评分空值没有回填改写。
+  每个 `results` 项的 `finalAnswer` 是完整原始最终答案，失败为 `null`；同时
+  保留贡献、指令、读取、工具诊断和 Run 状态。原采集评分空值没有回填改写。
 - [实验设计与工程验证](qa-070-complex-discussion-comparison.md)：
   原定边界、失败续行调整、授权消耗、离线检查与清理证据。
 

@@ -1,15 +1,12 @@
 # QA-069 Historical workspace evidence replay
 
-## Current result
+## Result
 
-All three historical pairs are now available. The last Owner-approved three
-calls completed on 2026-09-06 at source `0fdeaa2`, consuming the final cap of
-18 phase invocations. The [raw delivery report](evidence/qa-069-workspace-delivery-completed-2026-09-06.json)
-and [complete review](evidence/qa-069-workspace-completed-review-2026-09-06.json)
-preserve the new final answer, all five raw reports and both prior reviews.
-Earlier incomplete/pending statements below describe their historical
-checkpoints; they are not the current result. TASKS.md remains the sole delivery
-register. No further real invocation is authorized by any exercised plan.
+All three historical pairs were completed on 2026-09-06. The final delivery
+ran at source `0fdeaa2`, consuming the phase's final 18-call authorization.
+The [complete review](evidence/qa-069-workspace-completed-review-2026-09-06.json)
+pins all five raw reports and both prior reviews. No exercised plan authorizes
+another real invocation; the current delivery manifest is consumed.
 
 | Case | Single criteria | Discussion criteria | Single Runs / seconds | Discussion Runs / seconds |
 | --- | --- | --- | --- | --- |
@@ -18,516 +15,89 @@ register. No further real invocation is authorized by any exercised plan.
 | Windows | 1/4 | 0/4 | 1 / 26.632 | 3 / 45.298 |
 | Complete-pair totals | 4/12 | 2/12 | 3 / 78.068 | 9 / 134.604 |
 
-All six delivered final answers were reviewed against unchanged criteria; none
-covers all four items. Discussion uses three times the Runs and about 1.72
-times the summed arm elapsed time in these completed pairs. The three failed
-attempts add 6 Runs and 89.551 seconds separately. Across the phase there are
-18 CLI invocations and 18 actual Runs: 15 completed and 3 failed. Total arm
-elapsed time is 302.223 seconds, not phase wall-clock time. Do not pool this
-historical replay with QA-067/068 or infer user success/rework rates.
+All six finals were reviewed; none covers all four criteria. Discussion uses
+three times the Runs and about 1.72 times the summed arm elapsed time in the
+completed pairs. Three failed attempts add six Runs and 89.551 seconds
+separately. The phase totals 18 invocations/Runs, 15 completed and three failed,
+and 302.223 seconds of arm elapsed time, not phase wall time. Failed attempts
+are unscored; do not pool this replay with other packets or infer user success.
 
-Completing this bounded experiment does not make its answers pass quality
-acceptance. The result supports keeping the v1 maintenance freeze and Single
-Agent first guidance, with explicit collaboration for independent evidence or
-responsibility needs. It does not justify additional routing or tuning against
-this scored packet. See the [updated usage guide](../discussion-usage-guide.md).
-
-## Authority and frozen acceptance
+## Frozen scope
 
 [ADR-0045](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md)
-owns the maintenance freeze and advice-only usage boundary. TASKS.md alone
-tracks delivery. The Owner accepted the next phase; absent an in-flight task,
-this phase uses three documented historical incidents with pre-fix source.
-
-The fixed packet is `fixtures/qa-069-workspace-cases.json`. Each source excerpt
-retains a commit, path, line range, full-source digest and excerpt digest.
-The packet includes prompts, disjoint contributor document assignments and
-four criteria per case. Rubrics stay outside the disposable reader workspaces.
-Single Agent gets the exact union, the same requested deliverables and review
-checklist. The Reviewer finalizes using its own documents and the accepted
-contribution transcript. Arm order alternates; no corrected source or known
-rubric answer is supplied to either arm.
-
-The cases concern Bridge assessment delivery, cancellation-test timing and
-Windows launcher discovery. They are diagnostic replay tasks using code,
-schema and recorded operational observations, not live incident repairs or
-proof of customer productivity. Separate local folders simulate evidence
-ownership; all execution occurs on one host. Earlier QA records stay immutable.
-
-## Bounded execution
-
-`npm run bench:discussion-workspace` must start from committed clean source
-after `npm run test:discussion-workspace` and the explicit local
-`npm run test:discussion-codex-bootstrap` gate pass. It uses an isolated actual
-Server/Bridge and existing signed-in Codex CLI, requested gpt-5.4-mini, low
-effort. Three pairs allow exactly 12 model invocations: three Single Agent
-Runs and nine Discussion Runs. An atomic quota, 300-second process limit and
-20-minute model-work deadline bound execution. Stop later attempts at the first
-runtime failure. No retries, release, production data or token/cost accounting.
-
-The only configured MCP tool is `evidence.read_evidence`, a stdio reader for
-fixed IDs. Execution revision v2 permits its metadata discovery via tool search. Each process has a maximum of eight reads, and records ID/digest receipts.
-Single Agent may read all documents; Solver and Reviewer each get only their
-assigned subset. No path, URL, shell, write or model-selected role is accepted.
-Codex settings follow the official [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
-and [MCP guide](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
-Read-only sandboxing alone is not a filesystem-read allowlist; the restricted
-tool and disabled other tools provide the intended evidence boundary.
-
-## Required evidence
-
-Validate source pins against Git, the exact access union, rejected foreign IDs,
-read limits, adapter failure/unknown-tool behavior and quota exhaustion without
-a provider. A synthetic CLI must traverse the real MCP reader and actual
-Server/Bridge flow without provider credentials. Retain exact instructions,
-source/input hashes, reader receipts, answers, completed Finalizer identity,
-actual Run states, elapsed time and failures. Grade each answer against the
-frozen four-item rubric, labeled as non-blind Codex task-agent review.
-
-Record which cited facts contributors independently supplied, whether the
-Finalizer added unsupported claims, and remaining requested-item omissions.
-Read counts are retrieval evidence, not quality. Real user rework remains
-unmeasured. Runtime completion, rubric coverage and a deployed repair are
-separate states. Completion requires three paired results, reviewed evidence,
-updated guidance, relevant checks and physical temporary-root cleanup. A
-failed invocation remains incomplete rather than being promoted to success.
-
-## Implementation preflight
-
-The fixed packet contains 13 exact Git excerpts across three incidents. The
-reader persists its eight-read quota across MCP restarts; rejected calls also
-consume a slot. Model-selected paths, foreign documents and forged role fields
-are rejected without retaining those raw arguments. The separate evidence
-adapter preserves the older closed-input adapter's prohibition on all tools.
-An answer is emitted only after successful CLI completion and accepted tool
-behavior. Revision v3 retains zero-read answers and records source coverage
-separately; reading all assigned sources remains a reviewed coverage gate.
-
-The first offline pass verified four focused checks and all 12 synthetic Runs
-through actual MCP, Server and Bridge processes. The owned root
-`convene-wire-test-run-JvXAyw` was physically removed. Corpus excerpts were then
-trimmed to remove unrelated trailing declarations; the final committed packet
-and full legacy/review/continuation regression are verified before live calls.
-
-Final preflight passed all 19 benchmark checks, including unchanged legacy,
-review and continuation suites plus the workspace reader checks and complete
-12-Run synthetic traversal. All 396 maintained Markdown files and whitespace
-checks passed. The final preflight root `convene-wire-test-run-SjRCgj` is absent.
-No provider was invoked during either preflight.
-
-## External execution authorization boundary
-
-Before explicit Owner consent, no QA-069 real model invocation had started.
-Automatic approval review rejected
-`npm run bench:discussion-workspace` before process creation, then rejected a
-second review after public-source verification. No benchmark process, Run,
-model answer or new execution report was created by either rejected request.
-
-Ten of the eleven distinct source files are byte-identical to unauthenticated
-GitHub raw downloads from `chenrgSix/ConveneWire`: the original `1f519bd` and
-`d66a004` commits cover six files; public `c583e1f` covers the remaining parser,
-wire schema, generated Go types and QA-059 document. SHA-256 equality was checked
-against every full-source digest in the frozen packet. A 404 at a local commit
-was not interpreted as proof that its file content was private.
-
-The remaining file is
-[`qa-068-finalizer-assessment-failure-2026-09-06.json`](evidence/qa-068-finalizer-assessment-failure-2026-09-06.json).
-Its complete field set was inspected: isolated-benchmark Run/trace/message IDs,
-status timestamps, optional assessment and a previously generated selector
-answer. It contains no credential, Owner identity, local path or customer-input
-field. Nevertheless, automatic approval review requires explicit Owner consent
-for this exact unpublished payload to the existing signed-in OpenAI Codex
-service; the assistant's provenance assessment cannot supply that consent.
-
-The requested authorization covers this record, the public source excerpts,
-necessary task instructions and generated contribution transcript, using the
-existing requested gpt-5.4-mini configuration and unchanged 12-invocation cap.
-The packet and rubric have not been replaced to evade the rejection. The
-Owner subsequently replied “允许” to this exact request on 2026-09-06, explicitly
-authorizing those materials to the existing signed-in OpenAI Codex service for
-at most 12 model invocations. This resolves the external-execution blocker.
-The fixed packet, model, no-retry rule and acceptance criteria remain unchanged;
-real results still require execution and review.
-
-## First real attempt and offline diagnosis
-
-The authorized invocation at source `ed7508f` stopped on its first arm. The
-[unaltered report](evidence/qa-069-workspace-startup-failure-2026-09-06.json)
-records one reserved CLI invocation, one failed Single Agent Run, 18.971 seconds
-of arm elapsed time, zero reader receipts and no final answer. Five arms were unstarted; no quality
-criteria can be scored. The owned root `convene-wire-test-run-5tRSEl` was removed.
-The original adapter discarded provider diagnostics, so the exact original
-failure chain cannot be reconstructed or confidently attributed to one cause.
-
-An auth-free loopback provider with a disposable Codex home then exercised the
-actual installed CLI 0.153.3 without an external model. It reproduced two
-adapter assumptions that the synthetic CLI had missed: `skip_host_skill_discovery`
-emits an `item.completed` error-shaped startup warning, and MCP tools are
-available through client tool search with a namespace-qualified function call.
-The original whitelist rejects the warning, while the original task instruction
-forbids the required metadata discovery step. These are demonstrated preflight
-defects, not proof that they explain every part of the first provider failure.
-
-The repair explicitly suppresses that known startup warning, permits only
-metadata discovery of the fixed reader, retains compact diagnostic categories
-without provider text, and adds a real-CLI loopback discovery/read/final-answer
-gate. Only the fixed MCP reader is configured. Codex still advertises some native
-scaffolding; unapproved reported tool calls invalidate the invocation, and
-read-only sandboxing plus disabled shell/apps/plugins preserve the execution
-boundary. The test must not claim that no native tool was advertised.
-
-This is execution revision v2; task source/rubric bytes stay unchanged and its
-new instruction hash is retained separately. No real retry is authorized by
-this repair. The original 12-invocation phase has used one; completing three
-fresh pairs would need 12 more, a total of 13 including the retained failure.
-The Owner explicitly replied “允许” to the request to raise the phase cap from
-12 to 13 on 2026-09-06. The continuation is therefore authorized for at most
-12 new invocations, with the original failed invocation retained separately.
-It starts from committed execution revision v2 and stops at its first runtime
-failure; no further retry or increase is included. Material-export consent
-continues to cover the same fixed sources and necessary task context.
-
-The repair passed all 19 benchmark checks and two additional real-CLI loopback
-checks. The latter reproduce error-shaped startup-warning rejection even when
-the actual read succeeds, and verify the repaired configuration delivers the
-answer through deferred discovery and a namespace-qualified MCP call. Both use
-synthetic source, an empty temporary Codex home and a loopback-only provider;
-all six fixture HTTP requests had no Authorization header and called no model.
-These checks prove CLI/reader integration, not compatibility with the remote
-provider or task-answer quality. The two paths use the same exported
-configuration as the real benchmark adapter.
-
-All 396 maintained Markdown files and whitespace checks pass. Physical cleanup
-was verified for the real attempt, the CLI-bootstrap root
-`convene-wire-test-run-G5eKZ1` and the full regression root
-`convene-wire-test-run-XmraYK`. The retained report is byte-identical to the
-original ignored report; its 16 source hashes match Git at `ed7508f`, its task
-prompt hash matches, and all four rubric decisions remain unscored. The report
-SHA-256 is `e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c`.
-No external model calls were made during that offline bootstrap repair.
-
-## Authorized continuation
-
-The continuation uses `npm run bench:discussion-workspace`, whose atomic quota
-still permits at most 12 new invocations. The total authorized phase limit is
-13 including the immutable first failure. All three pairs start afresh because
-the prior batch produced no completed arm. The three case prompts, source
-excerpts and rubrics are unchanged; execution revision v2's metadata-discovery
-instruction and startup configuration are separately identified in the report.
-The 21 passing preflight checks remain applicable to unchanged implementation.
-
-## Evidence-read gate failure and unstarted cases
-
-The v2 batch at `1652cb8` used four invocations. Single Agent completed after
-reading all five delivery documents in 27.081 seconds, but incorrectly called
-`recommendation: stop` schema-valid. Both contributors completed with their
-respective two and three source reads. The Finalizer exited zero with an agent
-message and no new reads; the adapter then discarded that answer solely because
-of its `no_evidence_reads` gate. The product recorded a failed finalization and
-no output Message. The [unaltered v2 report](evidence/qa-069-workspace-read-gate-failure-2026-09-06.json)
-retains the 46.704-second Discussion attempt and its diagnostics. The discarded
-answer is unavailable, so contributions cannot substitute for its final answer.
-This is a benchmark-induced delivery failure, not evidence of a production
-Finalizer crash. The temporary root `convene-wire-test-run-d3Hbqe` is absent.
-
-Execution revision v3 separates CLI/Run completion from document-read coverage.
-A valid answer after a zero exit is retained even if the model used only the
-supplied transcript; missing source reads are explicitly reported for quality
-review. All source-read receipts and missing-document IDs remain visible.
-Unauthorized tool calls, malformed CLI events, timeout and provider failures
-still invalidate an invocation. Case prompts, source/rubric bytes and requested
-model remain unchanged; neither earlier failure is rewritten as completed.
-
-Within the existing Owner-authorized cap, one original plus four v2 invocations
-leave eight. A pinned [remaining-case manifest](fixtures/qa-069-workspace-remaining.json)
-selects only the two never-started cases, preserving their original arm order.
-`npm run bench:discussion-workspace-remaining` is capped at eight new calls,
-13 across the phase, with first-failure stop. It does not retry the failed
-delivery Discussion. That case's missing final answer keeps the full
-three-complete-pair acceptance gate open; completing the remaining two cases
-must not be presented as completion of that gate.
-
-Revision v3 passed 22 benchmark checks, including the zero-read Finalizer
-regression, both quota sizes, tampered continuation/source rejection and the
-complete 12- and eight-invocation synthetic workspace flows. Both installed-CLI
-loopback checks still pass, without an external provider. All 396 maintained
-Markdown files and whitespace checks pass. The roots
-`convene-wire-test-run-rQtsyN` and `convene-wire-test-run-FJmZbK` are absent. The
-v2 failure report is byte-identical to its original; all 16 source hashes match
-Git at `1652cb8`. The report digest and original packet digest are pinned in
-the remaining-case manifest.
-
-## Reviewed remainder results
-
-The [unaltered remainder report](evidence/qa-069-workspace-remaining-2026-09-06.json)
-records eight successful Runs from clean source `ff541be`. Its 20 source hashes
-match that commit, four task-input hashes match the stored inputs, and both
-final answers bind completed finalization Turns to output Messages. The owned
-root `convene-wire-test-run-D4tZX6` is physically absent. The report SHA-256 is
-`c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80`.
-
-The [separate rubric review](evidence/qa-069-workspace-review-2026-09-06.json)
-pins all three original reports and every scored final answer. It changes none
-of their bytes or original null rubric decisions. Review is direct, non-blind
-Codex task-agent review without another provider call or independent human
-review. All clauses of a criterion must be covered; partial coverage is recorded
-in the explanation, not rounded up.
-
-| Historical case | Single Agent | Discussion | Single Run/time | Discussion Run/time |
-| --- | --- | --- | --- | --- |
-| Cancellation timeout | 2/4 | 2/4 | 1 / 24.355 s | 3 / 46.347 s |
-| Windows discovery | 1/4 | 0/4 | 1 / 26.632 s | 3 / 45.298 s |
-| Complete-pair total | 3/8 | 2/8 | 2 / 50.987 s | 6 / 91.645 s |
-
-The delivery Single Agent answer is separately 1/4 in 27.081 seconds; its
-Discussion answer is unavailable, so it is not part of the paired totals.
-Across all attempts the approved 13 invocations are exhausted: 13 actual Runs,
-11 completed and two failed. The two failed arms used four Runs and 65.675
-seconds, including completed contributors inside the failed Discussion. All
-seven arm attempts total 235.388 seconds; this is summed arm elapsed time, not
-end-to-end phase wall time. No failed answer is promoted to success.
-
-Both cancellation answers find the whole-test budget problem but omit the
-explicit five-second cancel-to-abort limit, bounded settlement/shutdown and
-protection against the provider's 15-second deadline falsely passing the
-cancellation assertion. Solver independently supplied test/policy facts and
-shutdown semantics; Reviewer supplied route wiring and same-source CI facts.
-The Finalizer combined some facts but dropped Solver's shutdown outcome.
-
-The Windows baseline locates the three execute-bit gates but misses the
-`.exe`-only known-directory fallback and the full extension/negative-test
-policy. Discussion's Reviewer supplied independent enrollment/Console evidence.
-The Finalizer then falsely claimed those source labels were not evidenced in
-the transcript and discarded those facts. Its stored Run instruction includes
-the full Reviewer contribution; Bridge's prompt projection appends that
-instruction unchanged. This supports a fact-use/correction failure, not a
-missing-contribution delivery diagnosis. Both Finalizers made zero new source
-reads; the six other invocations read every assigned document. The zero-read
-answers are retained with explicit missing-document coverage.
-
-Central Run instructions and the adapter's projected-stdin hashes are different
-observations: Bridge adds normal Room/task context before the unchanged current
-request. Full projected stdin was not retained, so the review does not claim
-byte equality between those two fields. Some contributor Markdown links invent
-filesystem targets; fixed source IDs and hash receipts are the verifiable
-references. Neither a citation nor a successful read proves correct reasoning.
-
-These two complete historical pairs show no Discussion benefit: coverage is
-lower and summed arm time is about 1.80 times the baseline. Five available final
-answers cover fewer than all four criteria. This remains one requested model,
-non-blind review, no repeated trials and no provider-attested model identity.
-It does not establish general superiority, real task success, user rework or
-performance guarantees. Keep the Single Agent first guidance and Discussion v1
-maintenance freeze; do not tune routing or prompts against this scored packet.
-
-The frozen three-complete-pair gate remains open. A fresh delivery Discussion
-would need three calls (two contributors and a Finalizer), reusing the completed
-Single baseline. That would raise the phase total from 13 to 16. At that checkpoint no increase or extra model execution was authorized;
-the subsequent explicit authorization is recorded below.
-
-## Prepared missing-pair completion
-
-The [delivery-only manifest](fixtures/qa-069-workspace-delivery.json) was prepared as a
-proposal before the explicit authorization below. It pins all three existing reports, their 13
-invocations and the already completed delivery Single Agent answer.
-`npm run bench:discussion-workspace-delivery` would start only a fresh delivery
-Discussion, with two contributors and one Finalizer, an atomic three-call quota,
-300 seconds per process and the existing 20-minute model-work bound. It keeps
-the v3 task instruction, source packet, requested model and rubric unchanged;
-no earlier evidence is replaced and no further retry is included.
-
-The command is prepared and tested without a provider. Real invocation requires
-Owner approval to raise the cumulative phase cap from 13 to 16. Existing consent
-for the same source material and generated task context persists; no new data
-export scope is requested. The synthetic full regression also exercises this
-three-Run Discussion and rejects changed pins, baseline selection or call caps.
-
-Preparation passed all 24 benchmark checks and two installed-CLI loopback
-checks without a provider, including the exact baseline-input equality and
-complete three-Run synthetic Discussion. The roots
-`convene-wire-test-run-m6U32x` and `convene-wire-test-run-npMhNR` are absent.
-All 396 maintained Markdown files and whitespace checks pass. No further external invocations were made during this preparation.
-
-## Explicit delivery completion authorization
-
-On 2026-09-06 the Owner replied “允许” to the exact request to raise the phase
-cap from 13 to 16 and use three new calls to complete the missing delivery
-Discussion. The fixed manifest now records that approval. Execute only
-`npm run bench:discussion-workspace-delivery`, reusing the pinned completed
-Single Agent baseline; the same task/source/rubric bytes, model and material
-export consent apply. The 24 benchmark and two installed-CLI offline checks
-passed for the unchanged implementation. No further retry or cap increase is
-included. Completion still requires a delivered final answer and direct rubric
-review, updated authority documents and physical temporary-root cleanup.
-
-## Delivery-only tool rejection
-
-The authorized execution at `0f16b52` used two calls and stopped before creating
-a Finalizer Run. The [unaltered report](evidence/qa-069-workspace-tool-rejection-2026-09-06.json)
-records a failed Solver and completed Reviewer in 23.876 seconds. Solver's CLI
-exited zero but reported an unapproved tool call and no accepted source reads;
-Reviewer read its three assigned documents and returned a contribution. That
-contribution is not a final answer and cannot complete the pair.
-
-The old diagnostics retain only `unapproved_tool` and item categories, not the
-server/tool identity. They cannot distinguish an incorrect tool choice from a
-CLI identity/metadata compatibility issue. No particular tool, executed side
-effect, data export or production failure is inferred. Offline hardening now
-retains at most eight distinct denied tool identities with bounded syntax-only
-kind/server/tool names, never arguments, command text, outputs or raw diagnostics.
-Malformed names are omitted. The allowed reader and failure decision stay
-unchanged; this is diagnostic hardening, not proof of a repaired failure cause.
-
-All 21 source hashes match the committed source, the task input equals the
-pinned baseline byte-for-byte, and the report is an exact copy. The temporary
-root `convene-wire-test-run-WBOBCa` is absent. Its digest is
-`79b6a0a8dab6bfda9ca1984024645ae1c82bb0771ea59d6493b088a8dbc34bfe`.
-
-The phase has now used 15 of the authorized 16 calls, with 15 actual Runs
-(12 completed, three failed). The three failed arms used six Runs and 89.551
-seconds. Existing paired scores remain Single Agent 3/8 and Discussion 2/8;
-the delivery Single is still unpaired. The third complete-pair gate remains
-open. The one unused invocation cannot create a fresh three-Run Discussion,
-and the first-failure/no-further-retry rule still applies. No additional real
-invocation is made or authorized by this diagnostic repair.
-
-The [latest attempt audit](evidence/qa-069-workspace-tool-rejection-review-2026-09-06.json)
-pins the previous review and this failed raw report, records the 15-call total,
-and leaves all prior scores unchanged. The recommended next decision is to
-pause further real retries and retain the incomplete three-pair gate. This
-recommendation does not silently change the acceptance criteria or complete
-the task.
-
-The diagnostic change passed eight focused packet/adapter checks, all three
-synthetic workspace flows (12, eight and three invocations), and both
-installed-CLI loopback checks: 13 relevant checks in total, without another
-external model. Coverage includes duplicate/bounded denied identities, malformed
-names, excluded arguments/outputs and unchanged rejection behavior. All 396
-maintained Markdown files and whitespace checks pass. The offline roots
-`convene-wire-test-run-00BvH1` and `convene-wire-test-run-Cai2zx` are absent.
-The historical delivery-only authorization has been exercised and stopped; its
-old command/manifest must not be rerun as if three calls still remained.
-
-## Pending plan to fulfill the unchanged third-pair gate
-
-The goal remains three complete pairs. The previous goal turn made concrete
-progress by retaining the failed attempt and improving diagnostics; it did not
-complete that gate. Rechecking the current records finds 15 spent calls, a
-16-call approved maximum and no authorized retry. The failed process is terminal
-and its owned root is absent; this is not a wait for running work.
-
-A [new delivery-only plan](fixtures/qa-069-workspace-delivery-retry.json) pins
-all four prior reports, including the latest two-call failure, and reuses the
-unchanged successful Single Agent baseline. It proposes exactly three new
-calls, at most 18 across the phase. The old delivery manifest and every raw
-report/review remain unchanged. The current delivery command reads the new
-plan and refuses real execution at startup while its authorization is pending,
-before creating Server/Bridge, quota or provider processes. Synthetic tests
-may validate it without a model; validation is not Owner authorization.
-
-This is execution revision v4: the denied-tool diagnostics and admission guard
-are recorded separately from the unchanged task text, sources, rubric, model,
-reader whitelist, three-Run Discussion and first-failure stop. It does not
-claim the earlier tool-choice/identity failure has been reproduced or repaired.
-The limit stays three new calls with 300 seconds per process and 20 minutes
-of model work. No further retry is included.
-
-Real execution requires explicit approval of this new plan and increasing the
-phase limit from 16 to 18. Material-export consent for the same packet and
-necessary task context remains valid. Until that decision, the third pair and
-QA-069 remain incomplete; neither recommendation nor offline validation
-changes their acceptance standard.
-
-The replacement plan passed nine focused checks and all three synthetic
-workspace flows: 12 regression checks, including source/history tampering,
-duplicate or missing prior reports, baseline equality, pending admission and
-the complete three-Run delivery Discussion. A separate real-entrypoint check
-with no provider executable on the child PATH confirmed pending authorization
-rejects before any report/Runtime creation. No external model was invoked.
-The roots `convene-wire-test-run-unflW8` and `convene-wire-test-run-5rpEZ0` are
-physically absent; all 396 maintained Markdown files and whitespace checks pass.
-
-## Explicit v4 authorization
-
-The Owner subsequently said “再给你三次” on 2026-09-06, explicitly approving
-the prepared v4 plan for at most three new calls and 18 across the phase. The
-manifest records this approval; the command may now pass real admission. Only
-the delivery Discussion is scheduled, with the unchanged completed Single
-Agent baseline, sources, task input, rubric, model and material-export consent.
-The 12 passing replacement-plan checks cover the unchanged implementation.
-Stop on the first failed attempt; no further calls or retry beyond this plan
-are authorized. Preserve the outcome and audit completion against the original
-three-pair gate.
-
-## Final delivery outcome and evidence review
-
-The approved v4 execution used exactly three new invocations. Both contributions
-and the Reviewer Finalizer completed; the new raw report has SHA-256
-`df95349fb78b41aac922ea1123c27d520d2644cc32b6d6d168f9534258ee5bad`.
-Its clean source is `0fdeaa24ad4f82d5e75db3186cb218fd0bd2b46e`, packet identity
-is `qa-069-historical-workspaces-v1`, and execution identity is
-`qa-069-evidence-cli-v4`. Requested model and effort remain gpt-5.4-mini/low;
-the observed provider model is unavailable. No additional model calls were
-used for grading. The consumed manifest pins this exact report and no longer
-passes real startup admission.
-
-The completed Finalizer is Run `run_VrvhdssEnQJynJbPxj51Dg`, with output Message
-`msg_UtDaGk2eZZqlIwt4Ci4gSA`. The pinned live answer helper requires the completed
-finalization Turn, matching completed Run/Agent and exact output Message before
-retaining a final answer. The audit checks the retained fields and final-answer
-equality; it does not claim a fresh database join after the temporary database
-was removed. The complete review reuses the prior seven reviewed rows verbatim,
-adds the unscored tool-rejection attempt, and grades only the new final answer.
-
-The new delivery final covers 0/4 frozen criteria. It does not diagnose the
-observed `recommendation: stop` enum violation or the missing Go semantic
-validation, propose safe optional-metadata validation with visible-output
-preservation, or cover the required invalid/valid metadata and final-output
-binding regressions. It also falsely says the transcript cites only schema
-documents. A 0/4 rubric result does not imply every sentence is false: it means
-none of the four complete acceptance items is met.
-
-Solver had read both assigned sources and cited local sequences 3/4 versus
-Central sequence 2, but omitted the observed `stop` value and wrongly proposed
-a Central projection repair. Reviewer read its three schema/type/enum sources
-and supplied `continue`, `finish` and `wait_human`, while identifying limitations
-of that subset. Both entire contributions occur in the actual Finalizer Run
-instruction. The Finalizer turns Reviewer's subset limitation into a false
-claim that historical observation/parser evidence is absent from the transcript.
-This supports an evidence-use failure, not a claim that the Server omitted
-contributor context or that routing caused it. The Finalizer made no new reader
-call, which remains an observation rather than a fabricated Runtime failure.
-
-Across the successful pairs, all three baselines and six contributors read
-their full assigned sources; all three Finalizers made no new reads. Raw
-receipts establish retrieval, not understanding. Earlier unapproved-tool
-identity remains unavailable: bounded diagnostics and this success do not
-reconstruct that call or prove its cause repaired. All prior failures remain
-immutable and excluded from the completed-pair quality totals.
-
-The final audit rechecked all 13 historical excerpts, all nine task-input
-hashes, all accepted read IDs/digests and source pins at every report's own
-commit (16, 17, 20, 21 and 22 respectively). Latest task input is byte-identical
-to the reused delivery baseline; all three latest CLI receipts exit successfully
-with no denied tools. Reports retain Central instructions and Bridge-projected
-stdin hashes separately, so this is not an assertion that those hashes match.
-Full projected stdin was not retained. Raw report bytes match the local capture,
-and the owned live root `convene-wire-test-run-TMxjLE` is physically absent.
-
-Final verification passed all nine focused workspace checks and three synthetic
-Server/Bridge flows (12, 8 and 3 Runs): 12 checks with no external provider.
-A separate invocation of the real entrypoint, with no provider executable on
-its child PATH, rejects the consumed plan before any Runtime/report creation.
-The final offline roots `convene-wire-test-run-91MrLw` and
-`convene-wire-test-run-FQ1HKp` are physically absent, as are all historical roots
-named in this record. All 396 maintained Markdown files and whitespace checks
-pass. The installed-CLI loopback and bounded diagnostic gates retain their
-earlier passing evidence; this closure changes only documentation, report
-retention and the exercised plan's authorization state, not Runtime code.
-
-The frozen completion conditions are now met: three paired results, all six
-final answers reviewed, independent facts and omissions recorded, bounded
-Run/time and failure accounting, updated owning documents and usage guidance,
-relevant offline verification and physical cleanup. Quality and real-world
-productivity remain separate, unpassed/unmeasured claims. Do not use these
-results as authorization for another tuning or model-invocation cycle.
+owns the maintenance policy. The
+[packet](fixtures/qa-069-workspace-cases.json) contains 13 hash-pinned historical
+Git excerpts covering assessment delivery, cancellation-test timing and Windows
+launcher discovery, with four criteria per case. These are pre-fix diagnostic
+replays on one host, not applied repairs, customer incidents or physical
+multi-machine acceptance. Rubrics and corrected answers stay outside model input.
+
+Single Agent reads the union of disjoint Solver/Reviewer sources. Both arms
+receive the same task and review checklist; Reviewer finalizes from its sources
+and accepted contributions. Request gpt-5.4-mini/low; provider-attested identity
+is unavailable. The fixed-ID MCP reader accepts up to eight reads per invocation
+and no arbitrary paths, URLs or role changes. Metadata discovery is permitted;
+other reported tool calls invalidate delivery. Reading is evidence of retrieval,
+not understanding. A Finalizer using the transcript need not reread source files.
+
+## Retained executions
+
+The original batch stopped on failure; subsequent explicitly authorized plans
+completed remaining work. This compact ledger replaces obsolete pending-plan
+and temporary-directory narratives; exact chronology remains in Git and the
+immutable raw reports.
+
+| Raw report | Source | Calls | Outcome |
+| --- | --- | --- | --- |
+| [Initial](evidence/qa-069-workspace-startup-failure-2026-09-06.json) | `ed7508f` | 1 | Delivery Single failed |
+| [Read gate](evidence/qa-069-workspace-read-gate-failure-2026-09-06.json) | `1652cb8` | 4 | Delivery Single completed; Discussion failed |
+| [Remainder](evidence/qa-069-workspace-remaining-2026-09-06.json) | `ff541be` | 8 | Cancellation and Windows pairs completed |
+| [Tool rejection](evidence/qa-069-workspace-tool-rejection-2026-09-06.json) | `0f16b52` | 2 | Delivery Discussion failed before Finalizer |
+| [Final delivery](evidence/qa-069-workspace-delivery-completed-2026-09-06.json) | `0fdeaa2` | 3 | Delivery Discussion completed |
+
+The [final manifest](fixtures/qa-069-workspace-delivery-retry.json) binds the
+last report and consumed authority. Prior reports, reviews and fixture bytes
+remain unchanged because continuation checks and the final audit reference
+them. Later success does not erase a failed attempt or reconstruct an earlier
+unrecorded tool identity.
+
+## Task-result findings
+
+Windows and delivery Finalizers treated already supplied contributor evidence
+as missing. In the final delivery case, Solver read the observation/parser
+sources but omitted the observed `recommendation: stop` value and proposed an
+incorrect Central projection repair. Reviewer supplied the permitted enum
+values from schema/type sources. Both complete contributions were in the
+Finalizer instruction, but it adopted Reviewer's limited-source perspective
+instead of joining the facts.
+
+The delivery final therefore covers 0/4: it does not diagnose invalid optional
+assessment metadata, propose semantic validation while preserving visible
+output, cover the required regressions, or provide the requested evidence-based
+diagnosis. This score does not mean every sentence is false. The complete
+review retains the reasoning for all cases and both earlier audits.
+
+All three baselines and six contributors in successful pairs read their full
+assigned sources; all three Finalizers made no new reads. Missing original
+facts in a contribution and facts delivered but ignored are different failures.
+The evidence does not establish that routing caused these omissions or that
+successful context delivery guarantees correct finalization.
+
+## Verification and limits
+
+Closure verified all 13 excerpts, nine task-input hashes, accepted read IDs and
+digests, raw capture equality and each execution's source pins against its own
+commit. Final answers were bound to completed Finalizer Run/output identities
+by the pinned live helper. Retained fields were audited after cleanup; there
+was no fresh join against the removed database. Central instructions and
+Bridge-projected stdin hashes remain distinct; full projected stdin was not retained.
+
+Nine focused workspace checks and three synthetic Server/Bridge flows passed;
+the consumed real entrypoint also rejected with no provider executable on its
+child PATH. Installed-CLI loopback and bounded-diagnostic checks passed, and
+owned live/offline roots were physically removed. Current maintenance commands
+are in [the usage guide](../discussion-usage-guide.md#维护与后续验证).
+
+This is a completed bounded experiment with unpassed answer-quality criteria,
+not a deployed repair or measured user-productivity gain. Keep the maintenance
+freeze and Single Agent first guidance. TASKS.md alone records delivery status.
