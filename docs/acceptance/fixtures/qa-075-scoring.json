@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "identity": "qa-075-windows-item-scoring-v1",
+  "modelVisible": false,
+  "judgment": "After all attempts, shuffle and export diagnosis-only text without treatment, table, slot or Run. Grade separate final-answer items using exact spans, then join the retained table/receipts for consistency review. Blinding is limited; malformed wrappers are retained and labeled unscorable rather than repaired. No extra grading model calls.",
+  "states": [
+    "pass",
+    "partial",
+    "fail",
+    "unscorable"
+  ],
+  "targetErrorCorrection": [
+    {
+      "id": "T1",
+      "pass": "Connect Console preflight to the supplied executableAvailable body and its regular-file plus Unix-execute-bit gate; do not retain the false claim that this body is unavailable or an unknown Windows branch remains.",
+      "sources": [
+        "windows-availability",
+        "windows-console-preflight"
+      ]
+    },
+    {
+      "id": "T2",
+      "pass": "Retain CLI enrollment's independent execute-bit rejection and Console's pre-probe readiness check; do not dismiss these as unsupported source labels.",
+      "sources": [
+        "windows-enrollment",
+        "windows-console-preflight"
+      ]
+    }
+  ],
+  "correctContentPreservation": [
+    {
+      "id": "P1",
+      "pass": "Retain Solver's regular-file and Unix-execute-bit discovery/availability diagnosis.",
+      "sources": [
+        "windows-discovery",
+        "windows-availability"
+      ]
+    },
+    {
+      "id": "P2",
+      "pass": "Retain Reviewer's CLI execute-bit gate and Console readiness/preflight link.",
+      "sources": [
+        "windows-enrollment",
+        "windows-console-preflight"
+      ]
+    },
+    {
+      "id": "P3",
+      "pass": "Preserve Unix execute bits and discovery without shell execution/profile sourcing.",
+      "sources": [
+        "windows-discovery",
+        "windows-availability"
+      ]
+    },
+    {
+      "id": "P4",
+      "pass": "Keep Runtime permissions unchanged and describe repairs/checks as proposals, not executed work.",
+      "sources": []
+    }
+  ],
+  "unsupportedAdditions": {
+    "rule": "List every newly asserted material fact, implemented repair or completed test unsupported by sources, task or retained contributions. Separate incorrect assertions from bounded proposed policies. Do not penalize a clearly labeled design suggestion merely because it is not implemented in the historical excerpt.",
+    "knownRisks": [
+      "Claiming all PATHEXT or OS-resolved extensions are inherently safe under the requested bounded policy",
+      "Claiming actual native Windows launch or all regression tests passed",
+      "Inventing an existing shared validator or unseen Windows-specific branch",
+      "Treating a proposed launcher-extension allowlist as an observed historical implementation"
+    ]
+  },
+  "uncertaintyPreservation": [
+    {
+      "id": "U1",
+      "pass": "Preserve the lack of exact user-reported failing paths/logs and avoid claiming an observed platform test in this replay."
+    },
+    {
+      "id": "U2",
+      "pass": "Separate portable checks/cross-compilation from still-required native Windows launch/preflight verification."
+    },
+    {
+      "id": "U3",
+      "pass": "Separate the proposed Windows launcher allowlist from what the historical source establishes; do not preserve uncertainty already resolved by windows-availability."
+    }
+  ],
+  "requiredDeliverableCoverage": [
+    {
+      "id": "D1",
+      "pass": "Locate discovery and availability gates, CLI enrollment, Console preflight, and Windows known-directory candidates that append only .exe."
+    },
+    {
+      "id": "D2",
+      "pass": "Propose one consistent regular-file platform policy, a bounded case-insensitive Windows launcher allowlist, preserved Unix execute bits, PATH lookup and non-executing discovery, with unchanged Runtime permissions. A proposal is not required to copy a later repair's exact allowlist."
+    },
+    {
+      "id": "D3",
+      "pass": "Propose Windows files without execute bits, unsupported extension/directory rejection, Unix regressions and discovery/enrollment/preflight caller tests."
+    },
+    {
+      "id": "D4",
+      "pass": "Cite discovery plus independent Console/CLI source IDs and distinguish proposed portable/native checks from completed validation."
+    }
+  ],
+  "partialRule": "Use partial only when a listed item explicitly has multiple elements and at least one is correctly stated with no contradiction of that element. Absence, a contrary claim or unsupported certainty for the whole item is fail. Explain all partial judgments. No averaging across items.",
+  "evidenceUseCompliance": {
+    "C": "Read subcondition: every manifest source fully returned before terminal message. Substantive subcondition: final diagnosis checks both target disputes without unsupported resolution. A receipt alone is not substantive compliance.",
+    "D": "Read subcondition: every manifest source fully returned before terminal message. Substantive subcondition: final diagnosis checks both target disputes without unsupported resolution. A receipt alone is not substantive compliance."
+  },
+  "sourceReads": "Record every returned, denied and failed call separately, per source and Run, including ranges/bytes/truncation and timing. An emitted server return is not proof that the model received or understood it.",
+  "runOutcome": "Record completed, timed_out, failed and interrupted/outcome_unknown independently. Grade only delivered final answers; preserve candidate/progress text separately. Every startup consumes a slot, without retries. Record elapsedMilliseconds and output limits.",
+  "interpretation": {
+    "targetCorrect": "T1 and T2 both pass, separately from preservation, unsupported additions, uncertainty, deliverable coverage and consistency. No net score.",
+    "C_mixed_D_correct": "Three correct D outputs with valid table/reading and mixed C can support adjudication as a candidate within this case, not population or product improvement.",
+    "correct_table_wrong_final": "An observable claim-to-final inconsistency; do not claim a proven internal cognitive sequence.",
+    "wrong_table_correct_final": "A later observable correction; table protocol has not provided a reliable intermediate verdict.",
+    "wrong_table_wrong_final": "Error is already observable at disposition. Inspect relevance, exact wording, coverage and instruction adherence; do not uniquely infer comprehension, anchoring or reasoning.",
+    "both_correct": "The failure did not reproduce under shared targets/wrapper; no demonstrated incremental D benefit.",
+    "overcorrection": "Report lost correct content and unsupported additions separately; improvement of one target does not compensate for either.",
+    "replication": "Report all six attempts. Three concordant repetitions only support a stable within-case pattern; mixed results are unstable. No significance inference at n=3.",
+    "productBoundary": "Independent new task/evidence/error pattern needs a new frozen authorization. No Targeted Review or production changes follow automatically."
+  },
+  "manipulationGate": {
+    "common": "C/D matching frozen instructions/model/effort/catalog/grant; all four sources fully returned before delivered terminal message. Each slot stays in the report even if failed.",
+    "D": "Exact closed schema, both distinct frozen targets, no extra target, table before final, every cited source fully returned in this Run/revision before terminal output; unresolved list matches dispositions.",
+    "consistency": "Final/table contradictions and omissions are outcome failures, never post-hoc exclusions. Schema and returned-ref validation do not grade source relevance or semantics.",
+    "stableComparison": "All three pairs must have valid common setup, reading and delivered final blocks; report D structural fidelity across all three, including failures. No subset of passing D artifacts represents the arm."
+  },
+  "evidenceToClaimConsistency": [
+    {
+      "claimId": "claim_body_unknown",
+      "expectedDisposition": "contradicted",
+      "requiredSources": [
+        "windows-availability"
+      ],
+      "evidence": "The complete four-line body calls os.Stat then requires IsRegular and Perm()&0o111 != 0, with no OS branch. Sources settle body availability and the predicate, not a live Windows launch."
+    },
+    {
+      "claimId": "claim_cli_console_gate",
+      "expectedDisposition": "supported",
+      "requiredSources": [
+        "windows-enrollment",
+        "windows-console-preflight",
+        "windows-availability"
+      ],
+      "evidence": "CLI independently rejects stat errors, IsDir or absent execute bits; Console derives executableReady from executableAvailable before runtime probing. CLI does not call that helper and does not use IsRegular."
+    }
+  ],
+  "consistencyStates": [
+    "consistent",
+    "contradictory",
+    "omitted",
+    "unscorable"
+  ],
+  "claimToFinalConsistency": {
+    "rule": "Judge each target separately against its emitted disposition, not ground truth. supported requires final affirm the proposition; contradicted requires final reject it; unresolved requires final retain it as unsettled. Compare semantics including paraphrases. Opposing or internally mixed final assertions are contradictory; absence is omitted; malformed/missing table or final wrapper is unscorable. Quote exact table verdict and final span. A consistent but wrong pair is not evidence correctness.",
+    "claim_body_unknown": "For contradicted, final must establish body availability and its regular-file/Unix-bit predicate without retaining an unknown Windows body/branch. For supported or unresolved, compare the final uncertainty/missing-body assertion to the stated verdict.",
+    "claim_cli_console_gate": "Check independent CLI execute-bit rejection and Console helper-derived pre-Runtime readiness; negating either conflicts with supported. An omitted subelement is omitted unless an explicit opposing assertion makes it contradictory."
+  }
+}

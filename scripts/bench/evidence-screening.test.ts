@@ -31,7 +31,8 @@ test("QA-074 preserves diagnostic bytes, freezes repaired code and executes only
   assert.equal(renderReplay(replay), renderReplay(loadReplay()));
   assert.equal(treatmentInstruction("A", replay), treatmentInstruction("B", replay));
   assert.equal(treatmentInstruction("C", replay), treatmentInstruction("A", replay) + "\n\n## Evidence-use requirement\n" + replay.fixture.useInstruction);
-  const { freeze } = verifyQa074Freeze();
+  const { freeze } = verifyQa074Freeze(undefined, existsSync(reportPath) ?
+    JSON.parse(readFileSync(reportPath, "utf8")).sourceCommit : undefined);
   assert.ok(freeze.files.some((pin: any) => pin.path === "scripts/bench/evidence-invocation-observer.mjs"));
   assert.ok(replay.fixture.order.every(row => row.runId.includes("qa074")));
 });

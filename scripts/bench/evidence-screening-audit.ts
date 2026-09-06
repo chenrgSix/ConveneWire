@@ -19,7 +19,7 @@ function covers(ranges: Array<{ start: number; end: number }>, allowed: { start:
   return end >= allowed.end;
 }
 
-export function inspectManipulation(replay: Replay, row: any) {
+export function inspectManipulation(replay: Replay, row: any, expectedInstruction = treatmentInstruction(row.treatment, replay)) {
   const expected = makeAccess(replay, row, row.observedAt);
   const catalog = (row.readerLifecycle ?? []).filter((event: any) => event.stage === "tools_listed");
   const catalogObserved = catalog.length > 0;
@@ -27,7 +27,7 @@ export function inspectManipulation(replay: Replay, row: any) {
     event.definitionSha256 === hash(JSON.stringify(evidenceToolDefinition(expected.bundle))) &&
     Date.parse(event.observedAt) >= Date.parse(row.observedAt) && Date.parse(event.observedAt) <= Date.parse(row.endedAt));
   const grantValid = row.treatment !== "A" && JSON.stringify(row.grant) === JSON.stringify(expected.control.grant);
-  const instructionValid = row.instructionSha256 === hash(treatmentInstruction(row.treatment, replay));
+  const instructionValid = row.instructionSha256 === hash(expectedInstruction);
   const configurationValid = row.requestedModel === replay.fixture.runtime.model && row.reasoningEffort === replay.fixture.runtime.reasoningEffort;
   const counts = { returned: 0, denied: 0, failed: 0, invalid: 0, truncated: 0, beforeAnswer: 0 };
   const coverage = new Map<string, Array<{ start: number; end: number }>>();

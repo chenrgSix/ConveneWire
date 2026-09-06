@@ -21,6 +21,13 @@ separately authorizes QA-074's fresh nine-session screening using the repaired
 tooling. Manipulation checks govern experiment interpretation only; they add
 no production completion or acceptance gate. QA-072 remains consumed.
 
+[ADR-0049](../adr/0049-screen-evidence-to-claim-adjudication.md) bounds QA-075 to
+six fresh C/D sessions, testing a QA-only claim disposition between returned
+evidence and final diagnosis. Common target propositions, fixed reading and
+separate evidence/claim/final consistency review add no production Result type,
+contribution storage or acceptance gate. Contradictory artifacts remain failed
+outcomes in the retained comparison; QA-072 and QA-074 stay consumed.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.
 Code review/test pipelines belong to Execution, not Wave semantics. Focused
