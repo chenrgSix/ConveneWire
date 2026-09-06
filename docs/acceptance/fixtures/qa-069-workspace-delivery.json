@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "identity": "qa-069-missing-delivery-discussion-v3",
+  "packetPath": "docs/acceptance/fixtures/qa-069-workspace-cases.json",
+  "packetSha256": "421ed769d57717f6b87bca23a5bf68fb672a0fb27148fd6643e8dc12ef070241",
+  "priorReports": [
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-startup-failure-2026-09-06.json",
+      "sha256": "e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+      "sha256": "8acf79c26404d63cb2e2723fd15f6a5de0218791ced1a08df29abe2e8f32b986"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "sha256": "c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80"
+    }
+  ],
+  "caseIds": [
+    "delivery"
+  ],
+  "priorInvocations": 13,
+  "maximumNewInvocations": 3,
+  "maximumPhaseInvocations": 16,
+  "arms": [
+    "discussion"
+  ],
+  "authorization": "pending-owner-cap-increase",
+  "baseline": {
+    "reportIndex": 1,
+    "resultIndex": 0
+  }
+}

@@ -292,3 +292,27 @@ The frozen three-complete-pair gate remains open. A fresh delivery Discussion
 would need three calls (two contributors and a Finalizer), reusing the completed
 Single baseline. That would raise the phase total from 13 to 16. No such increase
 or extra model execution is authorized by the current record.
+
+## Prepared missing-pair completion
+
+The [delivery-only manifest](fixtures/qa-069-workspace-delivery.json) is a
+proposal, not authorization. It pins all three existing reports, their 13
+invocations and the already completed delivery Single Agent answer.
+`npm run bench:discussion-workspace-delivery` would start only a fresh delivery
+Discussion, with two contributors and one Finalizer, an atomic three-call quota,
+300 seconds per process and the existing 20-minute model-work bound. It keeps
+the v3 task instruction, source packet, requested model and rubric unchanged;
+no earlier evidence is replaced and no further retry is included.
+
+The command is prepared and tested without a provider. Real invocation requires
+Owner approval to raise the cumulative phase cap from 13 to 16. Existing consent
+for the same source material and generated task context persists; no new data
+export scope is requested. The synthetic full regression also exercises this
+three-Run Discussion and rejects changed pins, baseline selection or call caps.
+
+Preparation passed all 24 benchmark checks and two installed-CLI loopback
+checks without a provider, including the exact baseline-input equality and
+complete three-Run synthetic Discussion. The roots
+`convene-wire-test-run-m6U32x` and `convene-wire-test-run-npMhNR` are absent.
+All 396 maintained Markdown files and whitespace checks pass. There have been
+no further external invocations after the 13-call authorized phase.

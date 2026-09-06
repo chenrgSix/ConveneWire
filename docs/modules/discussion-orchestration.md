@@ -29,6 +29,9 @@ retained startup failure, at most 13 across the phase; this does not change
 production Discussion budgets or routing. Benchmark Runtime completion and
 source-read coverage are separate observations: a Finalizer using an accepted
 transcript must not become a failed Run solely for not rereading source files.
+QA-069 also defines a prepared three-call delivery-only completion after the
+13-call phase; real execution requires a separate Owner increase to 16. It does
+not change the task packet, acceptance criteria or production policy.
 
 ## Purpose
 

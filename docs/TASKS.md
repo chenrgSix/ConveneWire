@@ -679,7 +679,7 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | ADP-019 | DONE | Validate optional assessment before emitting Bridge events | QA-067 | Generated wire validation rejects unsupported enum/range/size/duplicate/null/nested metadata while preserving reply-only degradation; full Bridge tests and vet, Runtime race and 14 offline checks pass; four real Finalizers with invalid stop metadata now deliver answers and complete without structured approval; source failure evidence and owned-root cleanup retained |
 
 | GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
-| QA-069 | ACTIVE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | 13 authorized invocations used; two complete pairs reviewed (Single 3/8, Discussion 2/8), source/read/Run/time evidence and cleanup verified; v3 passes 22 benchmark plus two real-CLI loopback checks; delivery Discussion final answer remains missing, so the three-pair gate is incomplete |
+| QA-069 | ACTIVE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | 13 authorized invocations used; two complete pairs reviewed (Single 3/8, Discussion 2/8), source/read/Run/time evidence and cleanup verified; prepared completion passes 24 benchmark plus two real-CLI loopback checks; delivery Discussion final answer remains missing; three-call completion prepared pending Owner increase to 16, so the three-pair gate is incomplete |
 
 ## Deferred Beyond MVP
 

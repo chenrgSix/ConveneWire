@@ -8,6 +8,34 @@ export const workspaceExecutionIdentity = "qa-069-evidence-cli-v3";
 export const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 export const workspacePacket = JSON.parse(readFileSync(new URL(`../../${packetPath}`, import.meta.url), "utf8"));
 export const workspaceRemainingPath = "docs/acceptance/fixtures/qa-069-workspace-remaining.json";
+export const workspaceDeliveryPath = "docs/acceptance/fixtures/qa-069-workspace-delivery.json";
+export function loadWorkspaceDelivery(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceDeliveryPath}`, import.meta.url), "utf8"))) {
+  assert.equal(manifest.packetPath, packetPath);
+  assert.equal(sha256(readFileSync(new URL(`../../${packetPath}`, import.meta.url))), manifest.packetSha256);
+  assert.equal(manifest.priorReports.length, 3);
+  const prior = manifest.priorReports.map((source) => {
+    const text = readFileSync(new URL(`../../${source.path}`, import.meta.url), "utf8");
+    assert.equal(sha256(text), source.sha256);
+    const report = JSON.parse(text);
+    assert.equal(report.model, workspacePacket.model);
+    return report;
+  });
+  assert.equal(prior.reduce((sum, report) => sum + report.reservedInvocations, 0), 13);
+  assert.equal(manifest.priorInvocations, 13);
+  assert.deepEqual(manifest.baseline, { reportIndex: 1, resultIndex: 0 });
+  const baseline = prior[1].results[0];
+  assert.equal(baseline.caseId, "delivery");
+  assert.equal(baseline.arm, "single_agent");
+  assert.equal(baseline.runtimeSucceeded, true);
+  assert.ok(baseline.finalAnswer);
+  assert.ok(!prior.some((report) => report.results.some((result) =>
+    result.caseId === "delivery" && result.arm === "discussion" && result.runtimeSucceeded)));
+  assert.deepEqual(manifest.caseIds, ["delivery"]);
+  assert.deepEqual(manifest.arms, ["discussion"]);
+  assert.equal(manifest.maximumNewInvocations, 3);
+  assert.equal(manifest.maximumPhaseInvocations, 16);
+  return { manifest, baseline, samples: workspacePacket.cases.filter((sample) => sample.id === "delivery") };
+}
 export function loadWorkspaceRemaining(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceRemainingPath}`, import.meta.url), "utf8"))) {
   const read = (name) => readFileSync(new URL(`../../${name}`, import.meta.url), "utf8");
   assert.equal(manifest.packetPath, packetPath);

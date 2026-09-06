@@ -17,6 +17,7 @@ import { continuationPath, loadReviewContinuation } from "./discussion-continuat
 import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
   type Criterion } from "./discussion-review-packet.js";
 import { workspacePacket, workspaceExecutionIdentity, workspaceRemainingPath, loadWorkspaceRemaining,
+  workspaceDeliveryPath, loadWorkspaceDelivery,
   packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
 import { finalAnswerReviewChecklist } from "../../apps/server/src/discussion/finalization-instructions.js";
 const exec = promisify(execFile);
@@ -25,15 +26,17 @@ const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
 const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
-assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining"].includes(suite), "Unknown benchmark suite");
-const workspaceReplay = suite === "workspace" || suite === "workspace-remaining";
+assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery"].includes(suite), "Unknown benchmark suite");
+const workspaceReplay = suite.startsWith("workspace");
 const workspaceRemaining = suite === "workspace-remaining" ? loadWorkspaceRemaining() : undefined;
+const workspaceDelivery = suite === "workspace-delivery" ? loadWorkspaceDelivery() : undefined;
 const reviewing = suite !== "legacy";
 const continuation = suite === "continuation" ? loadReviewContinuation() : undefined;
 if (continuation) assert.equal(model, continuation.manifest.model, "Continuation model must match prior evidence");
-const samples = workspaceReplay ? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
+const samples = workspaceReplay ? workspaceDelivery?.samples ?? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
 if (workspaceReplay) assert.equal(model, workspacePacket.model);
-const maximumInvocations = workspaceReplay ? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
+const maximumInvocations = workspaceReplay ? workspaceDelivery?.manifest.maximumNewInvocations ?? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
+const maximumRuns = workspaceDelivery ? 3 : samples.length * 4;
 function pendingRubric(rubric: Array<string | Criterion>) {
   return rubric.map((item) => typeof item === "string"
     ? { criterion: item, passed: null, evidence: null }
@@ -56,11 +59,12 @@ test("bounded real single-Agent and Discussion task pairs", {
   resources.defer(() => app.close());
   const report = { version: workspaceReplay ? 5 : continuation ? 4 : reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
     model, observedProviderModel: null, reasoningEffort: "low", runtime: "codex exec via generic Bridge adapter",
-    runtimeVersion: "", maximumRuns: samples.length * 4, maximumInvocations, maximumModelWorkSeconds: 1200,
+    runtimeVersion: "", maximumRuns, maximumInvocations, maximumModelWorkSeconds: 1200,
     suite, packetIdentity: workspaceReplay ? workspacePacket.identity : reviewing ? reviewPacket.identity : undefined,
     executionIdentity: workspaceReplay ? workspaceExecutionIdentity : undefined,
     continuation: continuation?.manifest,
     workspaceRemaining: workspaceRemaining?.manifest,
+    workspaceDelivery: workspaceDelivery?.manifest,
     fixedReplays: reviewing && !continuation && !workspaceReplay ? reviewPacket.replays : undefined,
     replayResults: reviewing ? [] as Array<Record<string, unknown>> : undefined,
     fallbackCoverage: reviewing && !workspaceReplay ? fallbackCoverageProbe() : undefined,
@@ -76,6 +80,7 @@ test("bounded real single-Agent and Discussion task pairs", {
       "scripts/bench/codex-evidence-answer.mjs", "docs/adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md",
       "docs/acceptance/qa-069-workspace-evidence-replay.md"] : []),
     ...(workspaceRemaining ? [workspaceRemainingPath, ...workspaceRemaining.manifest.priorReports.map((source: any) => source.path)] : []),
+    ...(workspaceDelivery ? [workspaceDeliveryPath, ...workspaceDelivery.manifest.priorReports.map((source: any) => source.path)] : []),
     ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,
       continuation.manifest.priorEvidencePath, "docs/acceptance/qa-068-discussion-continuation.md"] : [])];
   const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
@@ -211,11 +216,13 @@ test("bounded real single-Agent and Discussion task pairs", {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
       const originalIndex = workspaceReplay ? workspacePacket.cases.findIndex((item: any) => item.id === sample.id)
         : reviewing ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
-      for (const arm of originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"]) {
+      const arms = workspaceDelivery ? ["discussion"] : originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"];
+      for (const arm of arms) {
         assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
         const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}` });
         const goal = workspaceReplay ? workspaceTaskInput(sample, finalAnswerReviewChecklist) : reviewing ? reviewedTaskInput(sample)
           : `Closed-input benchmark: answer only from the task below. Do not use tools, read files, access the network, or modify anything. Give a concise English answer under 350 words. Do not propose execution plans.\n\n${sample.prompt}`;
+        if (workspaceDelivery) assert.equal(goal, workspaceDelivery.baseline.taskInput, "Reused baseline must have the exact same task input");
         const startedAt = Date.now();
         currentAttempt = { caseId: sample.id, arm,
           promptSha256: createHash("sha256").update(goal).digest("hex"),
@@ -282,7 +289,7 @@ test("bounded real single-Agent and Discussion task pairs", {
         assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
       }
     }
-    assert.equal(scheduled, samples.length * 4);
+    assert.equal(scheduled, maximumRuns);
     assert.equal(replayInvocations + scheduled, maximumInvocations);
     assert.equal(report.reservedInvocations, maximumInvocations);
     assert.equal(Object.hasOwn(report, "tokens"), false);

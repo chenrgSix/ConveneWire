@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { workspacePacket, documentsFor, prepareWorkspaces, sha256, workspaceTaskInput, loadWorkspaceRemaining } from "./workspace-evidence.mjs";
+import { workspacePacket, documentsFor, prepareWorkspaces, sha256, workspaceTaskInput, loadWorkspaceRemaining, loadWorkspaceDelivery } from "./workspace-evidence.mjs";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 
@@ -117,7 +117,7 @@ test("adapter retains a transcript-only Finalizer answer and reports missing evi
     missingDocumentIds: ["delivery-schema", "delivery-type", "delivery-enum"] });
 });
 
-test("adapter rejects unapproved tools, absent answers, failed output and both quota sizes", async (t) => {
+test("adapter rejects unapproved tools, absent answers, failed output and all quota sizes", async (t) => {
   const valid = `await import(${JSON.stringify(path.resolve("scripts/bench/synthetic-evidence-codex.mjs"))});`;
   const bad = 'console.log(JSON.stringify({type:"item.completed",item:{type:"command_execution"}}));';
   for (const source of [valid + bad,
@@ -127,7 +127,7 @@ test("adapter rejects unapproved tools, absent answers, failed output and both q
     assert.equal(result.code, 1);
     assert.equal(result.stdout, "");
   }
-  for (const maximum of [8, 12]) {
+  for (const maximum of [3, 8, 12]) {
     const exhausted = await invoke(t, 'console.log("MUST_NOT_START");', { exhausted: true, maximum });
     assert.equal(exhausted.code, 1);
     assert.match(exhausted.stderr, /invocation limit/u);
@@ -137,6 +137,22 @@ test("adapter rejects unapproved tools, absent answers, failed output and both q
   const wrongRole = await invoke(t, 'console.log("MUST_NOT_START");', { role: "owner" });
   assert.equal(wrongRole.code, 1);
   assert.deepEqual(await readdir(wrongRole.quota), []);
+});
+
+test("delivery-only proposal pins the completed baseline and exactly three new calls", () => {
+  const { manifest, samples } = loadWorkspaceDelivery();
+  assert.deepEqual(samples.map((sample) => sample.id), ["delivery"]);
+  for (const change of [
+    (copy) => { copy.priorReports[2].sha256 = "0".repeat(64); },
+    (copy) => { copy.baseline.resultIndex = 1; },
+    (copy) => { copy.arms.push("single_agent"); },
+    (copy) => { copy.maximumNewInvocations = 4; },
+    (copy) => { copy.maximumPhaseInvocations = 17; }
+  ]) {
+    const copy = structuredClone(manifest);
+    change(copy);
+    assert.throws(() => loadWorkspaceDelivery(copy));
+  }
 });
 
 test("remaining manifest pins failed evidence and excludes every previously started case within 13 calls", () => {
