@@ -17,6 +17,7 @@ import { executionOperationDigest } from "@convene-wire/contracts/execution-vali
 import { ArtifactPublicationRepository } from "../src/artifact/artifact-publication-repository.js";
 import { LocalArtifactBlobStore } from "../src/artifact/local-artifact-blob-store.js";
 import { ArtifactRepository } from "../src/task/artifact-repository.js";
+import { inspectArtifactVerification } from "../src/task/acceptance-candidate-verification.js";
 import { CoreRepository } from "../src/data/core-repository.js";
 import { ContextPlanner } from "../src/task/context-planner.js";
 import { AgentTaskRepository } from "../src/task/task-repository.js";
@@ -714,6 +715,14 @@ test("real Go capture publication seals actual Git bytes and reconciles lost res
       SELECT outcome FROM verification_receipts ORDER BY outcome
     `).all() as Array<{ outcome: string }>).map(({ outcome }) => outcome),
     ["failed", "passed", "timed_out"]);
+    const artifactRepository = new ArtifactRepository(f.database);
+    const capturedOutput = captured.Checkpoint.outputs[0]!.artifact;
+    const inspected = inspectArtifactVerification(f.database,
+      artifactRepository.get(capturedOutput.artifactId)!, f.manifest.scope);
+    assert.equal(inspected.candidates[0]!.status, "failed",
+      "one successful check cannot conceal failed required checks");
+    assert.deepEqual(inspected.candidates[0]!.receipts.map(({ outcome }) => outcome).sort(),
+      ["failed", "passed", "timed_out"]);
     const markers = (await readFile(markerPath, "utf8")).trim().split("\n");
     for (const mode of ["pass", "fail"]) {
       assert.equal(markers.filter((line) => line === `${mode}:started`).length, 1);

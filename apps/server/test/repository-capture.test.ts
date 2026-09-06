@@ -13,6 +13,7 @@ import { ArtifactPublicationRepository } from "../src/artifact/artifact-publicat
 import { LocalArtifactBlobStore } from "../src/artifact/local-artifact-blob-store.js";
 import { RepositoryCaptureService } from "../src/repository/repository-capture-service.js";
 import { ArtifactRepository } from "../src/task/artifact-repository.js";
+import { inspectArtifactVerification } from "../src/task/acceptance-candidate-verification.js";
 import { RunRepository } from "../src/run/run-repository.js";
 import { planIsolatedWorkspace } from "../src/workspace/isolated-workspace-lease-service.js";
 import { openDatabase } from "../src/data/database.js";
@@ -40,10 +41,12 @@ function hashRequest(value: RepositoryOperationRequest) {
 async function captureFixture(
   t: TestContext,
   commitOutput = false,
-  independentVerification = false
+  independentVerification = false,
+  withoutVerification = false
 ) {
   const f = await workspaceFixture(t, false, { configurePlan: (definition) => {
     for (const node of definition.nodes) {
+      if (withoutVerification) node.verificationProfiles = [];
       if (commitOutput) {
         node.outputs.push({
           slotKey: "commit",
@@ -231,6 +234,9 @@ test("Central admits exact candidate verification and retains only the paired De
   const checkpoint = f.checkpoint(output);
   await f.deviceOK("POST", "/api/bridge/repository-checkpoints", checkpoint);
   const profile = f.manifest.verificationProfiles[0]!;
+  const inspectedArtifact = new ArtifactRepository(f.database).get(output.artifactId)!;
+  const inspect = () => inspectArtifactVerification(f.database, inspectedArtifact, f.manifest.scope);
+  assert.equal(inspect().candidates[0]!.status, "incomplete");
   const verificationRequest = hashRequest({
     version: 1,
     operationId: "op_verification_candidate0001",
@@ -402,6 +408,21 @@ test("Central admits exact candidate verification and retains only the paired De
   );
   assert.deepEqual(retained.receipt, receipt);
   assert.equal(retained.receiptDigest, executionOperationDigest(receipt));
+  const evidence = inspect();
+  assert.equal(evidence.candidates[0]!.status, "passed");
+  assert.equal(evidence.candidates[0]!.candidateCommit, checkpoint.candidateCommit);
+  assert.deepEqual(evidence.candidates[0]!.receipts.map(({ receiptDigest }) => receiptDigest),
+    [retained.receiptDigest]);
+  assert.equal(inspectArtifactVerification(f.database,
+    { ...inspectedArtifact, contentSha256: "f".repeat(64) }, f.manifest.scope
+  ).candidates[0]!.status, "unavailable", "another content digest cannot reuse this pass");
+  assert.deepEqual(inspectArtifactVerification(f.database, inspectedArtifact, {
+    ...f.manifest.scope, criteriaRevision: f.manifest.scope.criteriaRevision + 1
+  }).candidates, [], "another criteria revision cannot inherit the candidate proof");
+  assert.throws(() => inspectArtifactVerification(f.database, inspectedArtifact, {
+    ...f.manifest.scope, taskId: "task_foreign0001"
+  }), /outside/u);
+  assert.doesNotMatch(JSON.stringify(evidence), /workspaceRef|workspaceGeneration|logArtifact|command|argv/u);
   assert.deepEqual(await f.deviceOK(
     "GET",
     `/api/bridge/repository-verifications/${verificationRequest.operationId}/receipt`
@@ -635,4 +656,42 @@ test("another capture cannot borrow an earlier canonical Artifact even in the sa
   const rejected = await f.http("POST", "/api/bridge/repository-checkpoints", checkpoint);
   assert.equal(rejected.statusCode, 409, rejected.body);
   assert.match(rejected.body, /OUTPUT_NOT_CANONICAL/u);
+});
+
+test("acceptance inspection retains unknown outcomes and unconfigured code plans fail closed", async (t) => {
+  const f = await captureFixture(t, false, true);
+  const output = await f.publish();
+  const checkpoint = f.checkpoint(output);
+  await f.deviceOK("POST", "/api/bridge/repository-checkpoints", checkpoint);
+  const profile = f.manifest.verificationProfiles[0]!;
+  const request = hashRequest({ ...f.request,
+    operationId: "op_acceptance_unknown0001",
+    action: { kind: "verify", verify: {
+      candidateCommit: checkpoint.candidateCommit, candidateTree: checkpoint.candidateTree,
+      inputDigest: checkpoint.inputDigest,
+      profile: { profileId: profile.profileId, revision: profile.revision, digest: profile.digest }
+    } }
+  });
+  await f.deviceOK("POST", "/api/bridge/repository-verifications", request);
+  const receipt: VerificationReceipt = {
+    version: 1, verificationId: "verification_acceptance_unknown0001",
+    operationId: request.operationId, requestDigest: request.requestDigest,
+    plan: request.plan, execution: f.manifest.scope, integrationOperationId: null,
+    repositoryId: request.repositoryId, bindingId: request.bindingId,
+    authority: { kind: "bridge", deviceId: f.device.deviceId },
+    candidateCommit: checkpoint.candidateCommit, candidateTree: checkpoint.candidateTree,
+    inputDigest: checkpoint.inputDigest, profile: request.action.verify!.profile,
+    startedAt: now, finishedAt: now, outcome: "outcome_unknown", exitCode: null,
+    durationMilliseconds: 0, logArtifact: null
+  };
+  await f.deviceOK("POST", "/api/bridge/verification-receipts", receipt);
+  const artifact = new ArtifactRepository(f.database).get(output.artifactId)!;
+  const view = inspectArtifactVerification(f.database, artifact, f.manifest.scope);
+  assert.equal(view.candidates[0]!.status, "incomplete");
+  assert.equal(view.candidates[0]!.receipts[0]!.outcome, "outcome_unknown");
+  assert.equal(inspectArtifactVerification(f.database,
+    { ...artifact, sourceRunId: "run_another0001" }, f.manifest.scope
+  ).candidates[0]!.status, "unavailable");
+
+  await assert.rejects(captureFixture(t, false, false, true), /PLAN_REQUIRED_VERIFICATION_MISSING/u);
 });

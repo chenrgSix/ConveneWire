@@ -232,6 +232,13 @@ export function registerResultRoutes({
     "/api/results/:resultId",
     async (request) => results.get(principal(request), request.params.resultId)
   );
+  app.get<{ Params: { resultId: string } }>(
+    "/api/results/:resultId/acceptance-evidence",
+    async (request, reply) => {
+      noStore(reply);
+      return results.getAcceptanceEvidence(principal(request), request.params.resultId);
+    }
+  );
   app.post<{ Params: { taskId: string } }>(
     "/api/tasks/:taskId/results",
     async (request) => {

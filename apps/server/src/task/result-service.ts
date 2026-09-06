@@ -25,6 +25,7 @@ import {
   type ResultReviewOutcome,
   ResultRepository
 } from "./result-repository.js";
+import { AcceptanceEvidenceService } from "./acceptance-evidence-service.js";
 
 const operationPattern = /^op_[A-Za-z0-9_-]{8,128}$/u;
 const resultPattern = /^result_[A-Za-z0-9_-]{8,128}$/u;
@@ -82,6 +83,7 @@ function boundedList(
 }
 
 export class ResultService {
+  public readonly acceptanceEvidence: AcceptanceEvidenceService;
   public constructor(
     private readonly database: Database.Database,
     private readonly results: ResultRepository,
@@ -90,7 +92,14 @@ export class ResultService {
     private readonly runs: RunRepository,
     private readonly core: CoreRepository,
     private readonly auth: AuthService
-  ) {}
+  ) {
+    this.acceptanceEvidence = new AcceptanceEvidenceService(database, results, taskRepository);
+  }
+
+  public getAcceptanceEvidence(principal: WebPrincipal, resultId: string) {
+    this.get(principal, resultId);
+    return this.acceptanceEvidence.forResult(resultId);
+  }
 
   public get(principal: WebPrincipal, resultId: string): ResultProjection {
     const result = this.requireResult(resultId);

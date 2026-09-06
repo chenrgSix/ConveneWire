@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import test, { type TestContext } from "node:test";
 
 import { createTestResources } from "../../../scripts/test/resources.mjs";
 
 import Database from "better-sqlite3";
+import Ajv2020 from "ajv/dist/2020.js";
 
-import type { ResultProposal } from "@convene-wire/contracts/task-result";
+import type { ResultAcceptanceEvidence, ResultProposal } from "@convene-wire/contracts/task-result";
 
 import { createServerApp } from "../src/app.js";
 import { CoreRepository } from "../src/data/core-repository.js";
@@ -820,4 +822,136 @@ test("Task completion rejects required claims without Artifact evidence", async 
   } finally {
     await context.app.close();
   }
+});
+
+async function acceptanceFixture(t: TestContext) {
+  const context = await setup(t);
+  t.after(() => context.app.close());
+  const task = await createActiveTask(context);
+  const run = await createCompletedRun(context, task.taskId);
+  const artifactId = await createArtifact(context, task.taskId);
+  const request = (method: "GET" | "POST" | "PUT", url: string, payload?: unknown) =>
+    context.app.inject({ method, url, headers: { authorization: context.authorization },
+      ...(payload ? { payload: payload as Record<string, unknown> } : {}) });
+  const submit = async (id: string, change?: (value: ResultProposal) => void) => {
+    const current = (await request("GET", `/api/tasks/${task.taskId}`)).json();
+    const value = proposal({ operationId: `op_acceptance_${id}`, taskId: task.taskId,
+      taskRevision: current.taskRevision, definitionRevision: current.definitionRevision,
+      criteriaRevision: current.criteriaRevision, artifactId, runId: run.runId });
+    change?.(value);
+    const response = await request("POST", `/api/tasks/${task.taskId}/results`, value);
+    assert.equal(response.statusCode, 200, response.body);
+    return response.json();
+  };
+  const view = async (resultId: string) => {
+    const response = await request("GET", `/api/results/${resultId}/acceptance-evidence`);
+    assert.equal(response.statusCode, 200, response.body);
+    assert.equal(response.headers["cache-control"], "no-store");
+    const validator = new Ajv2020({ strict: true });
+    for (const name of ["work/task-result", "common/identifiers"]) {
+      validator.addSchema(JSON.parse(readFileSync(new URL(
+        `../../../packages/contracts/schemas/${name}.schema.json`, import.meta.url), "utf8")));
+    }
+    const validate = validator.getSchema(
+      "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence"
+    )!;
+    assert.equal(validate(response.json()), true, JSON.stringify(validate.errors));
+    return response.json<ResultAcceptanceEvidence>();
+  };
+  return { ...context, task, artifactId, run, request, submit, view };
+}
+
+test("acceptance evidence exposes omitted claims without promoting earlier prose or Artifact claims to verified", async (t) => {
+  const f = await acceptanceFixture(t);
+  const prior = await f.submit("prior0001");
+  const candidate = await f.submit("missing0001", (value) => {
+    value.outcome = "partial";
+    value.summary = "There is no evidence available.";
+    value.criterionClaims = [];
+    value.sources = value.sources.filter(({ kind }) => kind === "run_event");
+  });
+  const before = (await f.request("GET", `/api/tasks/${f.task.taskId}`)).json();
+  const evidence = await f.view(candidate.resultId);
+  assert.equal(evidence.criteria.length, 1);
+  assert.equal(evidence.criteria[0]!.candidate, null);
+  assert.equal(evidence.criteria[0]!.contributions[0]!.resultId, prior.resultId);
+  assert.deepEqual(evidence.criteria[0]!.diagnostics,
+    ["missing_claim", "earlier_evidence_not_referenced"]);
+  assert.equal(evidence.artifacts[0]!.artifactId, f.artifactId);
+  assert.deepEqual(evidence.artifacts[0]!.candidates, [], "a test_result label is not a verifier receipt");
+  assert.deepEqual(await f.view(candidate.resultId), evidence);
+  assert.deepEqual((await f.request("GET", `/api/tasks/${f.task.taskId}`)).json(), before);
+  assert.equal((await f.request("GET", `/api/results/${candidate.resultId}`)).json().state, "proposed");
+  assert.equal((await f.app.inject({ method: "GET",
+    url: `/api/results/${candidate.resultId}/acceptance-evidence` })).statusCode, 401);
+  const stranger = await f.app.inject({ method: "POST", url: "/api/bootstrap",
+    payload: { userId: "user_acceptance_stranger0001", displayName: "Stranger" } });
+  const forbidden = await f.app.inject({ method: "GET",
+    url: `/api/results/${candidate.resultId}/acceptance-evidence`,
+    headers: { authorization: `Bearer ${stranger.json().session.token}` } });
+  assert.equal(forbidden.statusCode, 403);
+  assert.doesNotMatch(forbidden.body, new RegExp(f.artifactId, "u"));
+});
+
+test("acceptance evidence compares exact source identity across Result-local reference names and labels rejected history", async (t) => {
+  const f = await acceptanceFixture(t);
+  const prior = await f.submit("identity_prior0001");
+  const kept = await f.submit("identity_kept0001", (value) => {
+    value.sources[0]!.evidenceRefId = "evidence_different0001";
+    value.criterionClaims[0]!.evidenceRefIds = ["evidence_different0001"];
+  });
+  assert.deepEqual((await f.view(kept.resultId)).criteria[0]!.diagnostics, []);
+  const otherArtifactId = await createArtifact(f, f.task.taskId, "Different candidate");
+  const changed = await f.submit("identity_changed0001", (value) => {
+    value.sources[0]!.artifactId = otherArtifactId;
+    value.criterionClaims[0]!.coverage = "unresolved";
+    value.outcome = "partial";
+  });
+  assert.deepEqual((await f.view(changed.resultId)).criteria[0]!.diagnostics,
+    ["earlier_evidence_not_referenced", "differing_coverage"]);
+  for (const result of [prior, kept]) {
+    const task = (await f.request("GET", `/api/tasks/${f.task.taskId}`)).json();
+    const review = await f.request("POST", `/api/results/${result.resultId}/review-decisions`, {
+      operationId: `op_reject_acceptance_${result.resultVersion}`, decision: "rejected",
+      expectedTaskRevision: task.taskRevision, expectedReviewRevision: 0,
+      reason: "Keep this as rejected history, not supporting evidence.", completeTask: false
+    });
+    assert.equal(review.statusCode, 200, review.body);
+  }
+  const after = await f.view(changed.resultId);
+  assert.deepEqual(after.criteria[0]!.diagnostics, []);
+  assert.ok(after.criteria[0]!.contributions.every(({ state }) => state === "rejected"));
+});
+
+test("acceptance evidence retains historical criteria and discloses bounded history across restart", async (t) => {
+  const f = await acceptanceFixture(t);
+  let last;
+  for (let index = 0; index < 12; index++) last = await f.submit(`bounded_${String(index).padStart(8, "0")}`);
+  const original = await f.view(last.resultId);
+  assert.equal(original.historyLimit, 10);
+  assert.equal(original.omittedResults, 1);
+  assert.equal(original.criteria[0]!.contributions.length, 10);
+  assert.equal(original.criteria[0]!.contributions[0]!.resultVersion, 11);
+  const current = (await f.request("GET", `/api/tasks/${f.task.taskId}`)).json();
+  const edited = await f.request("PUT", `/api/tasks/${f.task.taskId}/definition`, {
+    operationId: "op_acceptance_revise0001", expectedTaskRevision: current.taskRevision,
+    title: current.title, goal: current.goal, ownerMemberId: current.ownerMemberId,
+    completionPolicy: current.completionPolicy, priority: current.priority, dueAt: current.dueAt,
+    criteria: [{ ...current.criteria[0], description: "A new criterion description." }],
+    assignments: current.assignments.map(({ agentId, role }: { agentId: string; role: string }) => ({ agentId, role })),
+    budgetPolicy: current.budgetPolicy
+  });
+  assert.equal(edited.statusCode, 200, edited.body);
+  const historical = await f.view(last.resultId);
+  assert.equal(historical.stale, true);
+  assert.equal(historical.criteriaRevision, 1);
+  assert.equal(historical.currentCriteriaRevision, 2);
+  assert.equal(historical.criteria[0]!.criterion.description, original.criteria[0]!.criterion.description);
+  await f.app.close();
+  const reopened = await createServerApp({ databasePath: f.databasePath, clock: () => now, logger: false });
+  t.after(() => reopened.close());
+  const replay = await reopened.inject({ method: "GET",
+    url: `/api/results/${last.resultId}/acceptance-evidence`, headers: { authorization: f.authorization } });
+  assert.equal(replay.statusCode, 200, replay.body);
+  assert.deepEqual(replay.json(), historical);
 });

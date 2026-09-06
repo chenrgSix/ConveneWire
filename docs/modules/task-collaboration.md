@@ -113,7 +113,11 @@ silently edit or satisfy it. Context Planner labels the two sources separately.
 ### Criterion evidence delivery
 
 [ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md) owns
-the bounded code-delivery slice. Ordinary Result proposals are structured
+the bounded code-delivery slice. `GET /api/results/:resultId/acceptance-evidence`
+uses current Room membership and returns a no-store projection. It compares at
+most ten earlier matching Results in descending version order and reports the
+remaining count. References compare actual source IDs (and Run-event sequences),
+not Result-local reference labels. Ordinary Result proposals are structured
 contributions using existing criterion claims, explanations, risks, questions
 and source references. A separate read-only Result acceptance-evidence view
 joins each historical canonical criterion to the selected candidate claim,
