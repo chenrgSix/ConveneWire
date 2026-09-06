@@ -80,3 +80,109 @@ The shared receipt auditor accepts an explicit expected instruction for QA-075;
 its default QA-074 behavior is unchanged. Consumed QA-074 source pins are checked
 against its recorded source commit, so later experiment additions do not rewrite
 historical evidence. No production implementation file is changed.
+
+## Retained execution
+
+Frozen source commit: `5f1a4dd4efbf10b9a8f7cda56d5305438ca3f401`.
+Exactly six new Finalizer sessions completed, in the frozen order, with no
+retry, contributor generation or extra grading invocation. All common setup
+checks passed; every Run returned all four complete sources before its terminal
+message. There were 24 valid returns and no denied, failed, invalid or truncated
+returns. All diagnoses met the 450-word instruction and terminal byte cap.
+
+- [Raw execution journal](evidence/qa-075-claim-adjudication-2026-09-06.json)
+- [Recomputed artifact and reading checks](evidence/qa-075-artifacts-2026-09-06.json)
+- [Diagnosis-only export](evidence/qa-075-blind-answers-2026-09-06.json)
+- [Separate item assessments](evidence/qa-075-blind-assessment-2026-09-06.json)
+- [Joined consistency review and analysis](evidence/qa-075-analysis-2026-09-06.json)
+
+| Order | Arm | Repetition | Full sources | Both targets corrected | D structure / semantics | Seconds |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | C | 1 | 4/4 | yes | not applicable | 30.812 |
+| 2 | D | 1 | 4/4 | yes | valid / correct and consistent | 29.178 |
+| 3 | D | 2 | 4/4 | yes | valid / correct and consistent | 36.801 |
+| 4 | C | 2 | 4/4 | yes | not applicable | 26.351 |
+| 5 | C | 3 | 4/4 | yes | not applicable | 28.631 |
+| 6 | D | 3 | 4/4 | yes | valid / correct and consistent | 36.783 |
+
+D's three tables all reject `claim_body_unknown` using `windows-availability`
+and support `claim_cli_console_gate` using enrollment, Console preflight and
+availability. All six cited claim judgments match the actual returned evidence;
+all six final-answer judgments preserve the corresponding disposition. Thus
+all four D manipulation checks pass, including the separately reviewed final
+consistency check. Empty table `unresolved` lists concern these two settled
+targets only; they do not declare the entire Task free of uncertainty.
+
+No synthesis consistency failure was observed. C and D both correct the two
+targets in 3/3 answers, so **incremental adjudication benefit is not
+demonstrated**. The historical failure did not reproduce on this fresh common
+baseline. Both arms received explicit target propositions and a terminal
+wrapper; their contribution may warrant a future control, but this experiment
+does not isolate it. Do not compare this C to QA-074 C to claim that target
+prompting caused the improvement.
+
+## Separate quality and cost findings
+
+All six preserve the core availability and independent CLI/Console facts (P1,
+P2) and unchanged Runtime permissions/proposal boundaries (P4). Unix preservation
+P3 is partial in C1, D1 and D3: their proposed checks say `.cmd` remains rejected
+on Unix without qualifying absent execute bits. The actual predicate does not
+reject an extension on its own. C2's weaker “non-authoritative” wording is read
+as an extension alone not sufficing. These are explicit manual judgments and
+proposed-test ambiguities, not claimed observations of executed tests.
+
+No unambiguous new material historical fact, completed repair or passed test
+unsupported by the supplied materials was identified. This does not make the
+repair proposals acceptable: every answer omits a complete regular-file,
+bounded case-insensitive Windows policy or required regression cases. D2 resists
+unbounded extension expansion, but still omits regular-file and case-matching
+details. All six miss explicit no-execute-bit Windows fixtures and negative
+extension/directory coverage. Only C1/C2 fully locate the complete D1 gate set;
+D2 mentions `.exe`-only candidates but does not explicitly bind discovery itself
+to the availability filter. These distinct defects remain in D1/D2/D3 and P3,
+without offsetting them against target corrections.
+
+All answers distinguish proposed portable/native checks and resolve the false
+body uncertainty (U2/U3), but omit the missing exact user paths/logs (U1 partial).
+**No answer meets the complete required deliverable.** Target correction and
+schema validity do not establish Result acceptance or product quality.
+
+Median elapsed time is 28.631 seconds for C and 36.783 for D; means are 28.598
+and 34.254 seconds respectively. These are descriptive measurements from three
+Runs per arm. Every D table body costs 645 UTF-8 bytes. Mean final diagnosis
+length is 265.7 words for C and 223.3 for D; mean terminal size is 2,682.7 versus
+3,004.7 bytes. The retained runtime's legacy word counter also counts table
+content, so QA-075 uses its parsed diagnosis counter for the common word limit.
+Neither equal limits nor these output measurements establish equal compute.
+
+## Review and authority limitations
+
+The implementation agent specified all 78 item judgments from the shuffled
+diagnosis export before reading arm mappings or D tables. The first assessment
+export failed on one answer's paragraph layout; the corrected file was persisted
+after unmasking without changing the already declared judgments. There was no
+independent scorer or additional grading-model invocation. Blinding is limited,
+and exact quotations make the judgments reviewable rather than infallible.
+The separate table review checks six evidence-to-claim and six claim-to-final
+judgments. Receipts and correct external verdicts do not reveal private thought
+processes or uniquely distinguish comprehension, binding and anchoring.
+
+The first automatic approval review rejected startup because historical inputs
+could have been private. No process or reservation started. Anonymous downloads
+from the public repository at `a271417f0c9fdd9166f35492d4783166e7aa98ea` then
+matched the local QA-074 fixture, QA-069 source packet and retained contribution
+report byte-for-byte. With this evidence the same bounded command passed
+approval; there was no change to sources, destination, limits or reader scope.
+The journal now consumes the entire six-session authorization. Any new control,
+independent task or further model experiment needs a new bounded plan.
+
+## Post-run verification
+
+All 16 QA-075 tests pass, including recomputation of the six retained Runs,
+exact-source receipt checks, 78 rubric-item/quote bindings, six source-verdict
+and six verdict-final bindings, and separate summary counts. These integrity
+tests do not replace semantic review. All 407 maintained Markdown files lint
+clean and `git diff --check` passes. Seven invocation-owned roots from freezing,
+offline checks, the live run and audit were physically confirmed absent after
+their wrappers completed. Historical QA-072/QA-074 journals and fixtures are
+unchanged; production code is unchanged.

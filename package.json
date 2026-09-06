@@ -59,7 +59,7 @@
     "bench:discussion-evidence-access": "node scripts/test/run-with-temp-root.mjs --timeout-ms 2850000 -- tsx scripts/bench/evidence-access-execute.ts --execute-qa072-frozen-nine",
     "test:discussion-evidence-screening": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- tsx --test scripts/bench/evidence-screening.test.ts",
     "bench:discussion-evidence-screening": "node scripts/test/run-with-temp-root.mjs --timeout-ms 2850000 -- tsx scripts/bench/evidence-screening.ts --execute-qa074-frozen-nine",
-    "test:discussion-claim-adjudication": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- tsx --test scripts/bench/claim-adjudication.test.ts",
+    "test:discussion-claim-adjudication": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- tsx --test scripts/bench/claim-adjudication.test.ts scripts/bench/claim-adjudication-report.test.ts",
     "bench:discussion-claim-adjudication": "node scripts/test/run-with-temp-root.mjs --timeout-ms 1950000 -- tsx scripts/bench/claim-adjudication.ts --execute-qa075-frozen-six"
   },
   "devDependencies": {

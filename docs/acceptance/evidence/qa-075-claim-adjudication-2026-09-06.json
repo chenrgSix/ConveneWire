@@ -1,0 +1,3139 @@
+{
+  "version": 2,
+  "identity": "qa-075-windows-claim-adjudication-v1",
+  "fixturePath": "docs/acceptance/fixtures/qa-075-claim-adjudication.json",
+  "fixtureSha256": "f7a32858d31fc3cbef9a9e33fc14f9fd10054deb7d0aabee7d1f1b0cdad4c510",
+  "freezeSha256": "c45ab137337b2265f7031f49f498852cab9f9e671680c9ad3183881425a82b1b",
+  "sourceCommit": "5f1a4dd4efbf10b9a8f7cda56d5305438ca3f401",
+  "requestedModel": "gpt-5.4-mini",
+  "reasoningEffort": "low",
+  "runtimeVersion": "codex-cli 0.153.4",
+  "observedProviderModel": null,
+  "state": "consumed",
+  "maximumFinalizerInvocations": 6,
+  "attempts": [
+    {
+      "slot": 0,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 1,
+      "runId": "run_qa075_windows_1",
+      "reservedAt": "2026-09-06T12:45:55.306Z"
+    },
+    {
+      "slot": 1,
+      "state": "terminal",
+      "treatment": "D",
+      "repetition": 1,
+      "runId": "run_qa075_windows_2",
+      "reservedAt": "2026-09-06T12:46:26.248Z"
+    },
+    {
+      "slot": 2,
+      "state": "terminal",
+      "treatment": "D",
+      "repetition": 2,
+      "runId": "run_qa075_windows_3",
+      "reservedAt": "2026-09-06T12:46:55.555Z"
+    },
+    {
+      "slot": 3,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 2,
+      "runId": "run_qa075_windows_4",
+      "reservedAt": "2026-09-06T12:47:32.485Z"
+    },
+    {
+      "slot": 4,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 3,
+      "runId": "run_qa075_windows_5",
+      "reservedAt": "2026-09-06T12:47:58.966Z"
+    },
+    {
+      "slot": 5,
+      "state": "terminal",
+      "treatment": "D",
+      "repetition": 3,
+      "runId": "run_qa075_windows_6",
+      "reservedAt": "2026-09-06T12:48:27.723Z"
+    }
+  ],
+  "results": [
+    {
+      "slot": 0,
+      "treatment": "C",
+      "repetition": 1,
+      "runId": "run_qa075_windows_1",
+      "observedAt": "2026-09-06T12:45:55.307Z",
+      "endedAt": "2026-09-06T12:46:26.119Z",
+      "finalAnswerAt": "2026-09-06T12:46:21.828Z",
+      "instructionSha256": "280b1b727df891dd11eeae004223ceba3efb676aa9afbaf6279f781e59a6717f",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 30812,
+      "finalAnswer": "<final-answer>\nDiagnosis: the failure is a pre-Runtime launchability gate mismatch, not a Runtime permission issue. The discovery path is intentionally non-executing: `discoverRuntimeFrom` uses `exec.LookPath`, then absolute-path checks plus `executableAvailable`, and on Windows `runtimeCandidates` only synthesizes `.exe` names while still avoiding shells and profile execution ([windows-discovery]). However, the actual availability test is Unix-style: `executableAvailable` requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`), which will reject valid Windows launchers/shims such as `codex.cmd` and even native launchers if the bit test is relied on literally ([windows-availability]). The console preflight also uses that same gate before any Runtime probe: `executableReady := executableAvailable(executablePath)` and marks the agent unavailable if false ([windows-console-preflight]). CLI enrollment independently applies the same Unix execute-bit rule after `LookPath` and `Abs`, rejecting `Codex path must be an executable file` ([windows-enrollment]).\n\nMinimal consistent policy:\n- Preserve discovery as it is: absolute-path resolution only, no execution, no shell/profile sourcing.\n- Make launcher validation platform-aware:\n  - Unix: keep the current regular-file + execute-bit requirement.\n  - Windows: accept launchable OS-native entries, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers; do not require Unix permission bits.\n- Keep Runtime permissions unchanged.\n\nChecks to add:\n- Portable discovery check: path resolution succeeds without executing anything.\n- Native Windows check: `codex.exe` and `codex.cmd` are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files still fail, and `.cmd` remains rejected on Unix.\n- Coverage gap to preserve explicitly: the evidence shows the full `executableAvailable` body, so its Windows behavior is known; what remains to verify is whether any other caller duplicates this gate outside the shown excerpts.\n</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.92,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"windows-pathext-coverage\",\"question\":\"Should Windows validation explicitly honor PATHEXT beyond .exe/.cmd/.bat?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"none\"}</agentroom-assessment>",
+      "answerSha256": "5c53e3cadb55055b083d578a557ad28675a528e1d88b12244f39de7257e51619",
+      "outputWordCount": 265,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<final-answer>\nDiagnosis: the failure is a pre-Runtime launchability gate mismatch, not a Runtime permission issue. The discovery path is intentionally non-executing: `discoverRuntimeFrom` uses `exec.LookPath`, then absolute-path checks plus `executableAvailable`, and on Windows `runtimeCandidates` only synthesizes `.exe` names while still avoiding shells and profile execution ([windows-discovery]). However, the actual availability test is Unix-style: `executableAvailable` requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`), which will reject valid Windows launchers/shims such as `codex.cmd` and even native launchers if the bit test is relied on literally ([windows-availability]). The console preflight also uses that same gate before any Runtime probe: `executableReady := executableAvailable(executablePath)` and marks the agent unavailable if false ([windows-console-preflight]). CLI enrollment independently applies the same Unix execute-bit rule after `LookPath` and `Abs`, rejecting `Codex path must be an executable file` ([windows-enrollment]).\n\nMinimal consistent policy:\n- Preserve discovery as it is: absolute-path resolution only, no execution, no shell/profile sourcing.\n- Make launcher validation platform-aware:\n  - Unix: keep the current regular-file + execute-bit requirement.\n  - Windows: accept launchable OS-native entries, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers; do not require Unix permission bits.\n- Keep Runtime permissions unchanged.\n\nChecks to add:\n- Portable discovery check: path resolution succeeds without executing anything.\n- Native Windows check: `codex.exe` and `codex.cmd` are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files still fail, and `.cmd` remains rejected on Unix.\n- Coverage gap to preserve explicitly: the evidence shows the full `executableAvailable` body, so its Windows behavior is known; what remains to verify is whether any other caller duplicates this gate outside the shown excerpts.\n</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.92,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"windows-pathext-coverage\",\"question\":\"Should Windows validation explicitly honor PATHEXT beyond .exe/.cmd/.bat?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"none\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m checking the four supplied evidence sources directly, then I’ll reconcile them against the reported Windows failure and keep any missing body details explicit.",
+          "observedAt": "2026-09-06T12:46:01.117Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I have the evidence reader. Next I’m pulling all four excerpts in parallel so I can verify exactly where the pre-Runtime checks happen and what is still not shown.",
+          "observedAt": "2026-09-06T12:46:08.328Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:08.330Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:08.331Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:08.332Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:08.335Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:08.340Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:08.341Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:08.379Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:08.382Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:45:55.523Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:45:55.531Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:45:55.531Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:08.331Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:08.333Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:08.336Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:08.337Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:08.338Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:08.339Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:08.380Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_1",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:08.381Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_1",
+        "expiresAt": "2026-09-06T12:50:55.307Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_1",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:08.332Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_1",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:08.336Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_1",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:08.338Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_1",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:08.380Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 0,
+        "treatment": "C",
+        "repetition": 1,
+        "runId": "run_qa075_windows_1",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:08.332Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:08.336Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:08.338Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:08.380Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 30812,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the failure is a pre-Runtime launchability gate mismatch, not a Runtime permission issue. The discovery path is intentionally non-executing: `discoverRuntimeFrom` uses `exec.LookPath`, then absolute-path checks plus `executableAvailable`, and on Windows `runtimeCandidates` only synthesizes `.exe` names while still avoiding shells and profile execution ([windows-discovery]). However, the actual availability test is Unix-style: `executableAvailable` requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`), which will reject valid Windows launchers/shims such as `codex.cmd` and even native launchers if the bit test is relied on literally ([windows-availability]). The console preflight also uses that same gate before any Runtime probe: `executableReady := executableAvailable(executablePath)` and marks the agent unavailable if false ([windows-console-preflight]). CLI enrollment independently applies the same Unix execute-bit rule after `LookPath` and `Abs`, rejecting `Codex path must be an executable file` ([windows-enrollment]).\n\nMinimal consistent policy:\n- Preserve discovery as it is: absolute-path resolution only, no execution, no shell/profile sourcing.\n- Make launcher validation platform-aware:\n  - Unix: keep the current regular-file + execute-bit requirement.\n  - Windows: accept launchable OS-native entries, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers; do not require Unix permission bits.\n- Keep Runtime permissions unchanged.\n\nChecks to add:\n- Portable discovery check: path resolution succeeds without executing anything.\n- Native Windows check: `codex.exe` and `codex.cmd` are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files still fail, and `.cmd` remains rejected on Unix.\n- Coverage gap to preserve explicitly: the evidence shows the full `executableAvailable` body, so its Windows behavior is known; what remains to verify is whether any other caller duplicates this gate outside the shown excerpts.",
+          "diagnosisSha256": "ebefd335f7e3323f0e35d1c5739d0904a61b9affc8484590b6ef1f19e6969389",
+          "diagnosisWords": 263,
+          "diagnosisBytes": 2028,
+          "terminalBytes": 2628,
+          "dispositionBytes": 0,
+          "disposition": null,
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "not_required",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    },
+    {
+      "slot": 1,
+      "treatment": "D",
+      "repetition": 1,
+      "runId": "run_qa075_windows_2",
+      "observedAt": "2026-09-06T12:46:26.251Z",
+      "endedAt": "2026-09-06T12:46:55.429Z",
+      "finalAnswerAt": "2026-09-06T12:46:52.529Z",
+      "instructionSha256": "e63ca5f5081c09e2aa4eaf0cfcf687d9b05f915940f46240137d989230423d09",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 29178,
+      "finalAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime path is over-applying a Unix executable test to Windows launchers. Discovery stays non-executing and portable: `discoverRuntimeFrom` uses `LookPath` and absolute-path candidate scanning, including nvm and user-bin directories, and explicitly avoids shell/profile execution while locating runtimes [windows-discovery]. The breakage is in validation: `executableAvailable` requires a regular file with Unix execute bits (`0o111`) [windows-availability], and CLI enrollment independently rejects any resolved Codex path that lacks those bits [windows-enrollment]. Console then marks `ExecutableReady` solely from `executableAvailable` before any Runtime probe, so Windows users can be rejected or shown unavailable before runtime validation [windows-console-preflight].\n\nMinimal consistent policy:\n- Preserve discovery exactly as-is: resolve paths without executing anything.\n- Make launchability checks platform-aware.\n- Unix: keep the regular-file + execute-bit rule.\n- Windows: accept native launchers/shims that the OS can launch, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries; do not require Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution still works without shell execution or profile sourcing.\n- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files and `.cmd` remain rejected on Unix, while executable-bit behavior is unchanged.\n\nUnresolved limitation: the evidence shows the exact Unix-style predicate, so the Windows fix should be applied consistently across both CLI enrollment and Console preflight; no Runtime permission change is needed.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.93,\"resolvedQuestionIds\":[\"criterion_qa072_1\"],\"openQuestions\":[{\"id\":\"criterion_qa072_2\",\"question\":\"Confirm the Windows-specific launchability rule accepts PATHEXT-resolved shims consistently in both enrollment and console preflight.\",\"importance\":\"high\"},{\"id\":\"criterion_qa072_3\",\"question\":\"Add regression coverage for Unix execute-bit gating, Windows launcher acceptance, and non-executing discovery.\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "658eeaaefe1c2ed7af063e22ddaaa7a1488e3495e5efafa8c4942f86a1ccbdea",
+      "outputWordCount": 263,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime path is over-applying a Unix executable test to Windows launchers. Discovery stays non-executing and portable: `discoverRuntimeFrom` uses `LookPath` and absolute-path candidate scanning, including nvm and user-bin directories, and explicitly avoids shell/profile execution while locating runtimes [windows-discovery]. The breakage is in validation: `executableAvailable` requires a regular file with Unix execute bits (`0o111`) [windows-availability], and CLI enrollment independently rejects any resolved Codex path that lacks those bits [windows-enrollment]. Console then marks `ExecutableReady` solely from `executableAvailable` before any Runtime probe, so Windows users can be rejected or shown unavailable before runtime validation [windows-console-preflight].\n\nMinimal consistent policy:\n- Preserve discovery exactly as-is: resolve paths without executing anything.\n- Make launchability checks platform-aware.\n- Unix: keep the regular-file + execute-bit rule.\n- Windows: accept native launchers/shims that the OS can launch, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries; do not require Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution still works without shell execution or profile sourcing.\n- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files and `.cmd` remain rejected on Unix, while executable-bit behavior is unchanged.\n\nUnresolved limitation: the evidence shows the exact Unix-style predicate, so the Windows fix should be applied consistently across both CLI enrollment and Console preflight; no Runtime permission change is needed.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.93,\"resolvedQuestionIds\":[\"criterion_qa072_1\"],\"openQuestions\":[{\"id\":\"criterion_qa072_2\",\"question\":\"Confirm the Windows-specific launchability rule accepts PATHEXT-resolved shims consistently in both enrollment and console preflight.\",\"importance\":\"high\"},{\"id\":\"criterion_qa072_3\",\"question\":\"Add regression coverage for Unix execute-bit gating, Windows launcher acceptance, and non-executing discovery.\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m reading the fixed evidence sources directly and then I’ll reconcile the claims against them, keeping any unknowns explicit.",
+          "observedAt": "2026-09-06T12:46:31.359Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I have the evidence reader. Next I’m pulling all four excerpts in full so I can verify the pre-Runtime checks and the Windows-specific launcher handling precisely.",
+          "observedAt": "2026-09-06T12:46:37.949Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:37.951Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:37.953Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:37.953Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:37.959Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:37.960Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:37.961Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:46:37.967Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:46:37.969Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:46:26.464Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:46:26.470Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:46:26.472Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:37.952Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:37.955Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:37.955Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:37.957Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:37.959Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:37.960Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:46:37.968Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_2",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:46:37.969Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_2",
+        "expiresAt": "2026-09-06T12:51:26.251Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_2",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:37.954Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_2",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:37.956Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_2",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:37.960Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_2",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:46:37.968Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 1,
+        "treatment": "D",
+        "repetition": 1,
+        "runId": "run_qa075_windows_2",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:37.954Z"
+          },
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:37.956Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:37.960Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:46:37.968Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 29178,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the pre-Runtime path is over-applying a Unix executable test to Windows launchers. Discovery stays non-executing and portable: `discoverRuntimeFrom` uses `LookPath` and absolute-path candidate scanning, including nvm and user-bin directories, and explicitly avoids shell/profile execution while locating runtimes [windows-discovery]. The breakage is in validation: `executableAvailable` requires a regular file with Unix execute bits (`0o111`) [windows-availability], and CLI enrollment independently rejects any resolved Codex path that lacks those bits [windows-enrollment]. Console then marks `ExecutableReady` solely from `executableAvailable` before any Runtime probe, so Windows users can be rejected or shown unavailable before runtime validation [windows-console-preflight].\n\nMinimal consistent policy:\n- Preserve discovery exactly as-is: resolve paths without executing anything.\n- Make launchability checks platform-aware.\n- Unix: keep the regular-file + execute-bit rule.\n- Windows: accept native launchers/shims that the OS can launch, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries; do not require Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution still works without shell execution or profile sourcing.\n- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by enrollment and console preflight.\n- Unix regression check: non-executable files and `.cmd` remain rejected on Unix, while executable-bit behavior is unchanged.\n\nUnresolved limitation: the evidence shows the exact Unix-style predicate, so the Windows fix should be applied consistently across both CLI enrollment and Console preflight; no Runtime permission change is needed.",
+          "diagnosisSha256": "756cc05305a7a658724c35a4ab6629c0a46e38c7110cca017cd07935dc81f93b",
+          "diagnosisWords": 231,
+          "diagnosisBytes": 1780,
+          "terminalBytes": 3231,
+          "dispositionBytes": 645,
+          "disposition": {
+            "criterionChecks": [
+              {
+                "claimId": "claim_body_unknown",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.",
+                "evidenceRefs": [
+                  "windows-availability"
+                ],
+                "disposition": "contradicted"
+              },
+              {
+                "claimId": "claim_cli_console_gate",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.",
+                "evidenceRefs": [
+                  "windows-enrollment",
+                  "windows-console-preflight",
+                  "windows-availability"
+                ],
+                "disposition": "supported"
+              }
+            ],
+            "unresolved": []
+          },
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "structurally_valid",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    },
+    {
+      "slot": 2,
+      "treatment": "D",
+      "repetition": 2,
+      "runId": "run_qa075_windows_3",
+      "observedAt": "2026-09-06T12:46:55.558Z",
+      "endedAt": "2026-09-06T12:47:32.359Z",
+      "finalAnswerAt": "2026-09-06T12:47:27.621Z",
+      "instructionSha256": "e63ca5f5081c09e2aa4eaf0cfcf687d9b05f915940f46240137d989230423d09",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 36801,
+      "finalAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime gate is using one Unix-style launchability rule in both CLI enrollment and Console readiness, and that is the Windows failure. `windows-enrollment` resolves `codex` with `exec.LookPath`, normalizes to an absolute path, then rejects it unless `os.Stat` succeeds and `Mode().Perm() & 0o111 != 0`; `windows-console-preflight` marks `ExecutableReady` by the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly “regular file + Unix execute bits.” That can reject valid Windows launchers/shims such as `codex.cmd` before runtime validation. `windows-discovery` is different: it keeps discovery non-executing, uses `LookPath` plus absolute candidate paths, and on Windows only probes `*.exe` candidates in the fallback path.\n\nRecommended minimal policy:\n- Keep discovery portable and non-executing.\n- Make launchability validation platform-aware.\n- Unix: retain the current regular-file + execute-bit rule.\n- Windows: accept OS-launchable native entries, including `*.exe`, `*.cmd`, and `*.bat`, without requiring Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery: confirm lookup/candidate resolution still works without shells or profile sourcing (`windows-discovery`).\n- Native Windows validation: confirm `codex.exe` and `codex.cmd` are accepted by the pre-Runtime gates.\n- Unix regression: confirm non-executable files still fail and Unix behavior is unchanged.\n- Caller coverage: confirm both CLI enrollment and Console preflight use the same platform-specific helper.\n\nUnresolved but not blocking: the transcript does not show any additional Windows-only launcher forms beyond `*.exe`, `*.cmd`, and `*.bat`; no evidence here supports broadening past those without more requirements.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.93,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"windows_launcher_scope\",\"question\":\"Do we need support beyond .exe/.cmd/.bat on Windows?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "91664ca636fc5a17c0cdf569fdd21b544d9b230c3cc7b339a25b8c339a2669cb",
+      "outputWordCount": 270,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime gate is using one Unix-style launchability rule in both CLI enrollment and Console readiness, and that is the Windows failure. `windows-enrollment` resolves `codex` with `exec.LookPath`, normalizes to an absolute path, then rejects it unless `os.Stat` succeeds and `Mode().Perm() & 0o111 != 0`; `windows-console-preflight` marks `ExecutableReady` by the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly “regular file + Unix execute bits.” That can reject valid Windows launchers/shims such as `codex.cmd` before runtime validation. `windows-discovery` is different: it keeps discovery non-executing, uses `LookPath` plus absolute candidate paths, and on Windows only probes `*.exe` candidates in the fallback path.\n\nRecommended minimal policy:\n- Keep discovery portable and non-executing.\n- Make launchability validation platform-aware.\n- Unix: retain the current regular-file + execute-bit rule.\n- Windows: accept OS-launchable native entries, including `*.exe`, `*.cmd`, and `*.bat`, without requiring Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery: confirm lookup/candidate resolution still works without shells or profile sourcing (`windows-discovery`).\n- Native Windows validation: confirm `codex.exe` and `codex.cmd` are accepted by the pre-Runtime gates.\n- Unix regression: confirm non-executable files still fail and Unix behavior is unchanged.\n- Caller coverage: confirm both CLI enrollment and Console preflight use the same platform-specific helper.\n\nUnresolved but not blocking: the transcript does not show any additional Windows-only launcher forms beyond `*.exe`, `*.cmd`, and `*.bat`; no evidence here supports broadening past those without more requirements.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.93,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"windows_launcher_scope\",\"question\":\"Do we need support beyond .exe/.cmd/.bat on Windows?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m checking the fixed evidence sources in full first, then I’ll reconcile the participant claims against them and summarize only what the sources support.",
+          "observedAt": "2026-09-06T12:47:01.189Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I’ve found the evidence reader. Next I’m pulling all four fixed excerpts so I can compare the pre-Runtime gates directly instead of inferring from the transcript.",
+          "observedAt": "2026-09-06T12:47:08.358Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:08.360Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:08.365Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:08.408Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:08.410Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:08.412Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:08.414Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:08.415Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:08.417Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:46:55.752Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:46:55.759Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:46:55.760Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:08.360Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:08.362Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:08.410Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:08.412Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:08.412Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:08.413Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:08.414Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_3",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:08.415Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_3",
+        "expiresAt": "2026-09-06T12:51:55.558Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_3",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:08.361Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_3",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:08.411Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_3",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:08.412Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_3",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:08.414Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 2,
+        "treatment": "D",
+        "repetition": 2,
+        "runId": "run_qa075_windows_3",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:08.361Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:08.411Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:08.412Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:08.414Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 36801,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the pre-Runtime gate is using one Unix-style launchability rule in both CLI enrollment and Console readiness, and that is the Windows failure. `windows-enrollment` resolves `codex` with `exec.LookPath`, normalizes to an absolute path, then rejects it unless `os.Stat` succeeds and `Mode().Perm() & 0o111 != 0`; `windows-console-preflight` marks `ExecutableReady` by the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly “regular file + Unix execute bits.” That can reject valid Windows launchers/shims such as `codex.cmd` before runtime validation. `windows-discovery` is different: it keeps discovery non-executing, uses `LookPath` plus absolute candidate paths, and on Windows only probes `*.exe` candidates in the fallback path.\n\nRecommended minimal policy:\n- Keep discovery portable and non-executing.\n- Make launchability validation platform-aware.\n- Unix: retain the current regular-file + execute-bit rule.\n- Windows: accept OS-launchable native entries, including `*.exe`, `*.cmd`, and `*.bat`, without requiring Unix permission bits.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery: confirm lookup/candidate resolution still works without shells or profile sourcing (`windows-discovery`).\n- Native Windows validation: confirm `codex.exe` and `codex.cmd` are accepted by the pre-Runtime gates.\n- Unix regression: confirm non-executable files still fail and Unix behavior is unchanged.\n- Caller coverage: confirm both CLI enrollment and Console preflight use the same platform-specific helper.\n\nUnresolved but not blocking: the transcript does not show any additional Windows-only launcher forms beyond `*.exe`, `*.cmd`, and `*.bat`; no evidence here supports broadening past those without more requirements.",
+          "diagnosisSha256": "beeff52e17f34aa1c526a808631916bd0ac11b34214bae14c306171e8c29cdd1",
+          "diagnosisWords": 238,
+          "diagnosisBytes": 1816,
+          "terminalBytes": 3081,
+          "dispositionBytes": 645,
+          "disposition": {
+            "criterionChecks": [
+              {
+                "claimId": "claim_body_unknown",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.",
+                "evidenceRefs": [
+                  "windows-availability"
+                ],
+                "disposition": "contradicted"
+              },
+              {
+                "claimId": "claim_cli_console_gate",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.",
+                "evidenceRefs": [
+                  "windows-enrollment",
+                  "windows-console-preflight",
+                  "windows-availability"
+                ],
+                "disposition": "supported"
+              }
+            ],
+            "unresolved": []
+          },
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "structurally_valid",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    },
+    {
+      "slot": 3,
+      "treatment": "C",
+      "repetition": 2,
+      "runId": "run_qa075_windows_4",
+      "observedAt": "2026-09-06T12:47:32.488Z",
+      "endedAt": "2026-09-06T12:47:58.839Z",
+      "finalAnswerAt": "2026-09-06T12:47:55.618Z",
+      "instructionSha256": "280b1b727df891dd11eeae004223ceba3efb676aa9afbaf6279f781e59a6717f",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 26351,
+      "finalAnswer": "<final-answer>\nDiagnosis: the failure is a pre-Runtime validation mismatch on Windows. In `windows-discovery`, discovery stays non-executing and portable: it uses `exec.LookPath`, then absolute-path candidate scanning, and only checks `filepath.IsAbs(...) && executableAvailable(...)` before recording a runtime. The Windows-specific candidate builder only appends `.exe` under `platform == \"windows\"`, while the NVM scan explicitly avoids shells/profiles. In `windows-availability`, `executableAvailable` is just `os.Stat` plus regular-file and Unix execute-bit gating, with no Windows branch in the excerpt. In `windows-enrollment`, CLI enrollment independently rejects any resolved Codex path that lacks execute bits. In `windows-console-preflight`, Console sets `ExecutableReady` from the same `executableAvailable(executablePath)` before any Runtime probe. That combination explains why installed native launchers and `codex.cmd` shims can be marked missing/rejected before Runtime is consulted.\n\nMinimal consistent policy: keep discovery unchanged and non-executing, but make launchability validation platform-aware. Preserve the current Unix rule (`regular file + execute bit`). On Windows, accept launchers that the OS can run, including native `.exe` and script launchers such as `.cmd`/`.bat`, without requiring Unix permission bits. Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still work without executing shells or sourcing profiles.\n- Native Windows validation check: a discovered `codex.exe` and `codex.cmd` both pass the pre-Runtime availability gate.\n- Unix regression check: `.cmd` remains non-authoritative on Unix, and execute-bit enforcement still applies.\n- Caller coverage: both Console preflight and CLI enrollment use the same platform-aware launchability rule.\n\nUnresolved observation: the supplied excerpt does not show the full `executableAvailable` call graph or any Windows-specific build tags, so the exact extension handling beyond `.exe` is still an implementation detail to confirm.\n</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.79,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_windows_extensions\",\"question\":\"Should Windows validation explicitly accept only .exe/.cmd/.bat, or delegate to a broader OS launchability check?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "357f745dda8802f5d2acbf56e7180210e89eb3582eed5b620cc7c9b9e4569167",
+      "outputWordCount": 266,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<final-answer>\nDiagnosis: the failure is a pre-Runtime validation mismatch on Windows. In `windows-discovery`, discovery stays non-executing and portable: it uses `exec.LookPath`, then absolute-path candidate scanning, and only checks `filepath.IsAbs(...) && executableAvailable(...)` before recording a runtime. The Windows-specific candidate builder only appends `.exe` under `platform == \"windows\"`, while the NVM scan explicitly avoids shells/profiles. In `windows-availability`, `executableAvailable` is just `os.Stat` plus regular-file and Unix execute-bit gating, with no Windows branch in the excerpt. In `windows-enrollment`, CLI enrollment independently rejects any resolved Codex path that lacks execute bits. In `windows-console-preflight`, Console sets `ExecutableReady` from the same `executableAvailable(executablePath)` before any Runtime probe. That combination explains why installed native launchers and `codex.cmd` shims can be marked missing/rejected before Runtime is consulted.\n\nMinimal consistent policy: keep discovery unchanged and non-executing, but make launchability validation platform-aware. Preserve the current Unix rule (`regular file + execute bit`). On Windows, accept launchers that the OS can run, including native `.exe` and script launchers such as `.cmd`/`.bat`, without requiring Unix permission bits. Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still work without executing shells or sourcing profiles.\n- Native Windows validation check: a discovered `codex.exe` and `codex.cmd` both pass the pre-Runtime availability gate.\n- Unix regression check: `.cmd` remains non-authoritative on Unix, and execute-bit enforcement still applies.\n- Caller coverage: both Console preflight and CLI enrollment use the same platform-aware launchability rule.\n\nUnresolved observation: the supplied excerpt does not show the full `executableAvailable` call graph or any Windows-specific build tags, so the exact extension handling beyond `.exe` is still an implementation detail to confirm.\n</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.79,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_windows_extensions\",\"question\":\"Should Windows validation explicitly accept only .exe/.cmd/.bat, or delegate to a broader OS launchability check?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m checking the supplied evidence sources directly, then I’ll reconcile the discovery, console, and enrollment checks against the Windows failure mode and keep the answer bounded to the supported facts.",
+          "observedAt": "2026-09-06T12:47:37.728Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I have the evidence reader. Next I’m loading all four excerpts so I can verify which checks are actually present and which are still inference.",
+          "observedAt": "2026-09-06T12:47:44.148Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:44.150Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:44.152Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:44.158Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:44.160Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:44.178Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:47:44.180Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:44.182Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:47:44.185Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:47:32.647Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:47:32.656Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:47:32.656Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:44.151Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:44.153Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:44.153Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:44.156Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:44.179Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:44.181Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:47:44.181Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_4",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:47:44.181Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_4",
+        "expiresAt": "2026-09-06T12:52:32.488Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_4",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:44.152Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_4",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:44.154Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_4",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:44.180Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_4",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:47:44.181Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 3,
+        "treatment": "C",
+        "repetition": 2,
+        "runId": "run_qa075_windows_4",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:44.152Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:44.154Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:44.180Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:47:44.181Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 26351,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the failure is a pre-Runtime validation mismatch on Windows. In `windows-discovery`, discovery stays non-executing and portable: it uses `exec.LookPath`, then absolute-path candidate scanning, and only checks `filepath.IsAbs(...) && executableAvailable(...)` before recording a runtime. The Windows-specific candidate builder only appends `.exe` under `platform == \"windows\"`, while the NVM scan explicitly avoids shells/profiles. In `windows-availability`, `executableAvailable` is just `os.Stat` plus regular-file and Unix execute-bit gating, with no Windows branch in the excerpt. In `windows-enrollment`, CLI enrollment independently rejects any resolved Codex path that lacks execute bits. In `windows-console-preflight`, Console sets `ExecutableReady` from the same `executableAvailable(executablePath)` before any Runtime probe. That combination explains why installed native launchers and `codex.cmd` shims can be marked missing/rejected before Runtime is consulted.\n\nMinimal consistent policy: keep discovery unchanged and non-executing, but make launchability validation platform-aware. Preserve the current Unix rule (`regular file + execute bit`). On Windows, accept launchers that the OS can run, including native `.exe` and script launchers such as `.cmd`/`.bat`, without requiring Unix permission bits. Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still work without executing shells or sourcing profiles.\n- Native Windows validation check: a discovered `codex.exe` and `codex.cmd` both pass the pre-Runtime availability gate.\n- Unix regression check: `.cmd` remains non-authoritative on Unix, and execute-bit enforcement still applies.\n- Caller coverage: both Console preflight and CLI enrollment use the same platform-aware launchability rule.\n\nUnresolved observation: the supplied excerpt does not show the full `executableAvailable` call graph or any Windows-specific build tags, so the exact extension handling beyond `.exe` is still an implementation detail to confirm.",
+          "diagnosisSha256": "0d26ce18aac89f5c98b16be407aee1568301976b325e65270ea692cfc9ca88dd",
+          "diagnosisWords": 264,
+          "diagnosisBytes": 2077,
+          "terminalBytes": 2724,
+          "dispositionBytes": 0,
+          "disposition": null,
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "not_required",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    },
+    {
+      "slot": 4,
+      "treatment": "C",
+      "repetition": 3,
+      "runId": "run_qa075_windows_5",
+      "observedAt": "2026-09-06T12:47:58.969Z",
+      "endedAt": "2026-09-06T12:48:27.600Z",
+      "finalAnswerAt": "2026-09-06T12:48:24.619Z",
+      "instructionSha256": "280b1b727df891dd11eeae004223ceba3efb676aa9afbaf6279f781e59a6717f",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 28631,
+      "finalAnswer": "<final-answer>Diagnosis: the pre-Runtime path applies a Unix-style executability gate too early and too broadly. In `windows-discovery`, runtime discovery is portable in shape (`exec.LookPath` plus absolute candidate fallback), but every discovered path is still filtered through `executableAvailable` before it is accepted. That helper is Unix-only: it requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`) in `windows-availability`. The same gate is used again in `windows-console-preflight` to mark an agent `ExecutableReady`, so Windows launchers can be reported unavailable before any Runtime probe. In `windows-enrollment`, CLI enrollment independently rejects `codex` unless the resolved path is an executable file by the same execute-bit rule. This matches the reported failure mode for native launchers and `codex.cmd` shims.\n\nMinimal consistent policy:\n- Keep discovery non-executing and absolute-path based.\n- Keep Unix behavior unchanged: regular file plus execute bit.\n- On Windows, replace execute-bit validation with a native launchability check that accepts OS-launchable files and shims, without changing Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still do not execute shells or source profiles (`windows-discovery` already documents that intent).\n- Unix regression check: Unix binaries still require execute bits; non-executable files remain rejected.\n- Windows native check: a valid `codex.cmd` and a native launcher path are accepted by CLI enrollment and console preflight before Runtime probing.\n\nResolved vs unresolved:\n- `claim_body_unknown`: resolved false; the `executableAvailable` body is present and clearly Unix-only.\n- `claim_cli_console_gate`: supported by `windows-enrollment` and `windows-console-preflight`.\n- Missing evidence remains on the exact Windows acceptance rule to implement for non-`.exe` launcher forms beyond the obvious shim case; that should be verified separately without changing Runtime permissions.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.87,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_windows_acceptance_rule\",\"question\":\"What exact Windows launchability predicate should replace the Unix execute-bit check, including handling of .cmd/.bat and PATHEXT resolution?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "55de0985f64d6839c2e50a0e66b590a54d0b324a70e90725057a34033d691b8a",
+      "outputWordCount": 270,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<final-answer>Diagnosis: the pre-Runtime path applies a Unix-style executability gate too early and too broadly. In `windows-discovery`, runtime discovery is portable in shape (`exec.LookPath` plus absolute candidate fallback), but every discovered path is still filtered through `executableAvailable` before it is accepted. That helper is Unix-only: it requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`) in `windows-availability`. The same gate is used again in `windows-console-preflight` to mark an agent `ExecutableReady`, so Windows launchers can be reported unavailable before any Runtime probe. In `windows-enrollment`, CLI enrollment independently rejects `codex` unless the resolved path is an executable file by the same execute-bit rule. This matches the reported failure mode for native launchers and `codex.cmd` shims.\n\nMinimal consistent policy:\n- Keep discovery non-executing and absolute-path based.\n- Keep Unix behavior unchanged: regular file plus execute bit.\n- On Windows, replace execute-bit validation with a native launchability check that accepts OS-launchable files and shims, without changing Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still do not execute shells or source profiles (`windows-discovery` already documents that intent).\n- Unix regression check: Unix binaries still require execute bits; non-executable files remain rejected.\n- Windows native check: a valid `codex.cmd` and a native launcher path are accepted by CLI enrollment and console preflight before Runtime probing.\n\nResolved vs unresolved:\n- `claim_body_unknown`: resolved false; the `executableAvailable` body is present and clearly Unix-only.\n- `claim_cli_console_gate`: supported by `windows-enrollment` and `windows-console-preflight`.\n- Missing evidence remains on the exact Windows acceptance rule to implement for non-`.exe` launcher forms beyond the obvious shim case; that should be verified separately without changing Runtime permissions.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.87,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_windows_acceptance_rule\",\"question\":\"What exact Windows launchability predicate should replace the Unix execute-bit check, including handling of .cmd/.bat and PATHEXT resolution?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m checking the supplied evidence sources in full first, then I’ll reconcile the participant claims against them and produce a concise diagnosis with explicit unknowns.",
+          "observedAt": "2026-09-06T12:48:04.159Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I’ve found the evidence reader. Next I’m pulling all four excerpts in parallel so I can verify the actual checks rather than rely on the transcript summaries.",
+          "observedAt": "2026-09-06T12:48:10.298Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:10.301Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:10.304Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:10.309Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:10.312Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:10.330Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:10.332Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:10.335Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:10.336Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:47:59.131Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:47:59.138Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:47:59.140Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:10.302Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:10.305Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:10.305Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:10.307Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:10.332Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:10.332Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:10.333Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_5",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:10.333Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_5",
+        "expiresAt": "2026-09-06T12:52:58.969Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_5",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:10.303Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_5",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:10.306Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_5",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:10.332Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_5",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:10.333Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 4,
+        "treatment": "C",
+        "repetition": 3,
+        "runId": "run_qa075_windows_5",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:10.303Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:10.306Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:10.332Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:10.333Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 28631,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the pre-Runtime path applies a Unix-style executability gate too early and too broadly. In `windows-discovery`, runtime discovery is portable in shape (`exec.LookPath` plus absolute candidate fallback), but every discovered path is still filtered through `executableAvailable` before it is accepted. That helper is Unix-only: it requires a regular file with execute bits (`Mode().Perm() & 0o111 != 0`) in `windows-availability`. The same gate is used again in `windows-console-preflight` to mark an agent `ExecutableReady`, so Windows launchers can be reported unavailable before any Runtime probe. In `windows-enrollment`, CLI enrollment independently rejects `codex` unless the resolved path is an executable file by the same execute-bit rule. This matches the reported failure mode for native launchers and `codex.cmd` shims.\n\nMinimal consistent policy:\n- Keep discovery non-executing and absolute-path based.\n- Keep Unix behavior unchanged: regular file plus execute bit.\n- On Windows, replace execute-bit validation with a native launchability check that accepts OS-launchable files and shims, without changing Runtime permissions.\n\nChecks to add:\n- Portable discovery check: path resolution and candidate enumeration still do not execute shells or source profiles (`windows-discovery` already documents that intent).\n- Unix regression check: Unix binaries still require execute bits; non-executable files remain rejected.\n- Windows native check: a valid `codex.cmd` and a native launcher path are accepted by CLI enrollment and console preflight before Runtime probing.\n\nResolved vs unresolved:\n- `claim_body_unknown`: resolved false; the `executableAvailable` body is present and clearly Unix-only.\n- `claim_cli_console_gate`: supported by `windows-enrollment` and `windows-console-preflight`.\n- Missing evidence remains on the exact Windows acceptance rule to implement for non-`.exe` launcher forms beyond the obvious shim case; that should be verified separately without changing Runtime permissions.",
+          "diagnosisSha256": "9033a3c47a6384e1b962c81fad90249ee138be4e0b4df996741ae18ef2e5d126",
+          "diagnosisWords": 270,
+          "diagnosisBytes": 2021,
+          "terminalBytes": 2696,
+          "dispositionBytes": 0,
+          "disposition": null,
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "not_required",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    },
+    {
+      "slot": 5,
+      "treatment": "D",
+      "repetition": 3,
+      "runId": "run_qa075_windows_6",
+      "observedAt": "2026-09-06T12:48:27.726Z",
+      "endedAt": "2026-09-06T12:49:04.509Z",
+      "finalAnswerAt": "2026-09-06T12:49:00.469Z",
+      "instructionSha256": "e63ca5f5081c09e2aa4eaf0cfcf687d9b05f915940f46240137d989230423d09",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 36783,
+      "finalAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime gate is Unix-shaped in two places. `windows-enrollment` resolves `codex` with `exec.LookPath`, then rejects it unless `os.Stat` succeeds and the file has Unix execute bits; `windows-console-preflight` marks `ExecutableReady` only through the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly `IsRegular()` plus `Perm() & 0o111 != 0`, so Windows launchers and npm shims like `codex.cmd` are rejected by policy, not by Runtime.\n\nRecommended minimal policy:\n- Keep discovery non-executing and portable.\n- Keep Unix behavior unchanged: regular file + execute bit.\n- On Windows, accept launchable native entries via Windows resolution semantics instead of Unix mode bits; at minimum, do not require `0o111` for `.exe`, `.cmd`, or `.bat`.\n- Do not change Runtime permissions.\n\nRegression checks:\n- Portable discovery: path resolution still happens without running shells or sourcing profiles; `windows-discovery` already documents the nvm directory scan and no-shell intent.\n- Native Windows verification: a resolved `codex.cmd` and a native launcher path are accepted by enrollment/preflight.\n- Unix regression: non-executable files still fail, and `.cmd` does not become valid on Unix.\n\nUnresolved from the supplied excerpts: the complete caller-side `executableAvailable` contract beyond these snippets, and whether any additional Windows launcher forms beyond `.exe/.cmd/.bat` must be preserved.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.82,\"resolvedQuestionIds\":[],\"openQuestions\":[{\"id\":\"windows-launchability\",\"question\":\"Should Windows acceptance include only .exe/.cmd/.bat, or all PATHEXT-resolved launchables?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "17487bf4d4314243978341782e5e4a5bcb06cff18706d2e1937116db5bf52277",
+      "outputWordCount": 233,
+      "outputWordInstructionMet": true,
+      "candidateAnswer": "<claim-disposition>{\"criterionChecks\":[{\"claimId\":\"claim_body_unknown\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.\",\"evidenceRefs\":[\"windows-availability\"],\"disposition\":\"contradicted\"},{\"claimId\":\"claim_cli_console_gate\",\"criterionKey\":\"criterion_qa072_1\",\"claim\":\"CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.\",\"evidenceRefs\":[\"windows-enrollment\",\"windows-console-preflight\",\"windows-availability\"],\"disposition\":\"supported\"}],\"unresolved\":[]}</claim-disposition>\n<final-answer>Diagnosis: the pre-Runtime gate is Unix-shaped in two places. `windows-enrollment` resolves `codex` with `exec.LookPath`, then rejects it unless `os.Stat` succeeds and the file has Unix execute bits; `windows-console-preflight` marks `ExecutableReady` only through the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly `IsRegular()` plus `Perm() & 0o111 != 0`, so Windows launchers and npm shims like `codex.cmd` are rejected by policy, not by Runtime.\n\nRecommended minimal policy:\n- Keep discovery non-executing and portable.\n- Keep Unix behavior unchanged: regular file + execute bit.\n- On Windows, accept launchable native entries via Windows resolution semantics instead of Unix mode bits; at minimum, do not require `0o111` for `.exe`, `.cmd`, or `.bat`.\n- Do not change Runtime permissions.\n\nRegression checks:\n- Portable discovery: path resolution still happens without running shells or sourcing profiles; `windows-discovery` already documents the nvm directory scan and no-shell intent.\n- Native Windows verification: a resolved `codex.cmd` and a native launcher path are accepted by enrollment/preflight.\n- Unix regression: non-executable files still fail, and `.cmd` does not become valid on Unix.\n\nUnresolved from the supplied excerpts: the complete caller-side `executableAvailable` contract beyond these snippets, and whether any additional Windows launcher forms beyond `.exe/.cmd/.bat` must be preserved.</final-answer>\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.82,\"resolvedQuestionIds\":[],\"openQuestions\":[{\"id\":\"windows-launchability\",\"question\":\"Should Windows acceptance include only .exe/.cmd/.bat, or all PATHEXT-resolved launchables?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "progressMessages": [
+        {
+          "itemId": "item_0",
+          "phase": "unspecified",
+          "text": "I’m pulling the fixed evidence first, then I’ll reconcile the participant claims against it and return a concise diagnosis with the unresolved limits kept explicit.",
+          "observedAt": "2026-09-06T12:48:35.218Z"
+        },
+        {
+          "itemId": "item_1",
+          "phase": "unspecified",
+          "text": "I’ve located the evidence reader. Next I’m loading all four fixed excerpts in full so the diagnosis rests on the supplied source bytes, not the transcript summaries.",
+          "observedAt": "2026-09-06T12:48:42.250Z"
+        }
+      ],
+      "failures": [],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:42.254Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:42.257Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:42.259Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-06T12:48:42.261Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:42.264Z"
+        },
+        {
+          "itemId": "item_3",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:42.265Z"
+        },
+        {
+          "itemId": "item_4",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:42.267Z"
+        },
+        {
+          "itemId": "item_5",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-06T12:48:42.268Z"
+        }
+      ],
+      "omittedToolEvents": 0,
+      "omittedMessages": 0,
+      "turnCompleted": true,
+      "readerLifecycle": [
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "startup",
+          "observedAt": "2026-09-06T12:48:27.884Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "initialized",
+          "observedAt": "2026-09-06T12:48:27.891Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "tools_listed",
+          "definitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+          "tools": [
+            {
+              "name": "read_evidence",
+              "schemaSha256": "eca56c447b44e17dbcbc3585aaf65cb3f2400a9931472e8623b5e71f5b49d47d"
+            }
+          ],
+          "observedAt": "2026-09-06T12:48:27.893Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:42.253Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:42.256Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:42.256Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:42.257Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:42.261Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:42.261Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_started",
+          "recognizedTool": true,
+          "observedAt": "2026-09-06T12:48:42.262Z"
+        },
+        {
+          "version": 1,
+          "runId": "run_qa075_windows_6",
+          "stage": "call_returned",
+          "status": "returned",
+          "failureReason": null,
+          "observedAt": "2026-09-06T12:48:42.262Z"
+        }
+      ],
+      "evidenceAccess": {
+        "configured": true,
+        "catalogListed": true,
+        "modelDiscovery": "not_observable_in_cli_json",
+        "sourceReturns": 4
+      },
+      "grant": {
+        "experimentId": "qa-075-windows-claim-adjudication-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa075_windows_6",
+        "expiresAt": "2026-09-06T12:53:27.726Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": [
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_6",
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:42.254Z"
+          },
+          "content": "package console\n\nimport (\n\t\"net/http\"\n\t\"os\"\n\t\"os/exec\"\n\t\"path/filepath\"\n\t\"runtime\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype RuntimeDiscovery struct {\n\tPath   string `json:\"path,omitempty\"`\n\tSource string `json:\"source,omitempty\"`\n}\n\ntype executableCandidate struct{ path, source string }\n\nfunc discoverRuntime(name string) RuntimeDiscovery {\n\thomeDirectory, _ := os.UserHomeDir()\n\treturn discoverRuntimeFrom(name, runtimeCandidates(name, runtime.GOOS, homeDirectory, os.Getenv), exec.LookPath)\n}\n\nfunc discoverRuntimeFrom(name string, candidates []executableCandidate, lookPath func(string) (string, error)) RuntimeDiscovery {\n\tif name != \"codex\" && name != \"pi\" {\n\t\treturn RuntimeDiscovery{}\n\t}\n\tif path, err := lookPath(name); err == nil && filepath.IsAbs(path) && executableAvailable(path) {\n\t\treturn RuntimeDiscovery{Path: path, Source: \"PATH\"}\n\t}\n\tfor _, candidate := range candidates {\n\t\tif filepath.IsAbs(candidate.path) && executableAvailable(candidate.path) {\n\t\t\treturn RuntimeDiscovery{Path: candidate.path, Source: candidate.source}\n\t\t}\n\t}\n\treturn RuntimeDiscovery{}\n}\n\nfunc runtimeCandidates(name, platform, homeDirectory string, getenv func(string) string) []executableCandidate {\n\tvar result []executableCandidate\n\taddBin := func(directory, source string) {\n\t\tif !filepath.IsAbs(directory) {\n\t\t\treturn\n\t\t}\n\t\tfilename := name\n\t\tif platform == \"windows\" {\n\t\t\tfilename += \".exe\"\n\t\t}\n\t\tresult = append(result, executableCandidate{filepath.Join(directory, filename), source})\n\t}\n\tif platform == \"darwin\" && name == \"codex\" {\n\t\troots := []string{\"/Applications\"}\n\t\tif filepath.IsAbs(homeDirectory) {\n\t\t\troots = append(roots, filepath.Join(homeDirectory, \"Applications\"))\n\t\t}\n\t\tfor _, root := range roots {\n\t\t\tfor _, app := range []string{\"ChatGPT.app\", \"Codex.app\"} {\n\t\t\t\taddBin(filepath.Join(root, app, \"Contents\", \"Resources\"), \"macOS App\")\n\t\t\t}\n\t\t}\n\t}\n\tif platform != \"windows\" {\n\t\taddBin(\"/opt/homebrew/bin\", \"Homebrew / system\")\n\t\taddBin(\"/usr/local/bin\", \"Homebrew / system\")\n\t}\n\tif filepath.IsAbs(homeDirectory) {\n\t\tfor _, directory := range []string{\".local/bin\", \"bin\", \".npm-global/bin\", \".volta/bin\", \".bun/bin\"} {\n\t\t\taddBin(filepath.Join(homeDirectory, directory), \"user bin\")\n\t\t}\n\t}\n\taddBin(getenv(\"NVM_BIN\"), \"nvm\")\n\tnvmRoot := getenv(\"NVM_DIR\")\n\tif !filepath.IsAbs(nvmRoot) && filepath.IsAbs(homeDirectory) {\n\t\tnvmRoot = filepath.Join(homeDirectory, \".nvm\")\n\t}\n\tif filepath.IsAbs(nvmRoot) {\n\t\tfor _, directory := range nvmVersionBins(filepath.Join(nvmRoot, \"versions\", \"node\")) {\n\t\t\taddBin(directory, \"nvm\")\n\t\t}\n\t}\n\treturn result\n}\n\n// Read only one known installation directory, at most 128 entries. Never run\n// login shells or source user profiles merely to locate an executable.\nfunc nvmVersionBins(root string) []string {\n\tdirectory, err := os.Open(root)\n\tif err != nil {\n\t\treturn nil\n\t}\n\tdefer directory.Close()\n\tentries, _ := directory.ReadDir(128)\n\ttype version struct {\n\t\tname  string\n\t\tparts [3]int\n\t}\n\tversions := make([]version, 0, len(entries))\n\tfor _, entry := range entries {\n\t\tif !entry.IsDir() || !strings.HasPrefix(entry.Name(), \"v\") {\n\t\t\tcontinue\n\t\t}\n\t\tparts := strings.Split(strings.TrimPrefix(entry.Name(), \"v\"), \".\")\n\t\tif len(parts) != 3 {\n\t\t\tcontinue\n\t\t}\n\t\titem := version{name: entry.Name()}\n\t\tvalid := true\n\t\tfor index, part := range parts {\n\t\t\tvalue, err := strconv.Atoi(part)\n\t\t\tif err != nil || value < 0 {\n\t\t\t\tvalid = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\titem.parts[index] = value\n\t\t}\n\t\tif valid {\n\t\t\tversions = append(versions, item)\n\t\t}\n\t}\n\tsort.Slice(versions, func(i, j int) bool {\n\t\tfor index := range versions[i].parts {\n\t\t\tif versions[i].parts[index] != versions[j].parts[index] {\n\t\t\t\treturn versions[i].parts[index] > versions[j].parts[index]\n\t\t\t}\n\t\t}\n\t\treturn versions[i].name < versions[j].name\n\t})\n\tresult := make([]string, 0, len(versions))\n\tfor _, version := range versions {\n\t\tresult = append(result, filepath.Join(root, version.name, \"bin\"))\n\t}\n\treturn result\n}\n\nfunc (s *Service) discoverRuntimes() map[string]RuntimeDiscovery {\n\treturn map[string]RuntimeDiscovery{\"codex\": s.dependencies.DiscoverRuntime(\"codex\"), \"pi\": s.dependencies.DiscoverRuntime(\"pi\")}\n}\n\nfunc (s *Service) applyDiscoveryLocked(discovered map[string]RuntimeDiscovery) {\n\ts.state.RuntimeDiscovery = discovered\n\ts.state.DetectedCodex = discovered[\"codex\"].Path\n\ts.state.DetectedPi = discovered[\"pi\"].Path\n}\n\nfunc (s *Service) refreshRuntimeDiscovery(response http.ResponseWriter, _ *http.Request) {\n\tdiscovered := s.discoverRuntimes()\n\ts.mu.Lock()\n\ts.applyDiscoveryLocked(discovered)\n\ts.mu.Unlock()\n\twriteJSON(response, http.StatusOK, discovered)\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_6",
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:42.257Z"
+          },
+          "content": "func executableAvailable(path string) bool {\n\tinfo, err := os.Stat(path)\n\treturn err == nil && info.Mode().IsRegular() && info.Mode().Perm()&0o111 != 0\n}\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_6",
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:42.261Z"
+          },
+          "content": "\t\tsandbox := agent.Sandbox\n\t\texecutablePath := \"\"\n\t\tif len(agent.Command) > 0 {\n\t\t\texecutablePath = agent.Command[0]\n\t\t}\n\t\tcredentialEnvironmentVar := \"\"\n\t\tif kind == \"pi\" {\n\t\t\tstandard := map[string]struct{}{\n\t\t\t\t\"HOME\": {}, \"PATH\": {}, \"PI_CODING_AGENT_DIR\": {}, \"PI_TELEMETRY\": {},\n\t\t\t}\n\t\t\tfor _, name := range agent.EnvAllowlist {\n\t\t\t\tif _, exists := standard[name]; !exists {\n\t\t\t\t\tcredentialEnvironmentVar = name\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\texecutableReady := executableAvailable(executablePath)\n\t\truntimeState := \"unavailable\"\n\t\tif executableReady {\n\t\t\truntimeState = string(operations.RuntimeIdle)\n\t\t}\n\t\ts.state.Agents = append(s.state.Agents, AgentView{\n\t\t\tAgentID: identities[agent.Name], Kind: kind, Name: agent.Name, Role: agent.Role,\n\t\t\tExecutablePath: executablePath, Workspace: agent.Workspace,\n\t\t\tSandbox: sandbox, CodexSessionConflictPolicy: agent.CodexSessionConflictPolicy,\n\t\t\tCredentialEnvironmentVar: credentialEnvironmentVar,\n\t\t\tExecutableReady:          executableReady, RuntimeState: runtimeState,\n\t\t})\n\t}\n\treturn nil\n"
+        },
+        {
+          "receipt": {
+            "version": 1,
+            "experimentId": "qa-075-windows-claim-adjudication-v1",
+            "authorityId": "authority_qa072_owner_excerpts_v1",
+            "taskId": "task_qa072windows0001",
+            "roomId": "room_qa072windows0001",
+            "runId": "run_qa075_windows_6",
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "sourceContentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "status": "returned",
+            "failureReason": null,
+            "observedAt": "2026-09-06T12:48:42.262Z"
+          },
+          "content": "\tresolvedCodex := *codex\n\tif resolvedCodex == \"\" {\n\t\tresolvedCodex, err = exec.LookPath(\"codex\")\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"find Codex: use --codex with its executable path\")\n\t\t}\n\t}\n\tresolvedCodex, err = filepath.Abs(resolvedCodex)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"resolve Codex executable: %w\", err)\n\t}\n\tcodexInfo, err := os.Stat(resolvedCodex)\n\tif err != nil || codexInfo.IsDir() || codexInfo.Mode().Perm()&0o111 == 0 {\n\t\treturn fmt.Errorf(\"Codex path must be an executable file\")\n\t}\n"
+        }
+      ],
+      "manipulation": {
+        "slot": 5,
+        "treatment": "D",
+        "repetition": 3,
+        "runId": "run_qa075_windows_6",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:42.254Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:42.257Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:42.261Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T12:48:42.262Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 36783,
+        "commonValid": true,
+        "artifacts": {
+          "finalBlockValid": true,
+          "finalDiagnosis": "Diagnosis: the pre-Runtime gate is Unix-shaped in two places. `windows-enrollment` resolves `codex` with `exec.LookPath`, then rejects it unless `os.Stat` succeeds and the file has Unix execute bits; `windows-console-preflight` marks `ExecutableReady` only through the same `executableAvailable` check before any Runtime probe. `windows-availability` shows that check is exactly `IsRegular()` plus `Perm() & 0o111 != 0`, so Windows launchers and npm shims like `codex.cmd` are rejected by policy, not by Runtime.\n\nRecommended minimal policy:\n- Keep discovery non-executing and portable.\n- Keep Unix behavior unchanged: regular file + execute bit.\n- On Windows, accept launchable native entries via Windows resolution semantics instead of Unix mode bits; at minimum, do not require `0o111` for `.exe`, `.cmd`, or `.bat`.\n- Do not change Runtime permissions.\n\nRegression checks:\n- Portable discovery: path resolution still happens without running shells or sourcing profiles; `windows-discovery` already documents the nvm directory scan and no-shell intent.\n- Native Windows verification: a resolved `codex.cmd` and a native launcher path are accepted by enrollment/preflight.\n- Unix regression: non-executable files still fail, and `.cmd` does not become valid on Unix.\n\nUnresolved from the supplied excerpts: the complete caller-side `executableAvailable` contract beyond these snippets, and whether any additional Windows launcher forms beyond `.exe/.cmd/.bat` must be preserved.",
+          "diagnosisSha256": "83e3de3c1ae3c42004767bd5f2ee26fa8165078b642f32aeff1cc56434c430b6",
+          "diagnosisWords": 201,
+          "diagnosisBytes": 1480,
+          "terminalBytes": 2702,
+          "dispositionBytes": 645,
+          "disposition": {
+            "criterionChecks": [
+              {
+                "claimId": "claim_body_unknown",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "The supplied evidence does not contain the complete executableAvailable body, so its Windows permission check remains unknown.",
+                "evidenceRefs": [
+                  "windows-availability"
+                ],
+                "disposition": "contradicted"
+              },
+              {
+                "claimId": "claim_cli_console_gate",
+                "criterionKey": "criterion_qa072_1",
+                "claim": "CLI enrollment independently rejects paths without Unix execute bits, and Console derives pre-Runtime readiness via executableAvailable.",
+                "evidenceRefs": [
+                  "windows-enrollment",
+                  "windows-console-preflight",
+                  "windows-availability"
+                ],
+                "disposition": "supported"
+              }
+            ],
+            "unresolved": []
+          },
+          "errors": []
+        },
+        "bindingErrors": [],
+        "outputWordInstructionMet": true,
+        "dispositionProtocol": "structurally_valid",
+        "semanticConsistency": "requires_frozen_rubric_review"
+      }
+    }
+  ],
+  "error": null
+}
