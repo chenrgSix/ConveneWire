@@ -687,6 +687,17 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | GOV-034 | DONE | Adopt post-comparison maintenance and Single Agent acceptance guidance | GOV-033, QA-070 | [Accepted ADR follow-up](adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md#post-comparison-adoption) and [acceptance workflow](discussion-usage-guide.md#日常任务的执行与验收) align README and module/baseline guidance; docs, links and scope checks passed with no production or experiment change |
 | GOV-035 | DONE | Remove redundant Discussion documentation and derived test material | GOV-034 | Consolidated policy, usage and QA-069/070 execution records; duplicate answer export removed, originals remain in raw reports; 520 retained evidence/fixture/test/Bridge files byte-identical, 34 provider-free checks, 398-file docs lint, links/whitespace and physical test-root cleanup passed |
 
+## Criterion Evidence Delivery
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| GOV-036 | DONE | Freeze criterion evidence delivery for code Results | GOV-035, TASK-013, VER-001 | Owner-authorized ADR-0046 and owning module criteria fix scope, existing authorities, bounded projection and provider-free acceptance before implementation |
+| CON-025 | ACTIVE | Define the closed Result acceptance-evidence projection | GOV-036, CON-024 | Additive generated TypeScript/Go response, shared positive/negative schema and round-trip checks; unchanged proposal/Bridge envelopes |
+| TASK-014 | PLANNED | Join criterion contributions, candidates and verification | CON-025, TASK-013, VER-001 | Room-authorized read-only Result endpoint, exact SQLite evidence joins, historical/stale/bounded diagnostics, candidate substitution and negative verification regressions |
+| DISC-020 | PLANNED | Include accepted criterion contributions in finalization | TASK-014, DISC-018, DISC-014 | Canonical criterion guidance, accepted-prior-Run selection, quorum and same-Wave exclusions, frozen bounded instructions and explicit omitted/unstructured evidence |
+| WEB-073 | PLANNED | Inspect criterion evidence beside candidate Results | TASK-014, WEB-064 | Chinese/English Result matrix, attributed claims and exact candidate checks, loading/error/stale behavior, narrow-screen rendered production acceptance |
+| QA-071 | PLANNED | Accept the criterion evidence delivery slice | DISC-020, WEB-073 | Contract/build/Server/Web/Discussion and deterministic Server/Bridge verification checks, physical cleanup and documented evidence; no real model experiment |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

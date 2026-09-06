@@ -680,6 +680,19 @@ runtime acceptance, rather than the earlier design acceptance, is what adds
 this bounded provider capability when the extension is enabled; it adds no Core
 completion requirement.
 
+### Criterion evidence inspection
+
+[ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md) adds
+a read-only consumer of existing local code-candidate verification receipts.
+Result Artifact references must rejoin exact checkpoint output revisions,
+candidate commit/tree, input digest, owning Run, plan revision and required
+profile pins before the view can report matching checks. Missing, optional-only,
+failed, unknown or mismatched receipts cannot imply required verification passed.
+The view copies no source bytes or verifier commands and changes no admission,
+receipt, materialization, integration or human acceptance authority. Acceptance
+must inspect real SQLite joins and exercise the existing Server/Bridge verifier
+path, including negative outcomes and physical temporary-root cleanup.
+
 ### Independent Verification Vertical Slice
 
 The accepted VER-001 target is

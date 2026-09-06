@@ -110,6 +110,27 @@ The existing long-term Memory type `acceptance_criterion` remains an attributed
 claim or context projection; it is not the canonical criterion table and cannot
 silently edit or satisfy it. Context Planner labels the two sources separately.
 
+### Criterion evidence delivery
+
+[ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md) owns
+the bounded code-delivery slice. Ordinary Result proposals are structured
+contributions using existing criterion claims, explanations, risks, questions
+and source references. A separate read-only Result acceptance-evidence view
+joins each historical canonical criterion to the selected candidate claim,
+earlier same-definition/criteria claims, exact Artifact pins and local candidate
+verification observations. It reports missing claims, differing coverage and
+earlier evidence not referenced by the candidate as structural diagnostics,
+never semantic error verdicts. Rejected/superseded history stays labeled.
+
+The required acceptance proves exact version/scope joins; every criterion is
+represented even without a claim; bounded history exposes omissions; stale
+Results retain their original criteria; unavailable, failed, optional or
+foreign-candidate verification never becomes a required pass; Room authorization
+precedes disclosure; projection reads do not mutate Result/Task/proof authority.
+The Web view must expose these distinctions in both locales, handle unavailable
+responses safely and remain usable at 390 px. Existing Owner review and Task
+completion gates remain authoritative.
+
 ### Result submission and review
 
 New submissions are admitted only for `active` or `review` Tasks; other states

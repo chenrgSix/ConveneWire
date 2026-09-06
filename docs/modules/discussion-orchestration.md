@@ -60,6 +60,26 @@ otherwise the prior approval is stale and becomes false. Approval is evidence
 for a policy that requires review, and the role is preferred when selecting the
 separate finalization member; it does not create a serial review Wave.
 
+## Criterion evidence finalization
+
+[ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md)
+authorizes one acceptance-evidence increment within the v1 maintenance freeze.
+Members use canonical criterion keys to distinguish facts, references,
+inferences, assumptions, verification and gaps. Existing Result proposals may
+retain these contributions structurally. A bounded index joins only Results
+attributable to accepted prior member Runs, using the shared Task criterion
+evidence projection. Plain replies remain valid and explicitly unstructured;
+the Server never fabricates criterion claims from their prose.
+
+The index is retained in the existing immutable Run instruction. Acceptance
+requires same-Wave, quorum-excluded and supplemental late Results to stay out;
+current criteria and stale claims to remain distinct; reference existence and
+independent verification to remain separate; deterministic ordering, explicit
+omission counts, intact required instruction sections and restart/retry identity
+to hold within the existing 20,000-code-point limit. Finalizers process supplied
+requirements and supported omissions without inventing defects or declaring
+Task acceptance. No extra Wave, provider call or private-source access is added.
+
 ## Authority Boundary
 
 The control chain is:
