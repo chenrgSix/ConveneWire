@@ -85,6 +85,15 @@ record are retained in
 
 ## Scope
 
+[ADR-0053](../adr/0053-screen-authority-separated-evidence.md) bounds QA-079 to
+authority-separated evidence in a disposable experiment. Raw owner sources and
+private model replies cannot enter the shared Room; separate local disclosure
+consent permits only typed, locally verified observations. The QA adapter reuses
+existing Result/Run-event persistence, with a physical publication-coordinator
+restart and a revoked-share scenario. Its tool/egress enforcement on one trusted
+host does not establish OS, physical-device or provider isolation. It adds no
+production permission policy, contribution store, completion gate or Wave.
+
 - Prefix: `DISC`
 - Implementation: `apps/server/src/discussion/`
 - Owns: bounded multi-Agent Discussions, durable Waves, progress projection,
