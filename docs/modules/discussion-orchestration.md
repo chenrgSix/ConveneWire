@@ -16,6 +16,11 @@ tool visibility and diagnostics using an auth-free loopback provider. It must
 retain the consumed QA-072 plan, original inputs/results and historical code
 identity. No new external-model invocation or production capability is granted.
 
+[ADR-0048](../adr/0048-repeat-evidence-screening-with-manipulation-checks.md)
+separately authorizes QA-074's fresh nine-session screening using the repaired
+tooling. Manipulation checks govern experiment interpretation only; they add
+no production completion or acceptance gate. QA-072 remains consumed.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.
 Code review/test pipelines belong to Execution, not Wave semantics. Focused

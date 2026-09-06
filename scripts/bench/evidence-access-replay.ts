@@ -31,8 +31,8 @@ export interface ReplayFixture {
     maximumReadCalls: number; maximumReturnBytes: number; retries: number };
   order: Array<{ slot: number; treatment: "A" | "B" | "C"; repetition: number; runId: string }>;
 }
-export function loadReplay() {
-  const fixture = JSON.parse(readFileSync(fixturePath, "utf8")) as ReplayFixture;
+export function loadReplay(inputPath = fixturePath) {
+  const fixture = JSON.parse(readFileSync(inputPath, "utf8")) as ReplayFixture;
   const originals = fixture.provenance.map((pin) => {
     const bytes = readFileSync(pin.path);
     assert.equal(sha256(bytes), pin.sha256, "Historical input changed");

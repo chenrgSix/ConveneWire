@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "identity": "qa-074-windows-access-use-v1",
+  "frozenAt": "2026-09-06T11:49:52.563Z",
+  "runtime": {
+    "executableSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
+    "version": "codex-cli 0.153.4",
+    "nodeVersion": "v22.23.1"
+  },
+  "baseInstructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+  "catalogDefinitionSha256": "d19f7e9c8b06f348c16276bc39870f0d1e67c13c864db72f3c1afa1b0c38debe",
+  "configSha256": {
+    "A": "10db75d57e48e2079a296cc52051c65aa0824bdfd629552bd8eed50f53abeaec",
+    "B": "72176321b4696a65b7c48d59e7c4fc8190d17f584fbc68a33fe8ef83888bc7ce",
+    "C": "72176321b4696a65b7c48d59e7c4fc8190d17f584fbc68a33fe8ef83888bc7ce"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/fixtures/qa-072-evidence-access-use.json",
+      "sha256": "6a21e9eedef9ad03e4cc83da81b810d5e48b96d1e40d30c95a5cc06b380d020e"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-read-receipt.schema.json",
+      "sha256": "850dd4e261ce06d9d0dcca6bbc59274be4e178ce92d9a753923c4f9542ddbe99"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-scoring.json",
+      "sha256": "40ee06473f07f29e20fdae86819a6b0b2aa5191ce1b850e3d3e0316fd0d84d34"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-base-instruction.txt",
+      "sha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6"
+    },
+    {
+      "path": "docs/adr/0047-screen-evidence-access-and-use.md",
+      "sha256": "2d179521b9225adc762b2c2fc87be815f94de2294df27c1c0bbcdc930e14d98a"
+    },
+    {
+      "path": "scripts/bench/evidence-access-replay.ts",
+      "sha256": "9a9a5b909beb561dcdb88b70f6d1ede256ea23e0f889b79354122730487f55b8"
+    },
+    {
+      "path": "scripts/bench/evidence-access-reader.mjs",
+      "sha256": "ef8526f136128b5c4ebe6d9619e7e78befc472192d01239c166cbb2481acc0de"
+    },
+    {
+      "path": "scripts/bench/evidence-access-runtime.mjs",
+      "sha256": "7bc4382dada2fc8386aa5de47c7e84289402e0d6ffed39054ef05b8c35f42e90"
+    },
+    {
+      "path": "scripts/bench/evidence-access-execute.ts",
+      "sha256": "045d4ea3b47fe79b144e71bb3e6d9e5e0dad18ce7679c7be3277f1351eb53f31"
+    },
+    {
+      "path": "scripts/bench/evidence-access.test.ts",
+      "sha256": "675f8b43d628bb90aad4b1bbe1bb97eea00b1a24df8c213a3b5435bc88d1dc78"
+    },
+    {
+      "path": "scripts/bench/evidence-codex-config.mjs",
+      "sha256": "2c991690e4e8d5bfcdf8fa9688f2617d4e7fcabfdd1f48ec1f6e66cc6615d7dc"
+    },
+    {
+      "path": "scripts/test/child-process.mjs",
+      "sha256": "b052c595a3262137e294cd6dd672bc2f15e0d40d3d213a884d221d6866ed0fe1"
+    },
+    {
+      "path": "scripts/test/resources.mjs",
+      "sha256": "612859696aa28fced956a4099a733b8d0bcab8c79f481f41b68de61c645cbcbb"
+    },
+    {
+      "path": "scripts/test/run-with-temp-root.mjs",
+      "sha256": "68ad727a8f716456e5488755abb0278011267de02fbc48bf6ae34710c657880e"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-service.ts",
+      "sha256": "44027a90ae43b50540160995dd837082b99717b009477568361b742f230e6f8a"
+    },
+    {
+      "path": "apps/server/src/discussion/acceptance-evidence-instructions.ts",
+      "sha256": "c267f490fc522e4ebe2569b78f4ab98f4f4b6af8114c32b8ffd20bbf4a327c51"
+    },
+    {
+      "path": "apps/server/src/discussion/finalization-instructions.ts",
+      "sha256": "626aff88fabfb7c4ac5cb859dbea11ec5c3787a761e08e061a65c5c41c070971"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-reference.ts",
+      "sha256": "542c717f2cc5bcdd0f0a811348399bbadfb6221a29b81b701fcb8d8658c9f879"
+    },
+    {
+      "path": "apps/server/src/domain/identifiers.ts",
+      "sha256": "a4f6935dc83d9359ed6deaec1befbc9ac559182f1a50c116332e3f662c447f40"
+    },
+    {
+      "path": "apps/server/src/domain/unicode-length.ts",
+      "sha256": "1db81e4bf7aea22489bd5bb93c3105e419be87bc895618b7c7239343b8c3ff48"
+    },
+    {
+      "path": "apps/server/src/security/redaction.ts",
+      "sha256": "e138c1dc9d88908dcd7915fb192e3f5fbaaa9dd4aaee218790eb26aeb745eb93"
+    },
+    {
+      "path": "package.json",
+      "sha256": "475552ad9280b74a3ab073ef78d863f5500fb8dd063b87226468b09c77f92c2c"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7d2b2f7af71c5dfdb256d89e881be8f95d1f606f520c575c950c3678bdff9a1b"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-evidence-access-use.json",
+      "sha256": "78c9dc2625313a53d15745f460751f46b4c7906a61f8eddc2977eb3688297587"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-base-instruction.txt",
+      "sha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-074-scoring.json",
+      "sha256": "5913055b39d31668c587d572927868bfa3c5f94f92563719a28fd2b0f38787b0"
+    },
+    {
+      "path": "docs/adr/0048-repeat-evidence-screening-with-manipulation-checks.md",
+      "sha256": "02f17fe37ea85e21ced59f6a1b897b355cbf2fc206dd6f57671b0ad92be38778"
+    },
+    {
+      "path": "scripts/bench/evidence-screening.ts",
+      "sha256": "0a5f325b9b2bd68af8c57a828ea7043cf2235a62d2a43e48c0710cd747ddf940"
+    },
+    {
+      "path": "scripts/bench/evidence-screening-audit.ts",
+      "sha256": "831820cae0f25e0af949cb8e073fa766c90348a0cfa5fc8e1ffea2623f080030"
+    },
+    {
+      "path": "scripts/bench/evidence-screening.test.ts",
+      "sha256": "8012d14f2c6bdcfa6e3aa57b73fd0bbe34c72c27c2e3372ad7862a02e241a3f7"
+    },
+    {
+      "path": "scripts/bench/evidence-invocation-observer.mjs",
+      "sha256": "44f010b7a16fdf33c5db81211de2813bef6101ac5a1e3270e2612a09490ccf6d"
+    },
+    {
+      "path": "scripts/bench/evidence-invocation-observer.test.mjs",
+      "sha256": "3b3633da0848e6711d80c815d3d2c09c3218e4619e40da3257dd7314004ef695"
+    },
+    {
+      "path": "scripts/bench/evidence-visibility.test.ts",
+      "sha256": "6ddea71aba1649517587976b73f5d3b0aef7bebab45f3aab50d8cd4c3d5cb6d9"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-069-workspace-cases.json",
+      "sha256": "421ed769d57717f6b87bca23a5bf68fb672a0fb27148fd6643e8dc12ef070241"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "sha256": "c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "identity": "qa-074-windows-item-scoring-v1",
+  "modelVisible": false,
+  "judgment": "After all attempts, read each output without its treatment label, cite exact answer spans and original evidence IDs. Unmask only for aggregation. No grading model calls. An evaluator can still infer access from answer wording; blinding is limited.",
+  "states": [
+    "pass",
+    "partial",
+    "fail",
+    "unscorable"
+  ],
+  "targetErrorCorrection": [
+    {
+      "id": "T1",
+      "pass": "Connect Console preflight to the supplied executableAvailable body and its regular-file plus Unix-execute-bit gate; do not retain the false claim that this body is unavailable or an unknown Windows branch remains.",
+      "sources": [
+        "windows-availability",
+        "windows-console-preflight"
+      ]
+    },
+    {
+      "id": "T2",
+      "pass": "Retain CLI enrollment's independent execute-bit rejection and Console's pre-probe readiness check; do not dismiss these as unsupported source labels.",
+      "sources": [
+        "windows-enrollment",
+        "windows-console-preflight"
+      ]
+    }
+  ],
+  "correctContentPreservation": [
+    {
+      "id": "P1",
+      "pass": "Retain Solver's regular-file and Unix-execute-bit discovery/availability diagnosis.",
+      "sources": [
+        "windows-discovery",
+        "windows-availability"
+      ]
+    },
+    {
+      "id": "P2",
+      "pass": "Retain Reviewer's CLI execute-bit gate and Console readiness/preflight link.",
+      "sources": [
+        "windows-enrollment",
+        "windows-console-preflight"
+      ]
+    },
+    {
+      "id": "P3",
+      "pass": "Preserve Unix execute bits and discovery without shell execution/profile sourcing.",
+      "sources": [
+        "windows-discovery",
+        "windows-availability"
+      ]
+    },
+    {
+      "id": "P4",
+      "pass": "Keep Runtime permissions unchanged and describe repairs/checks as proposals, not executed work.",
+      "sources": []
+    }
+  ],
+  "unsupportedAdditions": {
+    "rule": "List every newly asserted material fact, implemented repair or completed test unsupported by sources, task or retained contributions. Separate incorrect assertions from bounded proposed policies. Do not penalize a clearly labeled design suggestion merely because it is not implemented in the historical excerpt.",
+    "knownRisks": [
+      "Claiming all PATHEXT or OS-resolved extensions are inherently safe under the requested bounded policy",
+      "Claiming actual native Windows launch or all regression tests passed",
+      "Inventing an existing shared validator or unseen Windows-specific branch",
+      "Treating a proposed launcher-extension allowlist as an observed historical implementation"
+    ]
+  },
+  "uncertaintyPreservation": [
+    {
+      "id": "U1",
+      "pass": "Preserve the lack of exact user-reported failing paths/logs and avoid claiming an observed platform test in this replay."
+    },
+    {
+      "id": "U2",
+      "pass": "Separate portable checks/cross-compilation from still-required native Windows launch/preflight verification."
+    },
+    {
+      "id": "U3",
+      "pass": "Separate the proposed Windows launcher allowlist from what the historical source establishes; do not preserve uncertainty already resolved by windows-availability."
+    }
+  ],
+  "requiredDeliverableCoverage": [
+    {
+      "id": "D1",
+      "pass": "Locate discovery and availability gates, CLI enrollment, Console preflight, and Windows known-directory candidates that append only .exe."
+    },
+    {
+      "id": "D2",
+      "pass": "Propose one consistent regular-file platform policy, a bounded case-insensitive Windows launcher allowlist, preserved Unix execute bits, PATH lookup and non-executing discovery, with unchanged Runtime permissions. A proposal is not required to copy a later repair's exact allowlist."
+    },
+    {
+      "id": "D3",
+      "pass": "Propose Windows files without execute bits, unsupported extension/directory rejection, Unix regressions and discovery/enrollment/preflight caller tests."
+    },
+    {
+      "id": "D4",
+      "pass": "Cite discovery plus independent Console/CLI source IDs and distinguish proposed portable/native checks from completed validation."
+    }
+  ],
+  "partialRule": "Use partial only when a listed item explicitly has multiple elements and at least one is correctly stated with no contradiction of that element. Absence, a contrary claim or unsupported certainty for the whole item is fail. Explain all partial judgments. No averaging across items.",
+  "evidenceUseCompliance": {
+    "A": "not_applicable: no new reader",
+    "B": "optional: report actual complete/partial/not-read plus whether claims cite returned sources; absence of a read is not a Run failure",
+    "C": "compliant only if every manifest source was fully returned before the final answer and the answer substantively checks the relevant claims; a receipt alone satisfies only the read subcondition. A failed read explicitly acknowledged is attempted-but-incomplete, not full compliance."
+  },
+  "sourceReads": "Record every returned, denied and failed call separately, per source and Run, including ranges/bytes/truncation and timing. An emitted server return is not proof that the model received or understood it.",
+  "runOutcome": "Record completed, timed_out, failed and interrupted/outcome_unknown independently. Grade only delivered final answers; preserve candidate/progress text separately. Every startup consumes a slot, without retries. Record elapsedMilliseconds and output limits.",
+  "interpretation": {
+    "targetCorrect": "T1 and T2 both pass; also report preservation, unsupported additions, uncertainty and deliverables without merging them.",
+    "replication": "Show all three repetitions individually. Three concordant valid outcomes per arm are a within-case stable pattern only; any mix is unstable and reported as such. No significance or population effect claim from n=3.",
+    "A_wrong_B_wrong_C_correct": "In this case explicit evidence-use requirements helped beyond merely making access available; inspect compliance first.",
+    "A_wrong_B_correct_C_correct": "In this case adding source access helped.",
+    "all_wrong": "These two interventions did not resolve the problem. Check returned completeness, instruction adherence and source relevance; do not infer synthesis as the sole cause.",
+    "all_correct": "The historical failure did not reproduce on the current common baseline; no demonstrated mechanism benefit.",
+    "other": "Describe the observed mixed pattern and confounds without assigning a unique mechanism.",
+    "productBoundary": "No claim of improved Discussion product quality. Any independent new task/evidence/error pattern requires another frozen experiment.",
+    "gateFirst": "Never interpret a pattern unless the affected comparison gate passes; positive returns somewhere are necessary, not sufficient. No comparisons to QA-072 outcomes."
+  },
+  "manipulationGate": {
+    "setup": "A: no reader configuration/catalog/grant and zero returns; B/C: matching observed catalog and exact valid Run/source grant. Exact common model/effort/instructions for each treatment.",
+    "exposure": "At least one cryptographically checked successful reader return across B/C; zero means manipulation_failed and all semantic quality dimensions unscorable. No fabricated quality inference.",
+    "B": "Reads optional. No-read is valid setup and may be a completed Run; Q1 causal interpretation nevertheless requires actual B returns.",
+    "C": "Exact frozen rule supplied; full authorized source coverage before final answer, allowing the union of valid returned ranges. Substantive checking remains a separate item review.",
+    "Q1": "Report all A/B repetitions. For a stable access interpretation all three pairs must have valid setup, completed Runs, delivered answers and B source returns before its answer.",
+    "Q2": "Report all B/C repetitions. For a stable use interpretation all three pairs must have valid setup, completed Runs, delivered answers and all required C sources fully returned before its answer; B reading stays optional.",
+    "partial": "Any missing repetition/setup/outcome/exposure prevents a stable causal interpretation for that comparison. Report the missing gate and all runs without selecting only successful ones."
+  }
+}
