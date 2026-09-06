@@ -34,6 +34,9 @@ independent final-artifact acceptance owns the full-deliverable metric. This
 adds no production closure gate or claim store. The Owner subsequently approved
 one six-session E/F execution through the existing Codex/OpenAI service; the
 committed authorization freeze changes no model-visible input or grading rule.
+The six-session result retains full-deliverable E=0/3 and F=0/3, twelve F
+overclaims and one E output-framing failure; no production criterion gate is
+justified by this screening. The consumed journal prevents same-plan retries.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.

@@ -1,0 +1,876 @@
+{
+  "version": 1,
+  "identity": "qa-076-criterion-closure-assessment-v1",
+  "sourceCommit": "1375c999fcd576419c3dbe76fcbaee6988ab4c6a",
+  "reportSha256": "b32d85ce1cd5b17bfb5a5e7b65df785ecb0f4239a2d0181a44eef262987386d3",
+  "firstAssessmentSha256": "9843f4efe4c27685238e7d56b606e7caa651736945a7fae97b1b6cfdcb2b3a58",
+  "closureReviewSha256": "609e560d1248d9e7bfc59f67da25d074bcd6131e5cf68afcd91d598308c7d181",
+  "consumedInvocations": 6,
+  "results": [
+    {
+      "slot": 0,
+      "runId": "run_qa076_retention_1",
+      "treatment": "E",
+      "repetition": 1,
+      "blindId": "answer-3",
+      "answerSha256": "09f546ddcdb344fbebdb7e09ad32377a5c595d8a35113eba1b3e0e92dd17577a",
+      "finalArtifactSha256": "4c08dbb30cbe42cb5db4e265cbdfc3f5e8be92032c84f89105dad15df2651477",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 49677,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": true,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 0
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 6259,
+      "closureBytes": 0,
+      "terminalBytes": 6288
+    },
+    {
+      "slot": 1,
+      "runId": "run_qa076_retention_2",
+      "treatment": "F",
+      "repetition": 1,
+      "blindId": "answer-1",
+      "answerSha256": "7ac45648b3c6722fef3ede408226ba2a276c6fbdbe2de3765eb1073ff4af3cf3",
+      "finalArtifactSha256": "2704c2d4b5c3603b08888476c4c9fdc159796ac9785e9155821a9c2afd08edfe",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 57246,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": false,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "fail"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 2
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa076_closure_review",
+      "finalArtifactBytes": 7195,
+      "closureBytes": 1299,
+      "terminalBytes": 8565
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa076_retention_3",
+      "treatment": "F",
+      "repetition": 2,
+      "blindId": "answer-4",
+      "answerSha256": "fe684198b13cc061c8cb6673db20e8f0ec3937938bfb76b439fe4b82fe6e1ad8",
+      "finalArtifactSha256": "81ebb8430ecfb920906d755409f53e0aaad6f93d078a699c3823838e155f3ff8",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 56292,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": false,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "fail"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 2
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa076_closure_review",
+      "finalArtifactBytes": 6383,
+      "closureBytes": 1259,
+      "terminalBytes": 7712
+    },
+    {
+      "slot": 3,
+      "runId": "run_qa076_retention_4",
+      "treatment": "E",
+      "repetition": 2,
+      "blindId": "answer-2",
+      "answerSha256": "6ab2e4d586321b39fe2abdeedcfd1567dfad5a643475e3ee0a3764e15c59d534",
+      "finalArtifactSha256": "445f9362951507bdf649a4085161d9acaf8f26b99e55b0682e85c582bb196001",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 50092,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": false,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "fail"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 2
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 7257,
+      "closureBytes": 0,
+      "terminalBytes": 7286
+    },
+    {
+      "slot": 4,
+      "runId": "run_qa076_retention_5",
+      "treatment": "E",
+      "repetition": 3,
+      "blindId": "answer-6",
+      "answerSha256": "aeb091a46d64defd12c0625354cb259e13554c92f4a466954f0ece1e84d38193",
+      "finalArtifactSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 50955,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": false,
+      "closureProtocol": "not_required",
+      "finalSchemaValid": false,
+      "formatErrors": [
+        "invalid_final_artifact"
+      ],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": false,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "fail"
+        },
+        {
+          "id": "P2",
+          "status": "fail"
+        },
+        {
+          "id": "P3",
+          "status": "fail"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "fail",
+      "unsupportedAdditions": {
+        "reviewStatus": "unscorable_no_final_artifact",
+        "count": null
+      },
+      "criterionToFinalStatus": [],
+      "closureSemanticReview": "not_applicable",
+      "finalArtifactBytes": 0,
+      "closureBytes": 0,
+      "terminalBytes": 6348
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa076_retention_6",
+      "treatment": "F",
+      "repetition": 3,
+      "blindId": "answer-5",
+      "answerSha256": "897a89e2411dbec3b2e062abee665b2af5c5ce4db7199af0fae967ec3b20daf9",
+      "finalArtifactSha256": "b0f12189520d88cc29c9cd4cb985cc9783ce6aeae2a0a517e9cd812c2a472552",
+      "outcome": "completed",
+      "delivered": true,
+      "elapsedMilliseconds": 55752,
+      "setup": "passed",
+      "readerCatalogObserved": true,
+      "sourceAccessGrantValid": true,
+      "evidenceUseRuleSupplied": true,
+      "requiredReading": "complete",
+      "actualReaderReturns": 4,
+      "sourceReadCounts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "retention-policy",
+        "snapshot-inventory",
+        "verification-observations",
+        "active-pins"
+      ],
+      "commonManipulationValid": true,
+      "closureProtocol": "structurally_valid",
+      "finalSchemaValid": true,
+      "formatErrors": [],
+      "fullRequiredDeliverablePass": false,
+      "criticalCriteriaPass": false,
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "pass"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "required": true,
+          "deterministicNecessaryConditions": false,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "required": true,
+          "deterministicNecessaryConditions": true,
+          "status": "fail"
+        }
+      ],
+      "correctContentPreservationCriterionProjection": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        }
+      ],
+      "unresolvedPreservationCriterionProjection": "pass",
+      "unsupportedAdditions": {
+        "reviewStatus": "assessed",
+        "count": 1
+      },
+      "criterionToFinalStatus": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "asserted": "satisfied",
+          "final": "pass",
+          "comparison": "consistent"
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "asserted": "satisfied",
+          "final": "fail",
+          "comparison": "overclaimed"
+        }
+      ],
+      "closureSemanticReview": "retained_in_qa076_closure_review",
+      "finalArtifactBytes": 5973,
+      "closureBytes": 1299,
+      "terminalBytes": 7343
+    }
+  ],
+  "arms": {
+    "E": {
+      "scheduled": 3,
+      "delivered": 3,
+      "fullPass": 0,
+      "criticalPass": 1,
+      "allSourceReturns": 3,
+      "finalSchemaPass": 2,
+      "commonManipulationPass": 2,
+      "unsupportedClaimsAssessed": 2,
+      "unsupportedUnscorableRuns": 1,
+      "overclaimedCriteria": 0,
+      "meanElapsedMilliseconds": 50241.333333333336,
+      "medianElapsedMilliseconds": 50092,
+      "meanClosureBytes": 0,
+      "meanTerminalBytes": 6640.666666666667
+    },
+    "F": {
+      "scheduled": 3,
+      "delivered": 3,
+      "fullPass": 0,
+      "criticalPass": 0,
+      "allSourceReturns": 3,
+      "finalSchemaPass": 3,
+      "commonManipulationPass": 3,
+      "unsupportedClaimsAssessed": 5,
+      "unsupportedUnscorableRuns": 0,
+      "overclaimedCriteria": 12,
+      "meanElapsedMilliseconds": 56430,
+      "medianElapsedMilliseconds": 56292,
+      "meanClosureBytes": 1285.6666666666667,
+      "meanTerminalBytes": 7873.333333333333
+    }
+  },
+  "candidateWithinTaskSignal": false,
+  "interpretation": "no_prespecified_incremental_signal",
+  "limitations": [
+    "One evaluator-authored synthetic task, three attempts per arm; no product or population claim.",
+    "First semantic judgments hide arms/tables, but the implementation assistant knows its reference task; not independent human evaluation.",
+    "Frozen preservation metrics project whole criteria. Failure may reflect a different claim in that criterion, not loss of the named fact; no literal fact-loss rate is inferred.",
+    "Invalid final framing remains a non-pass. Missing extracted artifact is semantically unscorable, not zero unsupported additions.",
+    "Source returns attest bytes, not comprehension. Requested model/settings are pinned; provider model/compute are not independently attested.",
+    "No retry, tuned continuation, production protocol change or automatic next experiment is authorized."
+  ]
+}

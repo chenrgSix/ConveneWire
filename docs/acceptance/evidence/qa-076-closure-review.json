@@ -1,0 +1,380 @@
+{
+  "version": 1,
+  "identity": "qa-076-unmasked-closure-review-v1",
+  "recordedAt": "2026-09-06T14:06:37.315043+00:00",
+  "firstAssessmentSha256": "9843f4efe4c27685238e7d56b606e7caa651736945a7fae97b1b6cfdcb2b3a58",
+  "reportSha256": "b32d85ce1cd5b17bfb5a5e7b65df785ecb0f4239a2d0181a44eef262987386d3",
+  "protocol": "Performed after durable first final-only judgments. All 24 F rows inspected against actual returned sources and retained criterion judgments; relevant refs are not comprehensive proof. No first judgments changed. No additional model call.",
+  "rows": [
+    {
+      "slot": 1,
+      "runId": "run_qa076_retention_2",
+      "answerSha256": "7ac45648b3c6722fef3ede408226ba2a276c6fbdbe2de3765eb1073ff4af3cf3",
+      "closureSha256": "37485682ff0dc8aa8bb3ec3b5ea0aecd467dcfcc41b383539beced9609b693cc",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines proposal scope; inventory defines exact object universe; verification and pins are relevant to the decision records.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines verified-complete eligibility and ordering; inventory gives timestamps/state; observations give passed/failed/missing status.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The four actually newest verified objects are retained, but the slate-full-02 reason incorrectly also places it in the newest-two set. slate-full-03 and slate-delta-04 are newer; UTC normalization does not change this."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires direct/transitive protection; inventory gives baseObjectId chains; active-pins identifies the extra pinned object. Relevant citations do not by themselves establish correct closure.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines strict UTC seven-day comparison and decision priority; inventory gives object timestamps. Relevant source selection is not proof that protection was applied correctly.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines failed/missing holds and object-bound attestation requests; observations show failure and absence. Inventory, when cited, establishes the object identity.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory supplies exact integer bytes. Policy, when cited, defines counting categories. A relevant inventory citation cannot validate the model's category allocation or arithmetic.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four task sources are relevant inputs for the required policy, dependency, verification, pin and accounting test cases; source relevance cannot supply omitted test inputs.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The transitive case supplies only slate-delta-04 -> slate-full-03 with a hypothetical unspecified further base, not a concrete two-hop input. The strictly_older input is 11:59:59Z, one second before cutoff, while its expectation calls it one millisecond. Both required conditions fail."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four cited sources are relevant to support review; references alone do not make false factual assertions supported.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: Source references are relevant, but the false newest-two membership and second/millisecond assertion are unsupported additions; correct classification alone cannot pass support."
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa076_retention_3",
+      "answerSha256": "fe684198b13cc061c8cb6673db20e8f0ec3937938bfb76b439fe4b82fe6e1ad8",
+      "closureSha256": "28a8444c855807352ff1fddf4f4ff7754a75d629a173f5f07657687b9a15e746",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines proposal scope; inventory defines exact object universe; verification and pins are relevant to the decision records.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines verified-complete eligibility and ordering; inventory gives timestamps/state; observations give passed/failed/missing status.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires direct/transitive protection; inventory gives baseObjectId chains; active-pins identifies the extra pinned object. Relevant citations do not by themselves establish correct closure.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: lime-base-01 is incorrectly classified delete_candidate and called not a dependency, despite the protected two-hop chain explicitly named elsewhere."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines strict UTC seven-day comparison and decision priority; inventory gives object timestamps. Relevant source selection is not proof that protection was applied correctly.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: A protected transitive base is proposed for deletion; the seven-day exact boundary itself is retained correctly."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines failed/missing holds and object-bound attestation requests; observations show failure and absence. Inventory, when cited, establishes the object identity.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory supplies exact integer bytes. Policy, when cited, defines counting categories. A relevant inventory citation cannot validate the model's category allocation or arithmetic.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: 5300/3300/2100 sum to 10700 and match this unsafe manifest, but the required policy-correct category totals are 6300/2300/2100 because lime-base-01 must be retained."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four task sources are relevant inputs for the required policy, dependency, verification, pin and accounting test cases; source relevance cannot supply omitted test inputs.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The exact_age_boundary case gives only Z timestamps, without the required UTC-equivalent offset timestamp test. Its byte_accounting expected categories also repeat the unsafe classification. The one-millisecond and two-hop cases are present."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four cited sources are relevant to support review; references alone do not make false factual assertions supported.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The asserted absence of a dependency for lime-base-01 contradicts the source chain; the category totals/test expectation consequently endorse an incorrect policy classification."
+        }
+      ]
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa076_retention_6",
+      "answerSha256": "897a89e2411dbec3b2e062abee665b2af5c5ce4db7199af0fae967ec3b20daf9",
+      "closureSha256": "9d3b74baa3e19024d10753928f0c7c2ba42852579fa95b4d66d5308488c5e856",
+      "criterionChecks": [
+        {
+          "criterionKey": "criterion_qa076_identity",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines proposal scope; inventory defines exact object universe; verification and pins are relevant to the decision records.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_newest",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines verified-complete eligibility and ordering; inventory gives timestamps/state; observations give passed/failed/missing status.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_protection",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy requires direct/transitive protection; inventory gives baseObjectId chains; active-pins identifies the extra pinned object. Relevant citations do not by themselves establish correct closure.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_age",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines strict UTC seven-day comparison and decision priority; inventory gives object timestamps. Relevant source selection is not proof that protection was applied correctly.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: lime-full-05 is retained although complete, passed, unpinned, not a dependency and strictly older than cutoff. The false blanket protection claim does not satisfy the policy decision priority."
+        },
+        {
+          "criterionKey": "criterion_qa076_uncertainty",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "verification-observations",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Policy defines failed/missing holds and object-bound attestation requests; observations show failure and absence. Inventory, when cited, establishes the object identity.",
+          "missingAssessment": "adequate",
+          "reason": "Empty missing agrees with the independently reviewed final criterion."
+        },
+        {
+          "criterionKey": "criterion_qa076_accounting",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "Inventory supplies exact integer bytes. Policy, when cited, defines counting categories. A relevant inventory citation cannot validate the model's category allocation or arithmetic.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: 7100/1500/2100 match the emitted over-retention but not the policy-correct 6300/2300/2100 category totals. Summing to 10700 alone is insufficient."
+        },
+        {
+          "criterionKey": "criterion_qa076_regressions",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "The four task sources are relevant inputs for the required policy, dependency, verification, pin and accounting test cases; source relevance cannot supply omitted test inputs.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The exact_age_boundary test provides only Z timestamps and omits the required UTC-equivalent offset pair. Other required labels, two-hop chain and millisecond-before case are present."
+        },
+        {
+          "criterionKey": "criterion_qa076_support",
+          "assertedStatus": "satisfied",
+          "evidenceRefs": [
+            "retention-policy",
+            "snapshot-inventory",
+            "verification-observations",
+            "active-pins"
+          ],
+          "missing": [],
+          "sourceRelevance": "relevant",
+          "sourceRelevanceReason": "All four cited sources are relevant to support review; references alone do not make false factual assertions supported.",
+          "missingAssessment": "omits_final_defect",
+          "reason": "The empty missing list omits this final-artifact defect: The assertion that all lime objects are protected is false: lime-full-05 has no applicable protection. This unsupported addition also causes wrong category totals."
+        }
+      ]
+    }
+  ],
+  "unblindedFormatDiagnostic": {
+    "slot": 4,
+    "runId": "run_qa076_retention_5",
+    "answerSha256": "aeb091a46d64defd12c0625354cb259e13554c92f4a466954f0ece1e84d38193",
+    "terminalSuffix": "}]}<\\/final-answer>",
+    "failure": "The terminal contains an escaped-slash closing tag rather than the exact required final-answer delimiter. The frozen parser therefore exports an empty final artifact. This is an output-protocol failure, not a missing source or crashed Run.",
+    "secondaryObservation": "The visible raw JSON body also gives only a one-hop dependency with hypothetical further bases and an August-2 strictly_older case; the required concrete two-hop and one-millisecond cases are absent. This post-unmask observation does not repair the artifact or replace first judgments.",
+    "primaryVerdictChanged": false
+  }
+}
