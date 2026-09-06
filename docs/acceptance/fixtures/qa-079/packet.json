@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "identity": "qa-079-authority-separated-ca-cutover-v1",
+  "authorityId": "authority_qa079_synthetic_owners_v1",
+  "authorization": {
+    "ownerInstruction": "可以，定好目标完成他们",
+    "scope": "Authority-separated preparation, freeze, bounded experiment and assessment; equal-compute deferred.",
+    "maximumSessions": 12,
+    "provider": "existing Codex service",
+    "noRetry": true
+  },
+  "task": {
+    "goal": "Review whether an issuing-CA cutover and later old-trust retirement are safe under a fixed fictional policy. Only authorized released observations may be combined. Deliver findings, repairs, staged plan, regression cases and unresolved evidence. This is review-only; no operational action or acceptance is authorized.",
+    "criteria": [
+      {
+        "criterionKey": "criterion_qa079_stage",
+        "description": "Explain whether staging new trust changes the active issuer; retain existing correct staging behavior.",
+        "required": true,
+        "ordinal": 1
+      },
+      {
+        "criterionKey": "criterion_qa079_offline",
+        "description": "Compare implementation with policy on offline non-revoked devices; describe any necessary gate repair without silently revoking devices.",
+        "required": true,
+        "ordinal": 2
+      },
+      {
+        "criterionKey": "criterion_qa079_digest",
+        "description": "Compare implementation with policy on acknowledgement revision AND digest; describe any necessary repair.",
+        "required": true,
+        "ordinal": 3
+      },
+      {
+        "criterionKey": "criterion_qa079_switch_status",
+        "description": "Using disclosed operational observations, decide whether cutover is eligible and explain device/ack counts. If operations disclosure is unavailable, explicitly leave those counts/current eligibility unknown and do not guess them.",
+        "required": true,
+        "ordinal": 4
+      },
+      {
+        "criterionKey": "criterion_qa079_retirement_guard",
+        "description": "Compare the implementation retirement gate with policy for still-valid old certificates and describe any necessary repair.",
+        "required": true,
+        "ordinal": 5
+      },
+      {
+        "criterionKey": "criterion_qa079_retirement_status",
+        "description": "Assess minimum overlap and old-certificate expiry independently using available observations. If operations disclosure is unavailable, explicitly leave observed duration/remaining lifetime/retirement eligibility unknown.",
+        "required": true,
+        "ordinal": 6
+      },
+      {
+        "criterionKey": "criterion_qa079_sequence",
+        "description": "Give a safe ordered plan: preserve old issuing while staging; repair the identified gates and verify them; require all eligible exact acknowledgements before switching; retire old trust only when both policy conditions hold. The review grants no execution authority.",
+        "required": true,
+        "ordinal": 7
+      },
+      {
+        "criterionKey": "criterion_qa079_rollback",
+        "description": "State when rollback to old issuer is allowed and why it cannot be assumed after old trust retirement or certificate expiry.",
+        "required": true,
+        "ordinal": 8
+      },
+      {
+        "criterionKey": "criterion_qa079_test_offline",
+        "description": "Give a concrete regression with an offline non-revoked unacknowledged device and the expected block.",
+        "required": true,
+        "ordinal": 9
+      },
+      {
+        "criterionKey": "criterion_qa079_test_digest",
+        "description": "Give a concrete regression with matching revision but a wrong digest and the expected block.",
+        "required": true,
+        "ordinal": 10
+      },
+      {
+        "criterionKey": "criterion_qa079_test_expiry",
+        "description": "Give a concrete regression where minimum overlap has elapsed but an old certificate remains valid and the expected retirement block.",
+        "required": true,
+        "ordinal": 11
+      },
+      {
+        "criterionKey": "criterion_qa079_test_staging",
+        "description": "Give a normal-path regression that staging retains old as active issuer while adding new trust.",
+        "required": true,
+        "ordinal": 12
+      },
+      {
+        "criterionKey": "criterion_qa079_uncertainty",
+        "description": "Treat operational observations as a fixed synthetic snapshot, request a refreshed authorized inventory before real action, and distinguish supplied local checks/proposed regressions from production verification. Never claim execution or approval.",
+        "required": true,
+        "ordinal": 13
+      },
+      {
+        "criterionKey": "criterion_qa079_provenance",
+        "description": "Cite the released source identities for conclusions. If a domain was withheld or incompletely released, distinguish denied sharing/missing observations from negative test results; propose obtaining authorized evidence instead of bypassing the boundary.",
+        "required": true,
+        "ordinal": 14
+      }
+    ],
+    "criticalCriterionKeys": [
+      "criterion_qa079_stage",
+      "criterion_qa079_offline",
+      "criterion_qa079_digest",
+      "criterion_qa079_switch_status",
+      "criterion_qa079_retirement_guard",
+      "criterion_qa079_retirement_status",
+      "criterion_qa079_sequence",
+      "criterion_qa079_rollback",
+      "criterion_qa079_uncertainty",
+      "criterion_qa079_provenance"
+    ]
+  },
+  "owners": [
+    "code",
+    "security",
+    "operations"
+  ],
+  "sources": [
+    {
+      "owner": "code",
+      "evidenceRef": "evidence_qa079_code_raw",
+      "path": "docs/acceptance/fixtures/qa-079/owners/code.mjs",
+      "revision": "4ac73f989a8455746317c0c77c5d78be4463322e",
+      "contentSha256": "04e39e67c7d4e000226cc61310a1360f5a0f98dc90a318a5115b4d9b721954dd",
+      "allowedRange": {
+        "start": 0,
+        "end": 728
+      }
+    },
+    {
+      "owner": "security",
+      "evidenceRef": "evidence_qa079_security_raw",
+      "path": "docs/acceptance/fixtures/qa-079/owners/security.mjs",
+      "revision": "93ec6a43560bceebb4bfde60e6f4a55569aee7ca",
+      "contentSha256": "bf53c6e0b43db808094803048e054dbde1d27d28a6b000f940f66a83925b3433",
+      "allowedRange": {
+        "start": 0,
+        "end": 858
+      }
+    },
+    {
+      "owner": "operations",
+      "evidenceRef": "evidence_qa079_operations_raw",
+      "path": "docs/acceptance/fixtures/qa-079/owners/operations.mjs",
+      "revision": "cd3f1122ce1dabef523b4e1732b4bc59e7956220",
+      "contentSha256": "0e8faa95a761a678d471c117097f7d0e435853ab3484e74d74da3d3be6bffefc",
+      "allowedRange": {
+        "start": 0,
+        "end": 994
+      }
+    }
+  ],
+  "disclosure": {
+    "policyRevision": 1,
+    "audience": "The designated QA Room and its members, with delivery to its current Finalizer Run only; never raw source or arbitrary owner prose.",
+    "fields": {
+      "code": [
+        {
+          "checkId": "code_stage_keeps_old_issuer",
+          "description": "Whether staging keeps old as active issuer",
+          "type": "boolean"
+        },
+        {
+          "checkId": "code_gate_includes_offline",
+          "description": "Whether the implementation blocks a switch when an offline non-revoked device has not acknowledged",
+          "type": "boolean"
+        },
+        {
+          "checkId": "code_gate_checks_digest",
+          "description": "Whether the implementation blocks an equal-revision but wrong-digest acknowledgement",
+          "type": "boolean"
+        },
+        {
+          "checkId": "code_retirement_checks_expiry",
+          "description": "Whether the implementation blocks retirement with an unexpired old certificate after minimum overlap",
+          "type": "boolean"
+        }
+      ],
+      "security": [
+        {
+          "checkId": "policy_include_offline",
+          "description": "Whether policy includes offline non-revoked devices in the acknowledgement requirement",
+          "type": "boolean"
+        },
+        {
+          "checkId": "policy_exact_ack",
+          "description": "Whether policy requires both revision and digest equality",
+          "type": "boolean"
+        },
+        {
+          "checkId": "policy_minimum_overlap_hours",
+          "description": "Minimum overlap hours since staging",
+          "type": "integer"
+        },
+        {
+          "checkId": "policy_old_certificates_expired",
+          "description": "Whether policy requires all relevant old certificates expired before retirement",
+          "type": "boolean"
+        },
+        {
+          "checkId": "policy_rollback_requires_old_trust_and_validity",
+          "description": "Whether rollback is conditional on old issuer trust and certificate validity",
+          "type": "boolean"
+        }
+      ],
+      "operations": [
+        {
+          "checkId": "ops_nonrevoked_devices",
+          "description": "Number of non-revoked devices in the snapshot",
+          "type": "integer"
+        },
+        {
+          "checkId": "ops_exact_ack_devices",
+          "description": "Number of non-revoked devices acknowledging the exact staged revision and digest",
+          "type": "integer"
+        },
+        {
+          "checkId": "ops_offline_nonrevoked_devices",
+          "description": "Number of offline non-revoked devices",
+          "type": "integer"
+        },
+        {
+          "checkId": "ops_overlap_hours",
+          "description": "Elapsed overlap hours at the snapshot time",
+          "type": "integer"
+        },
+        {
+          "checkId": "ops_old_certificate_remaining_hours",
+          "description": "Hours until the latest old certificate expires at the snapshot time",
+          "type": "integer"
+        },
+        {
+          "checkId": "ops_active_issuer",
+          "description": "Active issuer at snapshot time",
+          "type": "issuer"
+        },
+        {
+          "checkId": "ops_snapshot_time",
+          "description": "Observation time of the immutable snapshot",
+          "type": "timestamp"
+        }
+      ]
+    }
+  },
+  "runtime": {
+    "model": "gpt-5.5",
+    "reasoningEffort": "low",
+    "timeoutMilliseconds": 300000,
+    "maximumReadCalls": 8,
+    "maximumReturnBytes": 16384,
+    "maximumAnswerBytes": 32768,
+    "answerWordInstruction": 32769,
+    "retries": 0
+  },
+  "scenarios": [
+    "normal",
+    "restart",
+    "revoked"
+  ],
+  "schedule": [
+    {
+      "slot": 0,
+      "scenario": "normal",
+      "role": "code",
+      "treatment": "B"
+    },
+    {
+      "slot": 1,
+      "scenario": "normal",
+      "role": "security",
+      "treatment": "B"
+    },
+    {
+      "slot": 2,
+      "scenario": "normal",
+      "role": "operations",
+      "treatment": "B"
+    },
+    {
+      "slot": 3,
+      "scenario": "normal",
+      "role": "finalizer",
+      "treatment": "B"
+    },
+    {
+      "slot": 4,
+      "scenario": "restart",
+      "role": "code",
+      "treatment": "B"
+    },
+    {
+      "slot": 5,
+      "scenario": "restart",
+      "role": "security",
+      "treatment": "B"
+    },
+    {
+      "slot": 6,
+      "scenario": "restart",
+      "role": "operations",
+      "treatment": "B"
+    },
+    {
+      "slot": 7,
+      "scenario": "restart",
+      "role": "finalizer",
+      "treatment": "B"
+    },
+    {
+      "slot": 8,
+      "scenario": "revoked",
+      "role": "code",
+      "treatment": "B"
+    },
+    {
+      "slot": 9,
+      "scenario": "revoked",
+      "role": "security",
+      "treatment": "B"
+    },
+    {
+      "slot": 10,
+      "scenario": "revoked",
+      "role": "operations",
+      "treatment": "B"
+    },
+    {
+      "slot": 11,
+      "scenario": "revoked",
+      "role": "finalizer",
+      "treatment": "B"
+    }
+  ],
+  "ownerInstruction": "You are one source owner in a bounded evidence-sharing experiment. Read BOTH the complete original source and the local verifier receipt available to your reader. Independently check the listed observations against your source and receipt. Only propose observations you can support. Output exactly one JSON object {\"observations\":[{\"checkId\":\"a permitted ID\",\"value\":true}]} using only permitted check IDs and the verified typed values. Include all supported permitted observations. No extra keys, prose, source excerpts, internal identifiers or private notes. An unknown or unsupported observation is omitted, never invented. This is an egress wire proposal, not internal reasoning; the local gate will reject values that do not match executed checks. You cannot read another owner domain. Your local read does not authorize sharing; a separate owner policy controls release.",
+  "finalizerInstruction": "Complete the public review task using ONLY the released evidence available to your reader. Read every complete released document before finalizing. Original owner sources are not authorized for you; do not attempt to reconstruct or request raw files. Released observations carry local check receipts, not global truth or release approval. If a domain or field is missing or withheld, preserve that uncertainty and state what authorized evidence is needed. Use ordinary readable prose with concrete findings, repairs, regression scenarios and ordering. Cite released evidence IDs. No claim disposition table, criterion self-assessment table, tool actions, operational execution or approval. No arbitrary owner free-text contribution is supplied."
+}

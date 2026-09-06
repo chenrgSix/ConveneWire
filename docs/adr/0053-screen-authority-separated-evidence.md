@@ -78,6 +78,15 @@ This first experiment enforces tool and publication boundaries on one trusted
 test host using synthetic data. The fixture author/test controller necessarily
 holds all source files; this is not a hostile-host OS isolation or provider-side
 confidentiality claim. The same service provider processes separate sessions.
+The three owner domains are represented by separate grants and source bundles
+under one test Owner's manual Agents; separate human logins, Devices and Bridge
+authentication are not exercised. A local owner gate checks consent before even
+constructing a Central request, and holds an owner lock through the publication
+attempt. Central independently validates the approved envelope against that
+consent snapshot. Revocation and delivery serialize at this trusted local gate.
+The injected failure kills the publication child after commit and before its
+acknowledgement; killing the owner gate while it holds a lock instead fails
+closed with a stale lock and is not claimed as automatically recoverable.
 Distinct workspaces alone are not a sandbox. Models have only their configured
 scoped reader, no shell/web/Room browsing; denied selectors and allowed tool
 catalogs must be physically exercised and retained. Source canaries detect

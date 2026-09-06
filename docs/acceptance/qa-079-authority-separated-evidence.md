@@ -42,5 +42,65 @@ Finalizer 输出普通可读报告，不添加自评表。
 
 ## 实现与记录
 
-实现前先登记目标和架构边界；完整题包、参考答案、原子评分、代码及运行条件
-随后提交冻结。本文在执行后补充实际输出、分项评分、调用次数、耗时与局限。
+目标与架构先由提交 `558b014` 登记。完整题包、参考答案、原子评分、代码及
+运行条件随后完成冻结；实验只在该冻结提交后启动。
+
+- [题包](fixtures/qa-079/packet.json)：14 项公开要求、16 个独立共享字段、
+  三种场景及十二次会话上限。
+- [参考交付](fixtures/qa-079/reference.md) 和
+  [评分](fixtures/qa-079/scoring.json)：逐项对应公开要求；撤销场景不能猜测
+  被扣留的运行事实，也不能把未知当作检查结果为否。
+- [代码域](fixtures/qa-079/owners/code.mjs)、
+  [安全域](fixtures/qa-079/owners/security.mjs)、
+  [运行域](fixtures/qa-079/owners/operations.mjs)：独立新合成原文，包含不会
+  获准共享的专用标记和机器名称；不冒充真实秘密或生产状态。
+- [本地验证器](../../scripts/bench/authority-owner-verifier.mjs)：每次独立
+  子进程只载入一个域的来源，运行该域检查并返回固定类型的观察值。
+- [权限与出口](../../scripts/bench/authority-collaboration.mjs)：原文版本和
+  范围绑定当前 Run；共享另校验 Owner、Task/Room、接收 Finalizer Run、字段、
+  版本和有效期。模型只提候选值，程序拒绝错误值和额外自由文本，不自动填补遗漏。
+- [实际 Result 适配器](../../scripts/bench/authority-central.mts)：使用现有
+  Server、SQLite、Run 事件与 ResultService；只有获准的签名封包进入 Result。
+  所有 Result 都是 `informational` 提案，`criterionClaims` 为空，不伪造人工接受。
+- [冻结记录](fixtures/qa-079/freeze.json)：287 个文件，含上述资料、代码及其
+  Server/contract/reader 依赖、CLI 指纹和 Node 版本。旧 QA-078 文件不修改。
+
+出口在创建 Central 请求之前检查当前许可，并持有本地授权锁直到该次发布
+结束。撤销后，已准备好的封包也不能变成 Central 请求；仅允许发送不含观察值的
+“本地已完成、共享被拒绝”状态。已经合法读到的内容不会被声称可以追溯收回。
+
+本轮三个逻辑资料域使用同一个测试 Owner 下的三个 manual Agent、不同来源
+bundle 和授权，不测试三个真实人的登录或三个 Device 的认证。Result 发布直接
+调用现有服务层；不是 Bridge 网络回传的完整产品 E2E。不同资料域的私有审计
+分开保留，模型看不到对方审计；受信任的题包作者和测试控制器仍持有全部合成
+资料，也不宣称模型供应商之间的隔离。
+
+中断点是 Result 已提交、确认尚未返回的发布子进程。Owner 侧持锁进程仍在，
+负责清理锁并重新检查授权后重放固定操作。若 Owner 侧自身持锁崩溃，残留锁会
+拒绝后续发布；本轮不宣称这种情况可自动恢复。
+
+## 运行和维护命令
+
+不调用外部模型的维护入口：
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/authority-collaboration.test.mjs scripts/bench/authority-experiment.test.mjs
+node scripts/bench/authority-experiment.mjs --audit-qa079
+node scripts/bench/authority-experiment.mjs --assess-qa079
+```
+
+后两个入口分别核对实际记录与已保留的语义评分，不执行模型或自动判断自然语言。
+唯一一次真实执行命令为：
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 3090000 -- node scripts/bench/authority-experiment.mjs --execute-qa079-frozen-twelve
+```
+
+journal 创建即占用本轮许可，不能作为维护重跑入口。控制器意外中断也不恢复
+模型会话；正常计划内的发布子进程恢复不新增模型调用。无需重新使用旧 QA 授权。
+
+执行前验证：13 项新离线检查通过，两项依赖未来真实记录/初评的审计明确跳过；
+9 项既有 reader/CLI 回环检查、19 项 QA-078 检查通过，417 份 Markdown 无 lint
+问题。参考交付 4,354 字节，低于相同终稿上限。CLI 为 `0.153.4`，Node 为
+`v22.23.1`；以上过程没有真实模型试答。暂存文件与临时 Server 数据在检查结束
+后清理。实际实验结果在执行后单独记录。
