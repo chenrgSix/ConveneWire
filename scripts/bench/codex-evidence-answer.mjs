@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import { evidenceCodexConfig } from "./evidence-codex-config.mjs";
 const [executable, model, quotaDirectory, maximum, role] = process.argv.slice(2);
-if (!executable || model !== "gpt-5.4-mini" || maximum !== "12" || !["Baseline", "Solver", "Reviewer"].includes(role)) {
+if (!executable || model !== "gpt-5.4-mini" || !["8", "12"].includes(maximum) || !["Baseline", "Solver", "Reviewer"].includes(role)) {
   throw new Error("Invalid fixed workspace benchmark configuration");
 }
 let instruction = "";
@@ -16,7 +16,7 @@ const bundlePath = path.join(process.cwd(), "evidence.json");
 const bundle = JSON.parse(readFileSync(bundlePath, "utf8"));
 if (caseIds.length !== 1 || !bundle.cases.some((sample) => sample.id === caseIds[0])) throw new Error("Missing unique case scope");
 let reservedSlot;
-for (let slot = 0; slot < 12; slot += 1) {
+for (let slot = 0; slot < Number(maximum); slot += 1) {
   try {
     closeSync(openSync(path.join(quotaDirectory, `invocation-${slot}`), "wx", 0o600));
     reservedSlot = slot;
@@ -80,11 +80,15 @@ metadata.diagnostics.exitCode = result;
 if (result !== 0) fail("nonzero_exit");
 const reads = readdirSync(receiptDirectory).filter((name) => name.startsWith("read-"))
   .map((name) => JSON.parse(readFileSync(path.join(receiptDirectory, name), "utf8")));
-if (!reads.some((read) => read.accepted)) fail("no_evidence_reads");
+const availableIds = bundle.cases.find((sample) => sample.id === caseIds[0]).documents.map((doc) => doc.id);
+const readIds = new Set(reads.filter((read) => read.accepted).map((read) => read.id));
+const missingDocumentIds = availableIds.filter((id) => !readIds.has(id));
+metadata.evidenceCoverage = { status: readIds.size === 0 ? "not_read" : missingDocumentIds.length ? "partial" : "complete",
+  availableDocuments: availableIds.length, readDocuments: readIds.size, missingDocumentIds };
 if (reads.some((read) => !read.accepted)) fail("rejected_evidence_read");
 if (!answer.trim()) fail("no_final_answer");
 metadata.runtimeSucceeded = !failed;
-metadata.failure = metadata.runtimeSucceeded ? null : "Runtime failed, used an unapproved tool or produced no evidence reads/final answer";
+metadata.failure = metadata.runtimeSucceeded ? null : "Runtime failed, used an unapproved tool or produced no final answer";
 persist();
 if (metadata.runtimeSucceeded) process.stdout.write(answer.trim() + "\n");
 else { process.stderr.write("Evidence benchmark invocation failed; inspect sanitized receipts.\n"); process.exitCode = 1; }

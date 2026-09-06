@@ -47,6 +47,7 @@ Node.js 22 and Go 1.26.7 are required. Repository commands are:
 - `npm run test:compose` — verify the default/custom central HTTPS ports and validate the Caddy configuration.
 - `npm run test:e2e` — run deterministic cross-process acceptance tests.
 - `npm run bench:discussion-workspace` — run the documented QA-069 three-pair historical workspace replay with at most 12 real model invocations and fixed-ID evidence reads.
+- `npm run bench:discussion-workspace-remaining` — run only QA-069's two never-started pairs from hash-pinned prior reports, at most eight new model invocations and 13 including earlier attempts; `test:discussion-workspace` also exercises the complete synthetic remainder.
 - `npm run test:discussion-codex-bootstrap` — explicitly exercise the installed Codex CLI with an auth-free loopback fixture, including deferred MCP discovery, real evidence reads and startup-warning handling; requires local Codex and never calls an external model.
 - `npm run test:discussion-workspace` — verify pinned historical sources, reader scope/limits, adapter failures and 12 synthetic Server/Bridge Runs with actual MCP retrieval and no provider.
 - `npm run test:discussion-benchmark` — verify the benchmark adapter, documentation-owned packet, 12 legacy synthetic Runs and six replay/24 review-suite synthetic invocations through an isolated Server/Bridge, without provider access or authentication.

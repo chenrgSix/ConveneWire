@@ -67,8 +67,9 @@ reader persists its eight-read quota across MCP restarts; rejected calls also
 consume a slot. Model-selected paths, foreign documents and forged role fields
 are rejected without retaining those raw arguments. The separate evidence
 adapter preserves the older closed-input adapter's prohibition on all tools.
-An answer is emitted only after successful completion and at least one actual
-reader receipt; reading all assigned sources remains a reviewed coverage gate.
+An answer is emitted only after successful CLI completion and accepted tool
+behavior. Revision v3 retains zero-read answers and records source coverage
+separately; reading all assigned sources remains a reviewed coverage gate.
 
 The first offline pass verified four focused checks and all 12 synthetic Runs
 through actual MCP, Server and Bridge processes. The owned root
@@ -171,7 +172,7 @@ was verified for the real attempt, the CLI-bootstrap root
 original ignored report; its 16 source hashes match Git at `ed7508f`, its task
 prompt hash matches, and all four rubric decisions remain unscored. The report
 SHA-256 is `e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c`.
-No external model calls were made after the first failed invocation.
+No external model calls were made during that offline bootstrap repair.
 
 ## Authorized continuation
 
@@ -182,3 +183,44 @@ the prior batch produced no completed arm. The three case prompts, source
 excerpts and rubrics are unchanged; execution revision v2's metadata-discovery
 instruction and startup configuration are separately identified in the report.
 The 21 passing preflight checks remain applicable to unchanged implementation.
+
+## Evidence-read gate failure and unstarted cases
+
+The v2 batch at `1652cb8` used four invocations. Single Agent completed after
+reading all five delivery documents in 27.081 seconds, but incorrectly called
+`recommendation: stop` schema-valid. Both contributors completed with their
+respective two and three source reads. The Finalizer exited zero with an agent
+message and no new reads; the adapter then discarded that answer solely because
+of its `no_evidence_reads` gate. The product recorded a failed finalization and
+no output Message. The [unaltered v2 report](evidence/qa-069-workspace-read-gate-failure-2026-09-06.json)
+retains the 46.704-second Discussion attempt and its diagnostics. The discarded
+answer is unavailable, so contributions cannot substitute for its final answer.
+This is a benchmark-induced delivery failure, not evidence of a production
+Finalizer crash. The temporary root `convene-wire-test-run-d3Hbqe` is absent.
+
+Execution revision v3 separates CLI/Run completion from document-read coverage.
+A valid answer after a zero exit is retained even if the model used only the
+supplied transcript; missing source reads are explicitly reported for quality
+review. All source-read receipts and missing-document IDs remain visible.
+Unauthorized tool calls, malformed CLI events, timeout and provider failures
+still invalidate an invocation. Case prompts, source/rubric bytes and requested
+model remain unchanged; neither earlier failure is rewritten as completed.
+
+Within the existing Owner-authorized cap, one original plus four v2 invocations
+leave eight. A pinned [remaining-case manifest](fixtures/qa-069-workspace-remaining.json)
+selects only the two never-started cases, preserving their original arm order.
+`npm run bench:discussion-workspace-remaining` is capped at eight new calls,
+13 across the phase, with first-failure stop. It does not retry the failed
+delivery Discussion. That case's missing final answer keeps the full
+three-complete-pair acceptance gate open; completing the remaining two cases
+must not be presented as completion of that gate.
+
+Revision v3 passed 22 benchmark checks, including the zero-read Finalizer
+regression, both quota sizes, tampered continuation/source rejection and the
+complete 12- and eight-invocation synthetic workspace flows. Both installed-CLI
+loopback checks still pass, without an external provider. All 396 maintained
+Markdown files and whitespace checks pass. The roots
+`convene-wire-test-run-rQtsyN` and `convene-wire-test-run-FJmZbK` are absent. The
+v2 failure report is byte-identical to its original; all 16 source hashes match
+Git at `1652cb8`. The report digest and original packet digest are pinned in
+the remaining-case manifest.

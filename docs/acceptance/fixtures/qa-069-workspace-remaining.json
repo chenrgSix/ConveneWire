@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "identity": "qa-069-unstarted-cases-v3",
+  "packetPath": "docs/acceptance/fixtures/qa-069-workspace-cases.json",
+  "packetSha256": "421ed769d57717f6b87bca23a5bf68fb672a0fb27148fd6643e8dc12ef070241",
+  "priorReports": [
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-startup-failure-2026-09-06.json",
+      "sha256": "e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+      "sha256": "8acf79c26404d63cb2e2723fd15f6a5de0218791ced1a08df29abe2e8f32b986"
+    }
+  ],
+  "caseIds": [
+    "cancellation",
+    "windows"
+  ],
+  "priorInvocations": 5,
+  "maximumNewInvocations": 8,
+  "maximumPhaseInvocations": 13
+}

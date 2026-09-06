@@ -26,7 +26,9 @@ no automatic startup gate or routing default changes. QA-069 separately checks
 historical workspace evidence retrieval with a fair union-access baseline.
 Its Owner-authorized continuation allows 12 new model invocations after the
 retained startup failure, at most 13 across the phase; this does not change
-production Discussion budgets or routing.
+production Discussion budgets or routing. Benchmark Runtime completion and
+source-read coverage are separate observations: a Finalizer using an accepted
+transcript must not become a failed Run solely for not rereading source files.
 
 ## Purpose
 

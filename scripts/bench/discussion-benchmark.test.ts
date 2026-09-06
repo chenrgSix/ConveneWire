@@ -16,7 +16,8 @@ import { completedFinalAnswer } from "./discussion-answer.js";
 import { continuationPath, loadReviewContinuation } from "./discussion-continuation.js";
 import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
   type Criterion } from "./discussion-review-packet.js";
-import { workspacePacket, workspaceExecutionIdentity, packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
+import { workspacePacket, workspaceExecutionIdentity, workspaceRemainingPath, loadWorkspaceRemaining,
+  packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
 import { finalAnswerReviewChecklist } from "../../apps/server/src/discussion/finalization-instructions.js";
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -24,14 +25,15 @@ const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
 const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
-assert.ok(["legacy", "review", "continuation", "workspace"].includes(suite), "Unknown benchmark suite");
-const workspaceReplay = suite === "workspace";
+assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining"].includes(suite), "Unknown benchmark suite");
+const workspaceReplay = suite === "workspace" || suite === "workspace-remaining";
+const workspaceRemaining = suite === "workspace-remaining" ? loadWorkspaceRemaining() : undefined;
 const reviewing = suite !== "legacy";
 const continuation = suite === "continuation" ? loadReviewContinuation() : undefined;
 if (continuation) assert.equal(model, continuation.manifest.model, "Continuation model must match prior evidence");
-const samples = workspaceReplay ? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
+const samples = workspaceReplay ? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
 if (workspaceReplay) assert.equal(model, workspacePacket.model);
-const maximumInvocations = workspaceReplay ? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
+const maximumInvocations = workspaceReplay ? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
 function pendingRubric(rubric: Array<string | Criterion>) {
   return rubric.map((item) => typeof item === "string"
     ? { criterion: item, passed: null, evidence: null }
@@ -58,6 +60,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     suite, packetIdentity: workspaceReplay ? workspacePacket.identity : reviewing ? reviewPacket.identity : undefined,
     executionIdentity: workspaceReplay ? workspaceExecutionIdentity : undefined,
     continuation: continuation?.manifest,
+    workspaceRemaining: workspaceRemaining?.manifest,
     fixedReplays: reviewing && !continuation && !workspaceReplay ? reviewPacket.replays : undefined,
     replayResults: reviewing ? [] as Array<Record<string, unknown>> : undefined,
     fallbackCoverage: reviewing && !workspaceReplay ? fallbackCoverageProbe() : undefined,
@@ -72,6 +75,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     ...(workspaceReplay ? [workspacePacketPath, "scripts/bench/workspace-evidence.mjs", "scripts/bench/evidence-reader.mjs", "scripts/bench/evidence-codex-config.mjs",
       "scripts/bench/codex-evidence-answer.mjs", "docs/adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md",
       "docs/acceptance/qa-069-workspace-evidence-replay.md"] : []),
+    ...(workspaceRemaining ? [workspaceRemainingPath, ...workspaceRemaining.manifest.priorReports.map((source: any) => source.path)] : []),
     ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,
       continuation.manifest.priorEvidencePath, "docs/acceptance/qa-068-discussion-continuation.md"] : [])];
   const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
@@ -205,7 +209,8 @@ test("bounded real single-Agent and Discussion task pairs", {
     }
     for (const [index, sample] of samples.entries()) {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
-      const originalIndex = reviewing && !workspaceReplay ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
+      const originalIndex = workspaceReplay ? workspacePacket.cases.findIndex((item: any) => item.id === sample.id)
+        : reviewing ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
       for (const arm of originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"]) {
         assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
         const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}` });
@@ -292,6 +297,7 @@ test("bounded real single-Agent and Discussion task pairs", {
           const sample = workspacePacket.cases.find((item: any) => item.id === result.caseId);
           const expected = sample.documents.filter((doc: any) => invocation.role === "Baseline" || doc.owner === invocation.role).map((doc: any) => doc.id).sort();
           assert.deepEqual(invocation.reads.map((read: any) => read.id).sort(), expected);
+          assert.equal(invocation.evidenceCoverage.status, "complete");
         }
       }
       if (synthetic && continuation) assert.match(String(result.finalAnswer), /<agentroom-assessment>/u);

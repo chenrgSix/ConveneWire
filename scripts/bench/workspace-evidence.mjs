@@ -4,9 +4,32 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 export const packetPath = "docs/acceptance/fixtures/qa-069-workspace-cases.json";
-export const workspaceExecutionIdentity = "qa-069-evidence-cli-v2";
+export const workspaceExecutionIdentity = "qa-069-evidence-cli-v3";
 export const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 export const workspacePacket = JSON.parse(readFileSync(new URL(`../../${packetPath}`, import.meta.url), "utf8"));
+export const workspaceRemainingPath = "docs/acceptance/fixtures/qa-069-workspace-remaining.json";
+export function loadWorkspaceRemaining(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceRemainingPath}`, import.meta.url), "utf8"))) {
+  const read = (name) => readFileSync(new URL(`../../${name}`, import.meta.url), "utf8");
+  assert.equal(manifest.packetPath, packetPath);
+  assert.equal(sha256(read(packetPath)), manifest.packetSha256);
+  assert.equal(manifest.priorReports.length, 2);
+  const prior = manifest.priorReports.map((source) => {
+    const text = read(source.path);
+    assert.equal(sha256(text), source.sha256);
+    return JSON.parse(text);
+  });
+  const used = prior.reduce((sum, report) => sum + report.reservedInvocations, 0);
+  assert.equal(used, 5);
+  assert.equal(manifest.priorInvocations, used);
+  const started = new Set(prior.flatMap((report) => report.results.map((result) => result.caseId)));
+  const samples = workspacePacket.cases.filter((sample) => !started.has(sample.id));
+  assert.deepEqual(manifest.caseIds, samples.map((sample) => sample.id));
+  assert.equal(manifest.maximumNewInvocations, 8);
+  assert.equal(samples.length * 4, manifest.maximumNewInvocations);
+  assert.equal(manifest.maximumPhaseInvocations, 13);
+  assert.equal(used + manifest.maximumNewInvocations, manifest.maximumPhaseInvocations);
+  return { manifest, samples };
+}
 export function documentsFor(sample, role) {
   assert.ok(["Baseline", "Solver", "Reviewer"].includes(role));
   return sample.documents.filter((doc) => role === "Baseline" || doc.owner === role);

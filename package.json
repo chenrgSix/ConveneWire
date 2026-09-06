@@ -47,8 +47,9 @@
     "bench:discussion-continuation": "CONVENE_WIRE_BENCH_SUITE=continuation CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts",
     "bench:discussion-workspace": "CONVENE_WIRE_BENCH_SUITE=workspace CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts",
     "test:discussion-workspace": "node scripts/test/run-with-temp-root.mjs -- npm run test:discussion-workspace:inner",
-    "test:discussion-workspace:inner": "node --test scripts/bench/workspace-evidence.test.mjs && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=workspace tsx --test scripts/bench/discussion-benchmark.test.ts",
-    "test:discussion-codex-bootstrap": "node scripts/test/run-with-temp-root.mjs --timeout-ms 150000 -- node --test scripts/bench/codex-evidence-bootstrap.test.mjs"
+    "test:discussion-workspace:inner": "node --test scripts/bench/workspace-evidence.test.mjs && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=workspace tsx --test scripts/bench/discussion-benchmark.test.ts && CONVENE_WIRE_BENCH_SYNTHETIC=1 CONVENE_WIRE_BENCH_SUITE=workspace-remaining tsx --test scripts/bench/discussion-benchmark.test.ts",
+    "test:discussion-codex-bootstrap": "node scripts/test/run-with-temp-root.mjs --timeout-ms 150000 -- node --test scripts/bench/codex-evidence-bootstrap.test.mjs",
+    "bench:discussion-workspace-remaining": "CONVENE_WIRE_BENCH_SUITE=workspace-remaining CONVENE_WIRE_BENCH_LIVE=1 node scripts/test/run-with-temp-root.mjs --timeout-ms 1260000 -- tsx --test scripts/bench/discussion-benchmark.test.ts"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.2"
