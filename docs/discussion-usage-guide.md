@@ -71,6 +71,7 @@ Result；同轮、未完成和补到的迟到贡献不混入已冻结的指令�
 | Finalizer 提示与封闭输入对照 | [QA-067](acceptance/qa-067-discussion-review-value.md)、[QA-068](acceptance/qa-068-discussion-continuation.md)：回放、完整配对及失败 |
 | 历史工作区资料回放 | [QA-069](acceptance/qa-069-workspace-evidence-replay.md)：三组配对、全部失败与最终审核 |
 | 新构造复杂工程题 | [QA-070 详细评价](acceptance/qa-070-complex-discussion-results.md)：逐项评分、具体错误和原始答案索引 |
+| 逐项证据交付机制 | [QA-071](acceptance/qa-071-criterion-evidence-delivery.md)：Result 对照、Finalizer 索引与代码候选验证的确定性验收，不是模型质量实验 |
 
 各题包分别解释，不合并评分。样本来自一个请求模型配置和非盲任务内审核；
 资料分配与贡献压缩会影响 Finalizer，结果不代表真实用户成功率、返工率或
