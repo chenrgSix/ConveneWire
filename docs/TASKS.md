@@ -698,6 +698,13 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | WEB-073 | DONE | Inspect criterion evidence beside candidate Results | TASK-014, WEB-064 | 19 focused Web and three disposable API fixture checks pass; built Chinese/English criterion comparison, missing-reference/missing-claim diagnostics, 390 px single-column/no-overflow DOM and screenshots verified; scope races, errors, stale history and all verifier states tested |
 | QA-071 | DONE | Accept the criterion evidence delivery slice | DISC-020, WEB-073 | [QA-071](acceptance/qa-071-criterion-evidence-delivery.md): 1,222 Node checks plus contracts Go packages pass; nine deterministic E2E pass, one live case intentionally skipped; builds/14 schemas/266 fixtures/docs pass; built bilingual/390 px browser evidence, exact real Go verifier path and 15 absent owned roots recorded; no model-quality claim |
 
+## Evidence Access and Use Screening
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| GOV-037 | DONE | Freeze a bounded evidence-access/use mechanism experiment | QA-071 | ADR-0047 and QA-072 freeze one Windows case, verbatim contributions, four owner-scoped source excerpts, current base instruction, receipt schema, separate item scoring and 23 file pins; 11 new offline checks including real CLI A/B/C loopback plus 47 current Discussion regressions pass before model calls |
+| QA-072 | ACTIVE | Execute one fixed case with three treatments and three repetitions | GOV-037 | Provider-free authority/pin/receipt/control regressions, at most nine fresh interleaved Finalizers, all outputs and per-dimension judgments retained, sample-local interpretation and owned cleanup |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

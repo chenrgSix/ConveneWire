@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "identity": "qa-072-windows-access-use-v1",
+  "frozenAt": "2026-09-06T10:24:17.816Z",
+  "runtime": {
+    "executableSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
+    "version": "codex-cli 0.153.4",
+    "nodeVersion": "v22.23.1"
+  },
+  "baseInstructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+  "files": [
+    {
+      "path": "docs/acceptance/fixtures/qa-072-evidence-access-use.json",
+      "sha256": "6a21e9eedef9ad03e4cc83da81b810d5e48b96d1e40d30c95a5cc06b380d020e"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-read-receipt.schema.json",
+      "sha256": "850dd4e261ce06d9d0dcca6bbc59274be4e178ce92d9a753923c4f9542ddbe99"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-scoring.json",
+      "sha256": "40ee06473f07f29e20fdae86819a6b0b2aa5191ce1b850e3d3e0316fd0d84d34"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-072-base-instruction.txt",
+      "sha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6"
+    },
+    {
+      "path": "docs/adr/0047-screen-evidence-access-and-use.md",
+      "sha256": "2d179521b9225adc762b2c2fc87be815f94de2294df27c1c0bbcdc930e14d98a"
+    },
+    {
+      "path": "scripts/bench/evidence-access-replay.ts",
+      "sha256": "859a69dadc09288aa4976e1bafa90c857418633e51014163edb76f51de49e90e"
+    },
+    {
+      "path": "scripts/bench/evidence-access-reader.mjs",
+      "sha256": "5ffc3a859d9422de4348bc2fa3805206c4ca091a132b9f205b70b5abdc246503"
+    },
+    {
+      "path": "scripts/bench/evidence-access-runtime.mjs",
+      "sha256": "c787877c9a218125b4aa4eb18ca9b6081a3168c6f2953fb017f68166ebfd8e2b"
+    },
+    {
+      "path": "scripts/bench/evidence-access-execute.ts",
+      "sha256": "da62d18cad923860e3b0905e4930c1d9e6dddd6ad5fefa5b07ac1c33e7e55c89"
+    },
+    {
+      "path": "scripts/bench/evidence-access.test.ts",
+      "sha256": "f20abac1093bfadafe255031c140350b0e1363c885fdb7c6ca823ba3d7d1619b"
+    },
+    {
+      "path": "scripts/bench/evidence-codex-config.mjs",
+      "sha256": "2c991690e4e8d5bfcdf8fa9688f2617d4e7fcabfdd1f48ec1f6e66cc6615d7dc"
+    },
+    {
+      "path": "scripts/test/child-process.mjs",
+      "sha256": "b052c595a3262137e294cd6dd672bc2f15e0d40d3d213a884d221d6866ed0fe1"
+    },
+    {
+      "path": "scripts/test/resources.mjs",
+      "sha256": "612859696aa28fced956a4099a733b8d0bcab8c79f481f41b68de61c645cbcbb"
+    },
+    {
+      "path": "scripts/test/run-with-temp-root.mjs",
+      "sha256": "68ad727a8f716456e5488755abb0278011267de02fbc48bf6ae34710c657880e"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-service.ts",
+      "sha256": "44027a90ae43b50540160995dd837082b99717b009477568361b742f230e6f8a"
+    },
+    {
+      "path": "apps/server/src/discussion/acceptance-evidence-instructions.ts",
+      "sha256": "c267f490fc522e4ebe2569b78f4ab98f4f4b6af8114c32b8ffd20bbf4a327c51"
+    },
+    {
+      "path": "apps/server/src/discussion/finalization-instructions.ts",
+      "sha256": "626aff88fabfb7c4ac5cb859dbea11ec5c3787a761e08e061a65c5c41c070971"
+    },
+    {
+      "path": "apps/server/src/discussion/discussion-evidence-reference.ts",
+      "sha256": "542c717f2cc5bcdd0f0a811348399bbadfb6221a29b81b701fcb8d8658c9f879"
+    },
+    {
+      "path": "apps/server/src/domain/identifiers.ts",
+      "sha256": "a4f6935dc83d9359ed6deaec1befbc9ac559182f1a50c116332e3f662c447f40"
+    },
+    {
+      "path": "apps/server/src/domain/unicode-length.ts",
+      "sha256": "1db81e4bf7aea22489bd5bb93c3105e419be87bc895618b7c7239343b8c3ff48"
+    },
+    {
+      "path": "apps/server/src/security/redaction.ts",
+      "sha256": "e138c1dc9d88908dcd7915fb192e3f5fbaaa9dd4aaee218790eb26aeb745eb93"
+    },
+    {
+      "path": "package.json",
+      "sha256": "60c19cf8e58d8feebc54df088767955b6bf6dd6632c6fc3c86cef3d4556a1c52"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4bed8bc4c8f8b4bc8aa9982ef7d16ed76f15569591a9e8b82b0f8c977653fe71"
+    }
+  ]
+}

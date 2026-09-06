@@ -1,5 +1,16 @@
 # Discussion Orchestration Module
 
+## Evidence access/use experiment boundary
+
+[ADR-0047](../adr/0047-screen-evidence-access-and-use.md) permits only an isolated
+QA-072 historical replay: frozen original contributions, current Finalizer
+instruction rendering, a fixed-source read grant and returned-byte receipts.
+The ordinary Result/criterion evidence model remains authoritative; historical
+plain replies are not synthesized into structured Result claims. The reader
+is experiment tooling, with no new production endpoint, persisted contribution
+type, scheduler, selection, completion or acceptance policy. Execution and
+interpretation must follow [QA-072](../acceptance/qa-072-evidence-access-use.md).
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.
 Code review/test pipelines belong to Execution, not Wave semantics. Focused

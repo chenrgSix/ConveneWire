@@ -49,6 +49,8 @@ Node.js 22 and Go 1.26.7 are required. Repository commands are:
 - `npm run test:discussion-benchmark` — provider-free regression for all benchmark adapters, packets and synthetic Server/Bridge flows.
 - `npm run test:discussion-workspace` — focused source-pin, scoped-reader, adapter and historical replay regression, including continuation paths.
 - `npm run test:discussion-complex` — focused complex-packet, reference-arithmetic, admission and synthetic continuation/failure regression.
+- `npm run test:discussion-evidence-access` — verify QA-072 fixture pins, authority/ranges, returned-byte receipts and A/B/C installed-CLI loopback controls without an external model.
+- `npm run bench:discussion-evidence-access` — consume only the exact owner-authorized QA-072 nine-Finalizer freeze; an existing report prevents replay. This is not routine test or future execution permission.
 - `npm run test:discussion-codex-bootstrap` — installed Codex CLI checks using an auth-free loopback fixture, without an external model.
 - Historical `bench:discussion*` commands are not routine test commands or reusable execution permission. See [Discussion maintenance and evidence](docs/discussion-usage-guide.md#维护与后续验证); exercised plans stay closed and a new real experiment requires a bounded new plan.
 - `npm run test:e2e:live` — explicitly invoke local Codex and Pi against an isolated temporary Team.
