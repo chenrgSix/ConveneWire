@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "identity": "qa-078-export-strong-single-discussion-v1",
+  "reportSha256": "861dc40735b0f1a5d66657d17379e2025c836a8ffc3e0853d4b8c6ec8bfea1a2",
+  "firstAssessmentSha256": "753dc907ed345c37f8bc94fa0a7c33eaf8721f48379dfc86252498e3fd568145",
+  "gradingDisclosure": "Same implementation assistant authored the synthetic case and knows its reference. First review uses hash-sorted final artifacts without arm labels or contributor text; this is not independent human blind grading and uses no additional model invocation.",
+  "candidateSignal": false,
+  "arms": {
+    "S": {
+      "scheduled": 3,
+      "full": {
+        "pass": 1,
+        "fail": 2,
+        "disputed": 0,
+        "no_artifact": 0
+      },
+      "criticalPass": 1,
+      "manipulationValid": 3,
+      "sessions": 3,
+      "failedSessions": 0,
+      "unfinishedSessions": 0,
+      "unsupportedAdditions": 0,
+      "meanElapsedMilliseconds": 69879.66666666667,
+      "medianElapsedMilliseconds": 70285
+    },
+    "D": {
+      "scheduled": 3,
+      "full": {
+        "pass": 2,
+        "fail": 1,
+        "disputed": 0,
+        "no_artifact": 0
+      },
+      "criticalPass": 2,
+      "manipulationValid": 3,
+      "sessions": 9,
+      "failedSessions": 0,
+      "unfinishedSessions": 0,
+      "unsupportedAdditions": 0,
+      "meanElapsedMilliseconds": 116392.66666666667,
+      "medianElapsedMilliseconds": 115143
+    }
+  },
+  "trials": [
+    {
+      "trialId": "trial_qa078_1",
+      "arm": "S",
+      "repetition": 1,
+      "finalRunId": "run_qa078_export_1",
+      "finalAnswerSha256": "af5e247f1c5e1d8d2bfdeefc1554647cf264d557e5b1a044646a0863d6c36610",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 1,
+      "terminalSessions": 1,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 70726,
+      "summedSessionMilliseconds": 70579,
+      "failedSessions": 0,
+      "reads": 4,
+      "blindId": "answer-1",
+      "full": "fail",
+      "critical": "fail",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "lost",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    },
+    {
+      "trialId": "trial_qa078_2",
+      "arm": "D",
+      "repetition": 1,
+      "finalRunId": "run_qa078_export_4",
+      "finalAnswerSha256": "b0818571d30f6c5bab461cd377f0f5b1c048ef32fd53c145f10da9eede68e458",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 3,
+      "terminalSessions": 3,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 120525,
+      "summedSessionMilliseconds": 165087,
+      "failedSessions": 0,
+      "reads": 8,
+      "blindId": "answer-2",
+      "full": "fail",
+      "critical": "fail",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "lost",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    },
+    {
+      "trialId": "trial_qa078_3",
+      "arm": "D",
+      "repetition": 2,
+      "finalRunId": "run_qa078_export_7",
+      "finalAnswerSha256": "ce07bd5f98cce2d4f359f74b50c9b8838bbeab4b291013d64e3ee5c0d5db884b",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 3,
+      "terminalSessions": 3,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 113510,
+      "summedSessionMilliseconds": 162531,
+      "failedSessions": 0,
+      "reads": 8,
+      "blindId": "answer-4",
+      "full": "pass",
+      "critical": "pass",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "preserved",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    },
+    {
+      "trialId": "trial_qa078_4",
+      "arm": "S",
+      "repetition": 2,
+      "finalRunId": "run_qa078_export_8",
+      "finalAnswerSha256": "e4a071809aaafac19ac7bca4745757b52e1c18340509e715bfcbec058deddf69",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 1,
+      "terminalSessions": 1,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 68628,
+      "summedSessionMilliseconds": 68483,
+      "failedSessions": 0,
+      "reads": 4,
+      "blindId": "answer-6",
+      "full": "fail",
+      "critical": "fail",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "lost",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    },
+    {
+      "trialId": "trial_qa078_5",
+      "arm": "S",
+      "repetition": 3,
+      "finalRunId": "run_qa078_export_9",
+      "finalAnswerSha256": "ce4c12b917ef96b6b9aead1e9228aad15c6d6bbe84b564abd008680535828573",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 1,
+      "terminalSessions": 1,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 70285,
+      "summedSessionMilliseconds": 70147,
+      "failedSessions": 0,
+      "reads": 4,
+      "blindId": "answer-5",
+      "full": "pass",
+      "critical": "pass",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "preserved",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    },
+    {
+      "trialId": "trial_qa078_6",
+      "arm": "D",
+      "repetition": 3,
+      "finalRunId": "run_qa078_export_12",
+      "finalAnswerSha256": "c3803c26c00eab3f2251e178a7a0e2c445e870065ba9b4bdb663ca93d72683df",
+      "delivered": true,
+      "manipulationValid": true,
+      "sessions": 3,
+      "terminalSessions": 3,
+      "unfinishedSessions": 0,
+      "elapsedMilliseconds": 115143,
+      "summedSessionMilliseconds": 160531,
+      "failedSessions": 0,
+      "reads": 8,
+      "blindId": "answer-3",
+      "full": "pass",
+      "critical": "pass",
+      "unsupportedAdditions": 0,
+      "facts": {
+        "F1": "preserved",
+        "F2": "preserved",
+        "F3": "preserved",
+        "F4": "preserved"
+      },
+      "unknowns": {
+        "U1": "preserved",
+        "U2": "preserved"
+      }
+    }
+  ],
+  "limitations": [
+    "One synthetic task repeated three times",
+    "More sessions for Discussion; not equal compute",
+    "Requested provider model not independently attested",
+    "Author knows reference; first final labels masked, not independent human evaluation",
+    "Isolated pipeline, not production Discussion E2E",
+    "No automatic semantic grader or net score"
+  ]
+}

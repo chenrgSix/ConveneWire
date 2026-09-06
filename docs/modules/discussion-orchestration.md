@@ -53,14 +53,25 @@ research question to strong Single versus bounded Discussion on a new
 cross-domain review task. Both final-answer Runs receive the same full-source
 access, criteria, evidence-use instruction and tools. Discussion adds two fresh
 independent contributions, not a closure table or review Wave. The comparison
-is one versus three model sessions per trial, not equal compute. QA-078's
-packet and adapter require a pre-execution freeze. The Owner subsequently
-authorized preparation through the exact twelve-session experiment and
-assessment. The QA-only adapter uses ordinary plain replies, preserving all
-bytes with current Run/source-return identity, without manufacturing Result
-claims or adding production storage. Its equal final prompts, fresh sessions
-and absence of the Central/Bridge execution path are explicit differences from
-shipped Discussion. Real-model outcomes remain separate from offline checks.
+is one versus three model sessions per trial, not equal compute. The Owner
+authorized the pre-execution freeze through the exact twelve-session experiment
+and assessment. The QA-only adapter transfers retained ordinary plain replies
+with current Run/source-return identity, without manufacturing Result claims or
+adding production storage; the inherited Runtime trims outer terminal whitespace
+before retention. Its equal final prompts, fresh sessions and absence of the
+Central/Bridge execution path are explicit differences from shipped Discussion.
+
+The retained [QA-078 result](../acceptance/qa-078-strong-single-discussion.md)
+has twelve completed sessions and 36 complete source returns. All six finals
+correctly identify and repair the four principal defects; first full grades are
+S=1/3 and D=2/3 solely due to an explicit worker-data-scope report omission in
+three artifacts. This is not a behavioral error. Mean trial wall time is 69.9s
+versus 116.4s. The frozen D=3/3 candidate signal is absent. Post-first review
+retains the compound F2 grading limitation: atomicity is preserved, but the
+private HTTP-response-loss clause is not explicitly stated. Do not turn coarse
+fact grades into an exhaustive retention percentage or enforce an extra hidden
+requirement. No production quality improvement or further Finalizer mechanism
+is established, and the twelve-session authorization is consumed.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.

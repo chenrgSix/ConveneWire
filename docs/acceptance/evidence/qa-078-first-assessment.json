@@ -1,0 +1,1214 @@
+{
+  "version": 1,
+  "identity": "qa-078-export-strong-single-discussion-v1",
+  "packetSha256": "1b26d128130c1acddf9cdd02f3ff43826fc09d6d34b8c085599bbe2e2f01a239",
+  "rubricSha256": "b6b49f8d333ba5f1fe4b6888e5dfb06a091a9149598fda0ba6516d814e1e4ad4",
+  "finalOnlySha256": "52ba2c6e0f2be397898b1687fc9b38a98fe46110699b2c881936dcf0c5af3d66",
+  "assessedAt": "2026-09-06T16:20:38.367Z",
+  "evaluatorDisclosure": "Same implementation assistant authored the synthetic case and knows its reference. First review uses hash-sorted final artifacts without arm labels or contributor text; this is not independent human blind grading and uses no additional model invocation.",
+  "gradingInterpretations": [
+    "All six artifacts correctly identify and repair the four confirmed implementation defects; none is graded as a behavioral error.",
+    "Public security criterion requires assessment of worker data scope. Frozen F1 also includes request/worker tenant provenance. Answers 1, 2 and 6 discuss API tenant checks and tenant-scoped object keys but do not state or equivalently assess that render receives stored job.tenantId/job.filter rather than event data. This is a narrow missing deliverable, not an incorrect tenant-boundary claim. The same omission affects security and preservation criteria; it is one omission per artifact, not two errors.",
+    "F1 is a compound frozen anchor. Its lost status below means its worker-scope component is not stated; request tenant and uniqueness components are retained. Component details prevent claiming all tenant facts were lost.",
+    "Regression scenarios are assessed across the complete artifact. Combined cases and references to the concrete earlier interleaving are accepted; answer 4 covers the cleanup race in its test and the stale overwrite sequence in its finding, with winner bytes explicitly protected.",
+    "A proposed attempt-specific key published through finish is accepted despite loose phrasing about publication following finish; no artifact prescribes a separate unfenced pointer write. Version/ETag promotion is explicitly conditional on storage capability.",
+    "Questions about real broker/storage behavior and conditional reinstatement are proposed verification needs, not unsupported assertions about current incidents or behavior.",
+    "Cancellation discussion is read with each artifact preserving canceled no-reclaim: later winner is relative to an earlier worker claim, not a claim that cancellation permits subsequent reclaim. No token keyword or exact HTTP status is required."
+  ],
+  "answers": [
+    {
+      "blindId": "answer-1",
+      "answerSha256": "af5e247f1c5e1d8d2bfdeefc1554647cf264d557e5b1a044646a0863d6c36610",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe correction: on existing row, compare `existing.payloadHash` with the newly computed hash. Return existing only on match; otherwise throw a conflict such as `idempotency_conflict`, leaving the existing job and outbox unchanged. This preserves tenant-local uniqueness via `UNIQUE(tenantId, requestKey)` in `evidence_qa078_api_storage`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "Effective fix: after `decode`, check that `members` contains the issued principal, for example the equivalent of `members.has(`${value.tenantId}/${value.userId}`)`, before reading the object. Keep the existing useful controls: HMAC signature, expiry validation, tenant-bound job lookup, ready-state check, and issuing links only from `issueLink` after `requireMember`.",
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "The download defect and repair are correct. However the report does not assess render receiving stored job.tenantId/job.filter rather than event data. API ownership and tenant object-key scoping alone do not cover the publicly required worker data-scope assessment. This is omission only."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery order: publish first, and mark `sentAt` only after a resolved publish that acknowledges durable broker acceptance. If publish throws before delivery, leave `sentAt` null so restart retries. If publish throws after delivery due to lost acknowledgement, local retry may publish a duplicate; workers and downstream effects must tolerate at-least-once delivery. Do not claim exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: write each attempt to a unique temporary key containing job id plus epoch or attempt id. Only the winning `finish` publishes that unique key into the DB. A failed stale attempt deletes only its own temporary key. Avoid shared final-key overwrite unless the store supports conditional generation/version operations and the code records and validates the winning generation.",
+            "The database publication fence in `evidence_qa078_api_storage` is good: `finish` requires matching `tenantId`, `state='running'`, `epoch`, and unexpired lease. The ready/canceled duplicate no-op is also present because `claim` refuses ready/canceled jobs."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\nConcrete tests to add or expand:\n\n1. Same key with changed payload: create tenant `cobalt` export with `requestKey=\"r1\", filter=\"paid\"`, then call create with same tenant/key and `filter=\"unpaid\"`. Expect conflict, same original job count, no new outbox row, original job unchanged.\n\n2. Same key across tenants and forged body tenant: create as verified `cobalt` with body `tenantId=\"ochre\"` and key `r1`; assert stored tenant is `cobalt`. Create as verified `ochre` with same key; assert a different job is allowed. Assert `ochre` cannot `getOwned` for `cobalt` job.\n\n3. Job/outbox transaction rollback: inject an exception after job insert and before outbox insert. Expect no job row for that request key and no partial outbox row. This is locally covered in `evidence_qa078_test_evidence`, but should remain as a regression.\n\n4. Broker failures and duplicate delivery: for pre-delivery throw, make `broker.publish` throw before recording delivery; after restart/second dispatch, expect `sentAt` still null until a resolved publish and the event eventually delivered. For lost acknowledgement after delivery, make publish record delivery then throw; expect later retry can deliver the same stable `eventId`, and worker duplicate on ready returns ignored without a second render or state change.\n\n5. Old/new worker publication and cleanup race: pause Worker A after claim epoch 1; advance time and let Worker B claim epoch 2, write bytes B, and finish ready. Resume A, have it write bytes A and fail finish. Expected result after repair: DB object key points to B’s unique object, B bytes remain downloadable, and A’s temp object is deleted without touching B.\n\n6. Cancellation during paused work: Worker A claims and pauses before store write; cancel the job; resume A. Expect finish fails, job remains canceled, future claim ignored, downloads denied, and only A’s own temporary object cleaned.\n\n7. Unexpired link after membership revocation: issue a ready-job link for `cobalt/u1`, remove `cobalt/u1` from members, call download before expiry. Expect `membership_revoked` or equivalent denial and no object read. Also assert valid member with valid link still succeeds.\n\n8. Normal ready download, expiry and ready-job duplicate: create, dispatch, work to ready, issue link, download before expiry succeeds with expected bytes; after expiry fails; duplicate delivery for the ready job returns ignored and does not rerender or alter object bytes. This is partially observed locally in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Do not release this fixture as-is. The review found confirmed blockers in request idempotency, download authorization after revocation, dispatcher recovery, and object-store publication cleanup races. No code or operational changes were made; this is a read-only review based only on the four supplied evidence sources.",
+            "**Ordered Repair And Verification Plan**\n\n1. Fix idempotency conflict detection while preserving tenant-local uniqueness and same-payload replay.\n2. Fix download membership enforcement for the signed `tenantId/userId`, preserving signature, expiry, ready-state and tenant lookup checks.\n3. Change dispatch to mark outbox sent only after durable publish acknowledgement; treat unknown publish failures as retryable and rely on stable `eventId` plus worker deduplication.\n4. Replace shared object keys for in-progress workers with attempt-unique keys and cleanup only the failed attempt’s own object.\n5. Add the regression cases above and rerun local scripted checks.\n6. Validate against real broker and remote object storage, including IAM, consistency/versioning, durability, duplicate delivery and recovery under load.\n\nBased on the confirmed blockers and the missing production evidence, this review does not grant release approval."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`.",
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`.",
+            "The database publication fence in `evidence_qa078_api_storage` is good: `finish` requires matching `tenantId`, `state='running'`, `epoch`, and unexpired lease. The ready/canceled duplicate no-op is also present because `claim` refuses ready/canceled jobs.",
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Request tenant scoping, uniqueness, atomic outbox insertion, DB fencing and terminal-job no-op remain correct. The worker-data component of frozen F1 is absent. This is the same single coverage omission as the security item, not a second behavioral error."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "- Real remote-store/IAM/consistency/durability configuration. `evidence_qa078_operations` explicitly says the object store semantics are in-memory and not proof of real remote-store consistency, versioning or durability; `evidence_qa078_security` also says no real secret, token, deployment key configuration or production IAM evidence is included. This would be resolved by production storage configuration, IAM policies, encryption/key management, object version/conditional-write behavior, durability settings, and integration tests against the real store.",
+            "- Production load, lease-latency and recovery-time measurements. `evidence_qa078_operations` states no worker lease-latency distribution, load benchmark or measured recovery-time evidence is provided. This would be resolved by load tests, worker pause/latency distributions relative to the 30-second lease, broker outage/restart drills, duplicate delivery metrics, and measured dispatcher recovery time under production-like concurrency."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "lost",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "not_stated"
+          },
+          "quotes": [
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Partial anchor retention: request tenant and uniqueness are stated, but no equivalent worker render-scope assessment appears. Lost does not mean the preserved API facts were contradicted."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "The database publication fence in `evidence_qa078_api_storage` is good: `finish` requires matching `tenantId`, `state='running'`, `epoch`, and unexpired lease. The ready/canceled duplicate no-op is also present because `claim` refuses ready/canceled jobs.",
+            "Safe repair: write each attempt to a unique temporary key containing job id plus epoch or attempt id. Only the winning `finish` publishes that unique key into the DB. A failed stale attempt deletes only its own temporary key. Avoid shared final-key overwrite unless the store supports conditional generation/version operations and the code records and validates the winning generation."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "- Verified-session tenant boundary: `requireSession`, `getOwned`, and create path use `ctx.tenantId`, not body `tenantId`, as shown in `evidence_qa078_api_storage`.\n- Tenant-local request-key uniqueness: `UNIQUE(tenantId, requestKey)` allows key reuse across tenants while preventing duplicate keys in one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in one transaction; the local rollback check in `evidence_qa078_test_evidence` observed no rollback job and unchanged outbox count after injected failure.\n- Database state/epoch/lease fencing: `claim` increments epoch and `finish` requires state, epoch, tenant and lease validity.\n- Ready/canceled duplicate no-op: `claim` only accepts queued/running and returns null for ready/canceled, which the local checks observed for duplicate ready work and canceled reclaim in `evidence_qa078_test_evidence`.",
+            "**Regression Plan**\n\nConcrete tests to add or expand:\n\n1. Same key with changed payload: create tenant `cobalt` export with `requestKey=\"r1\", filter=\"paid\"`, then call create with same tenant/key and `filter=\"unpaid\"`. Expect conflict, same original job count, no new outbox row, original job unchanged.\n\n2. Same key across tenants and forged body tenant: create as verified `cobalt` with body `tenantId=\"ochre\"` and key `r1`; assert stored tenant is `cobalt`. Create as verified `ochre` with same key; assert a different job is allowed. Assert `ochre` cannot `getOwned` for `cobalt` job.\n\n3. Job/outbox transaction rollback: inject an exception after job insert and before outbox insert. Expect no job row for that request key and no partial outbox row. This is locally covered in `evidence_qa078_test_evidence`, but should remain as a regression.\n\n4. Broker failures and duplicate delivery: for pre-delivery throw, make `broker.publish` throw before recording delivery; after restart/second dispatch, expect `sentAt` still null until a resolved publish and the event eventually delivered. For lost acknowledgement after delivery, make publish record delivery then throw; expect later retry can deliver the same stable `eventId`, and worker duplicate on ready returns ignored without a second render or state change.\n\n5. Old/new worker publication and cleanup race: pause Worker A after claim epoch 1; advance time and let Worker B claim epoch 2, write bytes B, and finish ready. Resume A, have it write bytes A and fail finish. Expected result after repair: DB object key points to B’s unique object, B bytes remain downloadable, and A’s temp object is deleted without touching B.\n\n6. Cancellation during paused work: Worker A claims and pauses before store write; cancel the job; resume A. Expect finish fails, job remains canceled, future claim ignored, downloads denied, and only A’s own temporary object cleaned.\n\n7. Unexpired link after membership revocation: issue a ready-job link for `cobalt/u1`, remove `cobalt/u1` from members, call download before expiry. Expect `membership_revoked` or equivalent denial and no object read. Also assert valid member with valid link still succeeds.\n\n8. Normal ready download, expiry and ready-job duplicate: create, dispatch, work to ready, issue link, download before expiry succeeds with expected bytes; after expiry fails; duplicate delivery for the ready job returns ignored and does not rerender or alter object bytes. This is partially observed locally in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "- Real remote-store/IAM/consistency/durability configuration. `evidence_qa078_operations` explicitly says the object store semantics are in-memory and not proof of real remote-store consistency, versioning or durability; `evidence_qa078_security` also says no real secret, token, deployment key configuration or production IAM evidence is included. This would be resolved by production storage configuration, IAM policies, encryption/key management, object version/conditional-write behavior, durability settings, and integration tests against the real store."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "- Production load, lease-latency and recovery-time measurements. `evidence_qa078_operations` states no worker lease-latency distribution, load benchmark or measured recovery-time evidence is provided. This would be resolved by load tests, worker pause/latency distributions relative to the 30-second lease, broker outage/restart drills, duplicate delivery metrics, and measured dispatcher recovery time under production-like concurrency."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    },
+    {
+      "blindId": "answer-2",
+      "answerSha256": "b0818571d30f6c5bab461cd377f0f5b1c048ef32fd53c145f10da9eede68e458",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Observed consequence from code: the second call returns the first job instead of rejecting the changed payload. Safe correction: after loading `existing`, compare `existing.payloadHash` with the new hash; return only if equal, otherwise raise a conflict and leave jobs/outbox unchanged."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "Consequence: a user can receive a valid link, be removed from `members`, and still download until expiry. Safe fix: after `decode`, check `members.has(`${value.tenantId}/${value.userId}`)` and reject if absent, while preserving the existing signature, expiry, tenant, and ready-state checks.",
+            "Preserve the good behavior already present: verified session tenant is used, body `tenantId` is ignored, different tenants may reuse a request key, and accepted job plus outbox insert are in one SQLite transaction."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "The download defect and repair are correct. However the report does not assess render receiving stored job.tenantId/job.filter rather than event data. API ownership and tenant object-key scoping alone do not cover the publicly required worker data-scope assessment. This is omission only."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery order: commit job and unsent outbox atomically; dispatcher publishes the unsent event; only after durable broker acceptance should it mark the outbox row sent. If acknowledgement is lost after delivery, retry can publish the same stable `eventId` again, so downstream execution must tolerate duplicate delivery. This is at-least-once delivery, not exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: write each attempt to an attempt-scoped key, for example including job id and epoch or a worker attempt id. Publish only the winning key through the existing fenced `finish`. Failed or stale workers may delete only their own unpublished attempt key, never the published object.",
+            "The database publication fence is good: `claim` increments epoch and sets a lease; `finish` only publishes ready state when job id, tenant, running state, epoch, and unexpired lease match, as shown in `evidence_qa078_api_storage`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\nAdd or extend tests with concrete expected behavior:\n\n1. Same tenant/key with changed payload: create `requestKey=request-1`, `filter=paid`; replay same tenant/key with `filter=unpaid`; expect conflict, original job unchanged, no new job, no new outbox row.\n\n2. Same key across tenants and forged body tenant: create as verified tenant `cobalt` with body `tenantId=ochre`; expect stored tenant `cobalt`. Create same key as verified tenant `ochre`; expect a separate job. Cross-tenant `getOwned` should fail.\n\n3. Job/outbox rollback: inject failure after job insert and before outbox insert; expect neither job nor outbox row persists. Retry without injection; expect both persist in one transaction.\n\n4. Broker recovery: simulate publish throwing before delivery; expect `sentAt` remains unset or recoverable and restart republishes. Simulate lost acknowledgement after delivery; expect duplicate broker delivery is tolerated by stable `eventId` and idempotent worker behavior, without promising exactly-once execution.\n\n5. Old/new worker object race: pause worker A after claim; let lease expire; worker B claims, writes attempt-scoped object, finishes ready; resume A. Expect DB still references B’s object and A cannot overwrite or delete it.\n\n6. Cancellation during paused work: worker claims and pauses; cancel increments epoch; worker resumes, writes/finishes. Expect `finish` fails, job remains canceled, and cleanup touches only the stale attempt object.\n\n7. Revoked membership download: issue a link for an active member, remove that member, call `download` before expiry. Expect authorization failure and no object read.\n\n8. Normal ready download, expiry, and ready duplicate: ready job downloads before expiry; expired token rejects; duplicate delivery for already ready job returns ignored and does not render or republish."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Do not release this service as reviewed. The evidence shows confirmed blockers in idempotency, download authorization after revocation, dispatcher recovery, and object-store publication fencing. This is a read-only review only; I made no operational changes and give no release approval.",
+            "**Ordered Repair Plan**\n\n1. Fix idempotency conflict handling.\n2. Enforce current membership in `download`.\n3. Change dispatcher ordering so broker acceptance precedes marking sent, or add a recoverable publish state.\n4. Make object writes and cleanup attempt-scoped while keeping the existing DB fence.\n5. Add the regression cases above against local fixtures.\n6. Verify against production-like broker and object-store configuration before any release decision."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "Preserve the good behavior already present: verified session tenant is used, body `tenantId` is ignored, different tenants may reuse a request key, and accepted job plus outbox insert are in one SQLite transaction.",
+            "Preserve the good behavior already present: verified session tenant is used, body `tenantId` is ignored, different tenants may reuse a request key, and accepted job plus outbox insert are in one SQLite transaction.",
+            "The database publication fence is good: `claim` increments epoch and sets a lease; `finish` only publishes ready state when job id, tenant, running state, epoch, and unexpired lease match, as shown in `evidence_qa078_api_storage`.",
+            "Preserve the existing DB protections: state/epoch/lease fencing, reclaim of expired running jobs, canceled jobs invalidating unfinished workers, and ready/canceled duplicate work returning no-op behavior."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Request tenant scoping, uniqueness, atomic outbox insertion, DB fencing and terminal-job no-op remain correct. The worker-data component of frozen F1 is absent. This is the same single coverage omission as the security item, not a second behavioral error."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Production remote-store/IAM/consistency/durability evidence is not provided. Resolving this needs actual storage provider configuration, IAM and bucket/key policies, consistency/versioning guarantees, conditional-write support, lifecycle cleanup rules, and durability settings.",
+            "Production load, lease-latency, and recovery-time evidence is not provided. Resolving this needs production-like measurements for worker runtimes, clock skew assumptions, lease expiry distribution, dispatcher restart behavior, broker retry timing, duplicate delivery rates, and recovery time under load."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "lost",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "not_stated"
+          },
+          "quotes": [
+            "Preserve the good behavior already present: verified session tenant is used, body `tenantId` is ignored, different tenants may reuse a request key, and accepted job plus outbox insert are in one SQLite transaction."
+          ],
+          "rationale": "Partial anchor retention: request tenant and uniqueness are stated, but no equivalent worker render-scope assessment appears. Lost does not mean the preserved API facts were contradicted."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "Preserve the good behavior already present: verified session tenant is used, body `tenantId` is ignored, different tenants may reuse a request key, and accepted job plus outbox insert are in one SQLite transaction."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "The database publication fence is good: `claim` increments epoch and sets a lease; `finish` only publishes ready state when job id, tenant, running state, epoch, and unexpired lease match, as shown in `evidence_qa078_api_storage`.",
+            "Safe repair: write each attempt to an attempt-scoped key, for example including job id and epoch or a worker attempt id. Publish only the winning key through the existing fenced `finish`. Failed or stale workers may delete only their own unpublished attempt key, never the published object."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "Preserve the existing DB protections: state/epoch/lease fencing, reclaim of expired running jobs, canceled jobs invalidating unfinished workers, and ready/canceled duplicate work returning no-op behavior.",
+            "**Regression Plan**\n\nAdd or extend tests with concrete expected behavior:\n\n1. Same tenant/key with changed payload: create `requestKey=request-1`, `filter=paid`; replay same tenant/key with `filter=unpaid`; expect conflict, original job unchanged, no new job, no new outbox row.\n\n2. Same key across tenants and forged body tenant: create as verified tenant `cobalt` with body `tenantId=ochre`; expect stored tenant `cobalt`. Create same key as verified tenant `ochre`; expect a separate job. Cross-tenant `getOwned` should fail.\n\n3. Job/outbox rollback: inject failure after job insert and before outbox insert; expect neither job nor outbox row persists. Retry without injection; expect both persist in one transaction.\n\n4. Broker recovery: simulate publish throwing before delivery; expect `sentAt` remains unset or recoverable and restart republishes. Simulate lost acknowledgement after delivery; expect duplicate broker delivery is tolerated by stable `eventId` and idempotent worker behavior, without promising exactly-once execution.\n\n5. Old/new worker object race: pause worker A after claim; let lease expire; worker B claims, writes attempt-scoped object, finishes ready; resume A. Expect DB still references B’s object and A cannot overwrite or delete it.\n\n6. Cancellation during paused work: worker claims and pauses; cancel increments epoch; worker resumes, writes/finishes. Expect `finish` fails, job remains canceled, and cleanup touches only the stale attempt object.\n\n7. Revoked membership download: issue a link for an active member, remove that member, call `download` before expiry. Expect authorization failure and no object read.\n\n8. Normal ready download, expiry, and ready duplicate: ready job downloads before expiry; expired token rejects; duplicate delivery for already ready job returns ignored and does not render or republish."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "Production remote-store/IAM/consistency/durability evidence is not provided. Resolving this needs actual storage provider configuration, IAM and bucket/key policies, consistency/versioning guarantees, conditional-write support, lifecycle cleanup rules, and durability settings."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "Production load, lease-latency, and recovery-time evidence is not provided. Resolving this needs production-like measurements for worker runtimes, clock skew assumptions, lease expiry distribution, dispatcher restart behavior, broker retry timing, duplicate delivery rates, and recovery time under load."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    },
+    {
+      "blindId": "answer-3",
+      "answerSha256": "c3803c26c00eab3f2251e178a7a0e2c445e870065ba9b4bdb663ca93d72683df",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe correction: keep tenant-local lookup, but compare `existing.payloadHash` with the newly computed hash. Return the existing job only when hashes match; otherwise throw a conflict and do not insert or update job/outbox state."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Effective fix: after `decode`, require current membership for `value.tenantId/value.userId` before reading the object. Preserve the existing HMAC signature check, expiry validation, tenant/job lookup, and ready-state enforcement in `evidence_qa078_security`.",
+            "- Verified-session tenant boundary: forged body tenant is ignored and stored/rendered tenant remains the session tenant, shown by `tenant-isolation-and-same-payload-replay`.\n- Tenant-local uniqueness: same tenant/key/same normalized payload returns the same job; same key in another tenant creates a different job.\n- Cross-tenant reads fail through `getOwned`.\n- Job/outbox transaction rollback: injected crash after job insert leaves no rollback job and does not add an outbox row.\n- Worker render scope uses stored job tenant/filter, not broker event tenant data.\n- Ready-job duplicate delivery is a no-op: second `work` returns `\"ignored\"` and render count stays unchanged.\n- Canceled jobs deny download and are not reclaimed by later duplicate work."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Download revocation defect and effective current signed-user membership fix are correct; creation/tenant controls and worker stored tenant/filter scope are explicitly assessed."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery/retry order: persist job and unsent outbox atomically; after commit, publish unsent events; mark `sentAt` only after durable broker acceptance. If acknowledgement is lost after delivery, the dispatcher may retry and create duplicate broker deliveries. That must be handled by idempotent worker processing and fencing; the service must not claim exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: write attempt-scoped immutable temporary keys that include an epoch/lease/attempt token, publish only the winning key through fenced `finish`, and delete only the failed attempt’s own temporary object. Add a sweeper for abandoned attempt objects. Do not weaken the existing DB fence.",
+            "`evidence_qa078_api_storage` gives useful DB fencing: `claim` only claims queued jobs or expired running jobs, increments `epoch`, and sets `leaseUntil`; `finish` only publishes ready when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all match. Preserve this state/epoch/lease fence."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` job with `requestKey=\"request-1\"`, `format=\"csv\"`, `filter=\"paid\"`. Replay same tenant/key with `filter=\"unpaid\"` or different normalized format/filter. Expected: conflict/error; original job unchanged; no new job; no new outbox row.\n\n2. Same key across tenants and forged body tenant: create as tenant `cobalt` with body `tenantId=\"ochre\"` and assert stored tenant is `cobalt`. Create same `requestKey` as tenant `ochre` and assert a different job id. Attempt `getOwned` across tenants and expect `not_found`.\n\n3. Job/outbox rollback: inject `afterInsert` throwing during `createExport`. Expected: no job row for that request key and outbox count unchanged.\n\n4. Dispatcher recovery: with broker throwing before delivery, expected safe behavior after repair is outbox remains retryable and dispatcher restart eventually delivers. With broker delivering then throwing due to lost acknowledgement, expected behavior is possible duplicate delivery, one final ready DB publication, and no exactly-once promise.\n\n5. Duplicate delivery: deliver the same event twice for a ready job. Expected: first worker may finish ready, second returns ignored or otherwise no-ops; render/publication/object bytes remain unchanged.\n\n6. Old/new worker object race: worker A claims and pauses past lease before or after rendering; worker B claims newer epoch, writes/publishes ready bytes; worker A resumes. Expected after repair: A cannot overwrite or delete B’s winning object, A’s attempt object is cleaned or swept, and download returns B’s bytes.\n\n7. Cancellation during paused work: worker claims and pauses; request cancels job; worker resumes and attempts write/finish. Expected: DB remains canceled, download denied, no shared ready object overwritten or deleted, only worker’s own attempt object cleaned.\n\n8. Revoked membership link: issue link for ready job while member exists; remove `${tenantId}/${userId}` from `members`; download before expiry. Expected: membership error, not bytes.\n\n9. Normal download controls: active member downloads ready job successfully; expired link fails; canceled ready job denies future download as already locally checked."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Do not release this service on the supplied evidence. This was a read-only review only; I made no code or operational changes and grant no release approval.",
+            "**Ordered Repair And Verification Plan**\n\n1. Fix idempotency hash comparison on existing `(tenantId, requestKey)` rows.\n2. Add current signed-user membership check to `download`.\n3. Change dispatcher ordering so `sentAt` is recorded only after durable broker acceptance; keep duplicate delivery safe.\n4. Replace shared pre-publication object keys with attempt-scoped keys and cleanup only the attempt’s own object.\n5. Add the regression cases above, including failure injection for both broker failure modes and stale/canceled worker object races.\n6. Run local regression suite, then validate against production-equivalent object storage/IAM and representative load/recovery measurements before any release decision."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Preserve: `ctx.tenantId` is authoritative and body `tenantId` is ignored; `UNIQUE(tenantId, requestKey)` correctly allows different tenants to reuse the same key; job and outbox are inserted in one DB transaction. These protections are shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.",
+            "Preserve: `ctx.tenantId` is authoritative and body `tenantId` is ignored; `UNIQUE(tenantId, requestKey)` correctly allows different tenants to reuse the same key; job and outbox are inserted in one DB transaction. These protections are shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.",
+            "`evidence_qa078_api_storage` gives useful DB fencing: `claim` only claims queued jobs or expired running jobs, increments `epoch`, and sets `leaseUntil`; `finish` only publishes ready when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all match. Preserve this state/epoch/lease fence.",
+            "- Verified-session tenant boundary: forged body tenant is ignored and stored/rendered tenant remains the session tenant, shown by `tenant-isolation-and-same-payload-replay`.\n- Tenant-local uniqueness: same tenant/key/same normalized payload returns the same job; same key in another tenant creates a different job.\n- Cross-tenant reads fail through `getOwned`.\n- Job/outbox transaction rollback: injected crash after job insert leaves no rollback job and does not add an outbox row.\n- Worker render scope uses stored job tenant/filter, not broker event tenant data.\n- Ready-job duplicate delivery is a no-op: second `work` returns `\"ignored\"` and render count stays unchanged.\n- Canceled jobs deny download and are not reclaimed by later duplicate work.",
+            "- Verified-session tenant boundary: forged body tenant is ignored and stored/rendered tenant remains the session tenant, shown by `tenant-isolation-and-same-payload-replay`.\n- Tenant-local uniqueness: same tenant/key/same normalized payload returns the same job; same key in another tenant creates a different job.\n- Cross-tenant reads fail through `getOwned`.\n- Job/outbox transaction rollback: injected crash after job insert leaves no rollback job and does not add an outbox row.\n- Worker render scope uses stored job tenant/filter, not broker event tenant data.\n- Ready-job duplicate delivery is a no-op: second `work` returns `\"ignored\"` and render count stays unchanged.\n- Canceled jobs deny download and are not reclaimed by later duplicate work."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All F1-F4 required fact anchors are explicitly retained, including worker render tenant/filter provenance and correct state/epoch/lease fence; no weaker replacement is proposed."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "No real remote object-store, IAM, consistency, versioning, encryption, lifecycle, access-policy, or durability configuration is provided. `evidence_qa078_operations` explicitly says the object store is an in-memory fixture and not proof of remote-store behavior. Resolving this requires production or production-equivalent storage configuration, IAM policy review, consistency/versioning guarantees, and failure-mode tests against that environment.",
+            "No production load, worker lease-latency distribution, broker redelivery timing, dispatcher restart timing, recovery-time measurements, or object cleanup timing evidence is provided. `evidence_qa078_test_evidence` explicitly identifies the checks as local in-memory scripted checks and lists production load/recovery and remote storage/IAM/durability as untested. Resolving this requires representative load tests and measured recovery behavior under realistic concurrency and failure injection."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "preserved",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "preserved"
+          },
+          "quotes": [
+            "Preserve: `ctx.tenantId` is authoritative and body `tenantId` is ignored; `UNIQUE(tenantId, requestKey)` correctly allows different tenants to reuse the same key; job and outbox are inserted in one DB transaction. These protections are shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.",
+            "- Verified-session tenant boundary: forged body tenant is ignored and stored/rendered tenant remains the session tenant, shown by `tenant-isolation-and-same-payload-replay`.\n- Tenant-local uniqueness: same tenant/key/same normalized payload returns the same job; same key in another tenant creates a different job.\n- Cross-tenant reads fail through `getOwned`.\n- Job/outbox transaction rollback: injected crash after job insert leaves no rollback job and does not add an outbox row.\n- Worker render scope uses stored job tenant/filter, not broker event tenant data.\n- Ready-job duplicate delivery is a no-op: second `work` returns `\"ignored\"` and render count stays unchanged.\n- Canceled jobs deny download and are not reclaimed by later duplicate work."
+          ],
+          "rationale": "Verified request tenant, tenant-local uniqueness and stored worker tenant/filter scope are stated."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "Preserve: `ctx.tenantId` is authoritative and body `tenantId` is ignored; `UNIQUE(tenantId, requestKey)` correctly allows different tenants to reuse the same key; job and outbox are inserted in one DB transaction. These protections are shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "`evidence_qa078_api_storage` gives useful DB fencing: `claim` only claims queued jobs or expired running jobs, increments `epoch`, and sets `leaseUntil`; `finish` only publishes ready when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all match. Preserve this state/epoch/lease fence.",
+            "Safe repair: write attempt-scoped immutable temporary keys that include an epoch/lease/attempt token, publish only the winning key through fenced `finish`, and delete only the failed attempt’s own temporary object. Add a sweeper for abandoned attempt objects. Do not weaken the existing DB fence."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "- Verified-session tenant boundary: forged body tenant is ignored and stored/rendered tenant remains the session tenant, shown by `tenant-isolation-and-same-payload-replay`.\n- Tenant-local uniqueness: same tenant/key/same normalized payload returns the same job; same key in another tenant creates a different job.\n- Cross-tenant reads fail through `getOwned`.\n- Job/outbox transaction rollback: injected crash after job insert leaves no rollback job and does not add an outbox row.\n- Worker render scope uses stored job tenant/filter, not broker event tenant data.\n- Ready-job duplicate delivery is a no-op: second `work` returns `\"ignored\"` and render count stays unchanged.\n- Canceled jobs deny download and are not reclaimed by later duplicate work.",
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` job with `requestKey=\"request-1\"`, `format=\"csv\"`, `filter=\"paid\"`. Replay same tenant/key with `filter=\"unpaid\"` or different normalized format/filter. Expected: conflict/error; original job unchanged; no new job; no new outbox row.\n\n2. Same key across tenants and forged body tenant: create as tenant `cobalt` with body `tenantId=\"ochre\"` and assert stored tenant is `cobalt`. Create same `requestKey` as tenant `ochre` and assert a different job id. Attempt `getOwned` across tenants and expect `not_found`.\n\n3. Job/outbox rollback: inject `afterInsert` throwing during `createExport`. Expected: no job row for that request key and outbox count unchanged.\n\n4. Dispatcher recovery: with broker throwing before delivery, expected safe behavior after repair is outbox remains retryable and dispatcher restart eventually delivers. With broker delivering then throwing due to lost acknowledgement, expected behavior is possible duplicate delivery, one final ready DB publication, and no exactly-once promise.\n\n5. Duplicate delivery: deliver the same event twice for a ready job. Expected: first worker may finish ready, second returns ignored or otherwise no-ops; render/publication/object bytes remain unchanged.\n\n6. Old/new worker object race: worker A claims and pauses past lease before or after rendering; worker B claims newer epoch, writes/publishes ready bytes; worker A resumes. Expected after repair: A cannot overwrite or delete B’s winning object, A’s attempt object is cleaned or swept, and download returns B’s bytes.\n\n7. Cancellation during paused work: worker claims and pauses; request cancels job; worker resumes and attempts write/finish. Expected: DB remains canceled, download denied, no shared ready object overwritten or deleted, only worker’s own attempt object cleaned.\n\n8. Revoked membership link: issue link for ready job while member exists; remove `${tenantId}/${userId}` from `members`; download before expiry. Expected: membership error, not bytes.\n\n9. Normal download controls: active member downloads ready job successfully; expired link fails; canceled ready job denies future download as already locally checked."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "No real remote object-store, IAM, consistency, versioning, encryption, lifecycle, access-policy, or durability configuration is provided. `evidence_qa078_operations` explicitly says the object store is an in-memory fixture and not proof of remote-store behavior. Resolving this requires production or production-equivalent storage configuration, IAM policy review, consistency/versioning guarantees, and failure-mode tests against that environment."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "No production load, worker lease-latency distribution, broker redelivery timing, dispatcher restart timing, recovery-time measurements, or object cleanup timing evidence is provided. `evidence_qa078_test_evidence` explicitly identifies the checks as local in-memory scripted checks and lists production load/recovery and remote storage/IAM/durability as untested. Resolving this requires representative load tests and measured recovery behavior under realistic concurrency and failure injection."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    },
+    {
+      "blindId": "answer-4",
+      "answerSha256": "ce07bd5f98cce2d4f359f74b50c9b8838bbeab4b291013d64e3ee5c0d5db884b",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe correction: inside the existing-job branch, compare `existing.payloadHash` with the newly computed hash. Return existing only on match; otherwise throw a conflict error and make no writes."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Effective fix: after decoding the token, check that `members` contains the signed tenant/user pair before reading the job/object, and fail with membership revocation otherwise. Preserve the existing HMAC signature, expiry, tenant binding, job lookup, and ready-state checks.",
+            "Creation, cancellation, and link issuance are membership-gated through `authorizedRoute`/`requireMember` and `issueLink` in `evidence_qa078_security`. Worker scope is also correct: `work` renders using stored `job.tenantId` and `job.filter`, never a tenant from the broker event, as shown in `evidence_qa078_operations` and observed in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Download revocation defect and effective current signed-user membership fix are correct; creation/tenant controls and worker stored tenant/filter scope are explicitly assessed."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery order: keep the event retryable until broker durable acceptance is known. Publish before permanently marking sent, or use an explicit in-flight lease/attempt state that is retried after crash or timeout. On pre-delivery failure, the row must remain eligible for retry. On lost acknowledgement after delivery, retry can cause duplicate delivery; worker behavior must be idempotent/fenced by stable `eventId`/`jobId`, job state, epoch, and lease. Do not claim exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: write each attempt to a unique immutable attempt key, ideally including job id and epoch/attempt id. `finish` should publish only the winning attempt key. A failed or canceled worker must delete only its own unpublished attempt object. Cancellation cleanup must also be fenced against the current DB state/object key so it cannot remove a winning ready object.",
+            "The database fence is good and should be retained. In `evidence_qa078_api_storage`, `claim` only claims queued or expired running jobs, increments `epoch`, and sets `leaseUntil`. `finish` updates to ready only when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all hold. `evidence_qa078_test_evidence` observed ready duplicate work returning `ignored`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` job with key `k` and filter `paid`; replay key `k` with filter `refunded`; expect conflict, one job row, one outbox row, original payload unchanged.\n\n2. Same key across tenants and forged body tenant: create as session tenant `cobalt` with body `tenantId: \"ochre\"`; expect stored tenant `cobalt`. Create with same request key as tenant `ochre`; expect independent job. Cross-tenant `getOwned` must fail.\n\n3. Job/outbox rollback: inject failure after job insert and before outbox insert; expect neither job nor outbox row committed. Retry without failure; expect both committed atomically.\n\n4. Dispatcher recovery: simulate publish throwing before delivery; after restart, event remains eligible and is delivered. Simulate lost acknowledgement after delivery; event may redeliver, and duplicate worker execution must not corrupt final state or create multiple ready publications.\n\n5. Old/new worker publication race: worker A claims epoch 1 and writes/pauses; lease expires; worker B claims epoch 2, writes attempt B, and finishes ready. A resumes and loses `finish`; expected DB points to B, B bytes remain, only A’s attempt object is cleaned.\n\n6. Cancellation during paused work: worker claims and pauses; user cancels job; worker resumes. Expected `finish` false, job remains canceled, no future claim, paused worker deletes only its own unpublished object.\n\n7. Revoked membership with unexpired link: active member issues ready-job link; remove the signed `tenant/user` from `members`; download before expiry must fail due to membership revocation while valid signature, tenant binding, and expiry checks remain enforced.\n\n8. Normal download and duplicates: active member downloads ready job successfully; expired link fails; canceled ready job denies future download; duplicate ready-job delivery returns no-op/ignored and does not re-render or replace the winning object."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Not ready for release. This is a read-only review; no code or operational changes were made, and this is not release approval.",
+            "**Ordered Repair And Verification Plan**\n\n1. Fix idempotency hash comparison and add replay-conflict regression.\n2. Add download-time active membership enforcement and revocation regression.\n3. Change dispatcher send marking to retry safely across pre-delivery failure and lost acknowledgement; add restart/redelivery tests.\n4. Replace shared object keys with immutable attempt keys and fenced cleanup; add old/new worker and cancellation race tests.\n5. Re-run local regression suite, then verify against real broker/object store behavior.\n6. Complete production evidence review for IAM, storage durability/consistency, load, lease latency, and recovery time before reconsidering release."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Correct behavior to preserve: `createExport` uses `ctx.tenantId`, not body `tenantId`; `getOwned` scopes by tenant; the database has `UNIQUE(tenantId, requestKey)`, so idempotency is tenant-local and different tenants may reuse a key. The local checks in `evidence_qa078_test_evidence` observed forged body tenant ignored, same-payload replay returning the same job, same key across tenants producing a different job, and cross-tenant `getOwned` denial.",
+            "Job/outbox atomicity is correctly shaped in `evidence_qa078_api_storage`: job insert, injected failure point, and outbox insert are inside one SQLite transaction. `evidence_qa078_test_evidence` observed an injected crash left no rollback job and did not add an outbox row.",
+            "The database fence is good and should be retained. In `evidence_qa078_api_storage`, `claim` only claims queued or expired running jobs, increments `epoch`, and sets `leaseUntil`. `finish` updates to ready only when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all hold. `evidence_qa078_test_evidence` observed ready duplicate work returning `ignored`.",
+            "Correct behavior to preserve: normal ready download works, expired links fail, canceled jobs deny download because `download` requires ready state. These were locally observed in `evidence_qa078_test_evidence`.",
+            "Creation, cancellation, and link issuance are membership-gated through `authorizedRoute`/`requireMember` and `issueLink` in `evidence_qa078_security`. Worker scope is also correct: `work` renders using stored `job.tenantId` and `job.filter`, never a tenant from the broker event, as shown in `evidence_qa078_operations` and observed in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All F1-F4 required fact anchors are explicitly retained, including worker render tenant/filter provenance and correct state/epoch/lease fence; no weaker replacement is proposed."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Unprovided production evidence: `evidence_qa078_security` states no real secret, token, deployment key, or production IAM evidence is included. `evidence_qa078_operations` states no production object-store contract, IAM policy, worker lease-latency distribution, load benchmark, or measured recovery-time evidence is provided. `evidence_qa078_test_evidence` says the environment is local in-memory SQLite/object store and scripted broker, with remote storage/IAM/durability and production load/recovery-time distribution untested.",
+            "To resolve those unknowns, review the real object-store consistency/versioning/durability and IAM policies, real secret/key management, broker acknowledgement semantics, and production-like load, lease-latency, restart, duplicate-delivery, and recovery-time measurements."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "preserved",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "preserved"
+          },
+          "quotes": [
+            "Correct behavior to preserve: `createExport` uses `ctx.tenantId`, not body `tenantId`; `getOwned` scopes by tenant; the database has `UNIQUE(tenantId, requestKey)`, so idempotency is tenant-local and different tenants may reuse a key. The local checks in `evidence_qa078_test_evidence` observed forged body tenant ignored, same-payload replay returning the same job, same key across tenants producing a different job, and cross-tenant `getOwned` denial.",
+            "Creation, cancellation, and link issuance are membership-gated through `authorizedRoute`/`requireMember` and `issueLink` in `evidence_qa078_security`. Worker scope is also correct: `work` renders using stored `job.tenantId` and `job.filter`, never a tenant from the broker event, as shown in `evidence_qa078_operations` and observed in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Verified request tenant, tenant-local uniqueness and stored worker tenant/filter scope are stated."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "Job/outbox atomicity is correctly shaped in `evidence_qa078_api_storage`: job insert, injected failure point, and outbox insert are inside one SQLite transaction. `evidence_qa078_test_evidence` observed an injected crash left no rollback job and did not add an outbox row."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "The database fence is good and should be retained. In `evidence_qa078_api_storage`, `claim` only claims queued or expired running jobs, increments `epoch`, and sets `leaseUntil`. `finish` updates to ready only when `id`, `tenantId`, `state='running'`, matching `epoch`, and unexpired lease all hold. `evidence_qa078_test_evidence` observed ready duplicate work returning `ignored`.",
+            "Safe repair: write each attempt to a unique immutable attempt key, ideally including job id and epoch/attempt id. `finish` should publish only the winning attempt key. A failed or canceled worker must delete only its own unpublished attempt object. Cancellation cleanup must also be fenced against the current DB state/object key so it cannot remove a winning ready object."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "Correct behavior to preserve: normal ready download works, expired links fail, canceled jobs deny download because `download` requires ready state. These were locally observed in `evidence_qa078_test_evidence`.",
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` job with key `k` and filter `paid`; replay key `k` with filter `refunded`; expect conflict, one job row, one outbox row, original payload unchanged.\n\n2. Same key across tenants and forged body tenant: create as session tenant `cobalt` with body `tenantId: \"ochre\"`; expect stored tenant `cobalt`. Create with same request key as tenant `ochre`; expect independent job. Cross-tenant `getOwned` must fail.\n\n3. Job/outbox rollback: inject failure after job insert and before outbox insert; expect neither job nor outbox row committed. Retry without failure; expect both committed atomically.\n\n4. Dispatcher recovery: simulate publish throwing before delivery; after restart, event remains eligible and is delivered. Simulate lost acknowledgement after delivery; event may redeliver, and duplicate worker execution must not corrupt final state or create multiple ready publications.\n\n5. Old/new worker publication race: worker A claims epoch 1 and writes/pauses; lease expires; worker B claims epoch 2, writes attempt B, and finishes ready. A resumes and loses `finish`; expected DB points to B, B bytes remain, only A’s attempt object is cleaned.\n\n6. Cancellation during paused work: worker claims and pauses; user cancels job; worker resumes. Expected `finish` false, job remains canceled, no future claim, paused worker deletes only its own unpublished object.\n\n7. Revoked membership with unexpired link: active member issues ready-job link; remove the signed `tenant/user` from `members`; download before expiry must fail due to membership revocation while valid signature, tenant binding, and expiry checks remain enforced.\n\n8. Normal download and duplicates: active member downloads ready job successfully; expired link fails; canceled ready job denies future download; duplicate ready-job delivery returns no-op/ignored and does not re-render or replace the winning object."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "Unprovided production evidence: `evidence_qa078_security` states no real secret, token, deployment key, or production IAM evidence is included. `evidence_qa078_operations` states no production object-store contract, IAM policy, worker lease-latency distribution, load benchmark, or measured recovery-time evidence is provided. `evidence_qa078_test_evidence` says the environment is local in-memory SQLite/object store and scripted broker, with remote storage/IAM/durability and production load/recovery-time distribution untested."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "To resolve those unknowns, review the real object-store consistency/versioning/durability and IAM policies, real secret/key management, broker acknowledgement semantics, and production-like load, lease-latency, restart, duplicate-delivery, and recovery-time measurements."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    },
+    {
+      "blindId": "answer-5",
+      "answerSha256": "ce4c12b917ef96b6b9aead1e9228aad15c6d6bbe84b564abd008680535828573",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe correction: inside the transaction, when an existing row is found, compare `existing.payloadHash` to the new normalized payload hash. Return the existing job only on match; otherwise throw a conflict error and do not insert a job or outbox row. Preserve tenant-local uniqueness through `UNIQUE(tenantId, requestKey)`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Effective fix: after decoding, check that `members` contains the decoded `{ tenantId, userId }` before reading the object. Keep the existing HMAC signature, expiry validation, tenant-bound job lookup, ready-state check, and route-level membership checks.",
+            "The worker render scope uses stored `job.tenantId` and `job.filter`, not tenant data from the event, in `evidence_qa078_operations`; this is the right tenant data boundary for background execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Download revocation defect and effective current signed-user membership fix are correct; creation/tenant controls and worker stored tenant/filter scope are explicitly assessed."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery/retry order: select unsent rows, call `broker.publish`, and mark `sentAt` only after publish resolves. If publish throws before delivery, leave `sentAt NULL` for retry after restart. If publish throws after delivery with lost acknowledgement, the event may be delivered and later retried because `sentAt` remains null; consumers must be idempotent. This service already has a useful DB-side deduplication behavior because `claim` ignores ready/canceled jobs and `finish` uses state/epoch/lease fencing, but external rendering/object writes still need cleanup fencing. Do not claim exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: write each attempt to a unique temporary object key containing job id plus claim epoch or attempt id. Only after `finish` succeeds should the job publish that immutable winning key, or use an atomic promote/copy operation with version/ETag preconditions if the backing store supports it. Failed/stale/canceled workers must delete only their own temporary object. Preserve the existing DB epoch/lease/state fence; the weakness is in object publication and cleanup, not the SQL guard.",
+            "The DB finish path is correctly fenced by `id`, `tenantId`, `state='running'`, `epoch`, and `leaseUntil > now` in `finish`, from `evidence_qa078_api_storage`. However, `work` writes every worker’s bytes to the same object key, `tenants/${tenantId}/exports/${job.id}.csv`, before calling `finish`. If `finish` fails, it deletes that same key, in `evidence_qa078_operations`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` export with `requestKey=k1`, `format=csv`, `filter=\"paid\"`. Replay same tenant/key with `filter=\"unpaid\"`. Expect conflict, same original job count, no new outbox row, original job unchanged.\n\n2. Same key across tenants and forged body tenant: create as verified `cobalt/u1` with body containing `tenantId=\"ochre\"`. Expect stored job tenant `cobalt`. Create as verified `ochre/u2` with same request key and same body. Expect a different job. `ochre` cannot `getOwned` the `cobalt` job.\n\n3. Job/outbox transaction rollback: inject an exception after job insert and before outbox insert. Expect no committed job and no committed outbox row for that request key.\n\n4. Broker failures and duplicate delivery: for pre-delivery publish failure, make `publish` throw before recording delivery. Expect `sentAt` remains null and restart dispatch republishes. For lost acknowledgement after delivery, make `publish` record delivery then throw. Expect `sentAt` remains null, retry may redeliver the same stable `eventId`, and duplicate worker execution does not create a second ready transition or corrupt output.\n\n5. Old/new worker publication and cleanup race: worker A claims and pauses past lease. Worker B claims, writes, and finishes ready. Worker A resumes. Expect A cannot overwrite or delete B’s winning bytes; ready download returns B’s bytes.\n\n6. Cancellation during paused work: worker A claims and pauses. Cancel the job. A resumes and attempts render/write/finish. Expect DB remains canceled, future downloads denied, and A deletes only its own temporary object without touching any previously published object.\n\n7. Unexpired link after membership revocation: issue a link for a ready job while `tenant/user` is active. Remove that membership before expiry. Attempt download with the same signed unexpired token. Expect membership-revoked denial, not bytes.\n\n8. Normal ready download, expiry, and ready-job duplicate: create, dispatch, work to ready, issue link, download before expiry successfully, download after expiry fails, and duplicate delivery for the ready job returns ignored/no-op without re-rendering or changing stored bytes."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Do not release this fixture as-is. This is a read-only review only; I made no code or operational changes and grant no release approval. The main blockers are confirmed implementation gaps in idempotency conflict handling, download authorization after membership revocation, dispatcher retry safety, and object-store fencing/cleanup under out-of-order workers. The local scripted checks passed, but they do not cover several required release risks and are explicitly in-memory rather than production evidence, per `evidence_qa078_test_evidence` and `evidence_qa078_operations`.",
+            "**Ordered Repair Plan**\n\n1. Fix idempotency conflict detection while preserving tenant-local uniqueness.\n2. Add current membership validation to `download` using the decoded token subject.\n3. Change dispatcher to mark `sentAt` only after durable publish acknowledgement; rely on idempotent consumers for retry after ambiguous delivery.\n4. Introduce per-attempt object keys or store-level conditional promotion so stale/canceled workers cannot overwrite or delete winning bytes.\n5. Add the regression scenarios above against the local fixture, then repeat the relevant storage and recovery cases against production-equivalent broker/object-store infrastructure.\n6. Review production IAM, store consistency/durability, and measured recovery/load evidence before reconsidering release readiness."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "The verified-session tenant boundary is present for create/get/cancel through `requireSession`, `ctx.tenantId`, and `getOwned`; the body `tenantId` is ignored on creation, as shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.",
+            "Job and outbox insertion are in one transaction in `createExport`, and the injected rollback check in `evidence_qa078_test_evidence` observed no orphan job after an exception before outbox insert.",
+            "The DB finish path is correctly fenced by `id`, `tenantId`, `state='running'`, `epoch`, and `leaseUntil > now` in `finish`, from `evidence_qa078_api_storage`. However, `work` writes every worker’s bytes to the same object key, `tenants/${tenantId}/exports/${job.id}.csv`, before calling `finish`. If `finish` fails, it deletes that same key, in `evidence_qa078_operations`.",
+            "The DB state/epoch/lease fence for publication is valid and should be preserved. Ready/canceled duplicate work is already a no-op at the DB claim layer: `claim` only accepts queued/running with expired lease, and the local duplicate-ready/canceled checks passed in `evidence_qa078_test_evidence`.",
+            "The worker render scope uses stored `job.tenantId` and `job.filter`, not tenant data from the event, in `evidence_qa078_operations`; this is the right tenant data boundary for background execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All F1-F4 required fact anchors are explicitly retained, including worker render tenant/filter provenance and correct state/epoch/lease fence; no weaker replacement is proposed."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Unprovided production evidence remains:\n- Real remote-store/IAM/consistency/durability configuration. Resolve with actual object-store configuration, IAM policies, versioning/conditional-write semantics, durability guarantees, and integration tests against the production-equivalent store.\n- Production load, lease-latency, and recovery-time measurements. Resolve with load tests and failure-injection runs measuring worker pause distributions, lease expiry behavior, dispatcher restart time, broker retry behavior, and recovery SLOs.",
+            "Unprovided production evidence remains:\n- Real remote-store/IAM/consistency/durability configuration. Resolve with actual object-store configuration, IAM policies, versioning/conditional-write semantics, durability guarantees, and integration tests against the production-equivalent store.\n- Production load, lease-latency, and recovery-time measurements. Resolve with load tests and failure-injection runs measuring worker pause distributions, lease expiry behavior, dispatcher restart time, broker retry behavior, and recovery SLOs."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "preserved",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "preserved"
+          },
+          "quotes": [
+            "The verified-session tenant boundary is present for create/get/cancel through `requireSession`, `ctx.tenantId`, and `getOwned`; the body `tenantId` is ignored on creation, as shown in `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.",
+            "The worker render scope uses stored `job.tenantId` and `job.filter`, not tenant data from the event, in `evidence_qa078_operations`; this is the right tenant data boundary for background execution."
+          ],
+          "rationale": "Verified request tenant, tenant-local uniqueness and stored worker tenant/filter scope are stated."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "Job and outbox insertion are in one transaction in `createExport`, and the injected rollback check in `evidence_qa078_test_evidence` observed no orphan job after an exception before outbox insert."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "The DB finish path is correctly fenced by `id`, `tenantId`, `state='running'`, `epoch`, and `leaseUntil > now` in `finish`, from `evidence_qa078_api_storage`. However, `work` writes every worker’s bytes to the same object key, `tenants/${tenantId}/exports/${job.id}.csv`, before calling `finish`. If `finish` fails, it deletes that same key, in `evidence_qa078_operations`.",
+            "Safe repair: write each attempt to a unique temporary object key containing job id plus claim epoch or attempt id. Only after `finish` succeeds should the job publish that immutable winning key, or use an atomic promote/copy operation with version/ETag preconditions if the backing store supports it. Failed/stale/canceled workers must delete only their own temporary object. Preserve the existing DB epoch/lease/state fence; the weakness is in object publication and cleanup, not the SQL guard."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "The DB state/epoch/lease fence for publication is valid and should be preserved. Ready/canceled duplicate work is already a no-op at the DB claim layer: `claim` only accepts queued/running with expired lease, and the local duplicate-ready/canceled checks passed in `evidence_qa078_test_evidence`.",
+            "**Regression Plan**\n\n1. Same key with changed payload: create tenant `cobalt` export with `requestKey=k1`, `format=csv`, `filter=\"paid\"`. Replay same tenant/key with `filter=\"unpaid\"`. Expect conflict, same original job count, no new outbox row, original job unchanged.\n\n2. Same key across tenants and forged body tenant: create as verified `cobalt/u1` with body containing `tenantId=\"ochre\"`. Expect stored job tenant `cobalt`. Create as verified `ochre/u2` with same request key and same body. Expect a different job. `ochre` cannot `getOwned` the `cobalt` job.\n\n3. Job/outbox transaction rollback: inject an exception after job insert and before outbox insert. Expect no committed job and no committed outbox row for that request key.\n\n4. Broker failures and duplicate delivery: for pre-delivery publish failure, make `publish` throw before recording delivery. Expect `sentAt` remains null and restart dispatch republishes. For lost acknowledgement after delivery, make `publish` record delivery then throw. Expect `sentAt` remains null, retry may redeliver the same stable `eventId`, and duplicate worker execution does not create a second ready transition or corrupt output.\n\n5. Old/new worker publication and cleanup race: worker A claims and pauses past lease. Worker B claims, writes, and finishes ready. Worker A resumes. Expect A cannot overwrite or delete B’s winning bytes; ready download returns B’s bytes.\n\n6. Cancellation during paused work: worker A claims and pauses. Cancel the job. A resumes and attempts render/write/finish. Expect DB remains canceled, future downloads denied, and A deletes only its own temporary object without touching any previously published object.\n\n7. Unexpired link after membership revocation: issue a link for a ready job while `tenant/user` is active. Remove that membership before expiry. Attempt download with the same signed unexpired token. Expect membership-revoked denial, not bytes.\n\n8. Normal ready download, expiry, and ready-job duplicate: create, dispatch, work to ready, issue link, download before expiry successfully, download after expiry fails, and duplicate delivery for the ready job returns ignored/no-op without re-rendering or changing stored bytes."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "Unprovided production evidence remains:\n- Real remote-store/IAM/consistency/durability configuration. Resolve with actual object-store configuration, IAM policies, versioning/conditional-write semantics, durability guarantees, and integration tests against the production-equivalent store.\n- Production load, lease-latency, and recovery-time measurements. Resolve with load tests and failure-injection runs measuring worker pause distributions, lease expiry behavior, dispatcher restart time, broker retry behavior, and recovery SLOs."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "Unprovided production evidence remains:\n- Real remote-store/IAM/consistency/durability configuration. Resolve with actual object-store configuration, IAM policies, versioning/conditional-write semantics, durability guarantees, and integration tests against the production-equivalent store.\n- Production load, lease-latency, and recovery-time measurements. Resolve with load tests and failure-injection runs measuring worker pause distributions, lease expiry behavior, dispatcher restart time, broker retry behavior, and recovery SLOs."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    },
+    {
+      "blindId": "answer-6",
+      "answerSha256": "e4a071809aaafac19ac7bca4745757b52e1c18340509e715bfcbec058deddf69",
+      "confirmedDefectsCorrect": [
+        "idempotency_payload_conflict",
+        "download_membership_revocation",
+        "outbox_publish_order",
+        "attempt_object_ownership"
+      ],
+      "behavioralErrors": [],
+      "criteria": [
+        {
+          "criterionKey": "criterion_qa078_api",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe correction: after loading the existing row, compare `existing.payloadHash` to the newly computed hash. Return the existing job only when they match; otherwise throw a conflict error and leave both `jobs` and `outbox` unchanged. Preserve the existing tenant-local uniqueness on `(tenantId, requestKey)`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correctly explains normalized payload hash omission, concrete changed-filter replay, and conflict without changing the existing job/outbox; tenant-local behavior retained."
+        },
+        {
+          "criterionKey": "criterion_qa078_security",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "Effective fix: after `decode`, check the current membership set for the signed `tenantId/userId` pair before reading the object. Keep the existing signature, expiry, tenant lookup, and ready-state checks. The fixture intentionally does not require a separate caller session for downloads, so the membership check must use the signed user identity.",
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "The download defect and repair are correct. However the report does not assess render receiving stored job.tenantId/job.filter rather than event data. API ownership and tenant object-key scoping alone do not cover the publicly required worker data-scope assessment. This is omission only."
+        },
+        {
+          "criterionKey": "criterion_qa078_recovery",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe delivery/retry order: publish first, and mark `sentAt` only after durable broker acceptance. If publish throws, leave `sentAt IS NULL` so the supervised periodic dispatcher retries. For the lost-ack-after-delivery case, the event may already be accepted while the dispatcher still sees failure; retrying publish is acceptable because the broker is at least-once and the stable `eventId` plus worker/database fences must handle duplicates. Do not claim exactly-once external execution."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_operations",
+            "evidence_qa078_api_storage"
+          ],
+          "rationale": "Correct mark-before-publish loss, restart consequence and publish-before-ack order; before-delivery and lost-ack ambiguity are distinguished, with duplicate-safe retry and no exactly-once claim."
+        },
+        {
+          "criterionKey": "criterion_qa078_concurrency",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Safe repair: use attempt-unique object keys containing job id plus epoch or another claim/attempt id, and have `finish` publish only that attempt’s key. A failed/stale/canceled attempt should delete only its own unpublished object key. Optionally run cleanup for superseded attempt keys after the database winner is known. Preserve the existing database state/epoch/lease fence.",
+            "The database publication fence is good: `finish` in `evidence_qa078_api_storage` requires matching `id`, `tenantId`, `state='running'`, original `epoch`, and unexpired lease. This prevents stale workers from publishing stale database state."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations"
+          ],
+          "rationale": "Concrete old/new worker interleaving distinguishes correct DB fencing from stale object overwrite/deletion; unique attempt ownership and winner-only publication with loser-only cleanup address the race and cancellation."
+        },
+        {
+          "criterionKey": "criterion_qa078_regressions",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "**Regression Plan**\n\n1. Same key with changed payload:\nPrecondition: tenant `cobalt` has an active member and no jobs. Action: create `requestKey=r1`, `format=csv`, `filter=\"paid\"`, then create with same key and `filter=\"unpaid\"`. Expected: second call returns conflict; original job id, payload hash, filter, and outbox count are unchanged.\n\n2. Same key across tenants and forged body tenant:\nPrecondition: active users in tenants `cobalt` and `ochre`. Action: `cobalt` creates with body `tenantId=\"ochre\"` and key `r1`; `ochre` creates with same key and payload. Expected: first job belongs to `cobalt`, body tenant ignored, second job is distinct and belongs to `ochre`; cross-tenant `getOwned` returns not found.\n\n3. Job/outbox rollback:\nPrecondition: inject an exception after job insert and before outbox insert. Action: call create. Expected: exception returned, no job row for that request key, no orphaned outbox mutation.\n\n4. Broker failures and duplicate delivery:\nPrecondition: queued job with unsent outbox. Action A: broker `publish` throws before delivery. Expected: outbox remains unsent and later dispatcher retry publishes it. Action B: broker accepts delivery but throws lost acknowledgement. Expected: dispatcher may retry; duplicate event delivery does not create a second ready transition or second render after ready, and no exactly-once external execution is assumed.\n\n5. Old/new worker publication and cleanup race:\nPrecondition: worker A claims a job and pauses past lease; worker B reclaims and finishes. Action: A resumes after B is ready. Expected after repair: B’s object bytes remain downloadable; A cannot overwrite or delete B’s object and only cleans its own attempt key.\n\n6. Cancellation during paused work:\nPrecondition: worker claims a job and pauses before or after rendering. Action: cancel the job, then let worker resume. Expected: database remains canceled, future download is denied, and worker cleanup removes only its own unpublished attempt object.\n\n7. Unexpired link after membership revocation:\nPrecondition: ready job, active member issues a link expiring in the future. Action: remove `${tenantId}/${userId}` from members, then call download before expiry. Expected: membership revoked error; no object read. Re-add membership and retry before expiry if policy allows reinstatement; expected behavior should be explicitly defined.\n\n8. Normal ready download, expiry, and ready-job duplicate:\nPrecondition: queued job, active member, working store. Action: process event to ready, deliver duplicate event, issue link, download before expiry, then after expiry. Expected: first work publishes ready bytes; duplicate work is ignored; pre-expiry download returns exact bytes; post-expiry download fails; tenant/signature tampering fails."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "All eight public regression groups have concrete preconditions/actions and observable expected safe behavior; cases can combine with the concrete finding interleaving. The scenarios are proposed, not falsely reported as executed."
+        },
+        {
+          "criterionKey": "criterion_qa078_release",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "Recommendation: do not release yet. The specimen has confirmed blockers in idempotency conflict handling, download authorization after membership revocation, pre-delivery dispatch recovery, and object-store publication cleanup under stale workers. This is a read-only review; I made no changes and grant no operational approval.",
+            "**Ordered Repair And Verification Plan**\n\n1. Fix idempotency conflict handling by comparing payload hashes on existing tenant/request key rows.\n2. Fix download authorization by checking current membership for the signed tenant/user before object access.\n3. Change dispatcher ordering so `sentAt` is recorded only after durable broker acceptance; retain retry on failure.\n4. Introduce attempt-unique object keys and cleanup only attempt-owned unpublished objects.\n5. Add the regression cases above against the local fixture.\n6. Add integration verification for the real broker and remote object store once production configuration evidence is supplied.\n7. Run load and crash-recovery measurements before any release decision.\n\nBased on the supplied evidence, the service is not ready for release."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Release is withheld pending the actual blockers and verification, with a feasible repair/test/deployment-evidence sequence. No change or approval is claimed; independent repair order is acceptable."
+        },
+        {
+          "criterionKey": "criterion_qa078_preservation",
+          "judgment": "fail",
+          "failureKind": "missing_deliverable",
+          "findingId": "omission_worker_data_scope",
+          "quotes": [
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`.",
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`.",
+            "The database publication fence is good: `finish` in `evidence_qa078_api_storage` requires matching `id`, `tenantId`, `state='running'`, original `epoch`, and unexpired lease. This prevents stale workers from publishing stale database state.",
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_api_storage",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Request tenant scoping, uniqueness, atomic outbox insertion, DB fencing and terminal-job no-op remain correct. The worker-data component of frozen F1 is absent. This is the same single coverage omission as the security item, not a second behavioral error."
+        },
+        {
+          "criterionKey": "criterion_qa078_uncertainty",
+          "judgment": "pass",
+          "failureKind": null,
+          "findingId": null,
+          "quotes": [
+            "First, real remote object-store, IAM, consistency, versioning, and durability configuration are not provided. This would be resolved by deployment configuration, IAM policies, bucket/container versioning and lifecycle settings, consistency guarantees, encryption/access policies, and integration tests against the real storage path.",
+            "Second, production load, lease-latency, and recovery-time measurements are not provided. This would be resolved by load tests measuring render duration distribution, lease expiry frequency, dispatcher restart latency, broker retry/redelivery timing, duplicate delivery rates, and end-to-end recovery time under worker and dispatcher crashes."
+          ],
+          "evidenceRefs": [
+            "evidence_qa078_security",
+            "evidence_qa078_operations",
+            "evidence_qa078_test_evidence"
+          ],
+          "rationale": "Both missing production evidence groups and ways to resolve them are retained; local scripted observations are separated from proposed regressions and production validation. Extra conditional verification suggestions are not factual overclaims."
+        }
+      ],
+      "facts": [
+        {
+          "id": "F1",
+          "judgment": "lost",
+          "components": {
+            "requestTenant": "preserved",
+            "tenantLocalUniqueness": "preserved",
+            "workerDataScope": "not_stated"
+          },
+          "quotes": [
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Partial anchor retention: request tenant and uniqueness are stated, but no equivalent worker render-scope assessment appears. Lost does not mean the preserved API facts were contradicted."
+        },
+        {
+          "id": "F2",
+          "judgment": "preserved",
+          "quotes": [
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`."
+          ],
+          "rationale": "Job and outbox atomic insertion/rollback are recognized as existing correct behavior."
+        },
+        {
+          "id": "F3",
+          "judgment": "preserved",
+          "quotes": [
+            "The database publication fence is good: `finish` in `evidence_qa078_api_storage` requires matching `id`, `tenantId`, `state='running'`, original `epoch`, and unexpired lease. This prevents stale workers from publishing stale database state.",
+            "Safe repair: use attempt-unique object keys containing job id plus epoch or another claim/attempt id, and have `finish` publish only that attempt’s key. A failed/stale/canceled attempt should delete only its own unpublished object key. Optionally run cleanup for superseded attempt keys after the database winner is known. Preserve the existing database state/epoch/lease fence."
+          ],
+          "rationale": "State/epoch/lease DB publication fence is recognized and retained; cancellation/stale-worker rejection is distinguished from storage-side effects."
+        },
+        {
+          "id": "F4",
+          "judgment": "preserved",
+          "quotes": [
+            "- Verified-session tenant boundary: `createExport` uses `ctx.tenantId` and ignores body tenant data; `getOwned` filters by job id and tenant. This is supported by `evidence_qa078_api_storage` and locally checked in `evidence_qa078_test_evidence`.\n- Tenant-local uniqueness: the schema has `UNIQUE(tenantId, requestKey)`, allowing the same key in different tenants while preventing duplicates within one tenant.\n- Atomic job/outbox transaction: `createExport` inserts the job and outbox event in a single database transaction; the injected rollback check in `evidence_qa078_test_evidence` observed no partial job on exception.\n- Database publication fencing: `finish` uses state, epoch, tenant, and lease checks.\n- Ready/canceled duplicate no-op: `claim` refuses ready and canceled jobs; the local checks observed duplicate ready work as ignored and canceled jobs as not reclaimable in `evidence_qa078_test_evidence`.",
+            "**Regression Plan**\n\n1. Same key with changed payload:\nPrecondition: tenant `cobalt` has an active member and no jobs. Action: create `requestKey=r1`, `format=csv`, `filter=\"paid\"`, then create with same key and `filter=\"unpaid\"`. Expected: second call returns conflict; original job id, payload hash, filter, and outbox count are unchanged.\n\n2. Same key across tenants and forged body tenant:\nPrecondition: active users in tenants `cobalt` and `ochre`. Action: `cobalt` creates with body `tenantId=\"ochre\"` and key `r1`; `ochre` creates with same key and payload. Expected: first job belongs to `cobalt`, body tenant ignored, second job is distinct and belongs to `ochre`; cross-tenant `getOwned` returns not found.\n\n3. Job/outbox rollback:\nPrecondition: inject an exception after job insert and before outbox insert. Action: call create. Expected: exception returned, no job row for that request key, no orphaned outbox mutation.\n\n4. Broker failures and duplicate delivery:\nPrecondition: queued job with unsent outbox. Action A: broker `publish` throws before delivery. Expected: outbox remains unsent and later dispatcher retry publishes it. Action B: broker accepts delivery but throws lost acknowledgement. Expected: dispatcher may retry; duplicate event delivery does not create a second ready transition or second render after ready, and no exactly-once external execution is assumed.\n\n5. Old/new worker publication and cleanup race:\nPrecondition: worker A claims a job and pauses past lease; worker B reclaims and finishes. Action: A resumes after B is ready. Expected after repair: B’s object bytes remain downloadable; A cannot overwrite or delete B’s object and only cleans its own attempt key.\n\n6. Cancellation during paused work:\nPrecondition: worker claims a job and pauses before or after rendering. Action: cancel the job, then let worker resume. Expected: database remains canceled, future download is denied, and worker cleanup removes only its own unpublished attempt object.\n\n7. Unexpired link after membership revocation:\nPrecondition: ready job, active member issues a link expiring in the future. Action: remove `${tenantId}/${userId}` from members, then call download before expiry. Expected: membership revoked error; no object read. Re-add membership and retry before expiry if policy allows reinstatement; expected behavior should be explicitly defined.\n\n8. Normal ready download, expiry, and ready-job duplicate:\nPrecondition: queued job, active member, working store. Action: process event to ready, deliver duplicate event, issue link, download before expiry, then after expiry. Expected: first work publishes ready bytes; duplicate work is ignored; pre-expiry download returns exact bytes; post-expiry download fails; tenant/signature tampering fails."
+          ],
+          "rationale": "Ready/canceled claim exclusion and completed duplicate no-op are retained; interrupted execution is not claimed exactly-once."
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "U1",
+          "judgment": "preserved",
+          "quotes": [
+            "First, real remote object-store, IAM, consistency, versioning, and durability configuration are not provided. This would be resolved by deployment configuration, IAM policies, bucket/container versioning and lifecycle settings, consistency guarantees, encryption/access policies, and integration tests against the real storage path."
+          ],
+          "rationale": "Remote storage/IAM/consistency/durability configuration remains unknown and concrete evidence is requested."
+        },
+        {
+          "id": "U2",
+          "judgment": "preserved",
+          "quotes": [
+            "Second, production load, lease-latency, and recovery-time measurements are not provided. This would be resolved by load tests measuring render duration distribution, lease expiry frequency, dispatcher restart latency, broker retry/redelivery timing, duplicate delivery rates, and end-to-end recovery time under worker and dispatcher crashes."
+          ],
+          "rationale": "Production load/lease latency/recovery timings remain unprovided; measurement or deployment-bound tests are requested."
+        }
+      ],
+      "unsupportedAdditions": []
+    }
+  ]
+}
