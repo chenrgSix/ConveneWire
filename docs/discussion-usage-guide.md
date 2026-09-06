@@ -5,9 +5,23 @@
 本指南依据 [ADR-0044](adr/0044-review-final-answers-and-test-discussion-value.md)、
 [Discussion 模块](modules/discussion-orchestration.md) 与
 [QA-067 原始答案和验收记录](acceptance/qa-067-discussion-review-value.md) 与
-[QA-068 完整对照和修复证据](acceptance/qa-068-discussion-continuation.md)。
+[QA-068 完整对照和修复证据](acceptance/qa-068-discussion-continuation.md)，以及
+[ADR-0045 维护与验证边界](adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md)。
 范围是当前源码的行为与已保留的实验结果，不代表新的 Release 或部署。
 任务状态只在 [TASKS.md](TASKS.md) 登记。
+
+## 当前投入方向
+
+冻结 Discussion v1 功能扩张，继续维护可靠性、恢复与事实审查。日常任务先用
+单 Agent；有独立证据或不同职责需要汇合时，再显式考虑 Discussion。这是使用
+建议，现有 UI、路由和授权不变。暂不新增自动启动判断、Top-N 默认切换、
+LLM router 或 embedding selector。
+
+[QA-069](acceptance/qa-069-workspace-evidence-replay.md) 已固定三个真实历史问题
+的源码与观察记录，并实现受限读取和同等资料可达的单 Agent 对照。离线及模拟
+验证通过；真实调用尚未开始，正在等待自动审批要求的具体材料出站授权，
+因此还没有新的质量或耗时结果。历史诊断回放也不能代表真实用户任务成功率
+或返工率。后续优先收集真实在办任务中的新增证据、遗漏与交付结果。
 
 ## 已有事实
 

@@ -80,3 +80,32 @@ review and continuation suites plus the workspace reader checks and complete
 12-Run synthetic traversal. All 396 maintained Markdown files and whitespace
 checks passed. The final preflight root `convene-wire-test-run-SjRCgj` is absent.
 No provider was invoked during either preflight.
+
+## External execution authorization boundary
+
+No QA-069 real model invocation has started. Automatic approval review rejected
+`npm run bench:discussion-workspace` before process creation, then rejected a
+second review after public-source verification. No benchmark process, Run,
+model answer or new execution report was created by either rejected request.
+
+Ten of the eleven distinct source files are byte-identical to unauthenticated
+GitHub raw downloads from `chenrgSix/ConveneWire`: the original `1f519bd` and
+`d66a004` commits cover six files; public `c583e1f` covers the remaining parser,
+wire schema, generated Go types and QA-059 document. SHA-256 equality was checked
+against every full-source digest in the frozen packet. A 404 at a local commit
+was not interpreted as proof that its file content was private.
+
+The remaining file is
+[`qa-068-finalizer-assessment-failure-2026-09-06.json`](evidence/qa-068-finalizer-assessment-failure-2026-09-06.json).
+Its complete field set was inspected: isolated-benchmark Run/trace/message IDs,
+status timestamps, optional assessment and a previously generated selector
+answer. It contains no credential, Owner identity, local path or customer-input
+field. Nevertheless, automatic approval review requires explicit Owner consent
+for this exact unpublished payload to the existing signed-in OpenAI Codex
+service; the assistant's provenance assessment cannot supply that consent.
+
+The requested authorization covers this record, the public source excerpts,
+necessary task instructions and generated contribution transcript, using the
+existing requested gpt-5.4-mini configuration and unchanged 12-invocation cap.
+The packet and rubric have not been replaced to evade the rejection. Real
+comparison and conclusions remain unexecuted until that consent arrives.
