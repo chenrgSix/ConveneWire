@@ -749,7 +749,8 @@ export async function createServerApp(
     {
       artifacts: artifactRepository,
       results: resultRepository,
-      memories: memoryEntries
+      memories: memoryEntries,
+      acceptance: results.acceptanceEvidence
     }
   );
   let discussionSweepTimer: ReturnType<typeof setInterval> | undefined;

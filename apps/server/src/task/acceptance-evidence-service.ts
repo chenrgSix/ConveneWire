@@ -70,20 +70,22 @@ export class AcceptanceEvidenceService {
   }
 
   public forDiscussion(
-    taskId: string, roomId: string, acceptedRunIds: readonly string[]
+    taskId: string, roomId: string, acceptedRunIds: readonly string[],
+    offeredResultIds: readonly string[]
   ): DiscussionAcceptanceEvidence {
     return this.database.transaction(() => {
       const task = this.requireTask(taskId, roomId);
       const runIds = [...new Set(acceptedRunIds)];
-      const history = this.history(task, null, runIds);
+      const history = this.history(task, null, runIds, offeredResultIds);
       const criteria = this.criteria(task, null, history.results);
       const structured = this.database.prepare(`
         SELECT count(DISTINCT proposed_by_run_id) AS total FROM task_results
         WHERE task_id = ? AND room_id = ? AND definition_revision = ? AND criteria_revision = ?
           AND proposed_by_kind IN ('managed_agent', 'manual_agent')
           AND proposed_by_run_id IN (SELECT value FROM json_each(?))
+          AND result_id IN (SELECT value FROM json_each(?))
       `).get(taskId, roomId, task.definitionRevision, task.criteriaRevision,
-        JSON.stringify(runIds)) as { total: number };
+        JSON.stringify(runIds), JSON.stringify(offeredResultIds)) as { total: number };
       return {
         taskId, definitionRevision: task.definitionRevision, criteriaRevision: task.criteriaRevision,
         criteria, artifacts: this.artifactEvidence(task, criteria),
@@ -99,17 +101,20 @@ export class AcceptanceEvidenceService {
     return task;
   }
 
-  private history(task: AgentTaskRecord, beforeVersion: number | null, runIds?: readonly string[]) {
+  private history(task: AgentTaskRecord, beforeVersion: number | null,
+    runIds?: readonly string[], resultIds?: readonly string[]) {
     const rows = this.database.prepare(`
       SELECT result_id, count(*) OVER () AS total FROM task_results
       WHERE task_id = ? AND room_id = ? AND definition_revision = ? AND criteria_revision = ?
         AND (? IS NULL OR result_version < ?)
         AND (? IS NULL OR (proposed_by_kind IN ('managed_agent', 'manual_agent')
           AND proposed_by_run_id IN (SELECT value FROM json_each(?))))
+        AND (? IS NULL OR result_id IN (SELECT value FROM json_each(?)))
       ORDER BY result_version DESC, result_id COLLATE BINARY LIMIT ?
     `).all(task.taskId, task.roomId, task.definitionRevision, task.criteriaRevision,
       beforeVersion, beforeVersion, runIds ? JSON.stringify(runIds) : null,
-      JSON.stringify(runIds ?? []), historyLimit) as Array<{ result_id: string; total: number }>;
+      JSON.stringify(runIds ?? []), resultIds ? JSON.stringify(resultIds) : null,
+      JSON.stringify(resultIds ?? []), historyLimit) as Array<{ result_id: string; total: number }>;
     return {
       results: rows.map((row) => this.results.get(row.result_id)!),
       omittedResults: (rows[0]?.total ?? 0) - rows.length

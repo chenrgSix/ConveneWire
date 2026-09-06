@@ -9,6 +9,10 @@ import { redactSensitiveText } from "../security/redaction.js";
 import type { ArtifactRepository } from "../task/artifact-repository.js";
 import type { MemoryEntryRepository } from "../task/memory-entry-repository.js";
 import type { ResultRepository } from "../task/result-repository.js";
+import type { AcceptanceEvidenceService } from "../task/acceptance-evidence-service.js";
+import {
+  acceptanceEvidenceInstruction, criterionContributionGuidance, criterionFinalizationGuidance
+} from "./acceptance-evidence-instructions.js";
 import { verifyDiscussionEvidenceReferences } from
   "./discussion-evidence-reference.js";
 import type { DiscussionRepository } from "./discussion-repository.js";
@@ -29,6 +33,7 @@ export interface DiscussionEvidenceReferenceSources {
   artifacts?: Pick<ArtifactRepository, "get">;
   results?: Pick<ResultRepository, "get">;
   memories?: Pick<MemoryEntryRepository, "get">;
+  acceptance?: Pick<AcceptanceEvidenceService, "forDiscussion">;
 }
 
 function codePointLength(value: string): number {
@@ -153,6 +158,18 @@ export class DiscussionEvidenceService {
     const currentRole = currentParticipant?.role ?? "participant";
     const trigger = this.core.getMessage(turn.inputMessageId);
     const transcript = this.discussionTranscript(discussion, wave, trigger);
+    const acceptedMessages = new Set(this.acceptedPriorTurnMessages(discussion, wave)
+      .map(({ messageId }) => messageId));
+    const acceptedTurns = this.repository.listTurns(discussion.discussionId).filter((turn) =>
+      turn.kind === "discussion" && turn.state === "completed" && turn.runId &&
+      turn.outputMessageId && acceptedMessages.has(turn.outputMessageId)
+    );
+    const acceptance = this.referenceSources.acceptance?.forDiscussion(
+      discussion.taskId, discussion.roomId,
+      acceptedTurns.map(({ runId }) => runId!),
+      acceptedTurns.flatMap(({ assessment }) => assessment?.newEvidenceRefs ?? [])
+        .filter((reference) => reference.startsWith("result_"))
+    );
     const remainingLease = Math.max(
       0,
       discussion.budget.leaseEndTurn - discussion.budget.turnsUsed
@@ -180,11 +197,14 @@ export class DiscussionEvidenceService {
           "If you cannot produce a complete closed-schema draft, omit the envelope; prose is preserved."
         ].join("\n")
       : "";
-    const task = turn.kind === "finalization"
+    let task = turn.kind === "finalization"
       ? finalizationTask(discussion.outputMode) +
         (planProposalInstruction ? `\n${planProposalInstruction}` : "")
       : "Make an independent, useful contribution for this Wave. Resolve a question, add evidence, " +
         "or challenge the current conclusion; do not merely repeat agreement.";
+    if (acceptance && acceptance.criteria.length > 0) {
+      task += `\n${turn.kind === "finalization" ? criterionFinalizationGuidance : criterionContributionGuidance}`;
+    }
     const progress = truncateSection([
       `Confidence: ${discussion.progress.confidence ?? "unknown"}`,
       `Disagreement: ${discussion.progress.disagreementRemaining}`,
@@ -243,10 +263,14 @@ export class DiscussionEvidenceService {
     if (framingCodePoints > maximumInstructionCodePoints) {
       throw new Error("Required Discussion instruction exceeds its character boundary");
     }
-    const transcriptBudget = maximumInstructionCodePoints - framingCodePoints;
+    const available = maximumInstructionCodePoints - framingCodePoints;
+    const acceptanceText = acceptance ? acceptanceEvidenceInstruction(acceptance,
+      Math.min(6_000, Math.max(0, available - 32), Math.floor(available * 0.6))) : "";
+    const transcriptBudget = available - codePointLength(acceptanceText) - (acceptanceText ? 2 : 0);
     const transcriptText = truncateTranscript(transcriptLines, transcriptBudget) ||
       "None available.";
-    const instruction = `${leading}\n${transcriptText}\n\n${trailing}`;
+    const instruction = `${leading}\n${transcriptText}\n\n` +
+      (acceptanceText ? `${acceptanceText}\n\n` : "") + trailing;
     if (exceedsUnicodeCodePointLimit(instruction, maximumInstructionCodePoints)) {
       throw new Error("Discussion instruction exceeds its character boundary");
     }

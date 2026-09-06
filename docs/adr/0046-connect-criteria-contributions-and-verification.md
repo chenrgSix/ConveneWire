@@ -29,7 +29,8 @@ history, never silently promoted into support. The projection reports its
 selection limits and omitted counts. It does not determine semantic truth,
 infer prose claims, or measure a model's internal understanding.
 
-Discussion uses only Results attributable to its accepted prior member Runs;
+Discussion uses only Results attributable to its accepted prior member Runs
+and explicitly offered in those accepted turns' `newEvidenceRefs`;
 same-Wave, quorum-excluded and supplemental late contributions remain excluded.
 The bounded criterion index is frozen in the existing durable Run instruction.
 It distinguishes available structured evidence from unstructured replies and

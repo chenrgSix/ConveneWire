@@ -67,8 +67,10 @@ authorizes one acceptance-evidence increment within the v1 maintenance freeze.
 Members use canonical criterion keys to distinguish facts, references,
 inferences, assumptions, verification and gaps. Existing Result proposals may
 retain these contributions structurally. A bounded index joins only Results
-attributable to accepted prior member Runs, using the shared Task criterion
-evidence projection. Plain replies remain valid and explicitly unstructured;
+attributable to accepted prior member Runs and explicitly cited by Result ID in
+those accepted turns' `newEvidenceRefs`, using the shared Task criterion evidence
+projection. Uncited or later Results do not silently enter the index. Plain
+replies remain valid and explicitly unstructured;
 the Server never fabricates criterion claims from their prose.
 
 The index is retained in the existing immutable Run instruction. Acceptance

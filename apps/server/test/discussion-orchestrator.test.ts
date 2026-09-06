@@ -36,6 +36,8 @@ import { ArtifactRepository } from "../src/task/artifact-repository.js";
 import { ContextPlanner } from "../src/task/context-planner.js";
 import { MemoryEntryRepository } from "../src/task/memory-entry-repository.js";
 import { ResultRepository } from "../src/task/result-repository.js";
+import { ResultService } from "../src/task/result-service.js";
+import { AcceptanceEvidenceService } from "../src/task/acceptance-evidence-service.js";
 
 const now = "2026-08-23T10:00:00.000Z";
 
@@ -167,7 +169,8 @@ async function fixture(
     orchestrator: new DiscussionOrchestrator(
       core, messages, discussions, runs, auth,
       taskRepository, () => clock.value, undefined,
-      { artifacts, results, memories }
+      { artifacts, results, memories,
+        acceptance: new AcceptanceEvidenceService(database, results, taskRepository) }
     ),
     restart: () => {
       const restartedDatabase = openDatabase(databasePath);
@@ -189,7 +192,9 @@ async function fixture(
         {
           artifacts: restartedArtifacts,
           results: restartedResults,
-          memories: restartedMemories
+          memories: restartedMemories,
+          acceptance: new AcceptanceEvidenceService(restartedDatabase, restartedResults,
+            new AgentTaskRepository(restartedDatabase))
         }
       );
     },
@@ -2685,4 +2690,113 @@ test("actual finalization uses a later-ordinal Task primary and survives restart
     assert.deepEqual(restarted.get(value.principal, result.discussion.discussionId)
       .waves.at(-1)!.selection, selection);
   } finally { value.close(); }
+});
+
+function criterionDiscussionTask(value: OrchestratorFixture) {
+  const repository = new AgentTaskRepository(value.database);
+  const auth = new AuthService(value.database);
+  const taskService = new AgentTaskService(repository, value.core, auth);
+  const task = taskService.create(value.principal, {
+    roomId: value.roomId, title: "Criterion evidence delivery", goal: "Preserve supported contribution facts.",
+    criteria: [{ criterionKey: "criterion_evidence0001", description: "Retain the observed evidence.", required: true, ordinal: 1 },
+      { criterionKey: "criterion_checks0001", description: "Describe independent checks and remaining gaps.", required: true, ordinal: 2 }],
+    assignments: value.agentIds.map((agentId, index) => ({ agentId,
+      role: index === 0 ? "primary" as const : "contributor" as const }))
+  }, now);
+  const results = new ResultService(value.database, value.results, taskService, repository,
+    value.runs, value.core, auth);
+  taskService.updateControl(value.principal, task.taskId, {
+    operationId: "op_criterion_task_active0001", expectedTaskRevision: task.taskRevision,
+    lifecycleState: "active"
+  }, now);
+  const offer = (run: RunRecord, suffix: string, explanation: string) => {
+    value.runs.applyEvent(run.runId, { type: "status", sequence: 1, status: "working" }, now);
+    const current = repository.get(task.taskId)!;
+    return results.proposeManagedAgent(value.devicePrincipal, {
+      agentId: run.targetAgentId, runId: run.runId,
+      proposal: {
+        operationId: `op_contribution_${suffix}`, taskId: task.taskId,
+        proposedAtTaskRevision: current.taskRevision, definitionRevision: current.definitionRevision,
+        criteriaRevision: current.criteriaRevision, supersedesResultId: null,
+        outcome: "partial", summary: explanation, risks: [], openQuestions: [], nextActions: [],
+        sources: [{ evidenceRefId: "evidence_contribution0001", kind: "run_event", runId: run.runId, sequence: 1 }],
+        criterionClaims: [{ criterionKey: "criterion_evidence0001", coverage: "unresolved",
+          explanation, evidenceRefIds: ["evidence_contribution0001"] }]
+      }
+    }, now);
+  };
+  return { task, offer };
+}
+
+const evidenceFinishAssessment = {
+  goalSatisfied: true, confidence: 0.99, newInformationAdded: true,
+  disagreementRemaining: "none", recommendation: "finish", reviewerApproved: true
+};
+
+test("finalizer receives only explicitly offered accepted Result claims and freezes the criterion index", async (t) => {
+  const value = await fixture(t, { value: now }, ["Coder", "Reviewer"], { readOnlyQuorumAgents: true });
+  const { task, offer } = criterionDiscussionTask(value);
+  let discussion = value.orchestrator.create(value.principal, {
+    roomId: value.roomId, taskId: task.taskId, goal: task.goal,
+    participantAgentIds: value.agentIds, mode: "round_robin"
+  });
+  const [first, second] = discussion.scheduledRuns;
+  assert.ok(first && second);
+  assert.match(first.instruction, /canonical criterion keys/u);
+  assert.match(first.instruction, /criterion_checks0001/u);
+  const offered = offer(first, "offered0001", "Retained structured evidence with a bounded uncertainty.");
+  const uncited = offer(second, "uncited0001", "UNADOPTED-RESULT-CLAIM");
+  assert.doesNotMatch(second.instruction, new RegExp(offered.resultId, "u"), "same Wave cannot consume this Result");
+  for (const [run, resultIds] of [[first, [offered.resultId]], [second, []]] as const) {
+    completeRun({ core: value.core, runs: value.runs, run, content: "Independent contribution.",
+      assessment: { ...evidenceFinishAssessment, newEvidenceRefs: resultIds } });
+    discussion = requireTerminalResult(value.orchestrator.onRunTerminal(run.runId));
+  }
+  const finalizer = discussion.scheduledRuns[0]!;
+  assert.equal(discussion.discussion.state, "finalizing");
+  const index = finalizer.instruction.split("## Criterion Evidence Index")[1]!.split("## Your Task")[0]!;
+  assert.match(index, new RegExp(offered.resultId, "u"));
+  assert.doesNotMatch(index, new RegExp(uncited.resultId, "u"));
+  assert.doesNotMatch(index, /UNADOPTED-RESULT-CLAIM/u);
+  assert.match(index, /accepted Runs without offered current Results: 1/u);
+  assert.match(finalizer.instruction, /Check available contributions before claiming evidence is missing/u);
+  assert.match(index, /0 criteria; 0 contribution entries/u);
+  const restarted = value.restart();
+  restarted.onRunTerminal(first.runId);
+  assert.equal(value.runs.getRun(finalizer.runId)!.instruction, finalizer.instruction);
+  assert.ok([...finalizer.instruction].length <= 20_000);
+});
+
+test("quorum finalization excludes an offered Result from the unfinished member even after its late reply", async (t) => {
+  const clock = { value: now };
+  const value = await fixture(t, clock, ["Coder", "Security", "Reviewer"], { readOnlyQuorumAgents: true });
+  const { task, offer } = criterionDiscussionTask(value);
+  const discussion = value.orchestrator.create(value.principal, {
+    roomId: value.roomId, taskId: task.taskId, goal: task.goal,
+    participantAgentIds: value.agentIds, mode: "review",
+    policy: { requireReviewer: true, waveCompletionMode: "read_only_quorum",
+      quorumMinimumCompleted: 2, quorumSoftDeadlineSeconds: 30 }
+  });
+  const [coder, late, reviewer] = discussion.scheduledRuns;
+  assert.ok(coder && late && reviewer);
+  for (const run of discussion.scheduledRuns) value.delivery.dispatch(run.runId);
+  const accepted = offer(coder, "quorum_accepted0001", "ACCEPTED-CRITERION-CLAIM");
+  const excluded = offer(late, "quorum_excluded0001", "EXCLUDED-CRITERION-CLAIM");
+  stageRunReply({ core: value.core, runs: value.runs, run: late,
+    content: "Late incomplete contribution.", assessment: { newEvidenceRefs: [excluded.resultId] } });
+  for (const run of [coder, reviewer]) {
+    completeRun({ core: value.core, runs: value.runs, run, content: "Accepted contribution.",
+      assessment: { ...evidenceFinishAssessment, newEvidenceRefs: run === coder ? [accepted.resultId] : [] } });
+    value.orchestrator.onRunTerminal(run.runId);
+  }
+  clock.value = "2026-08-23T10:00:31.000Z";
+  const recovered = value.restart().sweepDueWaves();
+  const finalizer = recovered.find((run) => run.instruction.includes("Produce the final"));
+  assert.ok(finalizer);
+  assert.match(finalizer.instruction, /ACCEPTED-CRITERION-CLAIM/u);
+  assert.doesNotMatch(finalizer.instruction, /EXCLUDED-CRITERION-CLAIM/u);
+  finishStagedRun(value.runs, late);
+  value.orchestrator.onRunTerminal(late.runId);
+  assert.equal(value.runs.getRun(finalizer.runId)!.instruction, finalizer.instruction);
+  assert.doesNotMatch(finalizer.instruction, new RegExp(excluded.resultId, "u"));
 });
