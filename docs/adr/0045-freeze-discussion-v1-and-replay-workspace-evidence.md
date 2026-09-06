@@ -47,7 +47,9 @@ authorized QA-069 to use 12 new invocations, at most 13 across the phase
 including the retained failure. After those 13 calls, the Owner explicitly
 authorized three new calls for only the missing delivery Discussion, at most
 16 across the phase, reusing the completed Single Agent baseline. Failed
-evidence remains immutable; no further automatic retry is added.
+evidence remains immutable. That attempt used two calls and stopped; the
+Owner then explicitly approved a v4 delivery-only plan for three new calls,
+at most 18 across the phase. No further automatic retry is added.
 Non-blind task-agent grading is separate from runtime success. Real user
 rework and task success rates are not measured by this historical replay.
 

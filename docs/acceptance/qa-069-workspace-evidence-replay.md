@@ -414,3 +414,15 @@ with no provider executable on the child PATH confirmed pending authorization
 rejects before any report/Runtime creation. No external model was invoked.
 The roots `convene-wire-test-run-unflW8` and `convene-wire-test-run-5rpEZ0` are
 physically absent; all 396 maintained Markdown files and whitespace checks pass.
+
+## Explicit v4 authorization
+
+The Owner subsequently said “再给你三次” on 2026-09-06, explicitly approving
+the prepared v4 plan for at most three new calls and 18 across the phase. The
+manifest records this approval; the command may now pass real admission. Only
+the delivery Discussion is scheduled, with the unchanged completed Single
+Agent baseline, sources, task input, rubric, model and material-export consent.
+The 12 passing replacement-plan checks cover the unchanged implementation.
+Stop on the first failed attempt; no further calls or retry beyond this plan
+are authorized. Preserve the outcome and audit completion against the original
+three-pair gate.

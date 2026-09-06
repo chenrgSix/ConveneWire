@@ -30,9 +30,10 @@
   "arms": [
     "discussion"
   ],
-  "authorization": "pending-owner-cap-increase",
+  "authorization": "owner-approved",
   "baseline": {
     "reportIndex": 1,
     "resultIndex": 0
-  }
+  },
+  "approvedOn": "2026-09-06"
 }
