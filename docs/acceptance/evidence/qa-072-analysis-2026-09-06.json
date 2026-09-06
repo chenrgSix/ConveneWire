@@ -1,0 +1,845 @@
+{
+  "version": 1,
+  "reportSha256": "188b7e12ef55dcf02e72ce22c3083a09606295a774bf97cc3dcbfc2d3021b798",
+  "results": [
+    {
+      "slot": 0,
+      "runId": "run_qa072_windows_1",
+      "treatment": "A",
+      "repetition": 1,
+      "outcome": "completed",
+      "elapsedMilliseconds": 17288,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 267,
+      "answerSha256": "ba983614c28172b2d186eb82ffbdb65f633ae187ac29ac813821fb2c53176729",
+      "blindId": "answer-6",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [
+        {
+          "id": "A1",
+          "kind": "unsupported_existing_implementation"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "not_applicable",
+        "readSubcondition": "not_applicable",
+        "substantiveSourceComparison": "not_applicable",
+        "status": "not_applicable",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 1,
+      "runId": "run_qa072_windows_2",
+      "treatment": "B",
+      "repetition": 1,
+      "outcome": "completed",
+      "elapsedMilliseconds": 16838,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 257,
+      "answerSha256": "bee3c5a2beb5cfe085d7a8c24986b4e7aa661de8ec1ec9d890cd2dbf7fad29cb",
+      "blindId": "answer-7",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "optional",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "optional_not_used",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa072_windows_3",
+      "treatment": "C",
+      "repetition": 1,
+      "outcome": "completed",
+      "elapsedMilliseconds": 24200,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 268,
+      "answerSha256": "fbec50caa991e50d4030c1007eb043246f6a78e0d0a493a8ffbad3fa25ddf47c",
+      "blindId": "answer-9",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "required_all_sources",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "noncompliant",
+        "limitationAcknowledged": true
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 3,
+      "runId": "run_qa072_windows_4",
+      "treatment": "B",
+      "repetition": 2,
+      "outcome": "completed",
+      "elapsedMilliseconds": 18374,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 286,
+      "answerSha256": "628cfa5ee2367bdd1a1cb053ae25d5b2622cdf794bf6d3ec076a3823ee14fe1e",
+      "blindId": "answer-2",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "optional",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "optional_not_used",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 4,
+      "runId": "run_qa072_windows_5",
+      "treatment": "C",
+      "repetition": 2,
+      "outcome": "failed",
+      "elapsedMilliseconds": 9887,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 25,
+      "answerSha256": "999fd1666572fbbc4a23830f0023c9f54dea09b3c84c4ddaf638a59595c630d5",
+      "blindId": "answer-4",
+      "answerKind": "progress_only",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "unscorable"
+        },
+        {
+          "id": "T2",
+          "status": "unscorable"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "unscorable"
+        },
+        {
+          "id": "P2",
+          "status": "unscorable"
+        },
+        {
+          "id": "P3",
+          "status": "unscorable"
+        },
+        {
+          "id": "P4",
+          "status": "unscorable"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "unscorable"
+        },
+        {
+          "id": "U2",
+          "status": "unscorable"
+        },
+        {
+          "id": "U3",
+          "status": "unscorable"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "unscorable"
+        },
+        {
+          "id": "D2",
+          "status": "unscorable"
+        },
+        {
+          "id": "D3",
+          "status": "unscorable"
+        },
+        {
+          "id": "D4",
+          "status": "unscorable"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "required_all_sources",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "run_failed_before_reader",
+        "limitationAcknowledged": true
+      },
+      "runFailures": [
+        "unapproved_tool",
+        "process_failed"
+      ]
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa072_windows_6",
+      "treatment": "A",
+      "repetition": 2,
+      "outcome": "completed",
+      "elapsedMilliseconds": 16066,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 263,
+      "answerSha256": "e7a3b4639dd25ed78a2a52c24daa2d3c8463980ec0a4a154b4685432310a15bb",
+      "blindId": "answer-8",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [
+        {
+          "id": "A1",
+          "kind": "unsupported_predicate_strengthening"
+        },
+        {
+          "id": "A2",
+          "kind": "proposal_presented_as_evidence"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "fail"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "not_applicable",
+        "readSubcondition": "not_applicable",
+        "substantiveSourceComparison": "not_applicable",
+        "status": "not_applicable",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 6,
+      "runId": "run_qa072_windows_7",
+      "treatment": "C",
+      "repetition": 3,
+      "outcome": "failed",
+      "elapsedMilliseconds": 9957,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 30,
+      "answerSha256": "416ca53f8f7c9525854f4e2f36dd480a56c75f92977e662b7ead97bb6b602f02",
+      "blindId": "answer-1",
+      "answerKind": "progress_only",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "unscorable"
+        },
+        {
+          "id": "T2",
+          "status": "unscorable"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "unscorable"
+        },
+        {
+          "id": "P2",
+          "status": "unscorable"
+        },
+        {
+          "id": "P3",
+          "status": "unscorable"
+        },
+        {
+          "id": "P4",
+          "status": "unscorable"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "unscorable"
+        },
+        {
+          "id": "U2",
+          "status": "unscorable"
+        },
+        {
+          "id": "U3",
+          "status": "unscorable"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "unscorable"
+        },
+        {
+          "id": "D2",
+          "status": "unscorable"
+        },
+        {
+          "id": "D3",
+          "status": "unscorable"
+        },
+        {
+          "id": "D4",
+          "status": "unscorable"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "required_all_sources",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "run_failed_before_reader",
+        "limitationAcknowledged": true
+      },
+      "runFailures": [
+        "unapproved_tool",
+        "process_failed"
+      ]
+    },
+    {
+      "slot": 7,
+      "runId": "run_qa072_windows_8",
+      "treatment": "A",
+      "repetition": 3,
+      "outcome": "completed",
+      "elapsedMilliseconds": 17328,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 301,
+      "answerSha256": "83c1880bdf4ef65b899df859d7f76af07529d630ec1b4757812a3d34315d6ee6",
+      "blindId": "answer-3",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "not_applicable",
+        "readSubcondition": "not_applicable",
+        "substantiveSourceComparison": "not_applicable",
+        "status": "not_applicable",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    },
+    {
+      "slot": 8,
+      "runId": "run_qa072_windows_9",
+      "treatment": "B",
+      "repetition": 3,
+      "outcome": "completed",
+      "elapsedMilliseconds": 17487,
+      "reads": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "truncated": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "allSourcesReturnedBeforeAnswer": false,
+      "wordInstructionMet": true,
+      "wordCount": 286,
+      "answerSha256": "9b807799666c53f55bd6e38d1eb55c168263aae25bd62ce67a950049dfc6412d",
+      "blindId": "answer-5",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "unsupportedAdditions": [],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "evidenceUseCompliance": {
+        "requirement": "optional",
+        "readSubcondition": "not_read",
+        "substantiveSourceComparison": "not_established_without_returns",
+        "status": "optional_not_used",
+        "limitationAcknowledged": false
+      },
+      "runFailures": []
+    }
+  ],
+  "conclusions": {
+    "actualReaderReturns": 0,
+    "manipulationCheck": "Live source availability/discovery not established. Offline transport success does not establish tool exposure in these provider sessions.",
+    "Q1": "inconclusive",
+    "Q2": "inconclusive",
+    "claim": "Seven substantive answers retained the helper uncertainty. Two C attempts ended at forbidden MCP tool use with progress text only. No source-based correction or product-quality gain is established.",
+    "diagnosticLimit": "Raw harness records MCP call kind and unapproved-tool failure but omits the started call server/tool identity; do not infer which tool was rejected or why the reader was not discovered. No more model calls authorized by this consumed plan."
+  },
+  "judgmentDetails": "qa-072-blind-assessment-2026-09-06.json joined by answerSha256 and blindId; this file retains statuses rather than duplicate reasons and quotes."
+}

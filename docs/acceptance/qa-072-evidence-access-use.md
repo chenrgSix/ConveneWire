@@ -145,3 +145,102 @@ The 47 current Discussion orchestrator regressions also pass. Documentation
 lint and whitespace checks pass. No external model call occurred during these
 checks. All owned test roots were physically removed by their lifecycle wrapper.
 The freeze pins 23 files; the shared rendered base is 11,683 UTF-8 bytes.
+
+## Retained execution
+
+The pre-invocation implementation/freeze commit is `edd19e0`. The new plan
+consumed exactly nine reserved Finalizer sessions in the frozen order, without
+retry or replacement. The wrapper completed and physically removed its owned
+root. Wrapper success means the planned attempts were recorded; it does not
+mean all Runs or answers passed.
+
+- [Original report](evidence/qa-072-access-use-2026-09-06.json): all nine
+  reservations, configurations/grants, retained texts, Run outcomes and times.
+- [Item-level masked review](evidence/qa-072-blind-assessment-2026-09-06.json):
+  exact answer hashes, quoted spans, separate judgments and evaluation limits.
+- [Joined analysis](evidence/qa-072-analysis-2026-09-06.json): treatment labels,
+  all eight dimensions and explicit inconclusive Q1/Q2 verdicts.
+
+| Slot | Arm / repetition | Run | Source returns | Time (seconds) | T1 / T2 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | A / 1 | completed | 0 | 17.288 | fail / partial |
+| 2 | B / 1 | completed | 0 | 16.838 | fail / pass |
+| 3 | C / 1 | completed | 0 | 24.200 | fail / pass |
+| 4 | B / 2 | completed | 0 | 18.374 | fail / partial |
+| 5 | C / 2 | failed | 0 | 9.887 | unscorable / unscorable |
+| 6 | A / 2 | completed | 0 | 16.066 | fail / pass |
+| 7 | C / 3 | failed | 0 | 9.957 | unscorable / unscorable |
+| 8 | A / 3 | completed | 0 | 17.328 | fail / partial |
+| 9 | B / 3 | completed | 0 | 17.487 | fail / partial |
+
+T1 is the missing/unknown `executableAvailable` body discrepancy. T2 is retention
+of CLI's independent execute-bit rejection and Console's pre-probe readiness
+check. Neither dimension is a total score. All seven substantive answers leave
+T1 unresolved; T2 varies as shown. The two failed C attempts retain only
+progress statements about finding tools/resources, not diagnostic answers or
+reasonable refusals. The raw adapter field `finalAnswer` holds the last Agent
+message even on failure; the assessment labels these `progress_only` and does
+not misrepresent them as delivered finals.
+
+| Arm | Correct content fully retained, per repetition | New unsupported assertions | Uncertainty | Deliverable coverage |
+| --- | --- | --- | --- | --- |
+| A | 2/4, 3/4, 2/4; other items partial | 1, 2, 0 | U1 pass/fail/pass; U2 all pass; U3 partial/fail/partial | All three answers: D1-D3 partial, D4 pass |
+| B | 3/4, 2/4, 2/4; other items partial | 0, 0, 0 | U1 fail/pass/partial; U2 all pass; U3 all partial | All three answers: D1-D3 partial, D4 pass |
+| C | 3/4, unscorable, unscorable | 0, unscorable, unscorable | C1: U1 fail, U2 pass, U3 partial; others unscorable | C1: D1-D3 partial, D4 pass; others unscorable |
+
+The A additions include asserting an existing shared availability policy and
+strengthening CLI's observed non-directory check into a regular-file predicate;
+A2 also promotes proposed launcher forms into an evidence-backed minimum.
+Broad proposed OS/PATHEXT acceptance and Unix extension rejection are recorded
+as policy concerns separately from new asserted facts. None of the substantive
+answers identifies known-directory discovery's `.exe`-only candidates. All
+seven substantive answers obey the common word instruction (257–301 words).
+
+## Evidence-use and causal limits
+
+A has no new reader and evidence-use compliance is not applicable. All three B
+sessions have the authorized reader configuration but make no recorded read;
+optional access is unused. C1 acknowledges inability to read but makes no
+reader call, so it does not comply with the all-source requirement. C2/C3 end
+when the adapter observes an MCP tool outside its permitted identity. There
+are **zero successful, denied or failed calls at the evidence reader itself**;
+these two failures are Runtime/tool-boundary failures, not failed source reads.
+No read receipts are fabricated for an unattempted read.
+
+The decisive manipulation check is therefore unresolved: the experiment does
+not establish that the live model correctly discovered its configured evidence
+reader. The offline CLI test proves the transport can serve an explicitly
+selected reader; its simulated provider deliberately chooses that tool. It
+cannot prove live-model exposure/discovery or actual use. The live adapter
+records `mcp_tool_call` and `unapproved_tool`, but does not retain the rejected
+started call's server/tool identity. We cannot identify that rejected tool or
+separate discovery failure from model choice using the retained telemetry.
+The model's statements that the reader was unavailable are not independent
+proof of tool availability. These limitations prevent a unique causal claim.
+
+Q1 and Q2 are **inconclusive**. The shared baseline reproduces the missing-body
+problem, but there is no source return with which to test the intended access
+or evidence-use mechanism. Do not call B ineffective, infer a synthesis-only
+bottleneck, count the failed C attempts as reasonable refusals, or infer a
+product-quality improvement. Total attempted elapsed times are A 50.682 s,
+B 52.699 s and C 44.044 s; C's early failures make the last number unsuitable
+as an efficiency comparison.
+
+The justified follow-up is an offline diagnostic of tool advertisement,
+discovery and the rejected tool identity, plus explicit separation of progress
+messages from terminal answers. It must preserve this report and the frozen
+implementation. No extra external-model call, amended fixture, same-plan rerun
+or independent new case is authorized by the consumed QA-072 plan. Targeted
+Review and all other ADR scope exclusions remain outside this stage.
+
+## Post-execution verification
+
+Two read-only audit checks pass: all nine results match the 23 frozen pins,
+exact treatment instructions, source grants and original answer hashes; every
+item quote exists verbatim and masked/unmasked judgments agree. Run them with
+`node scripts/test/run-with-temp-root.mjs -- node --test scripts/bench/evidence-access-report.test.mjs`.
+The report is never rewritten by this audit. Production Discussion sources,
+contracts, storage and policy files retain their pre-experiment bytes.
+Final physical inspection confirms all eleven named owned test roots from this
+stage are absent; the three task-owned fixture/grading helper files were also
+removed. No unrelated temporary state was removed.

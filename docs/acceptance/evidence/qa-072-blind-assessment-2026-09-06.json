@@ -1,0 +1,1165 @@
+{
+  "version": 1,
+  "reportSha256": "188b7e12ef55dcf02e72ce22c3083a09606295a774bf97cc3dcbfc2d3021b798",
+  "gradingProtocol": "Pre-frozen QA-072 scoring guide; answer hash order without arm labels. Run metadata was known before grading; answer wording can reveal treatment. No independent evaluator or grading model was used.",
+  "grades": [
+    {
+      "blindId": "answer-1",
+      "answerSha256": "416ca53f8f7c9525854f4e2f36dd480a56c75f92977e662b7ead97bb6b602f02",
+      "answerKind": "progress_only",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "unscorable",
+          "reason": "Only a tool-discovery progress statement was retained; no diagnostic answer.",
+          "quotes": [
+            "The dedicated evidence reader is not exposed here, so I’m falling back to the available resource inspection path to look for the manifest-backed evidence and confirm what is actually accessible."
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "unscorable",
+          "reason": "Only a tool-discovery progress statement was retained; no diagnostic answer.",
+          "quotes": [
+            "The dedicated evidence reader is not exposed here, so I’m falling back to the available resource inspection path to look for the manifest-backed evidence and confirm what is actually accessible."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P2",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P3",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P4",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "unscorable: the claim that the reader was unavailable cannot be verified from the retained live tool telemetry.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        },
+        {
+          "id": "U2",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        },
+        {
+          "id": "U3",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D2",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D3",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D4",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        }
+      ]
+    },
+    {
+      "blindId": "answer-2",
+      "answerSha256": "628cfa5ee2367bdd1a1cb053ae25d5b2622cdf794bf6d3ec076a3823ee14fe1e",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "The exact implementation of `executableAvailable` is not shown here"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Keeps the Console and CLI locations but drops or weakens the independently stated CLI execute-bit predicate.",
+          "quotes": [
+            "the enrollment path also uses pre-probe path resolution and availability gating."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "the current check is Unix-shaped if it relies on regular-file plus execute-bit semantics",
+            "The exact implementation of `executableAvailable` is not shown here"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Names CLI/Console but does not preserve the complete CLI predicate.",
+          "quotes": [
+            "the enrollment path also uses pre-probe path resolution and availability gating."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "keep `LookPath`/path resolution and absolute-path filtering.",
+            "- Unix regression check: `.cmd` does not become authoritative on Unix; execute-bit gating remains in place."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "Minimal consistent policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Preserves missing observed paths/logs and claims no executed platform tests.",
+          "quotes": [
+            "The transcript’s specific rejected paths are not included"
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both reported ready."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "Minimal consistent policy:",
+            "The exact implementation of `executableAvailable` is not shown here"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "the enrollment path also uses pre-probe path resolution and availability gating."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "keep `LookPath`/path resolution and absolute-path filtering.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both reported ready."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "windows-discovery",
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both reported ready."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-3",
+      "answerSha256": "83c1880bdf4ef65b899df859d7f76af07529d630ec1b4757812a3d34315d6ee6",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "I do not have the exact implementation of `executableAvailable`"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Keeps the Console and CLI locations but drops or weakens the independently stated CLI execute-bit predicate.",
+          "quotes": [
+            "then applies a file/stat-based executable check"
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "a Unix-style execute-bit test applied before Runtime would reject valid Windows launchers",
+            "I do not have the exact implementation of `executableAvailable`"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Names CLI/Console but does not preserve the complete CLI predicate.",
+          "quotes": [
+            "then applies a file/stat-based executable check"
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Preserve non-executing discovery and absolute-path resolution.",
+            "- Unix regression test: non-executable files and `.cmd` shims remain rejected on Unix, while true executables still pass."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "Recommended checks:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Preserves missing observed paths/logs and claims no executed platform tests.",
+          "quotes": [
+            "I also do not have the original transcript lines naming every rejected path"
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery test: path resolution still works without executing shells or probing Runtime.",
+            "- Windows-native availability test: `.exe` and `.cmd`/`.bat` entries are accepted as available."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "Recommended checks:",
+            "I do not have the exact implementation of `executableAvailable`"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "then applies a file/stat-based executable check"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Preserve non-executing discovery and absolute-path resolution.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery test: path resolution still works without executing shells or probing Runtime.",
+            "- Windows-native availability test: `.exe` and `.cmd`/`.bat` entries are accepted as available."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "`windows-discovery`",
+            "- Portable discovery test: path resolution still works without executing shells or probing Runtime.",
+            "- Windows-native availability test: `.exe` and `.cmd`/`.bat` entries are accepted as available."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-4",
+      "answerSha256": "999fd1666572fbbc4a23830f0023c9f54dea09b3c84c4ddaf638a59595c630d5",
+      "answerKind": "progress_only",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "unscorable",
+          "reason": "Only a tool-discovery progress statement was retained; no diagnostic answer.",
+          "quotes": [
+            "I didn’t find a deferred evidence tool, so I’m checking the available MCP resources next and will read the fixed excerpts if they’re exposed there."
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "unscorable",
+          "reason": "Only a tool-discovery progress statement was retained; no diagnostic answer.",
+          "quotes": [
+            "I didn’t find a deferred evidence tool, so I’m checking the available MCP resources next and will read the fixed excerpts if they’re exposed there."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P2",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P3",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        },
+        {
+          "id": "P4",
+          "status": "unscorable",
+          "reason": "No substantive diagnostic answer.",
+          "quotes": []
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "unscorable: the claim that the reader was unavailable cannot be verified from the retained live tool telemetry.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        },
+        {
+          "id": "U2",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        },
+        {
+          "id": "U3",
+          "status": "unscorable",
+          "reason": "Only progress text; not a content refusal.",
+          "quotes": []
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D2",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D3",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        },
+        {
+          "id": "D4",
+          "status": "unscorable",
+          "reason": "No final deliverable.",
+          "quotes": []
+        }
+      ]
+    },
+    {
+      "blindId": "answer-5",
+      "answerSha256": "9b807799666c53f55bd6e38d1eb55c168263aae25bd62ce67a950049dfc6412d",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "The exact implementation of `executableAvailable` is not fully visible in the provided excerpts"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Keeps the Console and CLI locations but drops or weakens the independently stated CLI execute-bit predicate.",
+          "quotes": [
+            "the supplied excerpt does not fully show the exact guard chain"
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "it treats launchability as a regular file plus execute bits (`0o111`)",
+            "The exact implementation of `executableAvailable` is not fully visible in the provided excerpts"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Names CLI/Console but does not preserve the complete CLI predicate.",
+          "quotes": [
+            "the supplied excerpt does not fully show the exact guard chain"
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Keep discovery portable and non-executing.",
+            "- Unix regression: `.cmd` is not treated as launchable on Unix, and execute-bit gating still applies."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Leave Runtime permissions unchanged.",
+            "Recommended minimal policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Preserves inability to enumerate rejected forms, but does not clearly distinguish absent original reports/logs.",
+          "quotes": [
+            "I cannot name every rejected launcher form with certainty."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery: a path can be resolved without executing shells or probing Runtime.",
+            "- Native Windows verification: `codex.exe` and `codex.cmd` are accepted by availability/preflight on Windows."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "Recommended minimal policy:",
+            "The exact implementation of `executableAvailable` is not fully visible in the provided excerpts"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "the supplied excerpt does not fully show the exact guard chain"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Keep discovery portable and non-executing.",
+            "Leave Runtime permissions unchanged."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery: a path can be resolved without executing shells or probing Runtime.",
+            "- Native Windows verification: `codex.exe` and `codex.cmd` are accepted by availability/preflight on Windows."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "`windows-discovery`",
+            "- Portable discovery: a path can be resolved without executing shells or probing Runtime.",
+            "- Native Windows verification: `codex.exe` and `codex.cmd` are accepted by availability/preflight on Windows."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-6",
+      "answerSha256": "ba983614c28172b2d186eb82ffbdb65f633ae187ac29ac813821fb2c53176729",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "The supplied excerpts do not include the full body of `executableAvailable`"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Keeps the Console and CLI locations but drops or weakens the independently stated CLI execute-bit predicate.",
+          "quotes": [
+            "together they indicate the same availability policy is being reused for enrollment and console preflight."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "Unix: require a regular file with execute bits, preserving current behavior.",
+            "The supplied excerpts do not include the full body of `executableAvailable`"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Names CLI/Console but does not preserve the complete CLI predicate.",
+          "quotes": [
+            "together they indicate the same availability policy is being reused for enrollment and console preflight."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Keep discovery non-executing and portable.",
+            "- Unix: require a regular file with execute bits, preserving current behavior."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "Minimal consistent policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [
+        {
+          "id": "A1",
+          "kind": "unsupported_existing_implementation",
+          "claim": "together they indicate the same availability policy is being reused for enrollment and console preflight.",
+          "reason": "The CLI excerpt inlines IsDir and execute-bit rejection; Console calls a regular-file helper. A shared existing policy/helper is not established.",
+          "sources": [
+            "windows-enrollment",
+            "windows-availability",
+            "windows-console-preflight"
+          ]
+        }
+      ],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Preserves missing observed paths/logs and claims no executed platform tests.",
+          "quotes": [
+            "The transcript also does not expose the exact rejected paths"
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery: path resolution still works without execution or shell sourcing.",
+            "- Native Windows launchability: an installed `codex.cmd` and a native launcher path are accepted by the pre-Runtime availability checks."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "Minimal consistent policy:",
+            "The supplied excerpts do not include the full body of `executableAvailable`"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "together they indicate the same availability policy is being reused for enrollment and console preflight."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Keep discovery non-executing and portable.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery: path resolution still works without execution or shell sourcing.",
+            "- Native Windows launchability: an installed `codex.cmd` and a native launcher path are accepted by the pre-Runtime availability checks."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "`windows-discovery`",
+            "- Portable discovery: path resolution still works without execution or shell sourcing.",
+            "- Native Windows launchability: an installed `codex.cmd` and a native launcher path are accepted by the pre-Runtime availability checks."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-7",
+      "answerSha256": "bee3c5a2beb5cfe085d7a8c24986b4e7aa661de8ec1ec9d890cd2dbf7fad29cb",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "the actual Windows branch is not included in the excerpt"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the CLI execute-bit rejection and Console pre-probe readiness linkage; does not dismiss their source identities. This is preservation, not independent verification.",
+          "quotes": [
+            "a Unix-style executable test rejecting valid Windows launchers and shims such as `codex.cmd`"
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "Unix: keep the current regular-file plus execute-bit policy.",
+            "the actual Windows branch is not included in the excerpt"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the CLI/Console facts at contribution level.",
+          "quotes": [
+            "a Unix-style executable test rejecting valid Windows launchers and shims such as `codex.cmd`"
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Preserve discovery as non-executing and path-based.",
+            "- Unix: keep the current regular-file plus execute-bit policy."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "One consistent minimal policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail",
+          "reason": "Does not explicitly preserve the absence of original failing-path/log observations.",
+          "quotes": []
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Windows-native availability check: a real `codex.exe` and an npm-style `codex.cmd` are both accepted before Runtime."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "One consistent minimal policy:",
+            "the actual Windows branch is not included in the excerpt"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "a Unix-style executable test rejecting valid Windows launchers and shims such as `codex.cmd`"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Preserve discovery as non-executing and path-based.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Windows-native availability check: a real `codex.exe` and an npm-style `codex.cmd` are both accepted before Runtime."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "`windows-discovery`",
+            "- Portable discovery check: path resolution still works without shell execution or profile sourcing.",
+            "- Windows-native availability check: a real `codex.exe` and an npm-style `codex.cmd` are both accepted before Runtime."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-8",
+      "answerSha256": "e7a3b4639dd25ed78a2a52c24daa2d3c8463980ec0a4a154b4685432310a15bb",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The exact four-line availability body is in the frozen sources and its predicate was already in Solver’s contribution, yet the output retains missing-body/unknown-branch uncertainty.",
+          "quotes": [
+            "The exact implementation of `executableAvailable` is not shown in the supplied excerpts"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the CLI execute-bit rejection and Console pre-probe readiness linkage; does not dismiss their source identities. This is preservation, not independent verification.",
+          "quotes": [
+            "then rejects it unless it is a regular file with execute bits set"
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "filters candidates through `filepath.IsAbs(...) && executableAvailable(...)`",
+            "The exact implementation of `executableAvailable` is not shown in the supplied excerpts"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the CLI/Console facts at contribution level.",
+          "quotes": [
+            "then rejects it unless it is a regular file with execute bits set"
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Keep discovery non-executing and absolute-path based.",
+            "- Unix regression verification: non-executable files and Windows shims remain rejected on Unix, and execute-bit gating still works."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "Recommended minimal policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [
+        {
+          "id": "A1",
+          "kind": "unsupported_predicate_strengthening",
+          "claim": "then rejects it unless it is a regular file with execute bits set",
+          "reason": "The enrollment excerpt rejects directories and absent execute bits; it does not use IsRegular. Regular-file rejection is observed in the separate availability helper, so this assigns a stronger predicate to enrollment.",
+          "sources": [
+            "windows-enrollment",
+            "windows-availability"
+          ]
+        },
+        {
+          "id": "A2",
+          "kind": "proposal_presented_as_evidence",
+          "claim": "The evidence supports `.exe/.cmd/.bat` as the minimum Windows launcher set",
+          "reason": "These forms occur in contributor policy proposals; the source does not establish this as the minimum compatibility set. Keep the proposal distinct from observed behavior.",
+          "sources": [
+            "windows-discovery"
+          ]
+        }
+      ],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail",
+          "reason": "Does not explicitly preserve the absence of original failing-path/log observations.",
+          "quotes": []
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery verification: path resolution still happens without executing shells or probing Runtime.",
+            "- Native Windows verification: a discovered `codex.cmd` and native launcher path are accepted by availability/readiness logic."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "fail",
+          "reason": "Treats proposed launcher forms as evidence while also retaining the helper uncertainty.",
+          "quotes": [
+            "Recommended minimal policy:",
+            "The exact implementation of `executableAvailable` is not shown in the supplied excerpts"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "then rejects it unless it is a regular file with execute bits set"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Keep discovery non-executing and absolute-path based.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery verification: path resolution still happens without executing shells or probing Runtime.",
+            "- Native Windows verification: a discovered `codex.cmd` and native launcher path are accepted by availability/readiness logic."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "windows-discovery",
+            "- Portable discovery verification: path resolution still happens without executing shells or probing Runtime.",
+            "- Native Windows verification: a discovered `codex.cmd` and native launcher path are accepted by availability/readiness logic."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    },
+    {
+      "blindId": "answer-9",
+      "answerSha256": "fbec50caa991e50d4030c1007eb043246f6a78e0d0a493a8ffbad3fa25ddf47c",
+      "answerKind": "diagnostic_answer",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "The output explicitly preserves inability to verify the helper; the target discrepancy is not resolved. Its reported access limitation is evaluated separately, not called a proven tool failure.",
+          "quotes": [
+            "I could not read the fixed evidence through `evidence.read_evidence`, so the exact `executableAvailable` implementation remains unverified."
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the CLI execute-bit rejection and Console pre-probe readiness linkage; does not dismiss their source identities. This is preservation, not independent verification.",
+          "quotes": [
+            "The participant summary says this filter is Unix-style execute-bit gating"
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Some discovery/Unix predicate content survives, but the output leaves the availability body or its Windows applicability unverified, weakening Solver’s specific evidence.",
+          "quotes": [
+            "Preserve Unix behavior: on Unix, require a regular file with execute bits.",
+            "I could not read the fixed evidence through `evidence.read_evidence`, so the exact `executableAvailable` implementation remains unverified."
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the CLI/Console facts at contribution level.",
+          "quotes": [
+            "The participant summary says this filter is Unix-style execute-bit gating"
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Retains non-executing discovery and the Unix execute-bit requirement; overly broad Unix extension-rejection suggestions are noted separately.",
+          "quotes": [
+            "Preserve discovery without execution on all platforms.",
+            "- Unix regression check: non-executable files and `.cmd`-style launchers are still not treated as valid Unix executables."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and presents proposed work without claiming test execution.",
+          "quotes": [
+            "Do not change Runtime permissions.",
+            "One consistent minimal policy:"
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "Only new material assertions are counted. The missing-body claim is the retained target error, not counted again as an addition. Broad OS/PATHEXT acceptance and Unix .cmd rejection suggestions are policy/constraint defects noted separately, not invented implementation facts.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "fail",
+          "reason": "Does not explicitly preserve the absence of original failing-path/log observations.",
+          "quotes": []
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from native Windows checks and does not claim either was run.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without executing shells or profiles.",
+            "- Windows-native check: a discovered `codex.cmd` and a native launcher are accepted by pre-Runtime availability."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Labels a Windows policy as proposed, but does not resolve the specific helper uncertainty. This item is partial; no net credit offsets the target error.",
+          "quotes": [
+            "One consistent minimal policy:",
+            "I could not read the fixed evidence through `evidence.read_evidence`, so the exact `executableAvailable` implementation remains unverified."
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Identifies several pre-probe locations; never identifies known-directory candidates appending only .exe. CLI detail may also be lost.",
+          "quotes": [
+            "The participant summary says this filter is Unix-style execute-bit gating"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Retains platform split and permission/non-execution boundaries, but omits a bounded case-insensitive Windows allowlist and a consistent regular-file policy across platforms; lookup details are incomplete in some answers.",
+          "quotes": [
+            "Preserve discovery without execution on all platforms.",
+            "Do not change Runtime permissions."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes some portable/native/Unix checks, but omits explicit no-execute-bit Windows files, unsupported extension/directory rejection and complete caller cases.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without executing shells or profiles.",
+            "- Windows-native check: a discovered `codex.cmd` and a native launcher are accepted by pre-Runtime availability."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI identities; separates proposed portable and native verification, without claiming execution.",
+          "quotes": [
+            "`windows-discovery`",
+            "- Portable discovery check: path resolution still works without executing shells or profiles.",
+            "- Windows-native check: a discovered `codex.cmd` and a native launcher are accepted by pre-Runtime availability."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "constraint_risk",
+          "reason": "OS-launchable/PATHEXT phrasing does not define a bounded case-insensitive Windows policy. Categorical rejection of .cmd on Unix, when asserted, is broader than the source’s extension-independent execute-bit rule. These are proposed-policy concerns, not newly observed source facts."
+        }
+      ]
+    }
+  ]
+}

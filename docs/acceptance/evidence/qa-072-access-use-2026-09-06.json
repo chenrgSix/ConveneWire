@@ -1,0 +1,612 @@
+{
+  "version": 1,
+  "identity": "qa-072-windows-access-use-v1",
+  "fixturePath": "docs/acceptance/fixtures/qa-072-evidence-access-use.json",
+  "fixtureSha256": "6a21e9eedef9ad03e4cc83da81b810d5e48b96d1e40d30c95a5cc06b380d020e",
+  "freezeSha256": "66274e1c6d10b5621749f0879bc8b5664d7a82df2e96b53b1868752f6a10c6bd",
+  "sourceCommit": "edd19e0e4f66995d53eb3f4b2017b3a133aef2f1",
+  "requestedModel": "gpt-5.4-mini",
+  "reasoningEffort": "low",
+  "observedProviderModel": null,
+  "runtimeVersion": "codex-cli 0.153.4",
+  "state": "consumed",
+  "maximumFinalizerInvocations": 9,
+  "attempts": [
+    {
+      "slot": 0,
+      "state": "terminal",
+      "treatment": "A",
+      "repetition": 1,
+      "runId": "run_qa072_windows_1",
+      "reservedAt": "2026-09-06T10:25:02.671Z"
+    },
+    {
+      "slot": 1,
+      "state": "terminal",
+      "treatment": "B",
+      "repetition": 1,
+      "runId": "run_qa072_windows_2",
+      "reservedAt": "2026-09-06T10:25:19.961Z"
+    },
+    {
+      "slot": 2,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 1,
+      "runId": "run_qa072_windows_3",
+      "reservedAt": "2026-09-06T10:25:36.802Z"
+    },
+    {
+      "slot": 3,
+      "state": "terminal",
+      "treatment": "B",
+      "repetition": 2,
+      "runId": "run_qa072_windows_4",
+      "reservedAt": "2026-09-06T10:26:01.004Z"
+    },
+    {
+      "slot": 4,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 2,
+      "runId": "run_qa072_windows_5",
+      "reservedAt": "2026-09-06T10:26:19.382Z"
+    },
+    {
+      "slot": 5,
+      "state": "terminal",
+      "treatment": "A",
+      "repetition": 2,
+      "runId": "run_qa072_windows_6",
+      "reservedAt": "2026-09-06T10:26:29.272Z"
+    },
+    {
+      "slot": 6,
+      "state": "terminal",
+      "treatment": "C",
+      "repetition": 3,
+      "runId": "run_qa072_windows_7",
+      "reservedAt": "2026-09-06T10:26:45.340Z"
+    },
+    {
+      "slot": 7,
+      "state": "terminal",
+      "treatment": "A",
+      "repetition": 3,
+      "runId": "run_qa072_windows_8",
+      "reservedAt": "2026-09-06T10:26:55.300Z"
+    },
+    {
+      "slot": 8,
+      "state": "terminal",
+      "treatment": "B",
+      "repetition": 3,
+      "runId": "run_qa072_windows_9",
+      "reservedAt": "2026-09-06T10:27:12.631Z"
+    }
+  ],
+  "results": [
+    {
+      "slot": 0,
+      "treatment": "A",
+      "repetition": 1,
+      "runId": "run_qa072_windows_1",
+      "observedAt": "2026-09-06T10:25:02.672Z",
+      "endedAt": "2026-09-06T10:25:19.960Z",
+      "finalAnswerAt": "2026-09-06T10:25:16.950Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 17288,
+      "finalAnswer": "The breakage is a pre-Runtime discovery/availability policy mismatch on Windows.\n\nSupported diagnosis:\n- `windows-discovery` shows the discovery path is doing non-executing resolution work before Runtime starts, so it is the right place to preserve portable lookup behavior.\n- `windows-console-preflight` shows the console marks an agent ready only after `executableAvailable(...)`, so this check can block Windows before Runtime probing.\n- `windows-availability` and `windows-enrollment` are the other pre-Runtime gates in the flow; together they indicate the same availability policy is being reused for enrollment and console preflight.\n\nMinimal consistent policy:\n- Keep discovery non-executing and portable.\n- Make launchability validation platform-aware.\n- Unix: require a regular file with execute bits, preserving current behavior.\n- Windows: accept native launchers and shims that Windows can launch, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits.\n- Do not change Runtime permissions.\n\nWhat to verify:\n- Portable discovery: path resolution still works without execution or shell sourcing.\n- Native Windows launchability: an installed `codex.cmd` and a native launcher path are accepted by the pre-Runtime availability checks.\n- Unix regression: `.cmd` stays non-authoritative on Unix, and execute-bit gating still applies there.\n\nUnresolved / missing:\n- The supplied excerpts do not include the full body of `executableAvailable`, so I cannot confirm whether it already special-cases Windows or applies the Unix permission test everywhere.\n- The transcript also does not expose the exact rejected paths; it only supports the class of failure.\n\nCriterion coverage:\n- `criterion_qa072_1`: supported by `windows-discovery`, `windows-console-preflight`, `windows-availability`, `windows-enrollment`.\n- `criterion_qa072_2`: supported minimal policy above.\n- `criterion_qa072_3`: regression checks above.\n- `criterion_qa072_4`: portable vs native verification separated; unresolved observations explicitly preserved.\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.79,\"openQuestions\":[{\"id\":\"unresolved_executableAvailable\",\"question\":\"Does executableAvailable apply the Unix execute-bit test on Windows, or a Windows-specific launchability rule?\",\"importance\":\"high\"},{\"id\":\"launcher_forms\",\"question\":\"Should any Windows launcher forms beyond .exe/.cmd/.bat be accepted by pre-Runtime availability?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "ba983614c28172b2d186eb82ffbdb65f633ae187ac29ac813821fb2c53176729",
+      "outputWordCount": 267,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": null,
+      "reads": []
+    },
+    {
+      "slot": 1,
+      "treatment": "B",
+      "repetition": 1,
+      "runId": "run_qa072_windows_2",
+      "observedAt": "2026-09-06T10:25:19.963Z",
+      "endedAt": "2026-09-06T10:25:36.801Z",
+      "finalAnswerAt": "2026-09-06T10:25:33.920Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 16838,
+      "finalAnswer": "The breakage is consistent with a pre-Runtime launchability check that is too Unix-specific for Windows.\n\nSupported diagnosis:\n- `windows-discovery` shows discovery first resolves via lookup and then evaluates absolute candidates without executing them.\n- `windows-availability` shows the availability gate is `executableAvailable`, but the actual Windows branch is not included in the excerpt, so its exact behavior remains partly unverified.\n- `windows-enrollment` shows CLI enrollment also gates `codex` before Runtime, and the reported failure mode is a Unix-style executable test rejecting valid Windows launchers and shims such as `codex.cmd`.\n- `windows-console-preflight` shows the console preflight marks agents ready only after this availability check, so rejection happens before any Runtime probe.\n\nOne consistent minimal policy:\n- Preserve discovery as non-executing and path-based.\n- Make launchability checks platform-aware.\n- Unix: keep the current regular-file plus execute-bit policy.\n- Windows: accept native launchers and shim forms that Windows can launch, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries.\n- Do not change Runtime permissions.\n\nRegression checks to add:\n- Portable discovery check: path resolution still works without shell execution or profile sourcing.\n- Windows-native availability check: a real `codex.exe` and an npm-style `codex.cmd` are both accepted before Runtime.\n- Unix regression check: `.cmd` is not treated as executable on Unix, and execute-bit gating still applies.\n- Caller check: console preflight and CLI enrollment both use the same policy so they cannot diverge.\n\nUnresolved:\n- The exact implementation of `executableAvailable` on Windows is not shown, so whether it currently uses the same Unix permission test or a different launchability rule is still open.\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.81,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"unresolved_windows_branch\",\"question\":\"Does executableAvailable already special-case Windows launchers, or does it still enforce Unix execute bits there?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "bee3c5a2beb5cfe085d7a8c24986b4e7aa661de8ec1ec9d890cd2dbf7fad29cb",
+      "outputWordCount": 257,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_2",
+        "expiresAt": "2026-09-06T10:30:19.963Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    },
+    {
+      "slot": 2,
+      "treatment": "C",
+      "repetition": 1,
+      "runId": "run_qa072_windows_3",
+      "observedAt": "2026-09-06T10:25:36.803Z",
+      "endedAt": "2026-09-06T10:26:01.003Z",
+      "finalAnswerAt": "2026-09-06T10:25:57.869Z",
+      "instructionSha256": "7a34a30926e6efbe2f05969b000a3d4b8d967474f093e88103e7476ddf046fc5",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 24200,
+      "finalAnswer": "The breakage is in the pre-Runtime launchability checks, not Runtime itself.\n\nSupported diagnosis:\n- `windows-discovery` shows discovery is intentionally non-executing: it uses lookup and absolute-path candidate discovery before any Runtime probe.\n- `windows-console-preflight` shows the console gates availability through an `ExecutableReady`-style check before Runtime, so a launcher can be rejected early.\n- `windows-enrollment` shows CLI enrollment also resolves `codex` before Runtime and applies a launchability filter. The participant summary says this filter is Unix-style execute-bit gating; I cannot independently verify the exact predicate because the full source bytes were not available through `evidence.read_evidence`.\n\nMost likely root cause:\n- The same pre-Runtime availability policy is being applied to Windows launchers/shims, which causes valid Windows forms such as `codex.cmd` and native launchers to be rejected before Runtime can probe them.\n\nOne consistent minimal policy:\n- Preserve discovery without execution on all platforms.\n- Preserve Unix behavior: on Unix, require a regular file with execute bits.\n- On Windows, accept launchable OS-native forms, including `.exe`, `.cmd`, and `.bat`, and do not require Unix permission bits.\n- Do not change Runtime permissions.\n\nRegression checks to add:\n- Portable discovery check: path resolution still works without executing shells or profiles.\n- Windows-native check: a discovered `codex.cmd` and a native launcher are accepted by pre-Runtime availability.\n- Unix regression check: non-executable files and `.cmd`-style launchers are still not treated as valid Unix executables.\n\nUnresolved observations:\n- I could not read the fixed evidence through `evidence.read_evidence`, so the exact `executableAvailable` implementation remains unverified.\n- I also cannot confirm whether there are any additional Windows-specific launcher forms beyond `.exe`, `.cmd`, and `.bat` that should be preserved.\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.74,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_source_bytes\",\"question\":\"Can the fixed evidence be read directly to confirm the exact Windows launchability predicate in discovery, console preflight, and enrollment?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "fbec50caa991e50d4030c1007eb043246f6a78e0d0a493a8ffbad3fa25ddf47c",
+      "outputWordCount": 268,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_3",
+        "expiresAt": "2026-09-06T10:30:36.803Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    },
+    {
+      "slot": 3,
+      "treatment": "B",
+      "repetition": 2,
+      "runId": "run_qa072_windows_4",
+      "observedAt": "2026-09-06T10:26:01.006Z",
+      "endedAt": "2026-09-06T10:26:19.380Z",
+      "finalAnswerAt": "2026-09-06T10:26:16.551Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 18374,
+      "finalAnswer": "The breakage is a pre-Runtime filtering problem, not a Runtime permission problem. The relevant checks are:\n\n- Discovery in [windows-discovery](bridge/internal/console/runtime_discovery.go): the code resolves candidates with `LookPath`, then requires an absolute path and `executableAvailable(...)` before a runtime probe.\n- Console preflight in [windows-console-preflight](bridge/internal/console/server.go): availability is decided before probe-time through `executableAvailable(executablePath)` and `ExecutableReady`.\n- CLI enrollment in [windows-enrollment](bridge/cmd/agentroom-bridge/main.go): the enrollment path also uses pre-probe path resolution and availability gating.\n- Availability logic in [windows-availability](bridge/internal/console/server.go): the current check is Unix-shaped if it relies on regular-file plus execute-bit semantics, which would reject Windows launchers and npm shims such as `codex.cmd`.\n\nSupported diagnosis: Windows native launchers and `.cmd` shims are being rejected by a discovery/availability policy that is too strict for Windows, so they never reach the Runtime probe.\n\nMinimal consistent policy:\n- Preserve discovery without execution: keep `LookPath`/path resolution and absolute-path filtering.\n- Make launchability checks platform-aware:\n  - Unix: keep the existing regular-file + execute-bit requirement.\n  - Windows: accept OS-launchable entries, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries; do not require Unix execute bits.\n- Do not change Runtime permissions.\n\nRegression checks to add:\n- Portable discovery check: path resolution still works without shell execution or profile sourcing.\n- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both reported ready.\n- Unix regression check: `.cmd` does not become authoritative on Unix; execute-bit gating remains in place.\n- Caller coverage check: both console preflight and CLI enrollment use the same platform-aware availability policy.\n\nUnresolved / missing evidence:\n- The exact implementation of `executableAvailable` is not shown here, so whether it already branches on Windows is unverified.\n- The transcript’s specific rejected paths are not included, so the exact launcher/shim variants observed in the field remain partially unknown.\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.79,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"unverified_exec_available\",\"question\":\"Does executableAvailable already branch by OS, or is it uniformly Unix-style across Windows and Unix?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "628cfa5ee2367bdd1a1cb053ae25d5b2622cdf794bf6d3ec076a3823ee14fe1e",
+      "outputWordCount": 286,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_4",
+        "expiresAt": "2026-09-06T10:31:01.006Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    },
+    {
+      "slot": 4,
+      "treatment": "C",
+      "repetition": 2,
+      "runId": "run_qa072_windows_5",
+      "observedAt": "2026-09-06T10:26:19.383Z",
+      "endedAt": "2026-09-06T10:26:29.270Z",
+      "finalAnswerAt": "2026-09-06T10:26:29.179Z",
+      "instructionSha256": "7a34a30926e6efbe2f05969b000a3d4b8d967474f093e88103e7476ddf046fc5",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "failed",
+      "exitCode": null,
+      "elapsedMilliseconds": 9887,
+      "finalAnswer": "I didn’t find a deferred evidence tool, so I’m checking the available MCP resources next and will read the fixed excerpts if they’re exposed there.",
+      "answerSha256": "999fd1666572fbbc4a23830f0023c9f54dea09b3c84c4ddaf638a59595c630d5",
+      "outputWordCount": 25,
+      "outputWordInstructionMet": true,
+      "failures": [
+        "unapproved_tool",
+        "process_failed"
+      ],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_5",
+        "expiresAt": "2026-09-06T10:31:19.383Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    },
+    {
+      "slot": 5,
+      "treatment": "A",
+      "repetition": 2,
+      "runId": "run_qa072_windows_6",
+      "observedAt": "2026-09-06T10:26:29.273Z",
+      "endedAt": "2026-09-06T10:26:45.339Z",
+      "finalAnswerAt": "2026-09-06T10:26:42.581Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 16066,
+      "finalAnswer": "Diagnosis: the pre-Runtime path is applying a Unix-style launchability gate too early for Windows. In `runtime_discovery.go`, discovery first uses `exec.LookPath`, then filters candidates through `filepath.IsAbs(...) && executableAvailable(...)` before any Runtime probe ([windows-discovery]). The console preflight also marks readiness only through `executableAvailable(executablePath)` before runtime enrollment ([windows-console-preflight]). The enrollment path similarly resolves `codex` with `exec.LookPath` and then rejects it unless it is a regular file with execute bits set ([windows-enrollment]). That policy is correct for Unix binaries, but it is the wrong acceptance test for Windows launchers and npm shims such as `codex.cmd`.\n\nRecommended minimal policy:\n- Keep discovery non-executing and absolute-path based.\n- Preserve Unix behavior: on Unix, continue requiring a regular file with execute bits.\n- On Windows, treat OS-launchable entries as valid without Unix permission bits, including native launchers and PATHEXT-resolved shims such as `.exe`, `.cmd`, and `.bat`.\n- Do not change Runtime permissions.\n\nChecks to add:\n- Portable discovery verification: path resolution still happens without executing shells or probing Runtime.\n- Native Windows verification: a discovered `codex.cmd` and native launcher path are accepted by availability/readiness logic.\n- Unix regression verification: non-executable files and Windows shims remain rejected on Unix, and execute-bit gating still works.\n\nUnresolved / not fully evidenced:\n- The exact implementation of `executableAvailable` is not shown in the supplied excerpts, so I cannot prove whether every caller uses the same Unix-only file-mode test or whether Windows has any special case already.\n- The evidence supports `.exe/.cmd/.bat` as the minimum Windows launcher set; it does not establish whether any additional Windows-specific forms must be preserved.\n\nEvidence used: [windows-discovery], [windows-console-preflight], [windows-enrollment].\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.83,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"unresolved-executableAvailable\",\"question\":\"Does executableAvailable already branch on Windows, or does it apply the Unix execute-bit test everywhere?\",\"importance\":\"high\"},{\"id\":\"unresolved-launcher-forms\",\"question\":\"Are any Windows launcher forms beyond .exe, .cmd, and .bat required to preserve compatibility?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-console-preflight\",\"windows-enrollment\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "e7a3b4639dd25ed78a2a52c24daa2d3c8463980ec0a4a154b4685432310a15bb",
+      "outputWordCount": 263,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": null,
+      "reads": []
+    },
+    {
+      "slot": 6,
+      "treatment": "C",
+      "repetition": 3,
+      "runId": "run_qa072_windows_7",
+      "observedAt": "2026-09-06T10:26:45.342Z",
+      "endedAt": "2026-09-06T10:26:55.299Z",
+      "finalAnswerAt": "2026-09-06T10:26:55.159Z",
+      "instructionSha256": "7a34a30926e6efbe2f05969b000a3d4b8d967474f093e88103e7476ddf046fc5",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "failed",
+      "exitCode": null,
+      "elapsedMilliseconds": 9957,
+      "finalAnswer": "The dedicated evidence reader is not exposed here, so I’m falling back to the available resource inspection path to look for the manifest-backed evidence and confirm what is actually accessible.",
+      "answerSha256": "416ca53f8f7c9525854f4e2f36dd480a56c75f92977e662b7ead97bb6b602f02",
+      "outputWordCount": 30,
+      "outputWordInstructionMet": true,
+      "failures": [
+        "unapproved_tool",
+        "process_failed"
+      ],
+      "itemKinds": [
+        "agent_message",
+        "mcp_tool_call"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_7",
+        "expiresAt": "2026-09-06T10:31:45.342Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    },
+    {
+      "slot": 7,
+      "treatment": "A",
+      "repetition": 3,
+      "runId": "run_qa072_windows_8",
+      "observedAt": "2026-09-06T10:26:55.302Z",
+      "endedAt": "2026-09-06T10:27:12.630Z",
+      "finalAnswerAt": "2026-09-06T10:27:09.661Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 17328,
+      "finalAnswer": "The breakage is in the pre-Runtime availability gate, not in Runtime permissions. The evidence shows three pre-probe checks:\n\n- Discovery first resolves a candidate path without executing it, then filters with `filepath.IsAbs(...) && executableAvailable(...)` in `windows-discovery`.\n- Console preflight marks an agent `ExecutableReady` only after `executableAvailable(executablePath)` in `windows-console-preflight`.\n- CLI enrollment also resolves `codex` with `exec.LookPath`, then applies a file/stat-based executable check in `windows-enrollment`.\n\nThe minimal consistent policy should be:\n- Preserve non-executing discovery and absolute-path resolution.\n- Make launchability checks platform-aware.\n- On Unix, keep the current regular-file + execute-bit gate.\n- On Windows, accept OS-launchable native entries and shims such as `.exe`, `.cmd`, and `.bat`, and do not require Unix permission bits.\n- Do not change Runtime permissions.\n\nThis matches the reported failure mode: a Unix-style execute-bit test applied before Runtime would reject valid Windows launchers and npm shims like `codex.cmd` too early.\n\nRecommended checks:\n- Portable discovery test: path resolution still works without executing shells or probing Runtime.\n- Windows-native availability test: `.exe` and `.cmd`/`.bat` entries are accepted as available.\n- Unix regression test: non-executable files and `.cmd` shims remain rejected on Unix, while true executables still pass.\n- Caller coverage: verify both console preflight and CLI enrollment use the same platform-aware availability rule.\n\nUnresolved / missing evidence:\n- I do not have the exact implementation of `executableAvailable`, so whether Windows already has a separate branch is unverified.\n- I also do not have the original transcript lines naming every rejected path; the diagnosis is supported by the provided source excerpts, not by the missing runtime logs.\n\nCriteria status:\n- `criterion_qa072_1`: supported by the discovery, console, and enrollment excerpts.\n- `criterion_qa072_2`: supported with the platform-aware policy above.\n- `criterion_qa072_3`: supported with the regression checks above.\n- `criterion_qa072_4`: supported; portable vs native verification and remaining uncertainty are separated below.\n\n<agentroom-assessment>{\"goalSatisfied\":false,\"confidence\":0.78,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"executableAvailable_windows_branch\",\"question\":\"Does executableAvailable already special-case Windows launcher forms, or does it apply the Unix execute-bit rule unconditionally?\",\"importance\":\"high\"},{\"id\":\"missing_transcript_paths\",\"question\":\"What exact launcher/shim paths were rejected in the original Windows report?\",\"importance\":\"medium\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":false,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "83c1880bdf4ef65b899df859d7f76af07529d630ec1b4757812a3d34315d6ee6",
+      "outputWordCount": 301,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": null,
+      "reads": []
+    },
+    {
+      "slot": 8,
+      "treatment": "B",
+      "repetition": 3,
+      "runId": "run_qa072_windows_9",
+      "observedAt": "2026-09-06T10:27:12.633Z",
+      "endedAt": "2026-09-06T10:27:30.120Z",
+      "finalAnswerAt": "2026-09-06T10:27:27.240Z",
+      "instructionSha256": "c3768c2a07b9ee3c9eff077cf4641911700a29256bf618f0177c2dbc47f23de6",
+      "requestedModel": "gpt-5.4-mini",
+      "observedProviderModel": null,
+      "reasoningEffort": "low",
+      "outcome": "completed",
+      "exitCode": 0,
+      "elapsedMilliseconds": 17487,
+      "finalAnswer": "The breakage is in the pre-Runtime discovery/availability path, not in Runtime permissions.\n\nSupported diagnosis:\n- `windows-discovery` shows discovery is intentionally non-executing: it uses path resolution / absolute-candidate scanning before runtime selection.\n- `windows-availability` shows the availability check is Unix-shaped: it treats launchability as a regular file plus execute bits (`0o111`), which is correct for Unix binaries but will reject Windows launchers and npm shims before Runtime can probe them.\n- `windows-console-preflight` shows the console marks an agent available only after that availability check, so a bad precheck blocks the agent early.\n- `windows-enrollment` is the CLI-side pre-Runtime enrollment path; it is part of the same class of checks, but the supplied excerpt does not fully show the exact guard chain, so I cannot name every rejected launcher form with certainty.\n\nRecommended minimal policy:\n- Keep discovery portable and non-executing.\n- Make launchability validation platform-aware:\n  - Unix: keep the current regular-file + execute-bit rule.\n  - Windows: accept OS-launchable entries, including native `.exe` and script shims such as `.cmd`/`.bat`, without requiring Unix permission bits.\n- Leave Runtime permissions unchanged.\n\nRegression checks to add:\n- Portable discovery: a path can be resolved without executing shells or probing Runtime.\n- Native Windows verification: `codex.exe` and `codex.cmd` are accepted by availability/preflight on Windows.\n- Unix regression: `.cmd` is not treated as launchable on Unix, and execute-bit gating still applies.\n- Caller coverage: console preflight and CLI enrollment should both use the same platform-aware policy so they do not diverge.\n\nUnresolved observation:\n- The exact implementation of `executableAvailable` is not fully visible in the provided excerpts, so I cannot prove whether Windows already has any special case. The evidence does support that the current default behavior is too strict for Windows launchers.\n\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.82,\"resolvedQuestionIds\":[\"criterion_qa072_1\",\"criterion_qa072_2\",\"criterion_qa072_3\",\"criterion_qa072_4\"],\"openQuestions\":[{\"id\":\"missing_executableAvailable_impl\",\"question\":\"Does executableAvailable already branch on Windows, or is the Unix execute-bit rule applied everywhere?\",\"importance\":\"high\"}],\"newEvidenceRefs\":[\"windows-discovery\",\"windows-availability\",\"windows-enrollment\",\"windows-console-preflight\"],\"disagreementRemaining\":\"low\",\"newInformationAdded\":true,\"reviewerApproved\":true,\"recommendation\":\"continue\"}</agentroom-assessment>",
+      "answerSha256": "9b807799666c53f55bd6e38d1eb55c168263aae25bd62ce67a950049dfc6412d",
+      "outputWordCount": 286,
+      "outputWordInstructionMet": true,
+      "failures": [],
+      "itemKinds": [
+        "agent_message"
+      ],
+      "toolCalls": [],
+      "grant": {
+        "experimentId": "qa-072-windows-access-use-v1",
+        "authorityId": "authority_qa072_owner_excerpts_v1",
+        "taskId": "task_qa072windows0001",
+        "roomId": "room_qa072windows0001",
+        "runId": "run_qa072_windows_9",
+        "expiresAt": "2026-09-06T10:32:12.633Z",
+        "sources": [
+          {
+            "evidenceRef": "windows-discovery",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "1ffbe8a4f2ae35fa2f5e2e4eb168bbb4aa823b886bc4a341b765d5c485b896b1",
+            "allowedRange": {
+              "start": 0,
+              "end": 4572
+            }
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "dc8f0585aa4c10c8da8caf2a689ee5ef020395d3b8ee2ba68fdcc0a429b7f5e6",
+            "allowedRange": {
+              "start": 0,
+              "end": 154
+            }
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "02acf9475d7e0782ceca3a51705dd25f33361cdc23303d63c8683b308bf2af38",
+            "allowedRange": {
+              "start": 0,
+              "end": 504
+            }
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "revision": "d66a004503ce0930b1586888453dbeea05866627",
+            "contentSha256": "6300cd606804508295c8beced23217164f0979fb3ab34068196c6fd70231d7eb",
+            "allowedRange": {
+              "start": 0,
+              "end": 1041
+            }
+          }
+        ]
+      },
+      "reads": []
+    }
+  ],
+  "error": null
+}
