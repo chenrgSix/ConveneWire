@@ -375,3 +375,42 @@ maintained Markdown files and whitespace checks pass. The offline roots
 `convene-wire-test-run-00BvH1` and `convene-wire-test-run-Cai2zx` are absent.
 The historical delivery-only authorization has been exercised and stopped; its
 old command/manifest must not be rerun as if three calls still remained.
+
+## Pending plan to fulfill the unchanged third-pair gate
+
+The goal remains three complete pairs. The previous goal turn made concrete
+progress by retaining the failed attempt and improving diagnostics; it did not
+complete that gate. Rechecking the current records finds 15 spent calls, a
+16-call approved maximum and no authorized retry. The failed process is terminal
+and its owned root is absent; this is not a wait for running work.
+
+A [new delivery-only plan](fixtures/qa-069-workspace-delivery-retry.json) pins
+all four prior reports, including the latest two-call failure, and reuses the
+unchanged successful Single Agent baseline. It proposes exactly three new
+calls, at most 18 across the phase. The old delivery manifest and every raw
+report/review remain unchanged. The current delivery command reads the new
+plan and refuses real execution at startup while its authorization is pending,
+before creating Server/Bridge, quota or provider processes. Synthetic tests
+may validate it without a model; validation is not Owner authorization.
+
+This is execution revision v4: the denied-tool diagnostics and admission guard
+are recorded separately from the unchanged task text, sources, rubric, model,
+reader whitelist, three-Run Discussion and first-failure stop. It does not
+claim the earlier tool-choice/identity failure has been reproduced or repaired.
+The limit stays three new calls with 300 seconds per process and 20 minutes
+of model work. No further retry is included.
+
+Real execution requires explicit approval of this new plan and increasing the
+phase limit from 16 to 18. Material-export consent for the same packet and
+necessary task context remains valid. Until that decision, the third pair and
+QA-069 remain incomplete; neither recommendation nor offline validation
+changes their acceptance standard.
+
+The replacement plan passed nine focused checks and all three synthetic
+workspace flows: 12 regression checks, including source/history tampering,
+duplicate or missing prior reports, baseline equality, pending admission and
+the complete three-Run delivery Discussion. A separate real-entrypoint check
+with no provider executable on the child PATH confirmed pending authorization
+rejects before any report/Runtime creation. No external model was invoked.
+The roots `convene-wire-test-run-unflW8` and `convene-wire-test-run-5rpEZ0` are
+physically absent; all 396 maintained Markdown files and whitespace checks pass.

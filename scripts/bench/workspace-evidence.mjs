@@ -4,15 +4,17 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 export const packetPath = "docs/acceptance/fixtures/qa-069-workspace-cases.json";
-export const workspaceExecutionIdentity = "qa-069-evidence-cli-v3";
+export const workspaceExecutionIdentity = "qa-069-evidence-cli-v4";
 export const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 export const workspacePacket = JSON.parse(readFileSync(new URL(`../../${packetPath}`, import.meta.url), "utf8"));
 export const workspaceRemainingPath = "docs/acceptance/fixtures/qa-069-workspace-remaining.json";
-export const workspaceDeliveryPath = "docs/acceptance/fixtures/qa-069-workspace-delivery.json";
-export function loadWorkspaceDelivery(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceDeliveryPath}`, import.meta.url), "utf8"))) {
+export const workspaceDeliveryPath = "docs/acceptance/fixtures/qa-069-workspace-delivery-retry.json";
+export function loadWorkspaceDelivery(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceDeliveryPath}`, import.meta.url), "utf8")), { requireApproval = false } = {}) {
+  assert.equal(manifest.identity, "qa-069-missing-delivery-discussion-v4");
   assert.equal(manifest.packetPath, packetPath);
   assert.equal(sha256(readFileSync(new URL(`../../${packetPath}`, import.meta.url))), manifest.packetSha256);
-  assert.equal(manifest.priorReports.length, 3);
+  assert.equal(manifest.priorReports.length, 4);
+  assert.equal(new Set(manifest.priorReports.map((source) => source.path)).size, 4);
   const prior = manifest.priorReports.map((source) => {
     const text = readFileSync(new URL(`../../${source.path}`, import.meta.url), "utf8");
     assert.equal(sha256(text), source.sha256);
@@ -20,8 +22,8 @@ export function loadWorkspaceDelivery(manifest = JSON.parse(readFileSync(new URL
     assert.equal(report.model, workspacePacket.model);
     return report;
   });
-  assert.equal(prior.reduce((sum, report) => sum + report.reservedInvocations, 0), 13);
-  assert.equal(manifest.priorInvocations, 13);
+  assert.equal(prior.reduce((sum, report) => sum + report.reservedInvocations, 0), 15);
+  assert.equal(manifest.priorInvocations, 15);
   assert.deepEqual(manifest.baseline, { reportIndex: 1, resultIndex: 0 });
   const baseline = prior[1].results[0];
   assert.equal(baseline.caseId, "delivery");
@@ -33,7 +35,9 @@ export function loadWorkspaceDelivery(manifest = JSON.parse(readFileSync(new URL
   assert.deepEqual(manifest.caseIds, ["delivery"]);
   assert.deepEqual(manifest.arms, ["discussion"]);
   assert.equal(manifest.maximumNewInvocations, 3);
-  assert.equal(manifest.maximumPhaseInvocations, 16);
+  assert.equal(manifest.maximumPhaseInvocations, 18);
+  if (requireApproval) assert.equal(manifest.authorization, "owner-approved",
+    "Delivery continuation requires explicit Owner approval for three new calls and phase cap 18");
   return { manifest, baseline, samples: workspacePacket.cases.filter((sample) => sample.id === "delivery") };
 }
 export function loadWorkspaceRemaining(manifest = JSON.parse(readFileSync(new URL(`../../${workspaceRemainingPath}`, import.meta.url), "utf8"))) {

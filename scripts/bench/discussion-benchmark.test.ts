@@ -29,7 +29,8 @@ const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
 assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery"].includes(suite), "Unknown benchmark suite");
 const workspaceReplay = suite.startsWith("workspace");
 const workspaceRemaining = suite === "workspace-remaining" ? loadWorkspaceRemaining() : undefined;
-const workspaceDelivery = suite === "workspace-delivery" ? loadWorkspaceDelivery() : undefined;
+const workspaceDelivery = suite === "workspace-delivery" ? loadWorkspaceDelivery(undefined,
+  { requireApproval: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE === "1" }) : undefined;
 const reviewing = suite !== "legacy";
 const continuation = suite === "continuation" ? loadReviewContinuation() : undefined;
 if (continuation) assert.equal(model, continuation.manifest.model, "Continuation model must match prior evidence");

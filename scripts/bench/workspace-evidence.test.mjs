@@ -174,8 +174,13 @@ test("adapter rejects unapproved tools, absent answers, failed output and all qu
 test("delivery-only proposal pins the completed baseline and exactly three new calls", () => {
   const { manifest, samples } = loadWorkspaceDelivery();
   assert.deepEqual(samples.map((sample) => sample.id), ["delivery"]);
+  assert.equal(manifest.priorInvocations, 15);
+  assert.equal(manifest.maximumPhaseInvocations, 18);
   for (const change of [
     (copy) => { copy.priorReports[2].sha256 = "0".repeat(64); },
+    (copy) => { copy.priorReports.pop(); },
+    (copy) => { copy.priorReports[3] = copy.priorReports[0]; },
+    (copy) => { copy.priorReports[3].sha256 = "0".repeat(64); },
     (copy) => { copy.baseline.resultIndex = 1; },
     (copy) => { copy.arms.push("single_agent"); },
     (copy) => { copy.maximumNewInvocations = 4; },
@@ -185,6 +190,17 @@ test("delivery-only proposal pins the completed baseline and exactly three new c
     change(copy);
     assert.throws(() => loadWorkspaceDelivery(copy));
   }
+});
+
+test("pending delivery plan permits offline inspection but refuses real admission", () => {
+  const { manifest } = loadWorkspaceDelivery();
+  const pending = { ...manifest, authorization: "pending-owner-cap-increase" };
+  assert.equal(loadWorkspaceDelivery(pending).manifest.maximumNewInvocations, 3);
+  assert.throws(() => loadWorkspaceDelivery(pending, { requireApproval: true }), /explicit Owner approval/u);
+  // This validates a receipt field, not actual human consent or permission to call a provider.
+  const approvedFixture = { ...manifest, authorization: "owner-approved" };
+  assert.equal(loadWorkspaceDelivery(approvedFixture, { requireApproval: true }).manifest.maximumPhaseInvocations, 18);
+  assert.throws(() => loadWorkspaceDelivery({ ...approvedFixture, maximumPhaseInvocations: 19 }, { requireApproval: true }));
 });
 
 test("remaining manifest pins failed evidence and excludes every previously started case within 13 calls", () => {

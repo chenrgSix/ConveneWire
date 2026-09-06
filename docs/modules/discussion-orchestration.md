@@ -34,7 +34,10 @@ Discussion, at most 16 across QA-069, reusing its completed Single Agent baselin
 This does not change the task packet, acceptance criteria or production policy.
 Benchmark denied-tool diagnostics retain only bounded kind/server/tool identity
 names, never arguments, output or executable text; they do not grant tools or
-change failure classification.
+change failure classification. A pending QA-069 replacement plan includes all
+15 spent invocations and proposes three new calls, at most 18; real delivery
+execution must reject pending authorization before starting Runtime resources.
+This proposal grants no new invocation or production authority.
 
 ## Purpose
 
