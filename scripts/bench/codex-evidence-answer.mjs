@@ -31,7 +31,7 @@ const receiptDirectory = path.join(quotaDirectory, `receipt-${reservedSlot}`);
 mkdirSync(receiptDirectory);
 const metadata = { caseId: caseIds[0], role, instructionSha256: createHash("sha256").update(instruction).digest("hex"),
   runtimeSucceeded: false, failure: null,
-  diagnostics: { exitCode: null, timedOut: false, itemKinds: [], failureReasons: [] } };
+  diagnostics: { exitCode: null, timedOut: false, itemKinds: [], failureReasons: [], deniedTools: [] } };
 const persist = () => writeFileSync(path.join(receiptDirectory, "invocation.json"), JSON.stringify(metadata));
 persist();
 const config = evidenceCodexConfig(bundlePath, caseIds[0], receiptDirectory);
@@ -46,6 +46,15 @@ let failed = false;
 const fail = (reason) => {
   failed = true;
   if (!metadata.diagnostics.failureReasons.includes(reason)) metadata.diagnostics.failureReasons.push(reason);
+};
+const boundedToolName = (value) => typeof value === "string" && /^[a-zA-Z][a-zA-Z0-9_.:-]{0,79}$/u.test(value) ? value : null;
+const retainDeniedTool = (item) => {
+  const identity = {
+    kind: ["mcp_tool_call", "command_execution", "web_search", "tool_search"].includes(item.type) ? item.type : "other",
+    server: boundedToolName(item.server), tool: boundedToolName(item.tool)
+  };
+  const entries = metadata.diagnostics.deniedTools;
+  if (entries.length < 8 && !entries.some((entry) => JSON.stringify(entry) === JSON.stringify(identity))) entries.push(identity);
 };
 const timer = setTimeout(() => {
   metadata.diagnostics.timedOut = true;
@@ -68,7 +77,10 @@ for await (const line of createInterface({ input: child.stdout })) {
     }
     if (event.type?.startsWith("item.") && event.item?.type && !["agent_message", "reasoning"].includes(event.item.type)) {
       if (event.item.type === "error") fail("item_error");
-      else if (event.item.type !== "mcp_tool_call" || event.item.server !== "evidence" || event.item.tool !== "read_evidence") fail("unapproved_tool");
+      else if (event.item.type !== "mcp_tool_call" || event.item.server !== "evidence" || event.item.tool !== "read_evidence") {
+        retainDeniedTool(event.item);
+        fail("unapproved_tool");
+      }
       else if (event.item.status === "failed" || event.item.error) fail("reader_call_failed");
     }
     persist();

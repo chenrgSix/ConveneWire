@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-09-06",
+  "reviewer": "Codex task agent; no additional provider invocation or independent blind review",
+  "priorReview": {
+    "path": "docs/acceptance/evidence/qa-069-workspace-review-2026-09-06.json",
+    "sha256": "f3aea3272767528dea5c468282a49ed61d1dc9ed47acdc7edc915ede65bc852f"
+  },
+  "latestReport": {
+    "path": "docs/acceptance/evidence/qa-069-workspace-tool-rejection-2026-09-06.json",
+    "sha256": "79b6a0a8dab6bfda9ca1984024645ae1c82bb0771ea59d6493b088a8dbc34bfe"
+  },
+  "transformation": "Separate attempt audit. Prior scores, source reports, answers and null rubric decisions remain unchanged. The new attempt has no Finalizer Run or final answer and is not scored.",
+  "phase": {
+    "authorizedMaximumInvocations": 16,
+    "actualInvocations": 15,
+    "remainingInvocations": 1,
+    "actualRuns": 15,
+    "runStates": {
+      "failed": 3,
+      "completed": 12
+    },
+    "allArmElapsedMilliseconds": 259264,
+    "failedArmRuns": 6,
+    "failedArmElapsedMilliseconds": 89551,
+    "completePairs": [
+      "cancellation",
+      "windows"
+    ],
+    "incompletePairs": [
+      "delivery"
+    ],
+    "minimumFreshDiscussionInvocations": 3,
+    "furtherRetryAuthorized": false
+  },
+  "completePairTotalsUnchanged": {
+    "single_agent": {
+      "coveredCriteria": 3,
+      "totalCriteria": 8,
+      "runs": 2,
+      "elapsedMilliseconds": 50987
+    },
+    "discussion": {
+      "coveredCriteria": 2,
+      "totalCriteria": 8,
+      "runs": 6,
+      "elapsedMilliseconds": 91645
+    }
+  },
+  "latestAttempt": {
+    "sourceCommit": "0f16b52ea9f1f7f28fc597a668b997c48eeed343",
+    "runs": 2,
+    "elapsedMilliseconds": 23876,
+    "finalizerCreated": false,
+    "finalAnswer": null,
+    "rubricScored": false,
+    "solver": {
+      "cliExitCode": 0,
+      "runtimeSucceeded": false,
+      "failureReasons": [
+        "unapproved_tool"
+      ],
+      "acceptedReads": 0,
+      "toolIdentityAvailable": false,
+      "discardedAnswerAvailable": false
+    },
+    "reviewer": {
+      "cliExitCode": 0,
+      "runtimeSucceeded": true,
+      "acceptedReads": 3,
+      "observation": "The independent contribution now enumerates continue, finish and wait_human, but has no observation/parser documents. It is not a final answer and is not substituted for one."
+    }
+  },
+  "verification": {
+    "rawReportByteEquality": true,
+    "sourceHashesMatchedGit": 21,
+    "taskInputMatchesPinnedBaseline": true,
+    "temporaryRootAbsent": "convene-wire-test-run-WBOBCa"
+  },
+  "limits": [
+    "Unapproved-tool identity was not retained. Wrong tool choice and CLI identity/metadata compatibility cannot be distinguished from this report. No particular tool, side effect, export or production defect is inferred.",
+    "New bounded denied-tool diagnostics improve future evidence; they do not reconstruct this target or prove the underlying cause repaired.",
+    "Three complete paired results remain unavailable. Keep QA-069 unfinished and do not claim the goal complete.",
+    "The approved attempt stops at first failure. No further real invocation is authorized by the diagnostic hardening or the one unused slot."
+  ]
+}

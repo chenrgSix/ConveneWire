@@ -102,7 +102,39 @@ test("adapter executes actual MCP reads and emits only the accepted final answer
   assert.match(result.stdout, /^Synthetic transport check only:/u);
   const metadata = JSON.parse(await readFile(path.join(result.quota, "receipt-0/invocation.json"), "utf8"));
   assert.equal(metadata.runtimeSucceeded, true);
+  assert.deepEqual(metadata.diagnostics.deniedTools, []);
   assert.equal((await readdir(path.join(result.quota, "receipt-0"))).length, 6);
+});
+
+test("denied-tool receipts retain bounded identity without arguments or provider text", async (t) => {
+  const source = `
+    const items = [
+      {type:"mcp_tool_call",server:"another_server",tool:"read_evidence"},
+      {type:"mcp_tool_call",server:"evidence",tool:"another_tool"},
+      {type:"mcp_tool_call",server:"/private/UNSAFE_NAME",tool:"UNSAFE_NAME\\n"},
+      {type:"mcp_tool_call",server:"a".repeat(81),tool:{secret:"UNSAFE_NAME"}},
+      ...Array.from({length:12}, (_, i) => ({type:"mcp_tool_call",server:"evidence",tool:"denied_"+i}))
+    ];
+    for (const item of items) for (const type of ["item.started", "item.completed"]) {
+      console.log(JSON.stringify({type,item:{...item,arguments:{credential:"PRIVATE_ARGUMENT"},command:"PRIVATE_COMMAND",result:"PRIVATE_OUTPUT",error:"PRIVATE_ERROR"}}));
+    }
+    console.log(JSON.stringify({type:"item.completed",item:{type:"agent_message",text:"Must not be delivered"}}));
+  `;
+  const result = await invoke(t, source);
+  assert.equal(result.code, 1);
+  assert.equal(result.stdout, "");
+  const text = await readFile(path.join(result.quota, "receipt-0/invocation.json"), "utf8");
+  const metadata = JSON.parse(text);
+  assert.deepEqual(metadata.diagnostics.failureReasons, ["unapproved_tool"]);
+  const denied = metadata.diagnostics.deniedTools;
+  assert.equal(denied.length, 8);
+  assert.deepEqual(denied.slice(0, 3), [
+    {kind:"mcp_tool_call",server:"another_server",tool:"read_evidence"},
+    {kind:"mcp_tool_call",server:"evidence",tool:"another_tool"},
+    {kind:"mcp_tool_call",server:null,tool:null}
+  ]);
+  assert.ok(denied.every((entry) => Object.keys(entry).join(",") === "kind,server,tool"));
+  assert.doesNotMatch(text, /UNSAFE_NAME|PRIVATE_|Must not be delivered|\/private\//u);
 });
 
 test("adapter retains a transcript-only Finalizer answer and reports missing evidence separately", async (t) => {

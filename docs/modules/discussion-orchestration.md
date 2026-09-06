@@ -32,6 +32,9 @@ transcript must not become a failed Run solely for not rereading source files.
 The Owner subsequently approved three calls for only the missing delivery
 Discussion, at most 16 across QA-069, reusing its completed Single Agent baseline.
 This does not change the task packet, acceptance criteria or production policy.
+Benchmark denied-tool diagnostics retain only bounded kind/server/tool identity
+names, never arguments, output or executable text; they do not grant tools or
+change failure classification.
 
 ## Purpose
 

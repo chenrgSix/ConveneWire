@@ -327,3 +327,51 @@ export consent apply. The 24 benchmark and two installed-CLI offline checks
 passed for the unchanged implementation. No further retry or cap increase is
 included. Completion still requires a delivered final answer and direct rubric
 review, updated authority documents and physical temporary-root cleanup.
+
+## Delivery-only tool rejection
+
+The authorized execution at `0f16b52` used two calls and stopped before creating
+a Finalizer Run. The [unaltered report](evidence/qa-069-workspace-tool-rejection-2026-09-06.json)
+records a failed Solver and completed Reviewer in 23.876 seconds. Solver's CLI
+exited zero but reported an unapproved tool call and no accepted source reads;
+Reviewer read its three assigned documents and returned a contribution. That
+contribution is not a final answer and cannot complete the pair.
+
+The old diagnostics retain only `unapproved_tool` and item categories, not the
+server/tool identity. They cannot distinguish an incorrect tool choice from a
+CLI identity/metadata compatibility issue. No particular tool, executed side
+effect, data export or production failure is inferred. Offline hardening now
+retains at most eight distinct denied tool identities with bounded syntax-only
+kind/server/tool names, never arguments, command text, outputs or raw diagnostics.
+Malformed names are omitted. The allowed reader and failure decision stay
+unchanged; this is diagnostic hardening, not proof of a repaired failure cause.
+
+All 21 source hashes match the committed source, the task input equals the
+pinned baseline byte-for-byte, and the report is an exact copy. The temporary
+root `convene-wire-test-run-WBOBCa` is absent. Its digest is
+`79b6a0a8dab6bfda9ca1984024645ae1c82bb0771ea59d6493b088a8dbc34bfe`.
+
+The phase has now used 15 of the authorized 16 calls, with 15 actual Runs
+(12 completed, three failed). The three failed arms used six Runs and 89.551
+seconds. Existing paired scores remain Single Agent 3/8 and Discussion 2/8;
+the delivery Single is still unpaired. The third complete-pair gate remains
+open. The one unused invocation cannot create a fresh three-Run Discussion,
+and the first-failure/no-further-retry rule still applies. No additional real
+invocation is made or authorized by this diagnostic repair.
+
+The [latest attempt audit](evidence/qa-069-workspace-tool-rejection-review-2026-09-06.json)
+pins the previous review and this failed raw report, records the 15-call total,
+and leaves all prior scores unchanged. The recommended next decision is to
+pause further real retries and retain the incomplete three-pair gate. This
+recommendation does not silently change the acceptance criteria or complete
+the task.
+
+The diagnostic change passed eight focused packet/adapter checks, all three
+synthetic workspace flows (12, eight and three invocations), and both
+installed-CLI loopback checks: 13 relevant checks in total, without another
+external model. Coverage includes duplicate/bounded denied identities, malformed
+names, excluded arguments/outputs and unchanged rejection behavior. All 396
+maintained Markdown files and whitespace checks pass. The offline roots
+`convene-wire-test-run-00BvH1` and `convene-wire-test-run-Cai2zx` are absent.
+The historical delivery-only authorization has been exercised and stopped; its
+old command/manifest must not be rerun as if three calls still remained.
