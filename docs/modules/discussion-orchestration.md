@@ -74,6 +74,15 @@ isolate orchestration from information allocation/compression, establish real
 user success rates or authorize retirement. Preserve the maintenance boundary
 and Single-first advice; task complexity alone does not establish a benefit.
 
+The Owner subsequently adopted this recommendation under
+[ADR-0045's post-comparison decision](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md#post-comparison-adoption).
+Everyday work uses explicit acceptance criteria with Single Agent as the
+recommended starting point. Maintain demonstrated reliability and evidence
+defects; retain explicit collaboration for distinct inputs or responsibilities.
+New expansion or value experiments need independent task evidence and a bounded
+plan. Adoption does not reopen consumed experiments, alter routing defaults,
+collect new telemetry or retire existing workflows.
+
 ## Purpose
 
 Discussion Orchestration makes Agent-to-Agent conversation visible in a Room

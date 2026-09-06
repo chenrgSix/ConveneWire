@@ -60,6 +60,46 @@ embedding selector or another tuning cycle against the same fixed questions.
 ADR-0043 continues to exclude token and monetary accounting. TASKS.md alone
 tracks delivery; the Discussion module owns scope and QA-069 owns acceptance.
 
+## Post-comparison adoption
+
+On 2026-09-06, after reviewing the
+[QA-070 complex-task results](../acceptance/qa-070-complex-discussion-results.md),
+the Owner accepted continuing the maintenance freeze and Single Agent first
+guidance. Three complete pairs scored Single 45/60 and Discussion 22/60; all
+nine delivered finals failed critical acceptance. Three failed arms remain
+unscored. This is evidence about one requested model and a split-source
+configuration, not proof that every collaboration workflow lacks value.
+
+Apply the following maintenance and work-selection policy:
+
+- Prioritize concrete everyday Task/Run/Result usability, reliability and
+  verifiable delivery problems when the Owner supplies a new task. Measure
+  success against that task's requirements and actual evidence.
+- Start ordinary work with one Agent, explicit source facts, hard constraints
+  and acceptance criteria. A completed Run or higher rubric score does not
+  accept a Result. Preserve the existing human review and execution boundaries.
+- Retain explicit Discussion for a stated need to combine independent evidence
+  or responsibilities. Identify what each participant contributes and check
+  that the final answer preserves facts, resolves supported conflicts and
+  covers the requested deliverables. Complexity alone is not a selection rule.
+- Maintain reproducible correctness, security, recovery, final-answer evidence
+  and Run-lifecycle defects within authorized task scope. Feature expansion,
+  routing experiments and further tuning on the scored packets remain frozen.
+- A new value experiment needs a concrete independent task or workflow
+  hypothesis, a frozen comparison and acceptance rule, equal source access
+  or explicit disclosure of access differences, and a bounded new execution
+  plan. Approval to adopt this recommendation does not reopen consumed plans.
+- Retain existing collaboration controls and historical data. Retirement would
+  require a separate decision covering actual usage, maintenance burden,
+  dependent workflows and compatibility; this adoption does not remove it.
+
+The [usage guide](../discussion-usage-guide.md#日常任务的执行与验收) supplies a
+practical starting workflow. This is a documentation and prioritization
+decision: no new classifier, product default, verification service, telemetry
+collection, model call, migration or publication is introduced. ADR-0043's
+token and monetary-accounting exclusion continues. TASKS.md alone records
+delivery; no new backlog or scheduled benchmark is created here.
+
 ## Alternatives
 
 More routing intelligence lacks evidence of a current bottleneck. Prompt-only

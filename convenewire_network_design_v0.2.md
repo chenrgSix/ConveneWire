@@ -264,6 +264,12 @@ Discussion Budget 记录 logical Waves、committed member execution slots 和 el
 
 [ADR-0045](docs/adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md) 冻结 Discussion v1 功能扩张，保留可靠性维护与显式控制。日常任务先用单 Agent 是使用建议，不改变现有路由或 UI 默认值；跨工作区收益须由独立证据和公平对照验证。
 
+Owner 在审阅 [QA-070 复杂任务结果](docs/acceptance/qa-070-complex-discussion-results.md)
+后已确认继续这一方向：优先处理具体任务的可用性、可靠性与可验证交付，日常
+先用单 Agent 并明确验收；独立资料或职责确需汇合时保留显式 Discussion。
+暂停已评分题目的进一步调参与基准运行。该决定不代表单 Agent 已通过任务验收，
+也不将“未观察到收益”视为删除功能的充分依据；后续决策边界由 ADR-0045 规定。
+
 ### 5.5 离线行为
 
 目标 Agent 离线时：

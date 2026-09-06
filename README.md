@@ -21,6 +21,13 @@ Agent replies in SQLite. Adaptive Discussions centrally schedule multiple
 Agents under progress and budget policy. Remote MCP supports pull participants,
 while the headless Go Bridge can wake configured Codex or Generic CLI runtimes.
 
+Start everyday work with one Agent and explicit task acceptance criteria.
+Discussion v1 is under a feature-expansion freeze; use explicit collaboration
+when participants have distinct evidence or responsibilities to contribute.
+The [measured results and practical workflow](docs/discussion-usage-guide.md)
+explain the limits: a completed Run or Discussion does not establish that its
+answer satisfies the task.
+
 - Current baseline:
   [convenewire_network_design_v0.2.md](convenewire_network_design_v0.2.md)
 - Stable release:
@@ -173,8 +180,10 @@ Open `http://127.0.0.1:5173`. On first use:
 3. For a Central Agent, the Team Owner fills in a model and API key, explicitly
    selects Rooms, then chooses **验证并创建** (Validate and create). For a demo,
    add a demonstration Agent without a model or key.
-4. Return to the Room, type `@`, select one Agent for a normal Run or multiple
-   Agents for an adaptive discussion, enter a message, and send.
+4. Return to the Room, type `@`, and start with one Agent for a normal Run.
+   State the task, source facts, constraints and acceptance criteria, then send.
+   Select multiple Agents when you explicitly need their independent evidence
+   or responsibilities in a Discussion.
 
 A message without a structured `@Agent` mention is stored in the Room but does
 not wake an Agent.
@@ -275,13 +284,18 @@ instructions and supported tools.
 
 ### Use Rooms and Agent discussions
 
+For everyday work, begin with one Agent and review the answer against the
+task's required deliverables and hard constraints. See the
+[acceptance workflow](docs/discussion-usage-guide.md#日常任务的执行与验收).
+
 - Send without a structured mention to add a normal Room message.
 - Type `@` and choose one ready Agent to create a normal managed Run.
 - Mention two to five ready Agents in the same message to start an orchestrated
   Team discussion automatically; there is no separate discussion mode.
 - Use **结束并生成结论**, **本轮后停止**, pause, continue, or cancel controls
-  while a discussion is active. The orchestrator, not a fixed visible turn
-  count, decides whether another turn has useful value.
+  while a discussion is active. The orchestrator applies progress and budget
+  policy to decide whether another Wave runs; that decision is not evidence
+  of answer quality.
 - Open **智能体管理** to inspect Agent presence, approve or revoke Bridge
   Devices, and create MCP credentials.
 
