@@ -224,3 +224,71 @@ Markdown files and whitespace checks pass. The roots
 v2 failure report is byte-identical to its original; all 16 source hashes match
 Git at `1652cb8`. The report digest and original packet digest are pinned in
 the remaining-case manifest.
+
+## Reviewed remainder results
+
+The [unaltered remainder report](evidence/qa-069-workspace-remaining-2026-09-06.json)
+records eight successful Runs from clean source `ff541be`. Its 20 source hashes
+match that commit, four task-input hashes match the stored inputs, and both
+final answers bind completed finalization Turns to output Messages. The owned
+root `convene-wire-test-run-D4tZX6` is physically absent. The report SHA-256 is
+`c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80`.
+
+The [separate rubric review](evidence/qa-069-workspace-review-2026-09-06.json)
+pins all three original reports and every scored final answer. It changes none
+of their bytes or original null rubric decisions. Review is direct, non-blind
+Codex task-agent review without another provider call or independent human
+review. All clauses of a criterion must be covered; partial coverage is recorded
+in the explanation, not rounded up.
+
+| Historical case | Single Agent | Discussion | Single Run/time | Discussion Run/time |
+| --- | --- | --- | --- | --- |
+| Cancellation timeout | 2/4 | 2/4 | 1 / 24.355 s | 3 / 46.347 s |
+| Windows discovery | 1/4 | 0/4 | 1 / 26.632 s | 3 / 45.298 s |
+| Complete-pair total | 3/8 | 2/8 | 2 / 50.987 s | 6 / 91.645 s |
+
+The delivery Single Agent answer is separately 1/4 in 27.081 seconds; its
+Discussion answer is unavailable, so it is not part of the paired totals.
+Across all attempts the approved 13 invocations are exhausted: 13 actual Runs,
+11 completed and two failed. The two failed arms used four Runs and 65.675
+seconds, including completed contributors inside the failed Discussion. All
+seven arm attempts total 235.388 seconds; this is summed arm elapsed time, not
+end-to-end phase wall time. No failed answer is promoted to success.
+
+Both cancellation answers find the whole-test budget problem but omit the
+explicit five-second cancel-to-abort limit, bounded settlement/shutdown and
+protection against the provider's 15-second deadline falsely passing the
+cancellation assertion. Solver independently supplied test/policy facts and
+shutdown semantics; Reviewer supplied route wiring and same-source CI facts.
+The Finalizer combined some facts but dropped Solver's shutdown outcome.
+
+The Windows baseline locates the three execute-bit gates but misses the
+`.exe`-only known-directory fallback and the full extension/negative-test
+policy. Discussion's Reviewer supplied independent enrollment/Console evidence.
+The Finalizer then falsely claimed those source labels were not evidenced in
+the transcript and discarded those facts. Its stored Run instruction includes
+the full Reviewer contribution; Bridge's prompt projection appends that
+instruction unchanged. This supports a fact-use/correction failure, not a
+missing-contribution delivery diagnosis. Both Finalizers made zero new source
+reads; the six other invocations read every assigned document. The zero-read
+answers are retained with explicit missing-document coverage.
+
+Central Run instructions and the adapter's projected-stdin hashes are different
+observations: Bridge adds normal Room/task context before the unchanged current
+request. Full projected stdin was not retained, so the review does not claim
+byte equality between those two fields. Some contributor Markdown links invent
+filesystem targets; fixed source IDs and hash receipts are the verifiable
+references. Neither a citation nor a successful read proves correct reasoning.
+
+These two complete historical pairs show no Discussion benefit: coverage is
+lower and summed arm time is about 1.80 times the baseline. Five available final
+answers cover fewer than all four criteria. This remains one requested model,
+non-blind review, no repeated trials and no provider-attested model identity.
+It does not establish general superiority, real task success, user rework or
+performance guarantees. Keep the Single Agent first guidance and Discussion v1
+maintenance freeze; do not tune routing or prompts against this scored packet.
+
+The frozen three-complete-pair gate remains open. A fresh delivery Discussion
+would need three calls (two contributors and a Finalizer), reusing the completed
+Single baseline. That would raise the phase total from 13 to 16. No such increase
+or extra model execution is authorized by the current record.
