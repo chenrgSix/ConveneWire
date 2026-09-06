@@ -83,7 +83,8 @@ No provider was invoked during either preflight.
 
 ## External execution authorization boundary
 
-No QA-069 real model invocation has started. Automatic approval review rejected
+Before explicit Owner consent, no QA-069 real model invocation had started.
+Automatic approval review rejected
 `npm run bench:discussion-workspace` before process creation, then rejected a
 second review after public-source verification. No benchmark process, Run,
 model answer or new execution report was created by either rejected request.
@@ -107,5 +108,9 @@ service; the assistant's provenance assessment cannot supply that consent.
 The requested authorization covers this record, the public source excerpts,
 necessary task instructions and generated contribution transcript, using the
 existing requested gpt-5.4-mini configuration and unchanged 12-invocation cap.
-The packet and rubric have not been replaced to evade the rejection. Real
-comparison and conclusions remain unexecuted until that consent arrives.
+The packet and rubric have not been replaced to evade the rejection. The
+Owner subsequently replied “允许” to this exact request on 2026-09-06, explicitly
+authorizing those materials to the existing signed-in OpenAI Codex service for
+at most 12 model invocations. This resolves the external-execution blocker.
+The fixed packet, model, no-retry rule and acceptance criteria remain unchanged;
+real results still require execution and review.
