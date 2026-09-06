@@ -20,24 +20,30 @@ import { workspacePacket, workspaceExecutionIdentity, workspaceRemainingPath, lo
   workspaceDeliveryPath, loadWorkspaceDelivery,
   packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
 import { finalAnswerReviewChecklist } from "../../apps/server/src/discussion/finalization-instructions.js";
+import { complexPacket, complexPacketPath, complexPlanPath, complexExecutionIdentity,
+  loadComplexExperiment, complexTaskInput } from "./complex-evidence.mjs";
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const terminal = new Set(["completed", "failed", "canceled", "expired", "outcome_unknown"]);
 const model = process.env.CONVENE_WIRE_BENCH_MODEL ?? "gpt-5.4-mini";
 const synthetic = process.env.CONVENE_WIRE_BENCH_SYNTHETIC === "1";
 const suite = process.env.CONVENE_WIRE_BENCH_SUITE ?? "legacy";
-assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery"].includes(suite), "Unknown benchmark suite");
-const workspaceReplay = suite.startsWith("workspace");
+assert.ok(["legacy", "review", "continuation", "workspace", "workspace-remaining", "workspace-delivery", "complex"].includes(suite), "Unknown benchmark suite");
+const complex = suite === "complex" ? loadComplexExperiment(undefined,
+  { requireAuthorization: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE === "1" }) : undefined;
+const workspaceReplay = suite.startsWith("workspace") || Boolean(complex);
+const activeWorkspacePacket = complex ? complexPacket : workspacePacket;
 const workspaceRemaining = suite === "workspace-remaining" ? loadWorkspaceRemaining() : undefined;
 const workspaceDelivery = suite === "workspace-delivery" ? loadWorkspaceDelivery(undefined,
   { requireApproval: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE === "1" }) : undefined;
 const reviewing = suite !== "legacy";
 const continuation = suite === "continuation" ? loadReviewContinuation() : undefined;
 if (continuation) assert.equal(model, continuation.manifest.model, "Continuation model must match prior evidence");
-const samples = workspaceReplay ? workspaceDelivery?.samples ?? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases);
-if (workspaceReplay) assert.equal(model, workspacePacket.model);
-const maximumInvocations = workspaceReplay ? workspaceDelivery?.manifest.maximumNewInvocations ?? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12);
+const samples = complex?.samples ?? (workspaceReplay ? workspaceDelivery?.samples ?? workspaceRemaining?.samples ?? workspacePacket.cases : continuation?.samples ?? (reviewing ? reviewPacket.cases : cases));
+if (workspaceReplay) assert.equal(model, activeWorkspacePacket.model);
+const maximumInvocations = complex?.plan.maximumInvocations ?? (workspaceReplay ? workspaceDelivery?.manifest.maximumNewInvocations ?? workspaceRemaining?.manifest.maximumNewInvocations ?? 12 : continuation?.manifest.maximumInvocations ?? (reviewing ? 30 : 12));
 const maximumRuns = workspaceDelivery ? 3 : samples.length * 4;
+const maximumModelWorkSeconds = complex ? 1800 : 1200;
 function pendingRubric(rubric: Array<string | Criterion>) {
   return rubric.map((item) => typeof item === "string"
     ? { criterion: item, passed: null, evidence: null }
@@ -45,7 +51,7 @@ function pendingRubric(rubric: Array<string | Criterion>) {
 }
 
 test("bounded real single-Agent and Discussion task pairs", {
-  skip: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE !== "1", timeout: 1_260_000
+  skip: !synthetic && process.env.CONVENE_WIRE_BENCH_LIVE !== "1", timeout: complex ? 2_160_000 : 1_260_000
 }, async (t) => {
   const resources = await createTestResources(t, "convenewire-discussion-bench-");
   const directory = resources.directory;
@@ -53,16 +59,17 @@ test("bounded real single-Agent and Discussion task pairs", {
   await mkdir(output, { recursive: true });
   const workspace = path.join(directory, "workspace");
   await mkdir(workspace);
-  const scopedWorkspaces = workspaceReplay ? prepareWorkspaces(workspace) : undefined;
+  const scopedWorkspaces = workspaceReplay ? prepareWorkspaces(workspace, activeWorkspacePacket) : undefined;
   const quotaDirectory = path.join(directory, "invocation-quota");
   await mkdir(quotaDirectory);
   const app = await createServerApp({ databasePath: path.join(directory, "server.sqlite") });
   resources.defer(() => app.close());
-  const report = { version: workspaceReplay ? 5 : continuation ? 4 : reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
+  const report = { version: complex ? 6 : workspaceReplay ? 5 : continuation ? 4 : reviewing ? 3 : 2, synthetic, sourceCommit: (await exec("git", ["rev-parse", "HEAD"], { cwd: root })).stdout.trim(),
     model, observedProviderModel: null, reasoningEffort: "low", runtime: "codex exec via generic Bridge adapter",
-    runtimeVersion: "", maximumRuns, maximumInvocations, maximumModelWorkSeconds: 1200,
-    suite, packetIdentity: workspaceReplay ? workspacePacket.identity : reviewing ? reviewPacket.identity : undefined,
-    executionIdentity: workspaceReplay ? workspaceExecutionIdentity : undefined,
+    runtimeVersion: "", maximumRuns, maximumInvocations, maximumModelWorkSeconds,
+    suite, packetIdentity: workspaceReplay ? activeWorkspacePacket.identity : reviewing ? reviewPacket.identity : undefined,
+    executionIdentity: complex ? complexExecutionIdentity : workspaceReplay ? workspaceExecutionIdentity : undefined,
+    complexPlan: complex?.plan,
     continuation: continuation?.manifest,
     workspaceRemaining: workspaceRemaining?.manifest,
     workspaceDelivery: workspaceDelivery?.manifest,
@@ -82,6 +89,8 @@ test("bounded real single-Agent and Discussion task pairs", {
       "docs/acceptance/qa-069-workspace-evidence-replay.md"] : []),
     ...(workspaceRemaining ? [workspaceRemainingPath, ...workspaceRemaining.manifest.priorReports.map((source: any) => source.path)] : []),
     ...(workspaceDelivery ? [workspaceDeliveryPath, ...workspaceDelivery.manifest.priorReports.map((source: any) => source.path)] : []),
+    ...(complex ? [complexPacketPath, complexPlanPath, "scripts/bench/complex-evidence.mjs",
+      "docs/acceptance/qa-070-complex-discussion-comparison.md"] : []),
     ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,
       continuation.manifest.priorEvidencePath, "docs/acceptance/qa-068-discussion-continuation.md"] : [])];
   const sources = await Promise.all(sourcePaths.map(async (name) => ({ name,
@@ -116,6 +125,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     throw new Error("Benchmark time limit reached; no retry was started");
   }
   try {
+    if (complex && !synthetic) assert.equal(workingTreeDirty, false, "Complex comparison must use committed clean source");
     if (reviewing && !synthetic) assert.equal(workingTreeDirty, false, "Commit the documented comparison before live execution");
     let codex: string;
     if (synthetic) {
@@ -173,7 +183,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     }, 30_000);
     const solver = agents.find(({ name }) => name === "Solver")!;
     const reviewer = agents.find(({ name }) => name === "Reviewer")!;
-    deadline = Date.now() + 1_200_000;
+    deadline = Date.now() + maximumModelWorkSeconds * 1000;
     if (reviewing && !continuation && !workspaceReplay) {
       for (const [index, sample] of reviewPacket.replays.entries()) {
         const arms = index % 2 === 0 ? ["legacy", "reviewed"] as const : ["reviewed", "legacy"] as const;
@@ -215,17 +225,18 @@ test("bounded real single-Agent and Discussion task pairs", {
     }
     for (const [index, sample] of samples.entries()) {
       // Alternate pair order to avoid assigning all warm-cache advantage to one arm.
-      const originalIndex = workspaceReplay ? workspacePacket.cases.findIndex((item: any) => item.id === sample.id)
+      const originalIndex = complex ? index : workspaceReplay ? workspacePacket.cases.findIndex((item: any) => item.id === sample.id)
         : reviewing ? reviewPacket.cases.findIndex(({ id }) => id === sample.id) : index;
       const arms = workspaceDelivery ? ["discussion"] : originalIndex % 2 === 0 ? ["single_agent", "discussion"] : ["discussion", "single_agent"];
       for (const arm of arms) {
         assert.ok(Date.now() < deadline && replayInvocations + scheduled + (arm === "discussion" ? 3 : 1) <= maximumInvocations);
-        const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}` });
-        const goal = workspaceReplay ? workspaceTaskInput(sample, finalAnswerReviewChecklist) : reviewing ? reviewedTaskInput(sample)
+        const room = await request("POST", `/api/teams/${teamId}/rooms`, { name: `${sample.id}-${arm}${complex ? `-r${sample.repetition}` : ""}` });
+        const goal = complex ? complexTaskInput(sample, finalAnswerReviewChecklist) : workspaceReplay ? workspaceTaskInput(sample, finalAnswerReviewChecklist) : reviewing ? reviewedTaskInput(sample)
           : `Closed-input benchmark: answer only from the task below. Do not use tools, read files, access the network, or modify anything. Give a concise English answer under 350 words. Do not propose execution plans.\n\n${sample.prompt}`;
         if (workspaceDelivery) assert.equal(goal, workspaceDelivery.baseline.taskInput, "Reused baseline must have the exact same task input");
         const startedAt = Date.now();
         currentAttempt = { caseId: sample.id, arm,
+          ...(complex ? { repetition: sample.repetition } : {}),
           promptSha256: createHash("sha256").update(goal).digest("hex"),
           runCount: null, runtimeSucceeded: null, finalAnswer: null, answers: [],
           taskInput: reviewing ? goal : undefined,
@@ -244,7 +255,7 @@ test("bounded real single-Agent and Discussion task pairs", {
           discussion = await request<DiscussionView>("POST", `/api/rooms/${room.roomId}/discussions`, {
             goal, participantAgentIds: [solver.agentId, reviewer.agentId], mode: "review", outputMode: "final_answer",
             policy: { initialLeaseTurns: 1, automaticMaxTurns: 1, hardMaxTurns: 3,
-              maxDurationSeconds: 300, waveTimeoutSeconds: 300, requireReviewer: true, allowAutomaticFinish: false }
+              maxDurationSeconds: complex ? 600 : 300, waveTimeoutSeconds: 300, requireReviewer: true, allowAutomaticFinish: false }
           });
           scheduled += 2;
           discussion = await waitFor(async () => {
@@ -275,7 +286,7 @@ test("bounded real single-Agent and Discussion task pairs", {
           (arm === "single_agent" || discussion?.discussion.state === "completed");
         Object.assign(currentAttempt, { caseId: sample.id, arm, promptSha256: createHash("sha256").update(goal).digest("hex"),
           elapsedMilliseconds: Date.now() - startedAt, runCount: runIds.length,
-          runs: runs.map(({ state, createdAt, terminalAt }) => ({ state, createdAt, terminalAt })),
+          runs: runs.map(({ runId, state, createdAt, terminalAt }) => ({ ...(complex ? { runId } : {}), state, createdAt, terminalAt })),
           instructions: reviewing ? runs.map(({ targetAgentId, instruction }) => ({
             agent: agents.find(({ agentId }) => agentId === targetAgentId)?.name, instruction })) : undefined,
           discussionUsage: discussion?.observedUsage ?? null,
@@ -286,7 +297,7 @@ test("bounded real single-Agent and Discussion task pairs", {
           nextInvocationSlot: workspaceReplay ? (await readdir(quotaDirectory)).filter((name) => name.startsWith("invocation-")).length : undefined,
           manualRubric: pendingRubric(sample.rubric) });
         await persist();
-        console.log(`${sample.id} ${arm}: ${runs.length} Runs, ${Date.now() - startedAt}ms, runtime ${success ? "completed" : "failed"}`);
+        console.log(`${sample.id}${complex ? ` r${sample.repetition}` : ""} ${arm}: ${runs.length} Runs, ${Date.now() - startedAt}ms, runtime ${success ? "completed" : "failed"}`);
         assert.ok(success, "Runtime failure retained in report; remaining paid runs were not started");
       }
     }
@@ -302,7 +313,7 @@ test("bounded real single-Agent and Discussion task pairs", {
         for (const invocation of invocations) {
           assert.equal(invocation.runtimeSucceeded, true);
           assert.equal(invocation.caseId, result.caseId);
-          const sample = workspacePacket.cases.find((item: any) => item.id === result.caseId);
+          const sample = activeWorkspacePacket.cases.find((item: any) => item.id === result.caseId);
           const expected = sample.documents.filter((doc: any) => invocation.role === "Baseline" || doc.owner === invocation.role).map((doc: any) => doc.id).sort();
           assert.deepEqual(invocation.reads.map((read: any) => read.id).sort(), expected);
           assert.equal(invocation.evidenceCoverage.status, "complete");

@@ -16,7 +16,7 @@ for (const doc of docs.values()) {
 }
 const server = new Server({ name: "evidence", version: "1.0.0" }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [{
-  name: "read_evidence", description: "Read one immutable historical source document. Available IDs: " + [...docs.keys()].join(", "),
+  name: "read_evidence", description: "Read one immutable evidence document. Available IDs: " + [...docs.keys()].join(", "),
   inputSchema: { type: "object", properties: { id: { type: "string", enum: [...docs.keys()] } }, required: ["id"], additionalProperties: false },
   annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false }
 }] }));

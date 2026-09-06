@@ -683,7 +683,7 @@ broad fallbacks intact while making selection and real task outcomes visible.
 
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
-| QA-070 | ACTIVE | Compare complex engineering task results before a Discussion retirement decision | QA-069, ADP-019 | Owner requested harder tasks and detailed result evaluation; [frozen design](acceptance/qa-070-complex-discussion-comparison.md) defines three new eight-document cases, two repetitions, 24-call cap, unchanged model, equal evidence access and 20-point rubrics; packet, offline validation, real execution and detailed review remain required |
+| QA-070 | ACTIVE | Compare complex engineering task results before a Discussion retirement decision | QA-069, ADP-019 | [Frozen design and preflight](acceptance/qa-070-complex-discussion-comparison.md): three new eight-document cases, two repetitions, 24-call cap, unchanged model, equal source access and 20-point rubrics pinned before answers at ebe5e74; 31 benchmark checks including all 24 synthetic Runs, two installed-CLI loopback checks, 397-file docs lint and physical cleanup pass; real execution and detailed result review remain required |
 
 ## Deferred Beyond MVP
 

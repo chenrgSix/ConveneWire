@@ -159,7 +159,7 @@ test("adapter rejects unapproved tools, absent answers, failed output and all qu
     assert.equal(result.code, 1);
     assert.equal(result.stdout, "");
   }
-  for (const maximum of [3, 8, 12]) {
+  for (const maximum of [3, 8, 12, 24]) {
     const exhausted = await invoke(t, 'console.log("MUST_NOT_START");', { exhausted: true, maximum });
     assert.equal(exhausted.code, 1);
     assert.match(exhausted.stderr, /invocation limit/u);

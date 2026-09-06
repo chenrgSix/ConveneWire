@@ -66,13 +66,13 @@ export function documentsFor(sample, role) {
   assert.ok(["Baseline", "Solver", "Reviewer"].includes(role));
   return sample.documents.filter((doc) => role === "Baseline" || doc.owner === role);
 }
-export function prepareWorkspaces(root) {
+export function prepareWorkspaces(root, packet = workspacePacket) {
   return Object.fromEntries(["Baseline", "Solver", "Reviewer"].map((role) => {
     const directory = path.join(root, role);
     mkdirSync(directory);
     // Model-readable workspaces contain source only, never rubrics or known repairs.
     writeFileSync(path.join(directory, "evidence.json"), JSON.stringify({ version: 1,
-      cases: workspacePacket.cases.map((sample) => ({ id: sample.id, documents: documentsFor(sample, role) })) }));
+      cases: packet.cases.map((sample) => ({ id: sample.id, documents: documentsFor(sample, role) })) }));
     return [role, directory];
   }));
 }

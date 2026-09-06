@@ -74,3 +74,29 @@ execution failure, review of every available final, faithful incomplete-result
 labels, relevant synthetic/adapter/packet checks, source/input/read identity,
 physical cleanup, updated documentation and a commit. An incomplete batch
 cannot be called a completed six-pair comparison.
+
+## Preflight evidence
+
+Task packet and grading requirements were committed at `ebe5e74` before any
+real answer. Packet SHA-256 is
+`a20930527f86484503764dbd17a79117910a71830c21881e64ce6ef45c63043e`.
+The separate plan pins these bytes and refuses absent/consumed authorization.
+The live entrypoint additionally requires committed clean source. The shared
+reader accepts eight immutable IDs at most; the adapter adds only the bounded
+24-invocation quota and keeps the same model, low effort and tool restrictions.
+
+`npm run test:discussion-benchmark` passed all 31 checks, retaining the legacy,
+review, continuation and historical workspace flows and adding packet/reference
+checks plus the complete new 24-Run synthetic traversal. Two explicit installed
+Codex CLI loopback checks passed with no external model. Both owned roots,
+`convene-wire-test-run-ApaCSG` and `convene-wire-test-run-hhXxf1`, are physically
+absent. All 397 maintained Markdown files and whitespace checks pass.
+
+The reference calculation proves at least one feasible planning solution:
+relative intervals A 0–6, C 0–4, E 4–7, B 6–11, D 7–11, F 11–13 satisfy
+memory, concurrency and precedence; total window is 21 minutes. This is a
+reference example, not a requirement to reproduce this exact schedule or a
+claim that 13 minutes is globally optimal. The fixed rubric accepts any
+auditable feasible job schedule within 14 minutes. Backlog is 4800 jobs, peak
+queue delay about 26.667 seconds and drain time 120 seconds. These references
+remain outside model inputs, together with all full/partial-credit criteria.
