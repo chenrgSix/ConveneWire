@@ -98,7 +98,13 @@ router、embedding selector 及对已评分题目的继续调参均暂停。
 - `npm run test:discussion-claim-adjudication`：QA-075 的 C/D 公共输入、结论表格式、实际来源返回绑定、六次上限和留存评分/摘要审计；不调用外部模型。[QA-075](acceptance/qa-075-claim-adjudication.md) 只研究 Evidence → Claim → Final，语义矛盾单独评分并保留，不改变生产 Discussion；实验入口已消耗。
 - `npm run test:discussion-criterion-closure`：[QA-076](acceptance/qa-076-criterion-closure.md) 新合成任务的完整交付判定、逐项 criterion 映射、E/F 输入一致性与六次留存审计。E/F 完整交付均为 0/3；F 三张表全部自报 `satisfied`，其中 12/24 项与验收不符，未达到预设机制信号。授权已消耗；测试不调用外部模型，也不重新调 Windows 历史题。
 
-- `npm run test:discussion-gpt55`：[QA-077](acceptance/qa-077-gpt55-criterion-closure.md) 保持同题、资料、提示和评分，换用 `gpt-5.5 / low`。六次关键验收都通过，完整交付 E 3/3、F 1/3；两次 F 缺口是重复编号测试允许“未解决”而非明确拒绝，没有出现错误删除建议或算错字节数。额外检查表仍无预设收益，六次授权已消耗；此命令只做离线审计。
+- `npm run test:discussion-gpt55`：[QA-077](acceptance/qa-077-gpt55-criterion-closure.md) 保持同题、资料、提示和评分，换用 `gpt-5.5 / low`。六次核心任务都做对，E 三份完整通过；F 另有两份的“拒绝或标为未解决”存在评分歧义。原严格评分 E 3/3、F 1/3 保留用于复算，但不能据此证明检查表使质量变差，也不改写为六份完整通过。额外检查表没有已证实的收益，六次授权已消耗；此命令只复算原评分。
+
+下一项研究按 [QA-078](acceptance/qa-078-strong-single-discussion.md) 比较强
+Single 与 Discussion：独立跨域任务，同样的最终资料访问、工具、模型和验收，
+每臂三次，最多十二次模型会话。两份成员贡献每次重新生成；不再优化 Finalizer
+提示、加结论表、逐项自评表或普通讨论轮次。此处定义比较方案，尚无新质量结果。
+三次重复来自同一道题，不能当成三项独立任务；额外团队计算也不能包装成等资源优势。
 
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。

@@ -41,9 +41,22 @@ justified by this screening. The consumed journal prevents same-plan retries.
 Owner-requested QA-077 model-only repeat using GPT-5.5, with identical input
 bytes and scoring, fresh Run scopes and a separate six-call budget. It adds no
 production behavior and does not reopen QA-076. The retained QA-077 result
-has complete E=3/3 and F=1/3, critical=3/3 in both arms and two F regression
-expectation overclaims; the six-call budget is consumed. This historical model
-repeat establishes no incremental F mechanism or production quality claim.
+has critical=3/3 in both arms. The original strict complete grades E=3/3 and
+F=1/3 remain reproducible, but two F regression wording judgments and their
+derived overclaims are disputed in the
+[interpretation amendment](../acceptance/qa-077-gpt55-criterion-closure.md#interpretation-amendment-after-wording-review).
+The six-call budget is consumed. Neither incremental F benefit nor reliable
+quality harm is established.
+
+[ADR-0052](../adr/0052-compare-strong-single-and-discussion.md) moves the next
+research question to strong Single versus bounded Discussion on a new
+cross-domain review task. Both final-answer Runs receive the same full-source
+access, criteria, evidence-use instruction and tools. Discussion adds two fresh
+independent contributions, not a closure table or review Wave. The comparison
+is one versus three model sessions per trial, not equal compute. QA-078's
+packet and adapter require a pre-execution freeze; this design adds no live
+invocation or production behavior. Any isolated adapter differences must be
+disclosed rather than presented as shipped Discussion performance.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.

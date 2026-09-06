@@ -36,7 +36,48 @@ old Run receipts, exclusive six-slot reservation and the frozen baseline. The
 20 QA-076 checks remain passing; documentation and whitespace are checked
 before the execution commit. These checks make no external model call.
 
+## Interpretation amendment after wording review
+
+**Current conclusion: all six GPT-5.5 answers handled the critical task
+correctly. E has three undisputed complete passes; F has one undisputed
+complete pass and two disputed wording judgments. Neither incremental benefit
+nor quality harm from the table is established.**
+
+The Owner challenged the two failures after the initial assessment. Both
+concern a proposed duplicate-identity regression expectation: “Reject or mark
+the manifest unresolved” in answer-5, and “Reject or mark unresolved” in
+answer-6. The frozen task requires duplicate-object rejection, but does not
+define whether an unresolved manifest may be accepted or executed. The actual
+inventory has no duplicate IDs. These are descriptions of hypothetical tests,
+not observed duplicate-processing failures.
+
+The first evaluator interpreted unresolved as insufficient rejection. That is
+a possible strict contract interpretation, but the wording could also mean
+refusing to proceed. It cannot reliably establish a functional defect. The
+two derived closure overclaims inherit this dispute; they are not independently
+proven false claims. Correct decisions for all twelve objects, correct byte
+totals and preserved failed/missing verification remain established in all six
+answers.
+
+This amendment changes interpretation, not the frozen experiment. Source
+fixtures, prompts, rubric, raw outputs, first judgments, closure review and
+derived JSON remain byte-for-byte unchanged. The historical E=3/3, F=1/3
+table below is the original strict assessment, not an undisputed current
+quality comparison. We also do not silently replace it with six full passes.
+The offline audit reproduces those original judgments; it does not settle the
+semantic dispute.
+
+The predeclared F signal remains absent even if both disputed items were
+accepted: E already passed 3/3. Future acceptance must distinguish concrete
+behavioral errors, missing deliverables and wording ambiguity. An ambiguous
+item must not be the sole basis for declaring an arm worse. This motivates
+the independent [QA-078 design](qa-078-strong-single-discussion.md), rather
+than another prompt revision on this retention task.
+
 ## Retained result
+
+This section preserves the original assessment. Read its wording-sensitive
+failures and derived overclaims with the interpretation amendment above.
 
 **GPT-5.5 produced correct critical decisions in all six attempts. Complete
 delivery passed E=3/3 and F=1/3.** E directly answers after evidence use; F adds
