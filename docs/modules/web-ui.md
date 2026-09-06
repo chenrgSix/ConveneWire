@@ -288,6 +288,20 @@ Task without copying evidence or acceptance. Accepted Result and Task
 completion may be one revisioned command, and a stale Result or partial Result
 with an unresolved required criterion cannot masquerade as completion.
 
+`WEB-073` adds an expandable **Review evidence by criterion** panel to each
+Result. It lazily reads the Room-authorized acceptance-evidence endpoint and
+keeps the original criteria, attributed current/earlier claims, structural
+diagnostics and exact Artifact/candidate verification distinct. No claim,
+rejected/superseded history, stale revisions and omitted Results/candidates/
+receipts remain explicit. Configured required checks passing is not human
+acceptance. Candidate details expose checkpoint, Run, plan/node, commit/tree,
+input and profile/receipt digests, without private source bytes or commands.
+The panel refreshes against Task/Workbench revisions and fences old Result,
+member, session and aborted request responses. Both locales support loading,
+denied access, identity mismatch and retry; the two-column comparison stacks at
+680 px and long source identifiers wrap at 390 px. Existing review controls
+and submission authorities are unchanged.
+
 Room Chat remains the ordered discussion surface. New UI requires an explicit
 runnable Task or visible quick-work default before sending an Agent Mention.
 No-Mention messages remain ordinary conversation. Run and Result lifecycle adds

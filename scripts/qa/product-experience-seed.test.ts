@@ -65,6 +65,19 @@ for (const mode of ["local", "trusted-team", "trusted-team-lan"] as const) test(
   const preview = await app.inject({ method: "GET", url: `/api/tasks/${evidenceTask.taskId}/artifacts/${artifactId}/preview`, headers });
   assert.equal(preview.statusCode, 200);
 
+  const comparisonTask = taskList.find(({ title }) => title === "QA · 逐项核对遗漏证据");
+  assert.ok(comparisonTask);
+  const comparisonResults = await app.inject({ method: "GET", url: `/api/tasks/${comparisonTask.taskId}/results`, headers });
+  const candidate = comparisonResults.json().find((result: { resultVersion: number }) => result.resultVersion === 2);
+  assert.ok(candidate);
+  const comparison = await app.inject({ method: "GET", url: `/api/results/${candidate.resultId}/acceptance-evidence`, headers });
+  assert.equal(comparison.statusCode, 200);
+  assert.deepEqual(comparison.json().criteria[0].diagnostics,
+    ["earlier_evidence_not_referenced", "differing_coverage"]);
+  assert.deepEqual(comparison.json().criteria[1].diagnostics, ["missing_claim"]);
+  assert.equal(comparison.json().criteria[0].contributions.length, 1);
+  assert.equal(comparison.json().artifacts.length, 0);
+
   const planTask = taskList.find(({ title }) =>
     title === "QA · 审查精确执行计划");
   assert.ok(planTask);

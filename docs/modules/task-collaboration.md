@@ -135,6 +135,12 @@ The Web view must expose these distinctions in both locales, handle unavailable
 responses safely and remain usable at 390 px. Existing Owner review and Task
 completion gates remain authoritative.
 
+In Work → Task → Results, expand **Review evidence by criterion** (逐项核对证据).
+The panel fetches on demand and can refresh verification receipts without
+changing a Result. The disposable product-experience fixture includes two
+ordinary Results with a lost criterion reference and an unanswered requirement;
+the displayed calculation is synthetic UI data, not a scheduling verifier.
+
 ### Result submission and review
 
 New submissions are admitted only for `active` or `review` Tasks; other states

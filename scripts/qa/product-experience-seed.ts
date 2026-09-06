@@ -200,6 +200,39 @@ export async function seedProductExperience(app: FastifyInstance, options: SeedO
       criterionClaims: [{ criterionKey: "criterion_qa_verified_0001", coverage: "satisfied", explanation: "真实 sealed 快照的 SHA-256 与预览字节一致。", evidenceRefIds: ["evidence_qa_artifact_0001"] }]
     });
 
+    const comparisonTask = await request<TaskProjection>("POST", `/api/rooms/${options.roomId}/tasks`, {
+      title: "QA · 逐项核对遗漏证据", goal: "比较两份合成 Result，定位没有进入候选结果的已有引用。",
+      ownerMemberId: options.ownerMemberId,
+      criteria: [
+        { criterionKey: "criterion_qa_calculation", description: "排程必须满足任务依赖和不可抢占约束。", required: true, ordinal: 1 },
+        { criterionKey: "criterion_qa_verifier", description: "执行前必须提供独立验证的通过回执。", required: true, ordinal: 2 }
+      ]
+    });
+    await request("POST", `/api/tasks/${comparisonTask.taskId}/control`, {
+      operationId: `op_qa_compare_activate_${nonce}`, expectedTaskRevision: comparisonTask.taskRevision, lifecycleState: "active"
+    });
+    const comparisonMessage = await request<{ message: { messageId: string } }>("POST", `/api/rooms/${options.roomId}/messages`, {
+      taskId: comparisonTask.taskId,
+      content: "合成案例：任务 A 先于 B，A 连续执行 2 个时间单位，B 连续执行 1 个时间单位。此消息不代表已运行验证器。"
+    });
+    for (const version of [1, 2]) {
+      const current = await request<TaskProjection>("GET", `/api/tasks/${comparisonTask.taskId}`);
+      await request("POST", `/api/tasks/${comparisonTask.taskId}/results`, {
+        operationId: `op_qa_compare_result_${nonce}_${version}`, taskId: current.taskId,
+        definitionRevision: current.definitionRevision, criteriaRevision: current.criteriaRevision,
+        proposedAtTaskRevision: current.taskRevision, supersedesResultId: null, outcome: "informational",
+        summary: version === 1 ? "已有排程计算，独立验证尚未执行。" : "候选汇总称排程资料不足；请核对此前贡献。",
+        sources: [{ evidenceRefId: "evidence_qa_comparison", kind: "message", messageId: comparisonMessage.message.messageId }],
+        criterionClaims: version === 1 ? [{
+          criterionKey: "criterion_qa_calculation", coverage: "satisfied", explanation: "A 在 [0, 2] 连续运行，B 在 [2, 3] 连续运行。该引用和计算是成员声明，尚无独立验证回执。",
+          evidenceRefIds: ["evidence_qa_comparison"]
+        }] : [{
+          criterionKey: "criterion_qa_calculation", coverage: "unresolved", explanation: "尚不能确认可执行排程。请检查此前贡献中的具体计算和来源。", evidenceRefIds: []
+        }],
+        risks: ["仅用于隔离 UI 验收；不构成迁移排程验证能力。"], openQuestions: [], nextActions: []
+      });
+    }
+
     const planTask = await request<TaskProjection>(
       "POST", `/api/rooms/${options.roomId}/tasks`, {
         title: "QA · 审查精确执行计划",

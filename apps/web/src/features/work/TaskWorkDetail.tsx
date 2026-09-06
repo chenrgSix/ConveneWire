@@ -1,6 +1,7 @@
 import { TaskCopyControl } from "../task/TaskCopyControl.js";
 import { MarkdownMessage } from "../../MarkdownMessage.js";
 import { ResultReportActions } from "./ResultReportActions.js";
+import { ResultAcceptancePanel } from "./ResultAcceptancePanel.js";
 import type {
   ResultProjection,
   RunContextManifest,
@@ -673,6 +674,7 @@ export function TaskWorkDetail({
                 {stale && <p className="work-warning">{text("此 Result 基于旧的 Task 定义或标准，不可接受。", "This Result is stale against the current Task definition or criteria and cannot be accepted.", locale)}</p>}
                 <div className="work-result-summary"><MarkdownMessage content={result.proposal.summary} /></div>
                 <ResultReportActions taskId={task.taskId} resultId={result.resultId} locale={locale} token={token} />
+                <ResultAcceptancePanel key={`${result.resultId}:${currentMember?.memberId}:${token}`} taskId={task.taskId} resultId={result.resultId} taskRevision={task.taskRevision} refreshKey={refreshKey} locale={locale} token={token} />
                 <p>{text("提议者", "Proposed by", locale)}: {display(result.proposedBy.kind)}</p>
                 <h5>{text("标准声明", "Criterion claims", locale)}</h5>
                 <ul>{result.proposal.criterionClaims.map((claim) => <li key={claim.criterionKey}><strong>{display(claim.coverage)}</strong> — {claim.explanation}<small>{claim.evidenceRefIds.join(", ")}</small></li>)}</ul>
