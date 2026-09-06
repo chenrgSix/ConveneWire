@@ -1,7 +1,7 @@
 # ADR-0052: Compare strong Single Agent and bounded Discussion
 
 - Date: 2026-09-06
-- Status: Accepted research design; execution requires a frozen packet
+- Status: Accepted for one Owner-authorized twelve-session experiment after freeze
 - Owner: Discussion experiment tooling
 
 ## Decision
@@ -76,8 +76,20 @@ pilot is permitted outside the twelve-session budget. The final bounded plan
 must bind Owner authorization to the exact packet and existing destination;
 no prior consumed QA plan is reusable authority.
 
-This decision documents the design only. It does not claim a finished fixture,
-working QA-078 adapter, new execution authorization or observed outcome. Only
-TASKS records preparation and execution state. Existing data, production
-contracts, credentials, acceptance authority and maintenance commands remain
-unchanged.
+The Owner subsequently requested “可以，定好目标把制作并冻结题包、参考答案和评分规则到实验完成做完”.
+This authorizes preparing and freezing the packet and running this exact
+twelve-session ceiling through assessment, without another permission round.
+The packet retains that instruction, model, destination, order and fresh Run
+identities. Existing consumed plans remain closed. Synthetic sources and the
+reference are authored by the implementation assistant acting for the Owner,
+not independent human experts. Only TASKS records delivery state.
+
+The isolated adapter retains ordinary plain replies and their source-return
+metadata in the experiment journal. It does not manufacture Result proposals,
+criterionClaims or production Artifact verification. Future contributor text
+cannot be frozen beforehand; its exact generation and lossless transfer are
+frozen, and each new reply is bound to its current Run and hash. The private
+rubric and reference are never passed to a model. Natural-language judgments
+are manual semantic review; code verifies their coverage, quotes, identities
+and aggregation, not their truth. Existing production contracts, credentials
+and acceptance authority remain unchanged.

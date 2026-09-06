@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "identity": "qa-078-export-strong-single-discussion-v1",
+  "frozenAt": "2026-09-06T16:01:27.442Z",
+  "packetSha256": "1b26d128130c1acddf9cdd02f3ff43826fc09d6d34b8c085599bbe2e2f01a239",
+  "runtime": {
+    "executableSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
+    "version": "codex-cli 0.153.4",
+    "nodeVersion": "v22.23.1"
+  },
+  "identities": {
+    "instructions": {
+      "single": "eef8cea95f460e3bede4ab82ab07c43b6c0239f1dc26d6d20c09e2af5c07dd60",
+      "contributor1": "8a1bbcdb4908ae256b8ed0da9f5e7ad551f97d62fcc1ee153055eb9d6447d468",
+      "contributor2": "c496c68333ad2e331070fea66ceb7a21c7444fbb59c3f77466c32ac971a6f175",
+      "finalizer": "eef8cea95f460e3bede4ab82ab07c43b6c0239f1dc26d6d20c09e2af5c07dd60"
+    },
+    "config": "72176321b4696a65b7c48d59e7c4fc8190d17f584fbc68a33fe8ef83888bc7ce",
+    "catalogs": {
+      "single": "7e8e6e59304ebcd665e2501e975ee4740aa13a3fabf15f149770c9c461ecec0b",
+      "contributor1": "ee91611c8dc18391430ff93dcb473bfbc54e7031d641f34b40c7de6d9e9a02e8",
+      "contributor2": "91d84266d6cdd5c7618a29a7f43fdc58051b330fd6c28f5f1619811d53710346",
+      "finalizer": "7e8e6e59304ebcd665e2501e975ee4740aa13a3fabf15f149770c9c461ecec0b"
+    }
+  },
+  "unrelatedWorktreeExceptions": [
+    {
+      "path": ".gitignore",
+      "sha256": "e03ada0bb2826769a6d779dec7d905c536edc0c467eafa680615c1be5f86f90a",
+      "reason": "Pre-existing Owner edit; ignored by the empty-CWD, ignore-config invocation. Never staged by QA-078."
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/fixtures/qa-078/contributor1-instruction.txt",
+      "sha256": "8a1bbcdb4908ae256b8ed0da9f5e7ad551f97d62fcc1ee153055eb9d6447d468"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/contributor2-instruction.txt",
+      "sha256": "c496c68333ad2e331070fea66ceb7a21c7444fbb59c3f77466c32ac971a6f175"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/finalizer-instruction.txt",
+      "sha256": "eef8cea95f460e3bede4ab82ab07c43b6c0239f1dc26d6d20c09e2af5c07dd60"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/packet.json",
+      "sha256": "1b26d128130c1acddf9cdd02f3ff43826fc09d6d34b8c085599bbe2e2f01a239"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/reference.md",
+      "sha256": "5e9bc1c9e771157373d07659d68d7f33e105164c0d5685cc340893fab37a95e6"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/scoring.json",
+      "sha256": "b6b49f8d333ba5f1fe4b6888e5dfb06a091a9149598fda0ba6516d814e1e4ad4"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/single-instruction.txt",
+      "sha256": "eef8cea95f460e3bede4ab82ab07c43b6c0239f1dc26d6d20c09e2af5c07dd60"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/sources/api-storage.mjs",
+      "sha256": "0a07f55a58ae0ce5634d5ec85593c5cee118a91da065aa73a505b20c56596e87"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/sources/operations.mjs",
+      "sha256": "b0cb757720c394ddad24a075042bf74261e78802128d86a3a309da930fee8563"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/sources/security.mjs",
+      "sha256": "904498aa93c956926fabeda927b989596ed973d850d6c13140ba20eaeb585ba2"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-078/sources/test-evidence.mjs",
+      "sha256": "dac4206c8a265fd5667580f0908fd661323ed90c2db34269fe471b81cb6404d2"
+    },
+    {
+      "path": "docs/adr/0052-compare-strong-single-and-discussion.md",
+      "sha256": "9c4254619b139f4ed49e2d183645371920f1e7a74251545f8dbdfa33e5ff364d"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "7d2b2f7af71c5dfdb256d89e881be8f95d1f606f520c575c950c3678bdff9a1b"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e7449648c0033afa0efb866067ef6ed19cdfcdc614e14206c7cdf68567f12d7c"
+    },
+    {
+      "path": "scripts/bench/evidence-access-reader.mjs",
+      "sha256": "ef8526f136128b5c4ebe6d9619e7e78befc472192d01239c166cbb2481acc0de"
+    },
+    {
+      "path": "scripts/bench/evidence-access-runtime.mjs",
+      "sha256": "1570dc6b9835cb191e2d4e4bd286f865863f3afb026b7fd81feed86ef16d32e6"
+    },
+    {
+      "path": "scripts/bench/evidence-codex-config.mjs",
+      "sha256": "2c991690e4e8d5bfcdf8fa9688f2617d4e7fcabfdd1f48ec1f6e66cc6615d7dc"
+    },
+    {
+      "path": "scripts/bench/evidence-invocation-observer.mjs",
+      "sha256": "44f010b7a16fdf33c5db81211de2813bef6101ac5a1e3270e2612a09490ccf6d"
+    },
+    {
+      "path": "scripts/bench/export-review-specimen.test.mjs",
+      "sha256": "5f6b37e46308b28bddc02e3823b8025e6694101f5416e3548e5f78ec581635ef"
+    },
+    {
+      "path": "scripts/bench/strong-discussion-run.mjs",
+      "sha256": "15f0cda46f610dba362bc04445c69b740af4feedcce50412b900b7aed76c3278"
+    },
+    {
+      "path": "scripts/bench/strong-discussion.mjs",
+      "sha256": "9a9b27dd0e19e8af16a61cfe77a5d83e816d86a3deffb1afe3ca1851d5b61e31"
+    },
+    {
+      "path": "scripts/bench/strong-discussion.test.mjs",
+      "sha256": "e63c7f2396644df23bdd8b855217f513e3573e74064efa3e967987216904deb2"
+    },
+    {
+      "path": "scripts/test/child-process.mjs",
+      "sha256": "b052c595a3262137e294cd6dd672bc2f15e0d40d3d213a884d221d6866ed0fe1"
+    },
+    {
+      "path": "scripts/test/resources.mjs",
+      "sha256": "612859696aa28fced956a4099a733b8d0bcab8c79f481f41b68de61c645cbcbb"
+    },
+    {
+      "path": "scripts/test/run-with-temp-root.mjs",
+      "sha256": "68ad727a8f716456e5488755abb0278011267de02fbc48bf6ae34710c657880e"
+    }
+  ]
+}

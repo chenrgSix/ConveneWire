@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "identity": "qa-078-export-strong-single-discussion-v1",
+  "evaluator": "Same implementation assistant; manual semantic grading, no additional model invocation. Masked final-only first pass, not independent human blind review.",
+  "primary": "full_required_deliverable",
+  "criteria": [
+    {
+      "criterionKey": "criterion_qa078_api",
+      "description": "Assess tenant-local idempotency and job/outbox atomicity from the implementation. For any confirmed request-replay defect, give a concrete input, observed consequence and safe correction consistent with the stated API contract.",
+      "required": true,
+      "ordinal": 1,
+      "critical": true,
+      "passRequirement": "same key different filter replays old job because existing.payloadHash is not compared; require normalized hash comparison and conflict without changing rows.",
+      "equivalence": "Equivalent conflict response/block is accepted; no exact HTTP status, hash spelling or code patch required."
+    },
+    {
+      "criterionKey": "criterion_qa078_security",
+      "description": "Assess creation, worker data scope and download authorization against the security contract, including a previously issued unexpired link after membership revocation. Give an evidence-supported consequence and effective fix for any confirmed gap; preserve valid tenant/signature/expiry controls.",
+      "required": true,
+      "ordinal": 2,
+      "critical": true,
+      "passRequirement": "download verifies signature/expiry/tenant/ready but ignores current membership; revoke after issue still reads; recheck current authorized membership or equivalent online revocation on every download.",
+      "equivalence": "TTL shortening alone fails immediate revocation; no need to invent absent signature or tenant check defects."
+    },
+    {
+      "criterionKey": "criterion_qa078_recovery",
+      "description": "Assess dispatcher crash and both broker failure modes (before delivery and lost acknowledgement after delivery), restart and duplicate delivery. Describe a safe delivery/retry order, remaining ambiguity and deduplication; do not promise exactly-once external execution.",
+      "required": true,
+      "ordinal": 3,
+      "critical": true,
+      "passRequirement": "sentAt before publish leaves queued job stranded after pre-delivery failure; publish then mark acknowledged, retry ambiguous failures with stable eventId and duplicate-safe worker.",
+      "equivalence": "A durable confirmed-delivery protocol equivalent to this is acceptable; do not demand exactly-once render."
+    },
+    {
+      "criterionKey": "criterion_qa078_concurrency",
+      "description": "Assess lease expiry, out-of-order workers and cancellation across database publication AND object-store writes/cleanup. Give a concrete interleaving and safe repair for confirmed races while preserving correct existing database fencing.",
+      "required": true,
+      "ordinal": 4,
+      "critical": true,
+      "passRequirement": "old worker pauses past lease; new worker publishes ready; old writes same key then loses DB CAS and deletes winner bytes. Use attempt/epoch-specific immutable keys, existing CAS, loser-only cleanup and cancellation handling.",
+      "equivalence": "Equivalent conditional/version-fenced remote publication is accepted if both stale overwrite and loser cleanup cannot harm winner; new DB fence alone fails."
+    },
+    {
+      "criterionKey": "criterion_qa078_regressions",
+      "description": "Propose concrete preconditions/actions/observable expected results covering: (1) same key with changed payload, (2) same key across tenants and forged body tenant, (3) job/outbox transaction rollback, (4) pre-delivery publish failure plus lost acknowledgement and duplicate delivery, (5) old/new worker publication and cleanup race, (6) cancellation during paused work, (7) unexpired link after membership revocation, (8) normal ready download, expiry and ready-job duplicate. Cases may be combined and equivalent safe behavior is accepted; a checklist of test names alone is insufficient.",
+      "required": true,
+      "ordinal": 5,
+      "critical": true,
+      "passRequirement": "Concrete cases cover all eight public groups, including both broker failure phases, stale-write/cleanup and paused cancellation, with preconditions/actions/expected safe behavior.",
+      "equivalence": "Tests can be combined, written in prose or code, and use arbitrary IDs/timings consistent with contracts. No hidden literal values, test count beyond the eight groups, or executed-test claim is required."
+    },
+    {
+      "criterionKey": "criterion_qa078_release",
+      "description": "Give a clear release recommendation tied to confirmed blockers and evidence gaps, with a feasible ordered repair/verification plan. Distinguish recommendations from changes actually made; no operational approval or execution is granted by this review.",
+      "required": true,
+      "ordinal": 6,
+      "critical": true,
+      "passRequirement": "Do not recommend releasing unchanged; tie hold/conditional release to blockers and missing production validation, prioritize authorization/data safety plus delivery/atomicity, then tests and deployment evidence.",
+      "equivalence": "Hold, no-go, conditional approval only after specified fixes/verification, or equivalent safe decision accepted. No magic words or exact ordering between independent repairs."
+    },
+    {
+      "criterionKey": "criterion_qa078_preservation",
+      "description": "Explicitly retain the verified-session tenant boundary and tenant-local uniqueness, atomic job/outbox transaction, state/epoch/lease fence for DB publication and the ready/canceled duplicate no-op. Do not claim these existing protections are absent or replace them with weaker controls.",
+      "required": true,
+      "ordinal": 7,
+      "critical": true,
+      "passRequirement": "Preserve each F1-F4 as a separate correct fact, without confusing correct DB fencing with safe object writes.",
+      "equivalence": "Equivalent concise explanations accepted; no quotation or repeated table required."
+    },
+    {
+      "criterionKey": "criterion_qa078_uncertainty",
+      "description": "Preserve both unprovided evidence groups: real remote-store/IAM/consistency/durability configuration, and production load/lease-latency/recovery-time measurements. State what would resolve each and distinguish observed local scripted checks from production verification and proposed regression tests. Cite relevant source identities throughout; do not invent incidents, test results, causes or approval.",
+      "required": true,
+      "ordinal": 8,
+      "critical": true,
+      "passRequirement": "Preserve U1/U2 with required evidence; distinguish actual four local scripted groups from unrun new regressions and absent production proof. Relevant source citations support material findings.",
+      "equivalence": "Source IDs may be abbreviated unambiguously; no need to list irrelevant unknowns or claim impossible certainty."
+    }
+  ],
+  "facts": [
+    {
+      "id": "F1",
+      "meaning": "Verified session tenant selects request/worker data; unique key is (tenantId,requestKey), so tenant separation exists.",
+      "evidenceRefs": [
+        "evidence_qa078_api_storage",
+        "evidence_qa078_security",
+        "evidence_qa078_operations"
+      ]
+    },
+    {
+      "id": "F2",
+      "meaning": "Job and outbox insert are in one SQLite transaction; rollback removes both and a lost HTTP response does not prove rollback.",
+      "evidenceRefs": [
+        "evidence_qa078_api_storage",
+        "evidence_qa078_test_evidence"
+      ]
+    },
+    {
+      "id": "F3",
+      "meaning": "DB finish already checks tenant, running state, epoch and unexpired lease; cancellation increments epoch. It does not fence storage side effects.",
+      "evidenceRefs": [
+        "evidence_qa078_api_storage",
+        "evidence_qa078_operations"
+      ]
+    },
+    {
+      "id": "F4",
+      "meaning": "Ready/canceled jobs cannot be claimed, so completed duplicate events do not rerender; this is not exactly-once across crashes.",
+      "evidenceRefs": [
+        "evidence_qa078_api_storage",
+        "evidence_qa078_operations",
+        "evidence_qa078_test_evidence"
+      ]
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "U1",
+      "meaning": "Real remote object-store consistency/versioning/durability and IAM configuration are unprovided; request provider guarantees/configuration plus deployment-bound integration evidence.",
+      "evidenceRefs": [
+        "evidence_qa078_operations",
+        "evidence_qa078_security",
+        "evidence_qa078_test_evidence"
+      ]
+    },
+    {
+      "id": "U2",
+      "meaning": "Production load, worker lease-latency and recovery-time evidence is missing; request deployment-bound load/fault tests and observed timings. Local scripted passes do not establish them.",
+      "evidenceRefs": [
+        "evidence_qa078_operations",
+        "evidence_qa078_test_evidence"
+      ]
+    }
+  ],
+  "judgments": [
+    "pass",
+    "fail",
+    "disputed",
+    "unscorable"
+  ],
+  "failureKinds": [
+    "behavior_error",
+    "missing_deliverable",
+    "wording_ambiguity",
+    "no_artifact"
+  ],
+  "rules": [
+    "Judge behavior, not keyword matching. A verified alternative defect/fix may be accepted with direct evidence.",
+    "Every grade cites answer excerpts and relevant fixed source identity; absence requires stating exactly what required element is missing.",
+    "Disputed semantic requirements are separate from definite failures; retain first grades and append any post-unmask amendment.",
+    "A failed required criterion makes full pass false; no aggregate net score. All eight are critical, so critical and full currently coincide.",
+    "Unsupported factual additions require a quoted assertion and contradictory/missing evidence; clearly conditional suggestions are not automatically unsupported.",
+    "Runtime unavailable final is unscorable, never dropped from the denominator of three.",
+    "A preserved evidence unknown can satisfy a criterion requiring uncertainty; do not confuse it with an omitted deliverable."
+  ],
+  "interpretation": {
+    "candidate": "D full=3/3 and critical=3/3; S full<=1/3; all manipulation valid; all D F1-F4 and U1-U2 retained; no unsupported D additions; result robust to disputed grading. Task-only candidate, not product or equal-compute superiority.",
+    "bothPass": "No observed incremental quality gain; compare actual total sessions and whole-trial elapsed time.",
+    "bothFail": "No demonstrated usable delivery gain; separate errors, omissions and disputes.",
+    "otherwise": "Mixed or insufficient signal; no extra runs, tuning or selective reporting."
+  },
+  "gradingExamples": [
+    {
+      "text": "Do not ship unchanged; proceed only after fixes and production evidence.",
+      "verdict": "pass",
+      "criterion": "release",
+      "why": "Equivalent conditional release, no requirement to use no-go."
+    },
+    {
+      "text": "Invalidate the existing link at next use by checking the current membership record.",
+      "verdict": "pass",
+      "criterion": "security",
+      "why": "Equivalent behavior without a specific function or response code."
+    },
+    {
+      "text": "Use a shorter token TTL; a revoked user can download until it expires.",
+      "verdict": "fail",
+      "criterion": "security",
+      "failureKind": "behavior_error",
+      "why": "Contradicts explicit next-download revocation."
+    },
+    {
+      "text": "Add regression tests for retries and auth.",
+      "verdict": "fail",
+      "criterion": "regressions",
+      "failureKind": "missing_deliverable",
+      "why": "No concrete input/action/expected outcome."
+    },
+    {
+      "text": "The local tests prove production recovery is under one second.",
+      "verdict": "fail",
+      "criterion": "uncertainty",
+      "failureKind": "behavior_error",
+      "why": "Unprovided deployment timing invented."
+    },
+    {
+      "text": "Mark the artifact unavailable.",
+      "verdict": "disputed",
+      "criterion": "security",
+      "failureKind": "wording_ambiguity",
+      "why": "Without specifying when and whether bytes remain accessible, safe behavior cannot be inferred either way."
+    }
+  ]
+}

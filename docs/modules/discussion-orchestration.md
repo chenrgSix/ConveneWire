@@ -54,9 +54,13 @@ cross-domain review task. Both final-answer Runs receive the same full-source
 access, criteria, evidence-use instruction and tools. Discussion adds two fresh
 independent contributions, not a closure table or review Wave. The comparison
 is one versus three model sessions per trial, not equal compute. QA-078's
-packet and adapter require a pre-execution freeze; this design adds no live
-invocation or production behavior. Any isolated adapter differences must be
-disclosed rather than presented as shipped Discussion performance.
+packet and adapter require a pre-execution freeze. The Owner subsequently
+authorized preparation through the exact twelve-session experiment and
+assessment. The QA-only adapter uses ordinary plain replies, preserving all
+bytes with current Run/source-return identity, without manufacturing Result
+claims or adding production storage. Its equal final prompts, fresh sessions
+and absence of the Central/Bridge execution path are explicit differences from
+shipped Discussion. Real-model outcomes remain separate from offline checks.
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.

@@ -4,8 +4,9 @@
 自己完成更容易交付正确、完整的结果？它增加了多少会话和等待时间？**
 
 按 [ADR-0052](../adr/0052-compare-strong-single-and-discussion.md) 执行研究边界。
-本文确定比较协议和选题；完整资料、标准答案、评分细则、适配器和执行许可仍需
-在调用前一起冻结。当前没有 QA-078 模型结果。交付状态只在 [TASKS](../TASKS.md)。
+本文确定比较协议和选题。Owner 随后授权“制作并冻结题包、参考答案和评分规则到
+实验完成做完”，本轮最多十二次会话的授权写入题包；不需要再次确认。
+交付状态只在 [TASKS](../TASKS.md)，准备证据与最终实验结果分别保留。
 
 ## 新任务：多租户异步导出服务的上线审查
 
@@ -168,3 +169,38 @@ manipulation 检查必须证明 S 与 D Finalizer 的 catalog、grant、四域�
 
 权限分离、独立证据和多人治理仍是 Discussion 的合理使用场景。但本题给两臂
 授权同一资料全集，不能同时把它当作真实权限隔离价值的证明。
+
+## 执行前冻结内容
+
+- [题包](fixtures/qa-078/packet.json)：八项公开验收、四域来源版本和范围、角色
+  分配、模型/时间/输出上限、十二个 Run 及 Owner 本轮授权。
+- [参考交付](fixtures/qa-078/reference.md)：一份能够完成任务的答案，非唯一
+  模板；它与 [语义评分规则](fixtures/qa-078/scoring.json) 均不传给模型。
+- 四份完整来源为 [API/storage](fixtures/qa-078/sources/api-storage.mjs)、
+  [security](fixtures/qa-078/sources/security.mjs)、
+  [operations](fixtures/qa-078/sources/operations.mjs) 和
+  [test evidence](fixtures/qa-078/sources/test-evidence.mjs)。它们由实现本实验的
+  assistant 编写，不冒充独立专家资料；其中四组本地正常路径检查确实执行过。
+- [离线反例](../../scripts/bench/export-review-specimen.test.mjs) 在真实内存
+  SQLite 与模拟对象存储上确认四类缺陷，以及既有事务、租户、取消和 DB fence
+  的正确行为。新回归的建议结果由参考交付解释，不能把复现缺陷的测试通过说成
+  被评审服务已经修好。
+- [实验适配器](../../scripts/bench/strong-discussion-run.mjs) 复用固定 reader
+  和 CLI 工具控制。Finalizer 收到当次成员完整普通回复；不制造结构化 claims。
+  终稿用可读文本，不设 XML/JSON 格式门槛。评分程序只核对初评结构、原句、来源
+  和汇总，不用关键词自动裁决自然语言语义。
+
+来源、公共及成员指令、评分、参考、代码依赖、CLI/Node 与工具配置在模型调用前
+写入 [freeze.json](fixtures/qa-078/freeze.json) 并提交。执行只允许这些已提交
+输入；Owner 原有的 `.gitignore` 修改单独记录哈希、不提交，也不进入空工作区
+模型上下文。命令中的 ignore-user-config/ignore-rules 和工具配置保持显式固定。
+
+维护入口是 `npm run test:discussion-strong-single`，没有外部模型调用。
+本轮执行使用 `npm run bench:discussion-strong-single`；journal 出现即消耗本次
+许可，不得作为今后维护或重新试跑的入口。
+
+模型调用前，25 个文件输入完成冻结；S 与 Finalizer 的基础指令和来源 catalog
+哈希相同。17 项新离线检查通过，另有 9 项既有 reader/CLI 本地回环检查通过，
+414 份 Markdown 无 lint 问题。两项依赖未来实验记录的审计检查在执行前明确
+跳过，不计作已通过。CLI 为 0.153.4，Node 为 v22.23.1；这些准备检查不包含
+真实模型试答，也不构成任何质量结论。

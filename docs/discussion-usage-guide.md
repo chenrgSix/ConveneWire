@@ -106,5 +106,10 @@ Single 与 Discussion：独立跨域任务，同样的最终资料访问、工�
 提示、加结论表、逐项自评表或普通讨论轮次。此处定义比较方案，尚无新质量结果。
 三次重复来自同一道题，不能当成三项独立任务；额外团队计算也不能包装成等资源优势。
 
+Owner 已授权把 QA-078 题包冻结到实验评审完成。维护使用
+`npm run test:discussion-strong-single`：验证新题行为、授权范围、成员并发和
+完整传递、十二次上限及留存审计；不调用外部模型。真实执行许可仍只绑定本轮
+题包与一次性 journal，不改变生产 Discussion。
+
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。
