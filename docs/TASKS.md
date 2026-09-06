@@ -678,6 +678,9 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | QA-068 | DONE | Complete remaining balanced Discussion pairs | QA-067, DISC-019, ADP-019 | [Completed evidence](acceptance/qa-068-discussion-continuation.md): five new real pairs/20 completed Runs plus QA-067's retained pair; both arms 22/24, 6/18 successful-pair Runs and 101.317/226.319 seconds; three-call failed continuation and earlier failure retained, 23-call phase cap respected; all answers graded, 14 source/10 prompt hashes, unchanged evidence, 394 Markdown files and physical cleanup verified; usage guide updated |
 | ADP-019 | DONE | Validate optional assessment before emitting Bridge events | QA-067 | Generated wire validation rejects unsupported enum/range/size/duplicate/null/nested metadata while preserving reply-only degradation; full Bridge tests and vet, Runtime race and 14 offline checks pass; four real Finalizers with invalid stop metadata now deliver answers and complete without structured approval; source failure evidence and owned-root cleanup retained |
 
+| GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
+| QA-069 | BLOCKED | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | Implementation, 19 benchmark checks, 396 Markdown files and cleanup pass; automatic approval rejected real execution before startup and requires explicit Owner consent for the retained unpublished benchmark record to OpenAI Codex; exact payload/boundary recorded in QA-069 |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |
@@ -688,6 +691,3 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | FUT-004 | DONE | Promote Artifact and structured-result transport | implemented by TASK-003 when Message-only collaboration proved insufficient |
 | FUT-005 | PLANNED | Attach to an existing visible Runtime Session | Runtime exposes a stable supported contract |
 | FUT-006 | PLANNED | Add an optional Relay/Tunnel network mode | direct-HTTPS onboarding metrics justify a separately accepted transport, privacy, address-ownership, credential-isolation and availability contract |
-
-| GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
-| QA-069 | BLOCKED | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | Implementation, 19 benchmark checks, 396 Markdown files and cleanup pass; automatic approval rejected real execution before startup and requires explicit Owner consent for the retained unpublished benchmark record to OpenAI Codex; exact payload/boundary recorded in QA-069 |
