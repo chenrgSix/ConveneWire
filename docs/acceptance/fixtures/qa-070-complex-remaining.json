@@ -10,9 +10,13 @@
   "priorInvocations": 6,
   "maximumNewInvocations": 17,
   "maximumPhaseInvocations": 24,
-  "authorization": "owner-requested-within-original-cap",
+  "authorization": "consumed",
   "retryFailedArms": false,
   "onArmFailure": "retain-and-continue-never-started-arms",
   "authorizationBasis": "Continue only original never-started arms requested by Owner, within the already announced 24-call phase cap; no failed arm is retried.",
-  "maximumModelWorkSeconds": 1667
+  "maximumModelWorkSeconds": 1667,
+  "consumedBy": {
+    "path": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+    "sha256": "f2536e54caf2ff33b6ea8db0ec3c56eacbe70d06efb0032f92219781073a2a23"
+  }
 }

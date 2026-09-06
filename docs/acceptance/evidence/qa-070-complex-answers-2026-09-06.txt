@@ -1,0 +1,548 @@
+QA-070 原始最终答案（派生只读导出）
+评分和原始报告见同目录 qa-070-complex-review-2026-09-06.json。
+本导出仅移除每行末尾空格；标题所列答案哈希对应原始 JSON 的完整模型文本，完整贡献、指令、工具回执和 Run 状态也以原始 JSON 为准。
+
+========================================================================
+跨模块交付链路审查 | repetition=1 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json results[0]
+Runtime: True; score=17/20; final SHA256=fa46d8b5ec4d26a2b97840645350c3e92a88587ccf5ffeeb3c377c1d46cee13f
+
+Release should not proceed as-is. The evidence shows multiple concrete defects across API, store, worker, and Bridge that can corrupt identity, violate immutability, or misapply a remote effect.
+
+**Prioritized defects**
+
+1. **API scopes operation keys globally instead of per Task**
+   - Evidence: `review-api` lines 8-9 use `results.byOperationKey(body.operationKey)`, and `review-store` defines `byOperationKey(key)` as `SELECT * FROM results WHERE operation_key=? LIMIT 1`.
+   - Impact: `review-observations` A shows Team Blue received the Red Result ID for the same key on a different Task. That violates `review-rules` and can leak cross-team data.
+   - Minimal repair: change lookup to `byTaskAndOperationKey(task.id, body.operationKey)` and preserve immutable insert/conflict behavior per Task.
+   - Regression: same key on two Tasks returns two distinct Results; same Task + same key + different body conflicts.
+
+2. **Result bodies are mutable after acceptance, and accepted source identity is not fixed**
+   - Evidence: `review-store` `save()` does `ON CONFLICT(task_id,operation_key) DO UPDATE SET body_json=..., body_digest=...`; `review-api` inserts acceptance on `body.review.reviewerApproved`; `review-observations` B says the `body_digest` changed after a human accepted the first body.
+   - Impact: violates `review-rules` immutability of Result bodies and accepted source identities.
+   - Minimal repair: replace update-on-conflict with immutable insert/conflict rejection or append-only versioning keyed by a new Result id; acceptance must bind to the originally stored Result id and body digest.
+   - Regression: second submission with same task/key but different body is rejected or creates a new immutable Result; accepted Result content cannot change.
+
+3. **Delivery claim is not atomic, allowing duplicate workers on the same delivery**
+   - Evidence: `review-store` says `claim()` SELECT and UPDATE are not in a transaction; `review-observations` C shows two claims on the same delivery both returned pending.
+   - Impact: two workers can invoke Bridge for one delivery, causing duplicate external effects or conflicting receipts.
+   - Minimal repair: make claim a single atomic conditional update/CAS, or wrap SELECT+UPDATE in a transaction with a state predicate.
+   - Regression: concurrent claim attempts yield exactly one worker owning the delivery.
+
+4. **Worker chooses the latest artifact revision instead of the accepted one**
+   - Evidence: `review-worker` line 5 uses `artifacts.latest(result.body.artifactId)`; `review-rules` require exact accepted Artifact ID, revision, and digest; `review-observations` D shows revision 8 appeared after queueing an accepted revision 7.
+   - Impact: the handoff can silently switch to the wrong revision.
+   - Minimal repair: fetch the exact accepted artifact reference from the accepted Result, not `latest()`, and verify id/revision/digest match the accepted record.
+   - Regression: if revision 8 appears after acceptance of revision 7, dispatch still uses revision 7.
+
+5. **Grant freshness is not revalidated at the last moment**
+   - Evidence: `review-worker` uses `grantCache.forDelivery(d.id); // approved and valid at enqueue`; `review-operations` requires revoked grants to fence not-yet-started effects and immediate revalidation before local effect; `review-observations` E shows expiration and revocation before dispatch.
+   - Impact: a revoked/expired grant can still authorize a dispatch.
+   - Minimal repair: re-read grant authority immediately before Bridge call and fail closed if expired/revoked.
+   - Regression: dispatch after revocation/expiry is blocked.
+
+6. **Bridge does not pass expectedHead into the external CAS**
+   - Evidence: `review-bridge` checks `RefHead(binding, x.Ref)` then calls `ExternalApply(...)` without `expectedHead`; `review-observations` G shows ref changes between the precheck and apply.
+   - Impact: another writer can race the ref update, so the precheck is stale.
+   - Minimal repair: pass `expectedHead` into `ExternalApply` and treat mismatch as conflict.
+   - Regression: ref changes between check and apply cause a conflict, not a write.
+
+**Controls already correct**
+
+- API rejects wrong team and wrong Run association (`review-tests`).
+- Digest syntax and unknown fields are rejected (`review-api`, `review-tests`).
+- Worker only proceeds when acceptance exists (`review-worker`).
+- Bridge rejects unrecognized repository and wrong transport pin (`review-tests`, `review-bridge`).
+- Exact bytes/digest comparison is already present in API and Bridge (`review-api`, `review-bridge`).
+
+**Residual uncertainty**
+
+- `review-api` inserts acceptance when `review.reviewerApproved` is true, but the evidence does not fully show whether that path is intended only for observations or also for final acceptance authority. The safe reading is that it must not grant acceptance authority beyond the human Owner rule in `review-rules`.
+
+**Regression matrix**
+
+- Cross-Task same key: expect distinct Results, no data leak (`review-observations` A).
+- Same Task same key different body: expect conflict or immutable new version, never in-place rewrite (`review-observations` B).
+- Concurrent claims: expect exactly one winner (`review-observations` C).
+- Accepted artifact superseded later: expect original revision/digest to be used (`review-observations` D).
+- Grant expired/revoked before dispatch: expect dispatch blocked (`review-observations` E).
+- Lost remote reply / retry: expect reconciliation by retained remote key, not fresh replay (`review-observations` F, `review-operations`).
+- Ref changed after precheck: expect CAS conflict (`review-observations` G).
+
+========================================================================
+跨模块交付链路审查 | repetition=1 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json results[1]
+Runtime: True; score=12/20; final SHA256=19876d9f400abf96f6d10dcca3e3b19603dbd198883a5f1b5dfa667e44bdb353
+
+The release should **not proceed** yet.
+
+**Prioritized defects**
+1. **Bridge current-authority gap**: `review-bridge` shows `RefHead(binding, x.Ref)` is checked before `ExternalApply`, but `ExternalApply` only enforces atomic expected-head CAS when `expectedHead` is supplied, and this call path does not pass it. That makes the local precheck insufficient against a concurrent writer.
+   - Repair boundary: require `expectedHead` in the external apply path and make it authoritative, not advisory.
+
+2. **Store claim race**: `review-store` indicates `claim` uses separate `SELECT` and `UPDATE` statements, and concurrent callers can race. That can double-dispatch one delivery and break lease/generation assumptions.
+   - Repair boundary: make claim atomic with a transaction or single guarded `UPDATE ... WHERE state='pending'`.
+
+3. **Worker timeout reconciliation gap**: `review-worker` says a remote effect can complete before the Central reply, but the timeout path discards no remote receipt and lacks read-only reconciliation. That can requeue an already-applied effect.
+   - Repair boundary: reconcile by retained receipt/key before requeueing.
+
+4. **API acceptance authority needs to remain non-authoritative**: `review-api` correctly validates task/team/agent membership, run ownership, artifact binding, and digest match, but `review.reviewerApproved` is only an observation and does not itself grant authority.
+   - Repair boundary: keep this field observational only; do not let downstream code treat it as proof of authorization.
+
+**Controls already correct**
+- API enforces task/team/agent/run/artifact/digest alignment before saving: `review-api`.
+- Closed result schema rejects unknown fields: `review-api`.
+- Bridge verifies pinned transport and repository registration before apply: `review-bridge`.
+- Bridge checks artifact digest locally before external apply: `review-bridge`.
+- Worker requires an acceptance record before dispatch: `review-worker`.
+- Existing tests cover malformed digest rejection, unknown JSON property rejection, unrecognized repository, wrong transport pin, one-worker claim behavior, and successful remote completion: `review-tests`.
+
+**Supported defects from the discussion transcript**
+- Same op key across tasks can return the wrong Result: `review-observations` A vs `review-rules`.
+- Accepted Result body can mutate after human acceptance: `review-observations` B vs `review-rules`.
+- Bridge dispatch can use latest revision instead of the exact accepted artifact: `review-observations` D vs `review-rules`.
+- Grant expiry/revocation can fail to fence a not-yet-started effect: `review-observations` E vs `review-rules` and `review-operations`.
+- Lost-response retry can mint a fresh remote key instead of reconciling the retained one: `review-observations` F vs `review-operations`.
+
+**Regression matrix**
+- Same op key, different task, different body -> conflict; no Result reuse.
+- Concurrent same key, same task, different bodies -> exactly one accepted body; the other conflicts/fails immutably.
+- Artifact revision advances after acceptance -> Bridge uses accepted revision/digest, not latest.
+- Grant expires or is revoked after enqueue but before dispatch -> dispatch blocked.
+- Remote call times out after write -> reconcile via retained remote key, not fresh-key replay.
+- Concurrent claim on one delivery -> exactly one winner, no duplicate dispatch.
+
+**Conclusion**
+The evidence supports a **blocker** decision. The strongest demonstrated issues are current-authority enforcement in Bridge, atomicity in claim/accept paths, and timeout reconciliation. The main unresolved implementation question is whether the Bridge external apply API must hard-require `expectedHead`; that appears necessary for correctness, but the exact code change boundary is still open.
+
+========================================================================
+跨模块交付链路审查 | repetition=2 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[4]
+Runtime: False; score=None/20; final SHA256=None
+
+无最终答案：运行失败，不评分。
+
+========================================================================
+跨模块交付链路审查 | repetition=2 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[3]
+Runtime: True; score=15/20; final SHA256=d0718ea00a64dae28fe2e95f5b78ae5aee1ed2ec9f6ded287dfde6b3fdcf3a9d
+
+Release should not proceed as-is.
+
+Prioritized defects, with evidence:
+1. Cross-task identity leakage in `review-store`.
+   - `byOperationKey(key)` looks up only `operation_key` and ignores `task_id`, while `results` is unique on `(task_id, operation_key)`. That allows one task to receive another task’s result when the same operation key is reused.
+   - This is a demonstrated source-identity bug, not a hypothesis.
+
+2. Concurrent claim race in `review-store`.
+   - `claim(id, now)` performs `SELECT` and `UPDATE` without a transaction, and the evidence says two workers can call `claim` concurrently with no per-delivery lock.
+   - Result: double-claim or split-brain dispatch is possible.
+
+3. Timeout reconciliation gap in `review-worker`.
+   - The evidence says a remote effect can complete before the central reply, but the timeout path “discards no remote receipt” and has no read-only reconciliation step.
+   - Result: central state can remain stale even though the external side already applied the operation.
+
+4. Incomplete current-authority enforcement in `review-bridge`.
+   - It checks `RefHead(binding, x.Ref) == x.ExpectedHead`, but `ExternalApply` is called without `expectedHead`, even though atomic CAS only happens when `expectedHead` is supplied.
+   - The evidence also says transport pinning authenticates a peer, not a task-specific owner grant, so current authority is not fully enforced.
+
+5. Accepted-result immutability appears broken.
+   - `review-rules` says result bodies and accepted source identities are immutable, while `review-observations` says concurrent submissions left one result ID but `body_digest` changed after human acceptance.
+   - If that reading is correct, accepted evidence can be rewritten after acceptance.
+
+6. Artifact pinning is not strong enough at handoff.
+   - `review-rules` requires the exact accepted artifact ID, revision, and digest, but `review-observations` says a later revision existed before dispatch.
+   - Without persisting the accepted tuple at decision time, Bridge can ship the wrong revision.
+
+7. Owner consent is not revalidated immediately before local effect.
+   - The evidence says consent must be bound to repository, Task, Run generation, destination, and expiry, with immediate revalidation before local effect.
+   - `review-observations` says a grant expired and was revoked before dispatch, yet dispatch still occurred.
+
+Controls already correct:
+- `review-api` constrains task/team/agent membership, run ownership, artifact team/run binding, and digest verification before saving.
+- `review-api` rejects unknown fields and treats `review.reviewerApproved` only as an agent observation, not acceptance authority.
+- `review-bridge` verifies repository registration, digest, and current ref head before attempting apply.
+- `review-tests` reportedly cover foreign team actor rejection, malformed digest rejection, unknown JSON rejection, one-worker claim behavior, artifact-byte digest checking, successful completion marking, unrecognized repository rejection, and wrong transport pin rejection.
+
+Minimal repair boundaries:
+- `review-store`: key result lookup by `(task_id, operation_key)` and make `claim` atomic with a transaction or single conditional update.
+- `review-worker`: add timeout reconciliation using the retained remote receipt before re-queuing.
+- `review-bridge`: pass `expectedHead` into `ExternalApply` and add a task-bound authorization check separate from transport pinning.
+- For immutable acceptance and artifact pinning, persist the accepted body/hash and accepted artifact tuple at decision time, then refuse later mutation or drift.
+
+Regression matrix:
+- Reused `operation_key` across tasks -> task-local lookup only; no cross-task result leakage.
+- Two workers claim the same delivery concurrently -> exactly one winner.
+- External apply succeeds but reply times out -> reconciliation marks completion; no duplicate dispatch.
+- Ref advances between read and apply -> CAS conflict, not blind overwrite.
+- Valid pinned peer but wrong task grant -> authorization failure.
+- Accepted artifact revision changes after queue -> dispatch still uses the queued accepted tuple.
+- Grant expires or is revoked before dispatch -> final pre-effect check aborts.
+
+Bottom line:
+- The release cannot proceed yet.
+- The strongest demonstrated defects are identity isolation, claim concurrency, worker reconciliation, and bridge authority/CAS handling.
+- The main unresolved question is whether any additional out-of-band authorization or reconciliation controls exist outside the reviewed API/store/worker/bridge modules; none are evidenced here.
+
+========================================================================
+跨时钟故障与重复副作用重建 | repetition=1 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[0]
+Runtime: True; score=13/20; final SHA256=2e0414752c60903e20755d05405eda9f02b756491882e11d04f7301dbea7e3c0
+
+**Supported reconstruction**
+
+All times below are normalized to UTC. Provider clock is 30 seconds behind UTC, and Bridge journal clock is 90 seconds ahead UTC. Source IDs cited inline.
+
+| UTC time | Event | Source |
+|---|---|---|
+| 10:00:00 | Central creates Task Alpha Run A1; Bridge epoch is 8. | `incident-central` |
+| 10:00:02 | A1 becomes working. | `incident-central` |
+| 10:00:04 | Provider commits `Alpha:1` receipt `P101`, `Widget +7` (`100 -> 107`). | `incident-provider` |
+| 10:00:06 | Bridge socket drops. | `incident-central` |
+| 10:00:07 | Cancellation is requested. | `incident-central` |
+| 10:00:10 | Bridge reconnects at epoch 9; A1 remains working/cancellation_pending. | `incident-central` |
+| 10:00:12 | Stale epoch-8 callback claims A1 completed; Central rejects it. | `incident-central` |
+| 10:00:15 | Deadline recovery creates Alpha retry A2, generation 2, key `Alpha:2`. | `incident-central`, `incident-recovery` |
+| 10:00:18 | Provider commits `Alpha:2` receipt `P102`, `Widget +7` (`107 -> 114`). | `incident-provider` |
+| 10:00:20 | A2 completes with valid epoch-9 reply. | `incident-central` |
+| 10:00:50 | Provider export watermark is complete through this time only. | `incident-provider` |
+| 10:01:00 | Central starts Beta Run B1 under epoch 9. | `incident-central` |
+| 10:01:02 | B1 becomes working. | `incident-central` |
+| 10:01:02 | Bridge prepares `Beta:1`. | `incident-bridge` |
+| 10:01:03 | Bridge sends `Beta:1`. | `incident-bridge` |
+| 10:01:04 | B1 socket drops after request sent; no terminal reply retained. | `incident-central`, `incident-bridge`, `incident-inbox` |
+| 10:01:12 | Lookup `Alpha:1 -> P101`. | `incident-lookups` |
+| 10:01:13 | Lookup `Alpha:2 -> P102`. | `incident-lookups` |
+| 10:01:14 | Lookup `Beta:1 -> not_found`, `asOfCommitTime=10:00:50 UTC`. | `incident-lookups` |
+| 10:01:20 | Dashboard shows created Runs=3, completed=1, working=2. | `incident-central` |
+
+**Per logical operation**
+
+| Logical op | Central runs / keys | External effect | Recovery state | Supported decision |
+|---|---|---|---|---|
+| Alpha | A1 `Alpha:1`, A2 `Alpha:2` | Two committed increments of `+7` exist: `P101` and `P102` (`incident-provider`) | A1 stale callback rejected; A2 terminal ack retained | **Do not retry.** Reconcile as committed effect evidence only. No compensation is authorized in the evidence. |
+| Beta | B1 `Beta:1` | No Beta row in provider export through watermark; lookup only proves not found as of `10:00:50`, not beyond that | B1 remains working/cancellation_pending with no terminal reply retained | **Do not treat as finished.** Exact-key authoritative status is missing, so UNKNOWN stays fenced. No retry/reconcile/compensation is supported yet. |
+
+**Run and timing summary**
+
+- Observation age at `10:01:20` from first Central Run creation at `10:00:00` is **80 seconds** (`incident-central`, `incident-ui-tests`).
+- Only **A2** has both `createdAt=10:00:15` and `terminalAt=10:00:20`, so its Central duration is **5 seconds** (`incident-ui-tests`, `incident-central`).
+- Central’s dashboard claim “2 tasks, 3 attempts, all finished” is **false**. The evidence shows 3 runs/attempts, but only 1 completed Run; A1 and B1 have no retained terminal transition (`incident-central`, `incident-inbox`, `incident-ui-tests`).
+- “Alpha +7 applied once” is also **false**. Provider audit shows `Alpha:1` and `Alpha:2` both committed, for a net `+14` (`incident-provider`).
+- “Beta +5 not applied” is **not fully established**. It is unsupported beyond the provider export watermark and the stale lookup; it may still be pending after the last known watermark (`incident-provider`, `incident-lookups`).
+
+**Root cause vs unresolved causes**
+
+Supported root cause:
+- Deadline recovery enqueued a new generation with a new operation key for Alpha without first checking remote effect status, while the remote deduplicates only exact `operationKey + payload digest` pairs. That allowed the same business operation to commit twice under `Alpha:1` and `Alpha:2` (`incident-recovery`).
+- The stale epoch-8 callback was correctly rejected by Central, but that rejection does not prove the external effect did not occur (`incident-central`, `incident-recovery`).
+
+Unresolved:
+- The evidence does **not** prove whether the socket losses were caused by network, process failure, or remote closure (`incident-inbox`).
+- Beta’s final state is unknown because no exact-key authoritative status is supplied and no terminal reply was retained (`incident-central`, `incident-lookups`, `incident-policy`).
+
+**Minimal repair proposal**
+
+- Before any retry of `UNKNOWN`, require exact-key authoritative status and preserve the evidence trail.
+- For `UNKNOWN` + committed-in-external-system, link the committed receipt as effect evidence and do not reapply.
+- For `durably rejected/no-effect`, a new owner-approved attempt may be created.
+- Keep immutable Run history; do not rewrite rejected callbacks into success (`incident-policy`).
+
+**Regression checks and expected outcomes**
+
+- Lost-response-after-commit: expect the system to surface committed effect evidence and avoid reapplying the same business operation.
+- Stale-epoch callback: expect rejection in Central and no rewrite of Run state to completed.
+- Stale negative index entry: expect `not_found` to be treated as “not found at watermark,” not as a global no-op proof.
+- Pending operation with no exact-key status: expect fenced UNKNOWN, no automatic retry, no compensation.
+
+========================================================================
+跨时钟故障与重复副作用重建 | repetition=1 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json results[2]
+Runtime: False; score=None/20; final SHA256=None
+
+无最终答案：运行失败，不评分。
+
+========================================================================
+跨时钟故障与重复副作用重建 | repetition=2 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[5]
+Runtime: True; score=14/20; final SHA256=9508f28d60f0685941f85c52175546ee61ef8aa1de0de11ccc477d228285adfe
+
+**Supported reconstruction**
+
+Normalized to UTC:
+
+- 10:00:00 Central creates Task Alpha Run A1; Bridge epoch is 8. [incident-central]
+- 10:00:01 A1 prepares Alpha:1 on Bridge. [incident-bridge]
+- 10:00:02 A1 becomes working in Central. [incident-central]
+- 10:00:03 A1 sends Alpha:1. [incident-bridge]
+- 10:00:04 Provider records receipt P101 and committed +7 for Alpha:1, before-after 100→107. [incident-provider]
+- 10:00:05 Bridge has a remote response that is not retained before connection failure; effect outcome is UNKNOWN at the transport layer. [incident-bridge]
+- 10:00:06 Bridge socket drops; 10:00:07 cancellation is requested. [incident-central]
+- 10:00:15 Bridge recovery creates A2 for Alpha:2; Central timeout recovery creates Run A2 for the same logical operation Alpha, generation 2. [incident-bridge] [incident-central]
+- 10:00:17 A2 sends Alpha:2. [incident-bridge]
+- 10:00:18 Provider records receipt P102 and committed +7 for Alpha:2, before-after 107→114. [incident-provider]
+- 10:00:19 Bridge records successful receipt P102. [incident-bridge]
+- 10:00:20 A2 completes in Central; dashboard later shows 3 created, 1 completed, 2 working. A2 duration is 5 seconds from 10:00:15 to 10:00:20. [incident-central] [incident-ui-tests]
+- 10:01:00 Central starts Beta Run B1 under epoch 9 and it becomes working. [incident-central]
+- 10:01:01 Bridge prepares Beta:1. [incident-bridge]
+- 10:01:02 Bridge sends Beta:1. [incident-bridge]
+- 10:01:04 B1 connection closes without retained response; no terminal reply is recorded. [incident-central] [incident-bridge] [incident-inbox]
+- 10:01:10 Central still shows B1 working/cancellation_pending. [incident-central]
+- 10:01:12 / 10:01:13 lookups find Alpha:1 -> P101 and Alpha:2 -> P102. [incident-lookups]
+- 10:01:14 lookup Beta:1 is not_found as of commit time 10:00:50 UTC, which does not cover later commits. [incident-lookups]
+- 10:01:20 Central’s UI shows 2 tasks, 3 attempts, all finished; that claim is contradicted by Central and inbox evidence. [incident-ui-tests] [incident-central] [incident-inbox]
+
+**Per logical operation**
+
+| Logical op | Attempts / keys | External effect evidence | Central lifecycle | Decision |
+|---|---|---|---|---|
+| Alpha | A1 key `Alpha:1`, A2 key `Alpha:2` | P101 and P102 both committed +7 on the provider side [incident-provider] | A1 stayed working/cancellation_pending; A2 completed [incident-central] | Do not retry automatically. Reconcile by linking both committed receipts as evidence. No compensation is supported from current evidence. |
+| Beta | B1 key `Beta:1` | No Beta row in the provider export; no Beta response retained; no exact-key status supplied [incident-provider] [incident-bridge] [incident-lookups] | B1 remains working/cancellation_pending; no terminal transition retained [incident-central] | Remain fenced. Retry only after exact-key authoritative status confirms durable reject/no-effect; otherwise treat as pending/unknown. No compensation basis exists yet. |
+
+**Run and timing summary**
+
+- Central durations are only known when createdAt and terminalAt both exist. A2 is 5 seconds. A1 and B1 have no retained terminal transition. [incident-ui-tests] [incident-central]
+- Observation age at 10:01:20 from first Central creation at 10:00:00 is 80 seconds. The UI’s 80-second figure is correct, but its “all finished” statement is not. [incident-ui-tests] [incident-central]
+- Bridge clock is exactly 90 seconds ahead of UTC; provider clock is exactly 30 seconds behind UTC. [incident-bridge] [incident-provider]
+
+**Root cause, supported and unresolved**
+
+Supported root cause:
+- The recovery path re-enqueues a new attempt on deadline without looking up remote effect first, and the remote deduplicates only exact key+payload digest pairs. That makes a lost response after a committed external effect capable of producing a duplicate committed increment under a new key. [incident-recovery]
+- Alpha demonstrates this: the original attempt’s remote effect committed as P101, but the retry A2 also committed as P102. [incident-provider] [incident-bridge] [incident-recovery]
+
+Unresolved causes:
+- The actual cause of the socket losses is not established; the evidence does not prove network failure, process failure, or remote closure. [incident-inbox]
+- Beta’s final remote status is unknown; no supplied exact-key authoritative status exists. [incident-lookups] [incident-policy]
+
+**What may be retried, reconciled, or compensated**
+
+- May be reconciled: Alpha’s committed receipts P101 and P102 should be recorded as effect evidence, not rewritten into a single success or into Run completion retroactively. [incident-policy] [incident-provider]
+- May be retried: only Beta, and only after exact-key authoritative status shows durable reject/no-effect or another owner-approved basis. Pending/unknown remains fenced. [incident-policy] [incident-lookups]
+- May be compensated: nothing yet. Any compensation requires separate explicit action and consent. [incident-policy]
+
+**Corrections to operator/UI claims**
+
+- “Alpha +7 applied once” is false. The provider export shows two committed +7 effects, P101 and P102. [incident-provider]
+- “Beta +5 not applied” is not proven. The export contains no Beta row, but its watermark ends before Beta’s send time; that absence is not a definitive negative receipt. [incident-provider] [incident-lookups]
+- “All finished” is false. Central retains no terminal transition for A1 or B1, and B1 is still working/cancellation_pending. [incident-central] [incident-inbox]
+
+========================================================================
+跨时钟故障与重复副作用重建 | repetition=2 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[6]
+Runtime: True; score=7/20; final SHA256=3f9e670ee16f4b1eb76a701065ceda075c638c803230377887cee1763477afee
+
+Supported reconstruction, with the main correction that the visible UI summary is not fully provable and “provider was slow” is unsupported.
+
+- Provider clock is 30 seconds behind UTC, so provider timestamps map to UTC + 00:00:30 ([incident-provider]).
+- Committed provider effects:
+  - P101, Alpha:1, Widget, +7, 100 -> 107 at provider 09:59:34 = UTC 10:00:04 ([incident-provider]).
+  - P102, Alpha:2, Widget, +7, 107 -> 114 at provider 09:59:48 = UTC 10:00:18 ([incident-provider]).
+- Export watermark is provider 10:00:20 = UTC 10:00:50, and the export is only complete through that point ([incident-provider]).
+- Central lookups:
+  - 10:01:12 Alpha:1 -> P101, +7 ([incident-lookups]).
+  - 10:01:13 Alpha:2 -> P102, +7 ([incident-lookups]).
+  - 10:01:14 Beta:1 -> `not_found`, asOfCommitTime=10:00:50 UTC ([incident-lookups]).
+- `not_found` only means no committed record at or before the watermark; it does not rule out a later commit or a still-pending request ([incident-lookups]).
+
+Normalized UTC timeline:
+1. 10:00:04 UTC: Alpha:1 commits +7, Widget 100 -> 107 ([incident-provider]).
+2. 10:00:18 UTC: Alpha:2 commits +7, Widget 107 -> 114 ([incident-provider]).
+3. 10:00:50 UTC: provider export watermark closes ([incident-provider]).
+4. 10:01:12 UTC: Alpha:1 lookup resolves to P101 ([incident-lookups]).
+5. 10:01:13 UTC: Alpha:2 lookup resolves to P102 ([incident-lookups]).
+6. 10:01:14 UTC: Beta:1 lookup is `not_found` at watermark 10:00:50 UTC ([incident-lookups]).
+7. 10:01:20 UTC: export downloaded; this is not a completeness watermark ([incident-provider]).
+
+Per-logical-operation effect / recovery:
+- Alpha:1
+  - Effect: committed durable +7, evidenced by provider export and Central lookup ([incident-provider], [incident-lookups]).
+  - Recovery: do not retry; if the UI missed it, reconcile by linking the committed receipt, not by reapplying ([incident-policy]).
+- Alpha:2
+  - Effect: committed durable +7, evidenced by provider export and Central lookup ([incident-provider], [incident-lookups]).
+  - Recovery: do not retry; same reconciliation rule ([incident-policy]).
+- Beta:1
+  - Effect: no committed effect is evidenced in the supplied documents; only `not_found` at the provider watermark is proven ([incident-lookups]).
+  - Recovery: unresolved. Exact-key authoritative status is required before retrying UNKNOWN. If durably rejected/no-effect, an owner-approved new attempt may be valid; if pending/unknown, it must be fenced ([incident-policy], [incident-lookups]).
+
+Run and timing summary:
+- The first Central Run creation timestamp is not supplied, so the overall observation age cannot be computed exactly from evidence alone ([incident-ui-tests]).
+- The only explicit run duration shown is A2: created 10:00:15, terminal 10:00:20, duration 5 seconds ([incident-ui-tests]).
+- The UI claim “2 tasks, 3 attempts, all finished; Alpha +7 applied once, Beta +5 not applied; elapsed 80 seconds, provider was slow” is not fully supported. In particular, “provider was slow” lacks any latency measurement basis, and “all finished” is not established because Beta’s authoritative status is missing ([incident-ui-tests]).
+
+Supported root cause versus unresolved causes:
+- Supported root cause of the visible discrepancy: stale read-path / index visibility can make Beta appear absent even though the supplied evidence does not prove its final state ([incident-lookups]).
+- Unresolved causes:
+  - Whether Beta was eventually committed, durably rejected, or still pending remains unknown ([incident-lookups]).
+  - Any claim that provider latency caused the issue is unsupported ([incident-ui-tests]).
+
+Minimal repair proposal:
+- Add an exact-key authoritative status check before any retry of UNKNOWN, and gate retries on committed / durably rejected / pending / unknown state per policy ([incident-policy]).
+- Preserve immutable run/event records and link committed receipts as evidence rather than rewriting success from downstream effects ([incident-policy]).
+
+Regression checks and expected outcomes:
+- Lost-response-after-commit: link the committed receipt; expected no double increment ([incident-policy]).
+- Stale-epoch callback: reject stale callback; expected prior event remains unchanged ([incident-policy]).
+- Stale negative index entry: lookup may still show `not_found`; expected system to consult authoritative status before retrying ([incident-lookups], [incident-policy]).
+- Pending operation: no automatic retry until exact-key status is known; expected fenced state ([incident-policy]).
+
+What may be retried, reconciled, or compensated:
+- Retry: only UNKNOWN cases after exact-key authoritative status is checked; do not assume `not_found` at a watermark is enough ([incident-policy], [incident-lookups]).
+- Reconcile: Alpha:1 and Alpha:2 by linking their committed receipts if local/UI state missed them ([incident-policy], [incident-provider], [incident-lookups]).
+- Compensate: only with separate explicit action and consent; no evidence supports automatic compensation here ([incident-policy]).
+
+========================================================================
+资源受限迁移与容量方案决策 | repetition=1 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[1]
+Runtime: True; score=14/20; final SHA256=c2e80bd5627ab8fb179cdf01f6d534057493bebebf91bf46b9aed8344c2f4c89
+
+Decision: `B LocalDelta` is the only feasible option under the supplied evidence.
+
+Decision table:
+- `A CentralSnapshot`: reject. It exposes raw workload data to Central, which violates the requirement that all workload data stay owner-local on Bridges and Central receive only IDs/digests/path-free receipts [plan-requirements], [plan-options].
+- `B LocalDelta`: accept as the best supported plan. It preserves local data ownership, keeps Central to IDs/digests, and matches the accepted local migration / LAN browser HTTP posture [plan-options], [plan-authority].
+- `C PublicEndpoint`: reject. It requires Internet, a public domain, public-CA HTTPS, and Device re-enrollment, all of which conflict with the site constraints and credential/origin preservation requirements [plan-requirements], [plan-options], [plan-authority].
+- `D SixAtOnce`: reject. “Max job duration” is not the correct feasibility criterion because jobs are bounded by a shared executor pool, at most 2 concurrent jobs, and <=16 GiB total memory; starting all six simultaneously is invalid [plan-jobs], [plan-options].
+
+Auditable schedule for `B`:
+- 0:00-0:04 `C` + `D` running, memory 12 GiB, valid because 2 jobs and <=16 GiB [plan-jobs].
+- 0:04-0:07 `A` + `E` running, memory 16 GiB. `E` is now eligible because `C` completed at 0:04 [plan-jobs].
+- 0:07-0:09 `B` + `F` running, memory 14 GiB. `F` is now eligible because `D` completed at 0:04 [plan-jobs].
+- 0:09-0:10 `A` alone continues, memory 10 GiB.
+- 0:10-0:12 `B` alone continues, memory 8 GiB.
+- All six jobs complete at 0:12. This is the job span from preflight end to cutover-ready state.
+
+Window arithmetic:
+- Approved window = 22 minutes total [plan-requirements].
+- Fixed components = 2-minute preflight + 12-minute job span + 1-minute global cutover + 5-minute observation = 20 minutes total [plan-requirements], [plan-jobs], [plan-rollback].
+- Slack remaining = 2 minutes.
+- Write pause = 1 minute = 60 seconds, which is within the 90-second maximum [plan-requirements].
+- The 1-minute pause is the exact global cutover pause; ordinary copy jobs do not pause writes [plan-requirements].
+
+Queue backlog / delay / drain:
+- Arrival rate during surge = 220 jobs/s for 120 s; service cap while backlogged = 180 jobs/s [plan-capacity].
+- Net backlog growth during surge = 40 jobs/s.
+- Peak backlog at end of surge = 40 * 120 = 4,800 jobs.
+- Peak queueing delay = 4,800 / 180 = 26.7 seconds, below the 60-second allowance [plan-capacity].
+- Drain time after arrivals return to 140 jobs/s = 4,800 / (180 - 140) = 120 seconds [plan-capacity].
+- Peak backlog also stays below the 6,000-job capacity [plan-capacity].
+
+Exact cutover / rollback:
+- Capture base snapshot `S` at source sequence `q0` while writes continue [plan-delta].
+- During the 1-minute global pause, capture final sequence `qf`, replay exactly `q0 < q <= qf` without gaps, and verify both `qf` and content digest for every tenant [plan-delta].
+- Flip routing only after every tenant has an exact checkpoint match; then resume writes [plan-delta].
+- Rollback remains safe only during the first 8 minutes after cutover, while reverse journal replay into a V1-readable target is available; rollback must pause writes, reconcile exact checkpoints, switch routing, and resume [plan-rollback].
+- The F3 boundary is the destructive compaction planned 8 minutes after cutover; after F3, V1 cannot read the format and rollback is no longer safe. Compaction requires a separate Owner action after the 5-minute observation window [plan-rollback].
+
+Prioritized go/no-go verification matrix:
+1. Go: all six jobs completed, each tenant has exact `qf` and digest match, and no checkpoint gaps exist [plan-delta], [plan-authority].
+2. Go: total pause remains 60 seconds or less; do not exceed 90 seconds [plan-requirements].
+3. Go: job schedule respects <=2 concurrent jobs and <=16 GiB memory at every interval [plan-jobs].
+4. Go: backlog peak <= 6,000 and peak delay <= 60 seconds; here both are satisfied [plan-capacity].
+5. No-go: any wrong CA, wrong origin, revoked/expired grant, or missing operation generation [plan-authority].
+6. No-go: any attempt to treat “latest verified” as a substitute for explicit per-tenant `qf`/digest, or to drop journals before the approved boundary [plan-delta], [plan-rollback].
+
+Measured-only-in-fixture facts: all job durations, memory values, and queue rates are planning-fixture measurements, not real production performance promises [plan-jobs], [plan-capacity]. Missing real evidence: no physical rehearsal of the 1-minute pause bound and no production-size throughput measurement [plan-acceptance].
+
+========================================================================
+资源受限迁移与容量方案决策 | repetition=1 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[2]
+Runtime: False; score=None/20; final SHA256=None
+
+无最终答案：运行失败，不评分。
+
+========================================================================
+资源受限迁移与容量方案决策 | repetition=2 | arm=single_agent
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[8]
+Runtime: True; score=14/20; final SHA256=c79fd3c0295c4d5c6da3b56cb37912e485b4cccf5a68e701db30b46fa36c66bd
+
+Decision: choose **B / LocalDelta** as the feasible migration design under the supplied planning fixture. It is the only option that preserves owner-local data handling and existing credentials while staying within the modeled schedule and rollback constraints ([plan-options](#), [plan-requirements](#), [plan-authority](#)).
+Reject A, C, and D for these reasons:
+- **A CentralSnapshot** exposes raw workload data to Central, which violates the locality requirement ([plan-options](#), [plan-requirements](#)).
+- **C PublicEndpoint** requires Internet/public domain, public-CA transport, and re-enrollment/identity rotation, all of which conflict with the stated constraints ([plan-options](#), [plan-requirements](#), [plan-authority](#)).
+- **D SixAtOnce** is not feasible: the jobs are not all simultaneously runnable under the fixed job table because at most 2 jobs may run and total memory must stay at 16 GiB or less; D’s “max duration = 6 minutes” arithmetic ignores those constraints ([plan-options](#), [plan-jobs](#)).
+
+**Auditable job schedule**
+Relative time starts after the 2-minute preflight ([plan-requirements](#), [plan-jobs](#)):
+- `0-4`: `C` + `D`
+  - Memory 6 + 6 = 12 GiB, 2 jobs, valid.
+- `4-7`: `A` + `E`
+  - `E` is unlocked when `C` completes. Memory 10 + 6 = 16 GiB, 2 jobs, valid.
+- `7-12`: `B` + `F`
+  - `F` is unlocked when `D` completes. Memory 8 + 6 = 14 GiB, 2 jobs, valid.
+- `12-13`: global cutover with writes paused
+- `13-18`: observation period
+
+Validation:
+- No more than 2 concurrent jobs at any time.
+- Memory never exceeds 16 GiB.
+- Dependencies are satisfied: `E` after `C`, `F` after `D`.
+- All 6 jobs finish by `t=12`, so the plan fits the 22-minute maintenance window: `2` preflight + `12` jobs + `1` cutover + `5` observation = `20` minutes, with `2` minutes slack ([plan-jobs](#), [plan-requirements](#)).
+
+**Write-pause arithmetic**
+- Approved global write pause during cutover: `1 minute = 60 seconds` ([plan-requirements](#)).
+- Maximum allowed write pause: `90 seconds`.
+- Result: `60 <= 90`, so the cutover pause is within limit.
+
+**Queue backlog / delay / drain**
+Using the planning fixture after cutover:
+- Arrival rate during surge: `220 jobs/s`
+- Shared service cap: `180 jobs/s`
+- Surge duration: `120 s`
+- Net backlog growth while surged: `220 - 180 = 40 jobs/s`
+- Peak backlog: `40 * 120 = 4800 jobs`
+- Peak queueing delay while backlogged: `4800 / 180 = 26.67 s`
+- Drain time after arrivals return to normal: `(4800) / (180 - 140) = 4800 / 40 = 120 s`
+
+Checks:
+- Backlog cap `6000` not exceeded: `4800 < 6000`
+- Delay allowance `60 s` not exceeded: `26.67 < 60`
+- A third worker alone would not lift the `180 jobs/s` downstream cap ([plan-capacity](#)).
+
+**Exact cutover and rollback**
+Cutover:
+- Each tenant copy captures `S` at `q0` while writes continue.
+- During the 1-minute pause at `t=12-13`, capture final sequence `qf` for each tenant.
+- Replay exactly `q0 < q <= qf` without gaps, verify `qf` and digest, then flip routing only after every tenant has an exact checkpoint match.
+- Resume writes only after the flip ([plan-delta](#)).
+
+Rollback:
+- Safe rollback window is the first **8 minutes after cutover**.
+- If rollback is needed, pause writes, reconcile/verify exact target checkpoints, replay the reverse journal into a V1-readable target, switch routing, and resume.
+- Do **not** restore V1 from its pre-cutover snapshot; that would lose writes.
+- Do **not** drop source snapshots/journals until the separate compaction decision.
+- The `F3` boundary is the planned compaction at `t = cutover + 8 minutes`; after that, V1 is no longer safe because it cannot read `F3` ([plan-rollback](#)).
+
+**Prioritized go/no-go matrix**
+1. **Go:** all 6 exact per-tenant checkpoints verified; required by authority/cutover rules ([plan-authority](#), [plan-delta](#)).
+2. **Go:** job schedule completes by `t=12` with max 2 jobs and <=16 GiB; schedule above satisfies this ([plan-jobs](#)).
+3. **Go:** write pause stays at 60s, within 90s limit ([plan-requirements](#)).
+4. **Go:** backlog peak 4800, delay 26.67s, drain 120s all within caps ([plan-capacity](#)).
+5. **No-go:** any wrong CA, wrong origin, revoked grant, or missing repository binding/operation generation match ([plan-authority](#)).
+6. **No-go:** any attempt to compact to `F3` before the owner’s separate post-observation decision ([plan-rollback](#)).
+
+**Evidence status**
+- Measured only in the constructed planning fixture: all job durations, memory values, queue rates/capacity, and the 22-minute window arithmetic ([plan-jobs](#), [plan-capacity](#), [plan-requirements](#)).
+- Still missing from real evidence: a physical rehearsal proving the 1-minute pause bound on production-size journals, and real throughput measurements confirming the queue model under site contention ([plan-acceptance](#)).
+
+========================================================================
+资源受限迁移与容量方案决策 | repetition=2 | arm=discussion
+Source: docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json results[7]
+Runtime: True; score=3/20; final SHA256=fde84faef6b7357345c792c4cc079d49329315170ae171e73e6a9053850938d6
+
+The current evidence is not sufficient to complete the requested four-way migration decision or audit it end-to-end.
+
+What is supported:
+- The visible fixture only contains four documents: `plan-requirements`, `plan-rollback`, `plan-authority`, and `plan-acceptance`.
+- The maintenance window is 22 minutes, with a 2-minute preflight, 1-minute global cutover write pause, and 5-minute observation period; ordinary copy jobs do not pause writes. `plan-requirements`
+- Maximum allowed write pause is 90 seconds. `plan-requirements`
+- Rollback is only safe before the `F3` boundary, using the reverse journal; `V1` cannot read `F3`, while `V2` initially writes `F2`. `plan-rollback`
+- Cutover requires six exact verified checkpoints; cached or revoked grants are insufficient, and negative checks should include wrong CA, wrong origin, and revoked grant. `plan-authority`
+- Preflight has synthetic schema and scheduling tests, but there is still no physical rehearsal for the 1-minute pause bound with production-size journals and no real throughput measurement under site contention. `plan-acceptance`
+
+What remains missing:
+- The actual A/B/C/D proposal definitions.
+- Job durations, memory needs, dependencies, backlog rates, and delay/drain inputs for the comparison.
+- Any evidence that would let us audibly verify the Solver’s proposed `B LocalDelta` schedule, backlog math, or cutover/rollback plan.
+
+Because those proposal-specific inputs are absent, the option decision, schedule, and queue arithmetic cannot be fully validated from the available evidence. The safest supported conclusion is to hold the decision open until the missing proposal document(s) are available.

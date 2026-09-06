@@ -1,5 +1,21 @@
 # QA-070 Complex task comparison
 
+## Delivered evidence
+
+The [Chinese comparison and task evaluation](qa-070-complex-discussion-results.md)
+retains every scheduled arm, all nine final answers and criterion-level reasons.
+Twelve original arms were each attempted once using 22 actual invocations/Runs:
+19 Runs completed and three failed. There are three complete pairs, three
+unpaired answers and three failed arms, not six complete pairs. Both real plans
+are consumed. No retry, Discussion removal or further model call is authorized.
+
+Across complete pairs, Single scores 45/60 with three Runs and 140.228 seconds;
+Discussion scores 22/60 with nine Runs and 202.479 seconds. All nine delivered
+answers fail the frozen critical acceptance gate. These coverage scores do not
+make an invalid migration plan safe, establish user success rates or isolate
+orchestration from the experiment's split evidence and contribution compression.
+See the full report before interpreting the totals.
+
 ## Authority and question
 
 On 2026-09-06 the Owner requested harder tasks, another real comparison and a
@@ -141,3 +157,67 @@ synthetic remainder and a first-arm failure followed by eight exactly-once
 successful arms. The root `convene-wire-test-run-fXyHQJ` is physically absent;
 397-file documentation lint and whitespace checks pass. Tool permissions and
 installed-CLI configuration are unchanged from the two passing loopback checks.
+
+## Final execution and evidence integrity
+
+The separately pinned remainder ran at clean source `c017243` and processed all
+nine never-started arms, using 16 new calls. Its
+[raw report](evidence/qa-070-complex-remaining-2026-09-06.json) has SHA-256
+`f2536e54caf2ff33b6ea8db0ec3c56eacbe70d06efb0032f92219781073a2a23`.
+Planning repetition 1 Discussion and review repetition 2 Single used disallowed
+`list_mcp_resources` tools and failed; all later scheduled arms still ran once.
+Both failed invocations had read their full assigned sources, unlike the
+initial failure. All three failed CLI receipts exited zero without timing out;
+the bounded adapter rejected unauthorized tool use. These failures remain
+unscored and do not directly measure ordinary production reliability. The
+remainder's zero process exit means its schedule finished, not that all Runs
+succeeded; its report explicitly retains the arm failures.
+
+The [separate review](evidence/qa-070-complex-review-2026-09-06.json) has SHA-256
+`cd2509cb8b6975e70ccff7ad45caf9a4bade090069cd8a977c089ccd26b82a14`.
+It binds nine grades to original result indices and final-answer hashes while
+leaving both raw reports, answer strings and original null grade fields intact.
+The [readable answer export](evidence/qa-070-complex-answers-2026-09-06.txt) has
+SHA-256 `de6395524dbca4e35cf5477f7575c9e50dac3bd5809b929eb4e504af1c7308ad`.
+The text export strips only line-end whitespace for repository formatting;
+its per-answer hashes refer to the unchanged original strings in raw JSON.
+
+Offline integrity checks verified raw capture byte equality, the unchanged
+packet, 21 initial and 23 remainder source pins against their own execution
+commits, all 12 task-input hashes, exactly-once arm identity, and every accepted
+read's ID/digest/role scope. All four completed Finalizers received both entire
+contributions in retained Central instructions, with completed Run/output IDs
+rejoined. Source facts omitted from a contribution remain distinct from facts
+delivered in full but ignored by finalization. Full Bridge-projected stdin is
+not retained, so its hash must not be equated to Central instruction bytes.
+Final answer ownership was checked during execution by the pinned helper;
+there is no fresh database verification after physical cleanup.
+
+Fifteen successful invocations read all assigned documents; four successful
+Finalizers used the accepted transcript without new reads. All nine finals are
+within 900 approximate whitespace-separated words. Incident repetition 2's
+Reviewer contribution is about 676 words and planning repetition 2's Solver
+contribution about 650, above the requested 600; both remained fully present.
+This deviation is disclosed without adding a post-hoc grading penalty.
+
+Whole-phase arm elapsed time sums to 629.139 seconds, including 122.343 seconds
+and five Runs in failed arms, and 164.089 seconds and five Runs in unpaired
+successful arms. It is not total project wall time or provider compute time.
+Both real owned roots, `convene-wire-test-run-urtkkt` and
+`convene-wire-test-run-BLCmCo`, are physically absent. All available finals have
+been reviewed; the explicit bounded-failure completion condition applies.
+
+## Closure checks
+
+After consuming both plans, `npm run test:discussion-complex` passed all eight
+provider-free checks, including original traversal, remainder traversal and
+failure-followed-by-continuation. The full 34-check benchmark preflight and two
+installed-CLI loopback checks remain the unchanged-code baseline above.
+Both real entrypoints were also exercised with an empty executable PATH:
+each rejected its consumed manifest before Runtime setup, with every retained
+real report unchanged and no provider invocation. The two closure roots,
+`convene-wire-test-run-VPKM7m` and `convene-wire-test-run-boi677`, and all five
+earlier owned roots were physically checked absent. All 398 maintained Markdown
+files and whitespace checks pass. The module, usage guide and command guidance
+now describe the completed evidence and consumed admission boundary; TASKS.md
+alone records delivery status.

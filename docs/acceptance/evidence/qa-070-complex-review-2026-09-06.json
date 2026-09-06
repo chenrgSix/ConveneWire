@@ -1,0 +1,1708 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-09-06",
+  "reviewer": "Codex task agent; direct rubric review with no additional judge/provider invocation",
+  "blinded": false,
+  "independentHumanReview": false,
+  "packet": {
+    "path": "docs/acceptance/fixtures/qa-070-complex-cases.json",
+    "sha256": "a20930527f86484503764dbd17a79117910a71830c21881e64ce6ef45c63043e"
+  },
+  "sourceReports": [
+    {
+      "path": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+      "sha256": "fa57b0eb46ddbbc1a1c7e5a22088f66a442c6dd9ccd27ec0a4eeb2159f3d5df8"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "sha256": "f2536e54caf2ff33b6ea8db0ec3c56eacbe70d06efb0032f92219781073a2a23"
+    }
+  ],
+  "transformation": "Separate review; both raw captures, all answer strings and original null grading fields stay unchanged. Failed arms remain unscored. Each completed final is bound by source index and SHA-256.",
+  "scoringRule": "Each frozen criterion scores 0/1/2 using its full/partial requirements. Acceptable task result requires at least 16/20 and full credit on every critical criterion. Score measures coverage; it is not a production pass, user success rate or proof that a more verbose answer is safer.",
+  "attempts": [
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "review",
+      "repetition": 1,
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "runCount": 1,
+      "elapsedMilliseconds": 33503,
+      "promptSha256": "1471121d90e0ba63ea185854a825efc63fa860314a132ec05d9459c52bdc8889",
+      "runStates": {
+        "completed": 1
+      },
+      "finalAnswerSha256": "fa46d8b5ec4d26a2b97840645350c3e92a88587ccf5ffeeb3c377c1d46cee13f",
+      "score": 17,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "key-scope",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies cross-Task operation-key lookup leak and returns/conflicts only within the authorized Task; cites API/store and observation A.",
+          "partialCredit": "Identifies unscoped lookup or leakage but lacks the scoped lookup/response correction.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "准确指出全局 operation-key 查询导致跨 Task/Team 返回旧结果，并提出按 Task+key 查询及冲突约束。"
+        },
+        {
+          "id": "immutability",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies accepted body mutation through concurrent same-key upsert; proposes immutable insert plus same-key digest equality/conflict, atomically preserving accepted source identity.",
+          "partialCredit": "Notices upsert mutation or key conflict but omits concurrent/accepted-data preservation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "发现 accepted body 被 upsert 修改，但允许同一 task/key 不同 body 创建新 Result/版本的备选方案，不满足明确的 same-key/different-body 冲突要求。"
+        },
+        {
+          "id": "acceptance",
+          "kind": "critical",
+          "critical": true,
+          "text": "Rejects automatic acceptance from Agent review.reviewerApproved and retains Owner-only acceptance; distinguishes proposal permission from acceptance.",
+          "partialCredit": "Notices untrusted approval but does not state the Owner-only boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "指出 reviewerApproved 不应超过明确的 human Owner 接受权限；残留段虽过度声称意图不明，仍保留 Owner-only 边界。"
+        },
+        {
+          "id": "claim",
+          "kind": "quality",
+          "critical": false,
+          "text": "Explains SELECT/UPDATE competing claim race and requires a conditional transactional/CAS claim whose affected-row result determines sole ownership.",
+          "partialCredit": "Finds the race but offers only a process-local lock or unspecified transaction.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "指出非原子 SELECT/UPDATE 竞争，提出条件 CAS/事务并要求并发只有一个领取者。"
+        },
+        {
+          "id": "artifact-pin",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins accepted revision 7/h7 with latest revision 8/h8 and replaces latest lookup with exact accepted Artifact ID/revision/digest; byte digest alone is insufficient.",
+          "partialCredit": "Finds latest-artifact drift without all accepted identity pins.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "要求按 accepted Artifact ID、revision、digest 读取，正确拒绝 latest。"
+        },
+        {
+          "id": "grant",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires owner-local current grant validation immediately before effect, bound to repository/Task/generation/destination/expiry and revocation; registration/pinned transport are insufficient.",
+          "partialCredit": "Finds expiry/revocation omission but proposes only Central/cache validation or lacks binding.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "只提出 Bridge 调用前重读 grant，没有落实 owner-local 的临效果复验和 Task/generation/destination 等绑定。"
+        },
+        {
+          "id": "unknown-retry",
+          "kind": "critical",
+          "critical": true,
+          "text": "Explains fresh generation changes remote idempotency identity after an ambiguous commit; reconciles old key read-only and blocks blind replay while UNKNOWN.",
+          "partialCredit": "Recognizes duplicate-effect risk without retained-key reconciliation and an UNKNOWN fence.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "丢响应回归要求按旧 key 对账而非新请求，但未解释 generation 更换远端幂等身份，也未明确 UNKNOWN 禁止重放。"
+        },
+        {
+          "id": "ref-cas",
+          "kind": "critical",
+          "critical": true,
+          "text": "Finds ref-check/use race and passes expectedHead into atomic effect CAS; separate precheck is insufficient.",
+          "partialCredit": "Mentions ref race or atomicity but not the final effect's expected-head CAS.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "指出 RefHead 检查与 ExternalApply 间的竞争，要求向原子 CAS 传入 expectedHead。"
+        },
+        {
+          "id": "regression",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides distinct actionable concurrent/collision, authority/pinning, revoked-grant, CAS and lost-response regressions with expected outcomes.",
+          "partialCredit": "Tests at least three of those five groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "回归矩阵覆盖并发/碰撞、来源与权限、过期撤销、CAS 以及丢响应，并给出结果要求。"
+        },
+        {
+          "id": "soundness",
+          "kind": "quality",
+          "critical": false,
+          "text": "Prioritizes release-blocking safety defects, cites material code/observation IDs, preserves existing team/Run/digest/pinning controls, and labels all repair/tests as proposed.",
+          "partialCredit": "Useful evidence-linked review but incomplete priority/control/verification boundary; no invented critical defect.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "以不予发布为结论，明确最小修复与回归建议，保留已正确的 Team/Run、摘要及传输控制，并逐项引用资料。"
+        }
+      ],
+      "evaluation": {
+        "summary": "找到了主要跨模块缺陷，审查可用，但幂等冲突、临执行授权和 UNKNOWN 重试边界仍不够严格。",
+        "materialIssues": [
+          "同一 key 不同 body 允许新版本的备选修复弱化了幂等合同。",
+          "授权检查停留在调用 Bridge 前，未明确 Bridge 本地的完整绑定复验。",
+          "未完整解释新 generation 造成重复外部效果的机制。"
+        ],
+        "acceptanceNote": "总分达到 16，但关键项 immutability、grant、unknown-retry 未满分，因此不能作为可直接接受的修复审查。"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+      "resultIndex": 1,
+      "caseId": "review",
+      "repetition": 1,
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "runCount": 3,
+      "elapsedMilliseconds": 59463,
+      "promptSha256": "1471121d90e0ba63ea185854a825efc63fa860314a132ec05d9459c52bdc8889",
+      "runStates": {
+        "completed": 3
+      },
+      "finalAnswerSha256": "19876d9f400abf96f6d10dcca3e3b19603dbd198883a5f1b5dfa667e44bdb353",
+      "score": 12,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "key-scope",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies cross-Task operation-key lookup leak and returns/conflicts only within the authorized Task; cites API/store and observation A.",
+          "partialCredit": "Identifies unscoped lookup or leakage but lacks the scoped lookup/response correction.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "发现跨 Task key 泄漏，但把不同 Task 使用相同 key 的合法独立请求写成应冲突，没有给出正确的按 Task 隔离查询/返回修复。"
+        },
+        {
+          "id": "immutability",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies accepted body mutation through concurrent same-key upsert; proposes immutable insert plus same-key digest equality/conflict, atomically preserving accepted source identity.",
+          "partialCredit": "Notices upsert mutation or key conflict but omits concurrent/accepted-data preservation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "列出 accepted body 会变的观察及冲突测试，但没有定位同 key upsert 的更新分支或明确不可变 insert+digest 冲突的原子修复。"
+        },
+        {
+          "id": "acceptance",
+          "kind": "critical",
+          "critical": true,
+          "text": "Rejects automatic acceptance from Agent review.reviewerApproved and retains Owner-only acceptance; distinguishes proposal permission from acceptance.",
+          "partialCredit": "Notices untrusted approval but does not state the Owner-only boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "要求 reviewerApproved 仅作观察，却未明确 Owner-only 接受动作及移除现有自动 acceptance.insert 分支。"
+        },
+        {
+          "id": "claim",
+          "kind": "quality",
+          "critical": false,
+          "text": "Explains SELECT/UPDATE competing claim race and requires a conditional transactional/CAS claim whose affected-row result determines sole ownership.",
+          "partialCredit": "Finds the race but offers only a process-local lock or unspecified transaction.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "提出事务或带 state=pending 条件的原子更新，并以并发仅一人领取为预期。"
+        },
+        {
+          "id": "artifact-pin",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins accepted revision 7/h7 with latest revision 8/h8 and replaces latest lookup with exact accepted Artifact ID/revision/digest; byte digest alone is insufficient.",
+          "partialCredit": "Finds latest-artifact drift without all accepted identity pins.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "只列出 latest 与 accepted 不一致，及使用 accepted revision/digest 的测试，未完整给出 accepted ID/revision/digest 固定读取修复。"
+        },
+        {
+          "id": "grant",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires owner-local current grant validation immediately before effect, bound to repository/Task/generation/destination/expiry and revocation; registration/pinned transport are insufficient.",
+          "partialCredit": "Finds expiry/revocation omission but proposes only Central/cache validation or lacks binding.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "指出过期/撤销后应阻断，但没有 owner-local 临效果复验和完整 grant 绑定。"
+        },
+        {
+          "id": "unknown-retry",
+          "kind": "critical",
+          "critical": true,
+          "text": "Explains fresh generation changes remote idempotency identity after an ambiguous commit; reconciles old key read-only and blocks blind replay while UNKNOWN.",
+          "partialCredit": "Recognizes duplicate-effect risk without retained-key reconciliation and an UNKNOWN fence.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "要求旧 key 对账而非 fresh-key replay，但没有解释 generation 改变远端幂等身份及明确 UNKNOWN 状态禁止重放。"
+        },
+        {
+          "id": "ref-cas",
+          "kind": "critical",
+          "critical": true,
+          "text": "Finds ref-check/use race and passes expectedHead into atomic effect CAS; separate precheck is insufficient.",
+          "partialCredit": "Mentions ref race or atomicity but not the final effect's expected-head CAS.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "准确要求 expectedHead 进入 ExternalApply 的原子 CAS，不能仅依赖本地预检。"
+        },
+        {
+          "id": "regression",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides distinct actionable concurrent/collision, authority/pinning, revoked-grant, CAS and lost-response regressions with expected outcomes.",
+          "partialCredit": "Tests at least three of those five groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "矩阵覆盖碰撞、来源、撤销、丢响应和领取竞争，却漏掉 Solver 已提出的 ref-check/use CAS 回归。"
+        },
+        {
+          "id": "soundness",
+          "kind": "quality",
+          "critical": false,
+          "text": "Prioritizes release-blocking safety defects, cites material code/observation IDs, preserves existing team/Run/digest/pinning controls, and labels all repair/tests as proposed.",
+          "partialCredit": "Useful evidence-linked review but incomplete priority/control/verification boundary; no invented critical defect.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "作出阻断发布的结论并保留现有正确控制，但跨 Task 错误冲突预期、关键修复压缩与不必要的不确定性降低了方案可用性。"
+        }
+      ],
+      "evaluation": {
+        "summary": "汇合了双方发现，但多个关键缺陷只剩一句话，修复不够具体；还沿用了 Reviewer 对跨 Task 同 key 的错误冲突预期。",
+        "materialIssues": [
+          "不同 Task 的同 key 请求被误判为应冲突。",
+          "未落实不可变 Result 写入和 Owner-only 接受的具体修复。",
+          "合并时丢掉 Solver 的 expectedHead 竞争回归，弱化 Reviewer 的 accepted artifact 修复细节。"
+        ],
+        "contributionReview": "两份完整贡献都在 Finalizer 指令中。Reviewer 提供 key/immutability/artifact/grant/retry 观察，Solver 提供 claim/CAS/Agent approval 的代码依据；Finalizer 收集了这些发现但没有彻底纠错和保留修复细节。"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+      "resultIndex": 2,
+      "caseId": "incident",
+      "repetition": 1,
+      "arm": "discussion",
+      "runtimeSucceeded": false,
+      "runCount": 2,
+      "elapsedMilliseconds": 39514,
+      "promptSha256": "ad9efe11f377db26f3655c202f1c5486731cde08b45cfea8ff578f02886e45e2",
+      "runStates": {
+        "failed": 1,
+        "completed": 1
+      },
+      "finalAnswerSha256": null,
+      "score": null,
+      "maximumScore": 20,
+      "acceptedTaskResult": null,
+      "criteria": null,
+      "failureDiagnostics": [
+        {
+          "role": "Solver",
+          "diagnostics": {
+            "exitCode": 0,
+            "timedOut": false,
+            "itemKinds": [
+              "agent_message",
+              "mcp_tool_call"
+            ],
+            "failureReasons": [
+              "unapproved_tool"
+            ],
+            "deniedTools": [
+              {
+                "kind": "mcp_tool_call",
+                "server": "codex",
+                "tool": "list_mcp_resources"
+              }
+            ]
+          },
+          "evidenceCoverage": {
+            "status": "not_read",
+            "availableDocuments": 4,
+            "readDocuments": 0,
+            "missingDocumentIds": [
+              "incident-central",
+              "incident-bridge",
+              "incident-recovery",
+              "incident-inbox"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "incident",
+      "repetition": 1,
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "runCount": 1,
+      "elapsedMilliseconds": 45191,
+      "promptSha256": "ad9efe11f377db26f3655c202f1c5486731cde08b45cfea8ff578f02886e45e2",
+      "runStates": {
+        "completed": 1
+      },
+      "finalAnswerSha256": "2e0414752c60903e20755d05405eda9f02b756491882e11d04f7301dbea7e3c0",
+      "score": 13,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "clock",
+          "kind": "quality",
+          "critical": false,
+          "text": "Normalizes A1 send to 10:00:03/commit 10:00:04, A2 send 10:00:17/commit 10:00:18, and B1 send 10:01:02 UTC using both offsets.",
+          "partialCredit": "Correctly applies both clock offsets but omits at least one key event or gives only approximate ordering.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "虽写出两个时钟偏移，但把 Beta 的准备/发送分别列为 10:01:02/03，正确应为 10:01:01/02；A1、A2 的 Bridge 发送时间也未列出，因此不满足正确应用两种偏移的部分分条件。"
+        },
+        {
+          "id": "alpha",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins P101 and P102 as two distinct committed +7 effects of one logical operation: total +14, surplus +7, final known Widget value 114 through the audit watermark.",
+          "partialCredit": "Finds duplicate Alpha effect and +14 or surplus +7 but omits another required quantity/watermark boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "正确认出两次 +7、净增 +14，并列出 107→114；没有明确计算超出授权的 +7，因此数量项未完整。"
+        },
+        {
+          "id": "beta",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps Beta pending/unknown: negative lookup watermark 10:00:50 predates 10:01:02 send, and no maximum pending time/status proves no effect; does not infer Beta +0 or +5.",
+          "partialCredit": "Keeps Beta unknown but omits either stale watermark or possible future commit of a pending request.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确保留 Beta UNKNOWN，指出 10:00:50 水位和缺少权威状态，允许其仍处于 pending，未断言 +0 或 +5。"
+        },
+        {
+          "id": "root-cause",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies generation-specific new idempotency key plus replay without reconciliation as duplicate-effect mechanism; does not blame correct stale-epoch rejection as the cause or assert socket-loss origin.",
+          "partialCredit": "Finds bad replay/new key but conflates lifecycle rejection with effect duplication or omits the causal join.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "准确定位 generation 派生新 key 与未先对账的重放机制，并保留正确的旧 epoch 拒绝。"
+        },
+        {
+          "id": "lifecycle",
+          "kind": "critical",
+          "critical": true,
+          "text": "Reports three Runs (one completed A2, two working/cancellation-pending A1/B1) separately from two logical Tasks and external effect status; preserves stale-epoch rejection.",
+          "partialCredit": "Correct counts/state separation but lacks stale-callback boundary or exact Run mapping.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确区分两个逻辑任务、三个 Run、一完成/两未终止及外部效果，保留 A1/B1 的取消等待边界。"
+        },
+        {
+          "id": "durations",
+          "kind": "quality",
+          "critical": false,
+          "text": "Distinguishes 80-second observation age from unmeasurable completed phase duration; reports only A2's known terminal duration 5 seconds and leaves A1/B1 ongoing.",
+          "partialCredit": "Corrects all-finished/elapsed claim but omits either observation-age or A2 calculation.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确把 80 秒称为观察年龄，只给 A2 已知终止时长 5 秒，未把全阶段报为已完成。"
+        },
+        {
+          "id": "reconcile",
+          "kind": "critical",
+          "critical": true,
+          "text": "Gives per-operation read-only exact-key authoritative reconciliation: retain both Alpha receipts, keep Beta fenced pending authoritative outcome, and avoid implicit compensation or blind new-key replay.",
+          "partialCredit": "Gives safe read-only reconciliation but lacks operation-specific actions or compensation boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "总体要求 exact-key 权威查询及未知状态围栏，但 Beta 行又写无 reconciliation 被支持，未明确执行已提供的只读权威查询这一安全下一步。"
+        },
+        {
+          "id": "repair",
+          "kind": "quality",
+          "critical": false,
+          "text": "Proposes stable logical operation key+payload digest across attempts, current consent checks, immutable effect evidence and no automatic completion of canonical Runs from remote receipts.",
+          "partialCredit": "Proposes stable key and reconciliation but omits current consent or canonical lifecycle preservation.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "最小修复段没有给出跨 attempt 的稳定逻辑 key+payload digest 方案或当前 consent 校验；仅提出 UNKNOWN 查询和保留历史。"
+        },
+        {
+          "id": "regressions",
+          "kind": "quality",
+          "critical": false,
+          "text": "Specifies expected outcomes for commit-before-response-loss (one effect), new epoch/stale callback, stale-negative/pending Beta (no replay), and conflicting payload for a reused key.",
+          "partialCredit": "Covers at least two of the four named scenarios with expected outcomes.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "有丢响应、旧 epoch、过时负查询和 pending 的预期结果，缺少 reused-key 不同 payload 的冲突回归。"
+        },
+        {
+          "id": "delivery",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides an evidence-cited timeline/decision table and truthful owner summary, explicitly retaining unknown socket-loss cause and unperformed repair/tests.",
+          "partialCredit": "Provides a usable cited summary but omits requested table/timeline or a material uncertainty boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "给出引用充分的时间表、操作表和面向使用者的状态纠正，保留未知掉线原因并清楚区分建议与实际执行。"
+        }
+      ],
+      "evaluation": {
+        "summary": "正确识别重复副作用与 UNKNOWN 边界，但时钟归一化出现具体错误，修复没有完整落实稳定逻辑幂等身份。",
+        "materialIssues": [
+          "Beta 的两条 Bridge 事件归一化各错 1 秒，并添加了未给出的 working 时间。",
+          "未明确超量 +7；Beta 行不应禁止安全的只读权威状态查询。",
+          "诊断找到了 generation-key 根因，最小修复却未明确保持稳定 key 与 payload digest。"
+        ],
+        "acceptanceNote": "该答案仅作未配对结果展示；第一轮对应 Discussion 运行失败，不能拿它参与完整配对平均。"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 1,
+      "caseId": "planning",
+      "repetition": 1,
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "runCount": 1,
+      "elapsedMilliseconds": 57032,
+      "promptSha256": "059cb5274a6294ab28fbe44267938ab9bfdab261ebbe35daac8006e8a2782e49",
+      "runStates": {
+        "completed": 1
+      },
+      "finalAnswerSha256": "c2e80bd5627ab8fb179cdf01f6d534057493bebebf91bf46b9aed8344c2f4c89",
+      "score": 14,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "alternatives",
+          "kind": "critical",
+          "critical": true,
+          "text": "Selects B as conditionally feasible; rejects A's raw-data export, C's offline/domain/credential violations and D's concurrency/memory misuse, with source-supported reasons.",
+          "partialCredit": "Selects B and correctly rejects at least two alternatives but misses a material constraint.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "选 B 并准确按数据出域、离线/凭据和并发内存限制排除 A、C、D。"
+        },
+        {
+          "id": "schedule",
+          "kind": "critical",
+          "critical": true,
+          "text": "Provides all six non-preemptive intervals completing within 14 minutes after preflight, with <=2 concurrent jobs, <=16 GiB and E-after-C/F-after-D; no assumed speedup.",
+          "partialCredit": "Provides an auditable resource/dependency-valid schedule taking more than 14 minutes, or a sound scheduling method without all intervals.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "时间表将 A 分段为 4–7、9–10，只给 4 分钟而任务需 6；B 分段为 7–9、10–12，只给 4 分钟而需 5，同时违反不可抢占约束，因此 12 分钟排程无效。"
+        },
+        {
+          "id": "window",
+          "kind": "quality",
+          "critical": false,
+          "text": "Computes own feasible schedule +2 preflight +1 cutover +5 observation within 22 minutes and identifies 60-second pause <=90 seconds; does not omit observation.",
+          "partialCredit": "Correct window or pause arithmetic but omits one required phase or condition.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "完整列入 preflight/copy/cutover/observation 并正确算出 60 秒暂停小于 90 秒，但 20 分钟总窗口依赖错误排程，只给部分分。"
+        },
+        {
+          "id": "backlog",
+          "kind": "quality",
+          "critical": false,
+          "text": "Uses aggregate service 180 (not 240), peak excess 40/s for 120s giving 4800 jobs <6000.",
+          "partialCredit": "Uses 180 capacity and recognizes bounded backlog but lacks/errs on one exact backlog number.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确用共享 180/s 服务率算出 4800 积压，并比较 6000 上限。"
+        },
+        {
+          "id": "queue-time",
+          "kind": "quality",
+          "critical": false,
+          "text": "Calculates peak delay 4800/180=26.667s <60 and drain after surge 4800/(180-140)=120s; extra worker alone does not lift shared cap.",
+          "partialCredit": "Correctly calculates either delay or drain and recognizes shared cap, but omits or errs on the other.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确计算 4800/180≈26.7 秒延迟及 4800/(180−140)=120 秒排空，使用共享上限而非 240。"
+        },
+        {
+          "id": "checkpoint",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires exact per-tenant snapshot/q0/qf/digest and destination generation, gap-free idempotent replay through final qf, all six verified before flip; rejects latest-verified substitution.",
+          "partialCredit": "Describes safe final catch-up and verification but misses immutable checkpoint identity or all-tenant barrier.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "正确要求 S/q0/qf、无缺口回放、摘要及所有租户屏障，但没有把 destination generation 纳入不可变检查点身份。"
+        },
+        {
+          "id": "rollback",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves/replays post-cutover writes before rollback and verifies checkpoints under pause; states safe pre-F3 boundary before 8 minutes, 5-minute observation, and fresh Owner compaction approval.",
+          "partialCredit": "Recognizes F3 incompatibility and need to preserve new writes but lacks rollback sequence or time/consent boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "保留 reverse journal 回放进入 V1 可读目标及暂停/校验/切换/恢复步骤，指出 8 分钟/F3 边界、5 分钟观察和另行 Owner compaction 动作。"
+        },
+        {
+          "id": "authority",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves local raw data, path-free Central receipts, owner-local current grants and unchanged Device credentials/pinned HTTPS with separately accepted browser HTTP.",
+          "partialCredit": "Correct transport/data choice but misses current grants or identity preservation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "保留本地数据、浏览器 HTTP、现有凭据/源约束，并列出 grant/CA/origin 阻断条件；没有完整表达 owner-local 当前 grant 及其 Task/Run 绑定。"
+        },
+        {
+          "id": "verification",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides expected-outcome checks for schedule/resource negatives, wrong CA/origin, revoked grant, checkpoint gaps/restart and rollback writes/F3; distinguishes planning from physical rehearsal.",
+          "partialCredit": "Covers at least three of those five regression groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "验证清单包含排程/资源、信任、撤销和检查点条件，但没有明确 restart 与回滚新写入/F3 的预期测试。"
+        },
+        {
+          "id": "readiness",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps real rollout conditional on missing pause-bound rehearsal and real contention/throughput evidence; does not promote synthetic results or theoretical feasible schedule into physical go-live approval.",
+          "partialCredit": "Keeps rollout conditional but names only one of the two missing physical evidence gates.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "明确这些时间/吞吐只属于构造测量，指出生产规模暂停演练和实际吞吐证据均缺失，没有宣称真实部署完成。"
+        }
+      ],
+      "evaluation": {
+        "summary": "选型、队列计算和回滚边界较好，但核心迁移排程缩短了作业实际运行时间并非法暂停，不能用于执行。",
+        "materialIssues": [
+          "A、B 被非法分段且总运行时间不足，导致 12 分钟 job span /20 分钟窗口结论无效。",
+          "检查点未完整绑定 destination generation。",
+          "实际 grant 复验和恢复/回滚验证矩阵仍欠具体。"
+        ]
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 2,
+      "caseId": "planning",
+      "repetition": 1,
+      "arm": "discussion",
+      "runtimeSucceeded": false,
+      "runCount": 2,
+      "elapsedMilliseconds": 43783,
+      "promptSha256": "059cb5274a6294ab28fbe44267938ab9bfdab261ebbe35daac8006e8a2782e49",
+      "runStates": {
+        "failed": 1,
+        "completed": 1
+      },
+      "finalAnswerSha256": null,
+      "score": null,
+      "maximumScore": 20,
+      "acceptedTaskResult": null,
+      "criteria": null,
+      "failureDiagnostics": [
+        {
+          "role": "Solver",
+          "diagnostics": {
+            "exitCode": 0,
+            "timedOut": false,
+            "itemKinds": [
+              "agent_message",
+              "mcp_tool_call"
+            ],
+            "failureReasons": [
+              "unapproved_tool"
+            ],
+            "deniedTools": [
+              {
+                "kind": "mcp_tool_call",
+                "server": "evidence",
+                "tool": "list_mcp_resources"
+              },
+              {
+                "kind": "mcp_tool_call",
+                "server": "codex",
+                "tool": "list_mcp_resources"
+              }
+            ]
+          },
+          "evidenceCoverage": {
+            "status": "complete",
+            "availableDocuments": 4,
+            "readDocuments": 4,
+            "missingDocumentIds": []
+          }
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 3,
+      "caseId": "review",
+      "repetition": 2,
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "runCount": 3,
+      "elapsedMilliseconds": 61866,
+      "promptSha256": "1471121d90e0ba63ea185854a825efc63fa860314a132ec05d9459c52bdc8889",
+      "runStates": {
+        "completed": 3
+      },
+      "finalAnswerSha256": "d0718ea00a64dae28fe2e95f5b78ae5aee1ed2ec9f6ded287dfde6b3fdcf3a9d",
+      "score": 15,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "key-scope",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies cross-Task operation-key lookup leak and returns/conflicts only within the authorized Task; cites API/store and observation A.",
+          "partialCredit": "Identifies unscoped lookup or leakage but lacks the scoped lookup/response correction.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确说明 operation_key 缺少 task_id 范围，并提出按 (task_id,operation_key) 查询。"
+        },
+        {
+          "id": "immutability",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies accepted body mutation through concurrent same-key upsert; proposes immutable insert plus same-key digest equality/conflict, atomically preserving accepted source identity.",
+          "partialCredit": "Notices upsert mutation or key conflict but omits concurrent/accepted-data preservation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "识别 accepted body/hash 改变并要求保留 accepted tuple，但未定位 upsert 更新分支或保证所有 Result 的不可变 insert 与同 key 不同 body 冲突。"
+        },
+        {
+          "id": "acceptance",
+          "kind": "critical",
+          "critical": true,
+          "text": "Rejects automatic acceptance from Agent review.reviewerApproved and retains Owner-only acceptance; distinguishes proposal permission from acceptance.",
+          "partialCredit": "Notices untrusted approval but does not state the Owner-only boundary.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "错误地把 API 已将 reviewerApproved 仅作观察、不作接受权限列为正确控制，遗漏了第 14 行自动 acceptance.insert 的实际越权。"
+        },
+        {
+          "id": "claim",
+          "kind": "quality",
+          "critical": false,
+          "text": "Explains SELECT/UPDATE competing claim race and requires a conditional transactional/CAS claim whose affected-row result determines sole ownership.",
+          "partialCredit": "Finds the race but offers only a process-local lock or unspecified transaction.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "用事务/条件更新修复领取竞争，回归要求只有一个胜者。"
+        },
+        {
+          "id": "artifact-pin",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins accepted revision 7/h7 with latest revision 8/h8 and replaces latest lookup with exact accepted Artifact ID/revision/digest; byte digest alone is insufficient.",
+          "partialCredit": "Finds latest-artifact drift without all accepted identity pins.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "明确 accepted Artifact ID/revision/digest 元组，要求决策时固定并拒绝后续漂移，回归保留原元组。"
+        },
+        {
+          "id": "grant",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires owner-local current grant validation immediately before effect, bound to repository/Task/generation/destination/expiry and revocation; registration/pinned transport are insufficient.",
+          "partialCredit": "Finds expiry/revocation omission but proposes only Central/cache validation or lacks binding.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "明确 consent 的 repository/Task/generation/destination/expiry 绑定和临本地效果复验，提出 Bridge 内独立 grant 检查及撤销/过期阻断。"
+        },
+        {
+          "id": "unknown-retry",
+          "kind": "critical",
+          "critical": true,
+          "text": "Explains fresh generation changes remote idempotency identity after an ambiguous commit; reconciles old key read-only and blocks blind replay while UNKNOWN.",
+          "partialCredit": "Recognizes duplicate-effect risk without retained-key reconciliation and an UNKNOWN fence.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "提出按旧远端 receipt 对账后再排队，但未完整解释新 generation 派生不同远端 key 的重复机制，也缺少明确 UNKNOWN 重放围栏。"
+        },
+        {
+          "id": "ref-cas",
+          "kind": "critical",
+          "critical": true,
+          "text": "Finds ref-check/use race and passes expectedHead into atomic effect CAS; separate precheck is insufficient.",
+          "partialCredit": "Mentions ref race or atomicity but not the final effect's expected-head CAS.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确要求 expectedHead 进入 ExternalApply 原子 CAS，并测试预检后 ref 改变的冲突。"
+        },
+        {
+          "id": "regression",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides distinct actionable concurrent/collision, authority/pinning, revoked-grant, CAS and lost-response regressions with expected outcomes.",
+          "partialCredit": "Tests at least three of those five groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "覆盖 key/领取并发、来源和权限、撤销、CAS、丢响应五组预期回归。"
+        },
+        {
+          "id": "soundness",
+          "kind": "quality",
+          "critical": false,
+          "text": "Prioritizes release-blocking safety defects, cites material code/observation IDs, preserves existing team/Run/digest/pinning controls, and labels all repair/tests as proposed.",
+          "partialCredit": "Useful evidence-linked review but incomplete priority/control/verification boundary; no invented critical defect.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "总体是有引用的阻断发布审查，但把 reviewerApproved 自动接受路径误称为正确控制，是实质性误判。"
+        }
+      ],
+      "evaluation": {
+        "summary": "比第一轮 Discussion 更具体地覆盖了 grant 和 artifact 身份，但把 Agent 自动接受缺陷误当作已正确实现的控制。",
+        "materialIssues": [
+          "遗漏并错误肯定 reviewerApproved 的自动 acceptance 路径。",
+          "不可变 Result 的底层 upsert 修复仍不完整。",
+          "UNKNOWN 后新 generation 更换远端幂等身份的机制仍未讲清。"
+        ],
+        "acceptanceNote": "第二轮 Single 运行失败，因此本答案只单独评价，不参与配对比较。"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 4,
+      "caseId": "review",
+      "repetition": 2,
+      "arm": "single_agent",
+      "runtimeSucceeded": false,
+      "runCount": 1,
+      "elapsedMilliseconds": 39046,
+      "promptSha256": "1471121d90e0ba63ea185854a825efc63fa860314a132ec05d9459c52bdc8889",
+      "runStates": {
+        "failed": 1
+      },
+      "finalAnswerSha256": null,
+      "score": null,
+      "maximumScore": 20,
+      "acceptedTaskResult": null,
+      "criteria": null,
+      "failureDiagnostics": [
+        {
+          "role": "Baseline",
+          "diagnostics": {
+            "exitCode": 0,
+            "timedOut": false,
+            "itemKinds": [
+              "agent_message",
+              "mcp_tool_call"
+            ],
+            "failureReasons": [
+              "unapproved_tool"
+            ],
+            "deniedTools": [
+              {
+                "kind": "mcp_tool_call",
+                "server": "evidence",
+                "tool": "list_mcp_resources"
+              }
+            ]
+          },
+          "evidenceCoverage": {
+            "status": "complete",
+            "availableDocuments": 8,
+            "readDocuments": 8,
+            "missingDocumentIds": []
+          }
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 5,
+      "caseId": "incident",
+      "repetition": 2,
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "runCount": 1,
+      "elapsedMilliseconds": 48947,
+      "promptSha256": "ad9efe11f377db26f3655c202f1c5486731cde08b45cfea8ff578f02886e45e2",
+      "runStates": {
+        "completed": 1
+      },
+      "finalAnswerSha256": "9508f28d60f0685941f85c52175546ee61ef8aa1de0de11ccc477d228285adfe",
+      "score": 14,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "clock",
+          "kind": "quality",
+          "critical": false,
+          "text": "Normalizes A1 send to 10:00:03/commit 10:00:04, A2 send 10:00:17/commit 10:00:18, and B1 send 10:01:02 UTC using both offsets.",
+          "partialCredit": "Correctly applies both clock offsets but omits at least one key event or gives only approximate ordering.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确归一化 A1/A2 的发送与 provider 提交，以及 Beta 发送 10:01:02，两个时钟偏移均正确。"
+        },
+        {
+          "id": "alpha",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins P101 and P102 as two distinct committed +7 effects of one logical operation: total +14, surplus +7, final known Widget value 114 through the audit watermark.",
+          "partialCredit": "Finds duplicate Alpha effect and +14 or surplus +7 but omits another required quantity/watermark boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "把两次 +7 和两份 receipt 合并为同一 Alpha 的重复效果，保留 114 的变化；未完成净增 +14、超额 +7 的显式汇总。"
+        },
+        {
+          "id": "beta",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps Beta pending/unknown: negative lookup watermark 10:00:50 predates 10:01:02 send, and no maximum pending time/status proves no effect; does not infer Beta +0 or +5.",
+          "partialCredit": "Keeps Beta unknown but omits either stale watermark or possible future commit of a pending request.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "指出水位早于 Beta 发送，保留 pending/unknown 及缺少权威状态，不把 not_found 当作最终无效果。"
+        },
+        {
+          "id": "root-cause",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies generation-specific new idempotency key plus replay without reconciliation as duplicate-effect mechanism; does not blame correct stale-epoch rejection as the cause or assert socket-loss origin.",
+          "partialCredit": "Finds bad replay/new key but conflates lifecycle rejection with effect duplication or omits the causal join.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确将新 generation 的新 key 与未对账重放连成重复副作用的因果链，没有将正确 epoch 防护作为根因。"
+        },
+        {
+          "id": "lifecycle",
+          "kind": "critical",
+          "critical": true,
+          "text": "Reports three Runs (one completed A2, two working/cancellation-pending A1/B1) separately from two logical Tasks and external effect status; preserves stale-epoch rejection.",
+          "partialCredit": "Correct counts/state separation but lacks stale-callback boundary or exact Run mapping.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "正确报告 3/1/2 和 A1/B1 未终止，但没有明确解释晚到 epoch-8 callback 的处理边界。"
+        },
+        {
+          "id": "durations",
+          "kind": "quality",
+          "critical": false,
+          "text": "Distinguishes 80-second observation age from unmeasurable completed phase duration; reports only A2's known terminal duration 5 seconds and leaves A1/B1 ongoing.",
+          "partialCredit": "Corrects all-finished/elapsed claim but omits either observation-age or A2 calculation.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确算出 80 秒观察年龄及 A2 的 5 秒，明确 A1/B1 无终止时长。"
+        },
+        {
+          "id": "reconcile",
+          "kind": "critical",
+          "critical": true,
+          "text": "Gives per-operation read-only exact-key authoritative reconciliation: retain both Alpha receipts, keep Beta fenced pending authoritative outcome, and avoid implicit compensation or blind new-key replay.",
+          "partialCredit": "Gives safe read-only reconciliation but lacks operation-specific actions or compensation boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "分别保留两份 Alpha receipt，Beta 先取 exact-key 权威状态且 pending/unknown 围栏不变，补偿需要单独授权。"
+        },
+        {
+          "id": "repair",
+          "kind": "quality",
+          "critical": false,
+          "text": "Proposes stable logical operation key+payload digest across attempts, current consent checks, immutable effect evidence and no automatic completion of canonical Runs from remote receipts.",
+          "partialCredit": "Proposes stable key and reconciliation but omits current consent or canonical lifecycle preservation.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有交付稳定 logical key+payload digest、当前 consent 复验的具体修复方案。"
+        },
+        {
+          "id": "regressions",
+          "kind": "quality",
+          "critical": false,
+          "text": "Specifies expected outcomes for commit-before-response-loss (one effect), new epoch/stale callback, stale-negative/pending Beta (no replay), and conflicting payload for a reused key.",
+          "partialCredit": "Covers at least two of the four named scenarios with expected outcomes.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有给出请求的回归矩阵或任何带预期结果的测试场景。"
+        },
+        {
+          "id": "delivery",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides an evidence-cited timeline/decision table and truthful owner summary, explicitly retaining unknown socket-loss cause and unperformed repair/tests.",
+          "partialCredit": "Provides a usable cited summary but omits requested table/timeline or a material uncertainty boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "提供有引用的时间表、操作表和状态纠正，明确未知掉线原因及未获得的 Beta 权威结果，未声称执行修复。"
+        }
+      ],
+      "evaluation": {
+        "summary": "事实重建比第一轮更准确，也正确识别重复效果，但遗漏了任务要求的最小代码修复和回归交付。",
+        "materialIssues": [
+          "没有显式汇总净增和超量。",
+          "晚到旧 epoch 的处理没有形成明确验收项。",
+          "缺少稳定幂等身份/授权修复和回归矩阵。"
+        ]
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 6,
+      "caseId": "incident",
+      "repetition": 2,
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "runCount": 3,
+      "elapsedMilliseconds": 69233,
+      "promptSha256": "ad9efe11f377db26f3655c202f1c5486731cde08b45cfea8ff578f02886e45e2",
+      "runStates": {
+        "completed": 3
+      },
+      "finalAnswerSha256": "3f9e670ee16f4b1eb76a701065ceda075c638c803230377887cee1763477afee",
+      "score": 7,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "clock",
+          "kind": "quality",
+          "critical": false,
+          "text": "Normalizes A1 send to 10:00:03/commit 10:00:04, A2 send 10:00:17/commit 10:00:18, and B1 send 10:01:02 UTC using both offsets.",
+          "partialCredit": "Correctly applies both clock offsets but omits at least one key event or gives only approximate ordering.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "仅保留 provider 时钟，漏掉 Solver 已提供的 Bridge +90 秒归一化与 A1/A2/Beta 发送时间。"
+        },
+        {
+          "id": "alpha",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins P101 and P102 as two distinct committed +7 effects of one logical operation: total +14, surplus +7, final known Widget value 114 through the audit watermark.",
+          "partialCredit": "Finds duplicate Alpha effect and +14 or surplus +7 but omits another required quantity/watermark boundary.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "把 Alpha:1 和 Alpha:2 按两个独立 logical operation 列出，未合并为同一 Alpha 的重复 +7，更没有净增/超量结论。"
+        },
+        {
+          "id": "beta",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps Beta pending/unknown: negative lookup watermark 10:00:50 predates 10:01:02 send, and no maximum pending time/status proves no effect; does not infer Beta +0 or +5.",
+          "partialCredit": "Keeps Beta unknown but omits either stale watermark or possible future commit of a pending request.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确解释过时 not_found 水位不能排除后续提交或 pending，并保留 Beta UNKNOWN。"
+        },
+        {
+          "id": "root-cause",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies generation-specific new idempotency key plus replay without reconciliation as duplicate-effect mechanism; does not blame correct stale-epoch rejection as the cause or assert socket-loss origin.",
+          "partialCredit": "Finds bad replay/new key but conflates lifecycle rejection with effect duplication or omits the causal join.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "把核心问题归为 Beta 读取索引延迟，丢掉 Solver 已明确给出的 generation 改 key、未对账重放的重复效果机制。"
+        },
+        {
+          "id": "lifecycle",
+          "kind": "critical",
+          "critical": true,
+          "text": "Reports three Runs (one completed A2, two working/cancellation-pending A1/B1) separately from two logical Tasks and external effect status; preserves stale-epoch rejection.",
+          "partialCredit": "Correct counts/state separation but lacks stale-callback boundary or exact Run mapping.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有给出 3 Runs/1 completed/2 working 的确定计数，并把是否 all finished 主要联系到 Beta 外部状态，混淆生命周期与副作用。"
+        },
+        {
+          "id": "durations",
+          "kind": "quality",
+          "critical": false,
+          "text": "Distinguishes 80-second observation age from unmeasurable completed phase duration; reports only A2's known terminal duration 5 seconds and leaves A1/B1 ongoing.",
+          "partialCredit": "Corrects all-finished/elapsed claim but omits either observation-age or A2 calculation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "正确算出 A2 5 秒，但未给 80 秒观察年龄。Solver 的贡献未包含 A1 10:00:00 创建时间，因此这里是信息未传递完整，不能声称该时间已经出现在 Finalizer 上下文。"
+        },
+        {
+          "id": "reconcile",
+          "kind": "critical",
+          "critical": true,
+          "text": "Gives per-operation read-only exact-key authoritative reconciliation: retain both Alpha receipts, keep Beta fenced pending authoritative outcome, and avoid implicit compensation or blind new-key replay.",
+          "partialCredit": "Gives safe read-only reconciliation but lacks operation-specific actions or compensation boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "保留两份 Alpha receipt 的证据链接，Beta exact-key 权威状态查询及 pending/unknown 围栏，补偿仍需独立授权。"
+        },
+        {
+          "id": "repair",
+          "kind": "quality",
+          "critical": false,
+          "text": "Proposes stable logical operation key+payload digest across attempts, current consent checks, immutable effect evidence and no automatic completion of canonical Runs from remote receipts.",
+          "partialCredit": "Proposes stable key and reconciliation but omits current consent or canonical lifecycle preservation.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有稳定逻辑 key/digest 与当前 consent 的修复建议，仅要求查询及保留历史。"
+        },
+        {
+          "id": "regressions",
+          "kind": "quality",
+          "critical": false,
+          "text": "Specifies expected outcomes for commit-before-response-loss (one effect), new epoch/stale callback, stale-negative/pending Beta (no replay), and conflicting payload for a reused key.",
+          "partialCredit": "Covers at least two of the four named scenarios with expected outcomes.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "覆盖丢响应、旧 epoch、过时负查询和 pending 的结果要求，但遗漏相同 key 不同 payload 的冲突场景。"
+        },
+        {
+          "id": "delivery",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides an evidence-cited timeline/decision table and truthful owner summary, explicitly retaining unknown socket-loss cause and unperformed repair/tests.",
+          "partialCredit": "Provides a usable cited summary but omits requested table/timeline or a material uncertainty boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "有引用和可用的保守 Beta 建议，但完整 timeline/逻辑操作整合和根因交付不足，丢失已有贡献事实。"
+        }
+      ],
+      "evaluation": {
+        "summary": "Reviewer 侧的正确 UNKNOWN 约束保住了，但 Finalizer 基本沿用 Reviewer 的局部视角，没有把 Solver 的重试机制与两次 provider 提交汇合。",
+        "materialIssues": [
+          "未识别同一 Alpha 的重复副作用。",
+          "把主要问题归为索引延迟，遗漏新 generation 改变幂等身份。",
+          "丢掉已经在 Solver 贡献里的 3/1/2 Run 计数和 Bridge 时间线。"
+        ],
+        "contributionReview": "两份贡献完整进入最终指令。Solver 独立提供 Bridge 时间线、3/1/2 计数、新 key 风险；Reviewer 提供两份提交 receipt、水位和 UNKNOWN 规则。Finalizer 未完成这些互补事实的关键合并。首次创建时间本来就未被 Solver 带入贡献，应与已提供但被丢弃的事实区分。"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 7,
+      "caseId": "planning",
+      "repetition": 2,
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "runCount": 3,
+      "elapsedMilliseconds": 73783,
+      "promptSha256": "059cb5274a6294ab28fbe44267938ab9bfdab261ebbe35daac8006e8a2782e49",
+      "runStates": {
+        "completed": 3
+      },
+      "finalAnswerSha256": "fde84faef6b7357345c792c4cc079d49329315170ae171e73e6a9053850938d6",
+      "score": 3,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "alternatives",
+          "kind": "critical",
+          "critical": true,
+          "text": "Selects B as conditionally feasible; rejects A's raw-data export, C's offline/domain/credential violations and D's concurrency/memory misuse, with source-supported reasons.",
+          "partialCredit": "Selects B and correctly rejects at least two alternatives but misses a material constraint.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有给出A/B/C/D选择或排除判断，最终将决策全部搁置。"
+        },
+        {
+          "id": "schedule",
+          "kind": "critical",
+          "critical": true,
+          "text": "Provides all six non-preemptive intervals completing within 14 minutes after preflight, with <=2 concurrent jobs, <=16 GiB and E-after-C/F-after-D; no assumed speedup.",
+          "partialCredit": "Provides an auditable resource/dependency-valid schedule taking more than 14 minutes, or a sound scheduling method without all intervals.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有提交任何排程，也未利用Solver的15分钟与Reviewer的固定8分钟推出23>22的具体冲突。"
+        },
+        {
+          "id": "window",
+          "kind": "quality",
+          "critical": false,
+          "text": "Computes own feasible schedule +2 preflight +1 cutover +5 observation within 22 minutes and identifies 60-second pause <=90 seconds; does not omit observation.",
+          "partialCredit": "Correct window or pause arithmetic but omits one required phase or condition.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "只重复22分钟窗口及固定阶段，没有完成总窗口或60≤90的暂停算式。"
+        },
+        {
+          "id": "backlog",
+          "kind": "quality",
+          "critical": false,
+          "text": "Uses aggregate service 180 (not 240), peak excess 40/s for 120s giving 4800 jobs <6000.",
+          "partialCredit": "Uses 180 capacity and recognizes bounded backlog but lacks/errs on one exact backlog number.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有保留Solver已给出的180/220/120输入和4800积压计算。"
+        },
+        {
+          "id": "queue-time",
+          "kind": "quality",
+          "critical": false,
+          "text": "Calculates peak delay 4800/180=26.667s <60 and drain after surge 4800/(180-140)=120s; extra worker alone does not lift shared cap.",
+          "partialCredit": "Correctly calculates either delay or drain and recognizes shared cap, but omits or errs on the other.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有保留Solver已给出的140基线、26.67秒延迟和120秒排空计算。"
+        },
+        {
+          "id": "checkpoint",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires exact per-tenant snapshot/q0/qf/digest and destination generation, gap-free idempotent replay through final qf, all six verified before flip; rejects latest-verified substitution.",
+          "partialCredit": "Describes safe final catch-up and verification but misses immutable checkpoint identity or all-tenant barrier.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "只说六个exact checkpoints，没有提出q0/qf/digest/generation及无缺口追赶的具体方案。"
+        },
+        {
+          "id": "rollback",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves/replays post-cutover writes before rollback and verifies checkpoints under pause; states safe pre-F3 boundary before 8 minutes, 5-minute observation, and fresh Owner compaction approval.",
+          "partialCredit": "Recognizes F3 incompatibility and need to preserve new writes but lacks rollback sequence or time/consent boundary.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "保留F3不兼容和使用reverse journal的安全界限，但没有回滚步骤、8分钟决策窗口或Owner compaction门槛。"
+        },
+        {
+          "id": "authority",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves local raw data, path-free Central receipts, owner-local current grants and unchanged Device credentials/pinned HTTPS with separately accepted browser HTTP.",
+          "partialCredit": "Correct transport/data choice but misses current grants or identity preservation.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "没有给出完整的本地数据/分离传输/当前grant/身份保持方案。"
+        },
+        {
+          "id": "verification",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides expected-outcome checks for schedule/resource negatives, wrong CA/origin, revoked grant, checkpoint gaps/restart and rollback writes/F3; distinguishes planning from physical rehearsal.",
+          "partialCredit": "Covers at least three of those five regression groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "仅有wrong CA/origin/revoked grant的负面方向，不满足三组带预期结果的回归条件。"
+        },
+        {
+          "id": "readiness",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps real rollout conditional on missing pause-bound rehearsal and real contention/throughput evidence; does not promote synthetic results or theoretical feasible schedule into physical go-live approval.",
+          "partialCredit": "Keeps rollout conditional but names only one of the two missing physical evidence gates.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "明确真实暂停演练与吞吐验证都缺失，维持真实发布的条件，未把模拟数据升格为物理验收。"
+        }
+      ],
+      "evaluation": {
+        "summary": "保守地拒绝给出方案，避免了提交错误排程，但任务基本未完成；还错误称Solver已提供的队列输入缺失。",
+        "materialIssues": [
+          "把已进入上下文的180/220/140速率、120秒峰值以及计算结果说成缺失。",
+          "未做15+2+1+5=23分钟、超过22分钟窗口这一可完成的跨资料纠错。",
+          "缺少选型、排程与容量计算交付。"
+        ],
+        "contributionReview": "两份完整贡献都在最终指令中。Solver给出方案、15分钟排程、队列输入与正确积压/延迟/排空；Reviewer提供22分钟窗口、固定8分钟阶段和回滚授权约束。Finalizer没有利用互补事实识别23>22，而整体拒答。并非所有原始job细节都进入贡献，应把直接源文件不可读与现成计算输入被忽略分开。",
+        "outcomeCategory": "未交付：保守拒绝，但遗漏可计算事实"
+      }
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 8,
+      "caseId": "planning",
+      "repetition": 2,
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "runCount": 1,
+      "elapsedMilliseconds": 57778,
+      "promptSha256": "059cb5274a6294ab28fbe44267938ab9bfdab261ebbe35daac8006e8a2782e49",
+      "runStates": {
+        "completed": 1
+      },
+      "finalAnswerSha256": "c79fd3c0295c4d5c6da3b56cb37912e485b4cccf5a68e701db30b46fa36c66bd",
+      "score": 14,
+      "maximumScore": 20,
+      "acceptedTaskResult": false,
+      "criteria": [
+        {
+          "id": "alternatives",
+          "kind": "critical",
+          "critical": true,
+          "text": "Selects B as conditionally feasible; rejects A's raw-data export, C's offline/domain/credential violations and D's concurrency/memory misuse, with source-supported reasons.",
+          "partialCredit": "Selects B and correctly rejects at least two alternatives but misses a material constraint.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确选 B，并以数据留本地、离线和身份条件、并发/内存约束排除 A/C/D。"
+        },
+        {
+          "id": "schedule",
+          "kind": "critical",
+          "critical": true,
+          "text": "Provides all six non-preemptive intervals completing within 14 minutes after preflight, with <=2 concurrent jobs, <=16 GiB and E-after-C/F-after-D; no assumed speedup.",
+          "partialCredit": "Provides an auditable resource/dependency-valid schedule taking more than 14 minutes, or a sound scheduling method without all intervals.",
+          "maximumScore": 2,
+          "score": 0,
+          "evidence": "A 只安排 4–7 共 3 分钟，规定需 6 分钟；F 也被写为 7–12，而规定 2 分钟，任务时长未按表执行，因此宣称所有任务 12 分钟完成无效。"
+        },
+        {
+          "id": "window",
+          "kind": "quality",
+          "critical": false,
+          "text": "Computes own feasible schedule +2 preflight +1 cutover +5 observation within 22 minutes and identifies 60-second pause <=90 seconds; does not omit observation.",
+          "partialCredit": "Correct window or pause arithmetic but omits one required phase or condition.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "包含所有窗口阶段并正确计算 60≤90 秒，但 20 分钟总窗口建立在错误排程上，部分分。"
+        },
+        {
+          "id": "backlog",
+          "kind": "quality",
+          "critical": false,
+          "text": "Uses aggregate service 180 (not 240), peak excess 40/s for 120s giving 4800 jobs <6000.",
+          "partialCredit": "Uses 180 capacity and recognizes bounded backlog but lacks/errs on one exact backlog number.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "正确以共享180/s计算 4800 队列积压并比较6000容量。"
+        },
+        {
+          "id": "queue-time",
+          "kind": "quality",
+          "critical": false,
+          "text": "Calculates peak delay 4800/180=26.667s <60 and drain after surge 4800/(180-140)=120s; extra worker alone does not lift shared cap.",
+          "partialCredit": "Correctly calculates either delay or drain and recognizes shared cap, but omits or errs on the other.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "延迟26.67秒、排空120秒及增加第三worker不能抬高共享cap均正确。"
+        },
+        {
+          "id": "checkpoint",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires exact per-tenant snapshot/q0/qf/digest and destination generation, gap-free idempotent replay through final qf, all six verified before flip; rejects latest-verified substitution.",
+          "partialCredit": "Describes safe final catch-up and verification but misses immutable checkpoint identity or all-tenant barrier.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "有 S/q0/qf、无缺口回放、摘要与全租户屏障，未完整纳入 destination generation。"
+        },
+        {
+          "id": "rollback",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves/replays post-cutover writes before rollback and verifies checkpoints under pause; states safe pre-F3 boundary before 8 minutes, 5-minute observation, and fresh Owner compaction approval.",
+          "partialCredit": "Recognizes F3 incompatibility and need to preserve new writes but lacks rollback sequence or time/consent boundary.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "清楚要求保留并回放切换后新写入，暂停/校验/切换/恢复，指出8分钟/F3、观察及独立Owner compaction决定。"
+        },
+        {
+          "id": "authority",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves local raw data, path-free Central receipts, owner-local current grants and unchanged Device credentials/pinned HTTPS with separately accepted browser HTTP.",
+          "partialCredit": "Correct transport/data choice but misses current grants or identity preservation.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "有数据本地、凭据和origin保护及grant/repository/generation条件，未完整给出owner-local当前Task/Run consent绑定复验。"
+        },
+        {
+          "id": "verification",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides expected-outcome checks for schedule/resource negatives, wrong CA/origin, revoked grant, checkpoint gaps/restart and rollback writes/F3; distinguishes planning from physical rehearsal.",
+          "partialCredit": "Covers at least three of those five regression groups with expected outcomes.",
+          "maximumScore": 2,
+          "score": 1,
+          "evidence": "清单覆盖资源、信任、撤销和检查点条件，没有完整的restart及rollback写入/F3预期回归。"
+        },
+        {
+          "id": "readiness",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps real rollout conditional on missing pause-bound rehearsal and real contention/throughput evidence; does not promote synthetic results or theoretical feasible schedule into physical go-live approval.",
+          "partialCredit": "Keeps rollout conditional but names only one of the two missing physical evidence gates.",
+          "maximumScore": 2,
+          "score": 2,
+          "evidence": "明确所有吞吐/时长为构造模型，并点名真实暂停边界演练和争用吞吐测量均缺失，没有声称物理验收。"
+        }
+      ],
+      "evaluation": {
+        "summary": "再次选对方案并算对排队指标，但漏掉 A 的一半运行时间，排程和维护窗口结论不能执行。",
+        "materialIssues": [
+          "A只执行3分钟而要求6分钟，12分钟完成声明不成立。",
+          "检查点与grant绑定还不完整。",
+          "缺少具体恢复/回滚回归。"
+        ],
+        "outcomeCategory": "不可执行：排程违反硬约束"
+      }
+    }
+  ],
+  "completePairs": [
+    {
+      "caseId": "review",
+      "repetition": 1,
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+        "resultIndex": 0,
+        "score": 17,
+        "maximumScore": 20,
+        "runCount": 1,
+        "elapsedMilliseconds": 33503,
+        "acceptedTaskResult": false
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+        "resultIndex": 1,
+        "score": 12,
+        "maximumScore": 20,
+        "runCount": 3,
+        "elapsedMilliseconds": 59463,
+        "acceptedTaskResult": false
+      }
+    },
+    {
+      "caseId": "incident",
+      "repetition": 2,
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 5,
+        "score": 14,
+        "maximumScore": 20,
+        "runCount": 1,
+        "elapsedMilliseconds": 48947,
+        "acceptedTaskResult": false
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 6,
+        "score": 7,
+        "maximumScore": 20,
+        "runCount": 3,
+        "elapsedMilliseconds": 69233,
+        "acceptedTaskResult": false
+      }
+    },
+    {
+      "caseId": "planning",
+      "repetition": 2,
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 8,
+        "score": 14,
+        "maximumScore": 20,
+        "runCount": 1,
+        "elapsedMilliseconds": 57778,
+        "acceptedTaskResult": false
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 7,
+        "score": 3,
+        "maximumScore": 20,
+        "runCount": 3,
+        "elapsedMilliseconds": 73783,
+        "acceptedTaskResult": false
+      }
+    }
+  ],
+  "completePairTotals": {
+    "single_agent": {
+      "score": 45,
+      "maximumScore": 60,
+      "actualRuns": 3,
+      "elapsedMilliseconds": 140228,
+      "acceptedTaskResults": 0
+    },
+    "discussion": {
+      "score": 22,
+      "maximumScore": 60,
+      "actualRuns": 9,
+      "elapsedMilliseconds": 202479,
+      "acceptedTaskResults": 0
+    }
+  },
+  "unpairedCompletedAnswers": [
+    {
+      "caseId": "review",
+      "repetition": 2,
+      "arm": "discussion",
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 3,
+      "score": 15,
+      "runCount": 3,
+      "elapsedMilliseconds": 61866
+    },
+    {
+      "caseId": "incident",
+      "repetition": 1,
+      "arm": "single_agent",
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 0,
+      "score": 13,
+      "runCount": 1,
+      "elapsedMilliseconds": 45191
+    },
+    {
+      "caseId": "planning",
+      "repetition": 1,
+      "arm": "single_agent",
+      "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+      "resultIndex": 1,
+      "score": 14,
+      "runCount": 1,
+      "elapsedMilliseconds": 57032
+    }
+  ],
+  "phase": {
+    "maximumInvocations": 24,
+    "actualInvocations": 22,
+    "actualRuns": 22,
+    "runStates": {
+      "completed": 19,
+      "failed": 3
+    },
+    "plannedArms": 12,
+    "attemptedArms": 12,
+    "runtimeCompletedArms": 9,
+    "runtimeFailedArms": 3,
+    "completePairs": 3,
+    "incompletePairs": 3,
+    "scoredFinalAnswers": 9,
+    "acceptedTaskResults": 0,
+    "allArmElapsedMilliseconds": 629139,
+    "failedArmRuns": 5,
+    "failedArmElapsedMilliseconds": 122343,
+    "unpairedCompletedRuns": 5,
+    "unpairedCompletedElapsedMilliseconds": 164089,
+    "furtherInvocationAuthorized": false
+  },
+  "retrievalCoverage": [
+    {
+      "runtimeSucceeded": true,
+      "status": "complete",
+      "invocations": 15
+    },
+    {
+      "runtimeSucceeded": true,
+      "status": "not_read",
+      "invocations": 4
+    },
+    {
+      "runtimeSucceeded": false,
+      "status": "not_read",
+      "invocations": 1
+    },
+    {
+      "runtimeSucceeded": false,
+      "status": "complete",
+      "invocations": 2
+    }
+  ],
+  "verification": {
+    "packetUnchangedSince": "ebe5e74",
+    "sourceHashesMatchedGit": [
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+        "sourceCommit": "20bfdab061b07af3564d18ddabf1956a1bb99e36",
+        "matchedSources": 21
+      },
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "sourceCommit": "c017243d7e3cc44c3c68c4554d39eb44a5a5bcca",
+        "matchedSources": 23
+      }
+    ],
+    "taskPromptHashesMatched": 12,
+    "identicalTaskInputPerCase": true,
+    "allAcceptedReadIdsAndHashesMatchRoleScope": true,
+    "rawCaptureByteEquality": true,
+    "finalizerContext": [
+      {
+        "caseId": "review",
+        "repetition": 1,
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-initial-2026-09-06.json",
+        "resultIndex": 1,
+        "finalization": {
+          "turnId": "turn_I9f-fZeZWISgzvOQjADcKw",
+          "runId": "run_LCAvLubuh7Pc1Y0RKJqBrQ",
+          "outputMessageId": "msg_CKeVW8kLjxLA7nRMJQJQVg",
+          "state": "completed"
+        },
+        "bothEntireContributionsPresent": true,
+        "instructionCodePoints": 14859
+      },
+      {
+        "caseId": "review",
+        "repetition": 2,
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 3,
+        "finalization": {
+          "turnId": "turn_PxS2oAbQrwmyaZxbk_WPug",
+          "runId": "run_KmI8592JgimJC_lw0Xf02w",
+          "outputMessageId": "msg_7CX1FkBxbm9rPVUeT2C3Mw",
+          "state": "completed"
+        },
+        "bothEntireContributionsPresent": true,
+        "instructionCodePoints": 14149
+      },
+      {
+        "caseId": "incident",
+        "repetition": 2,
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 6,
+        "finalization": {
+          "turnId": "turn_qejfh8VEIO2ZqECdA0p5mQ",
+          "runId": "run_-jNLlkTv24WYXK7c-w4Qcw",
+          "outputMessageId": "msg_9EfuMSlsKpWLD6IrPxxExg",
+          "state": "completed"
+        },
+        "bothEntireContributionsPresent": true,
+        "instructionCodePoints": 15181
+      },
+      {
+        "caseId": "planning",
+        "repetition": 2,
+        "sourcePath": "docs/acceptance/evidence/qa-070-complex-remaining-2026-09-06.json",
+        "resultIndex": 7,
+        "finalization": {
+          "turnId": "turn_UNHFRH-vxuX8nn0hgwUj8g",
+          "runId": "run_isRlx03zxVwNZufhZFN0fQ",
+          "outputMessageId": "msg_WBU3iM7GZ1UAjS6wAfmHXQ",
+          "state": "completed"
+        },
+        "bothEntireContributionsPresent": true,
+        "instructionCodePoints": 12745
+      }
+    ],
+    "finalizationBoundary": "Retained Run IDs/states and Finalizer output IDs are rejoined; exact sender/message ownership was checked by the pinned live completedFinalAnswer helper, not a fresh database query after cleanup.",
+    "instructionBoundary": "Central Run instructions and hashes of Bridge-projected stdin are separate. Full projected stdin is not retained; do not claim those hashes match.",
+    "temporaryRootsAbsent": [
+      "convene-wire-test-run-ApaCSG",
+      "convene-wire-test-run-hhXxf1",
+      "convene-wire-test-run-urtkkt",
+      "convene-wire-test-run-fXyHQJ",
+      "convene-wire-test-run-BLCmCo"
+    ]
+  },
+  "outputLengthObservations": {
+    "measurement": "Whitespace-separated tokens in returned text, an approximate word count including Markdown; reported separately, without a new post-hoc score rule.",
+    "finalAnswerLimit": 900,
+    "contributionLimit": 600,
+    "finalAnswers": [
+      {
+        "caseId": "review",
+        "repetition": 1,
+        "arm": "single_agent",
+        "whitespaceSeparatedWords": 750
+      },
+      {
+        "caseId": "review",
+        "repetition": 1,
+        "arm": "discussion",
+        "whitespaceSeparatedWords": 501
+      },
+      {
+        "caseId": "incident",
+        "repetition": 1,
+        "arm": "single_agent",
+        "whitespaceSeparatedWords": 787
+      },
+      {
+        "caseId": "planning",
+        "repetition": 1,
+        "arm": "single_agent",
+        "whitespaceSeparatedWords": 690
+      },
+      {
+        "caseId": "review",
+        "repetition": 2,
+        "arm": "discussion",
+        "whitespaceSeparatedWords": 624
+      },
+      {
+        "caseId": "incident",
+        "repetition": 2,
+        "arm": "single_agent",
+        "whitespaceSeparatedWords": 747
+      },
+      {
+        "caseId": "incident",
+        "repetition": 2,
+        "arm": "discussion",
+        "whitespaceSeparatedWords": 668
+      },
+      {
+        "caseId": "planning",
+        "repetition": 2,
+        "arm": "discussion",
+        "whitespaceSeparatedWords": 232
+      },
+      {
+        "caseId": "planning",
+        "repetition": 2,
+        "arm": "single_agent",
+        "whitespaceSeparatedWords": 725
+      }
+    ],
+    "contributions": [
+      {
+        "caseId": "review",
+        "repetition": 1,
+        "role": "Reviewer",
+        "whitespaceSeparatedWords": 566
+      },
+      {
+        "caseId": "review",
+        "repetition": 1,
+        "role": "Solver",
+        "whitespaceSeparatedWords": 545
+      },
+      {
+        "caseId": "review",
+        "repetition": 2,
+        "role": "Solver",
+        "whitespaceSeparatedWords": 417
+      },
+      {
+        "caseId": "review",
+        "repetition": 2,
+        "role": "Reviewer",
+        "whitespaceSeparatedWords": 571
+      },
+      {
+        "caseId": "incident",
+        "repetition": 2,
+        "role": "Reviewer",
+        "whitespaceSeparatedWords": 676
+      },
+      {
+        "caseId": "incident",
+        "repetition": 2,
+        "role": "Solver",
+        "whitespaceSeparatedWords": 418
+      },
+      {
+        "caseId": "planning",
+        "repetition": 2,
+        "role": "Reviewer",
+        "whitespaceSeparatedWords": 217
+      },
+      {
+        "caseId": "planning",
+        "repetition": 2,
+        "role": "Solver",
+        "whitespaceSeparatedWords": 650
+      }
+    ]
+  },
+  "limitations": [
+    "Three completed pairs out of six planned, one per category; three tool-rejected arms and three unpaired finals are retained. Success-only pair averages can be biased and are not the whole experiment.",
+    "All three failed CLI receipts exited zero but used disallowed list_mcp_resources metadata tools; the restricted adapter rejected them. This is not an answer-quality zero or a direct measure of ordinary production Discussion reliability.",
+    "Baseline reads all eight documents; each contributor and the finalizing Reviewer can directly read only its assigned four. Total information access is equal across the team, but the Finalizer must rely on a lossy contributor transcript for the other half. This design cannot isolate orchestration from evidence allocation/compression.",
+    "Two scheduled repetitions, one requested gpt-5.4-mini/low model, no provider-attested identity, no human blind review, no executed generated repairs and no actual user success/rework measurements.",
+    "Do not pool these 20-point complex-task rubrics with earlier benchmarks or infer that all Discussion/multi-Agent workflows have no value.",
+    "A higher coverage score can still describe an invalid/unsafe plan; all nine answers fail the frozen critical acceptance gate. Conservative refusal and unsafe completion are different failure modes.",
+    "The initial batch stopped at first failure; the separately pinned remainder continued only never-started arms within the original cap. No failed or completed arm was rerun, and neither plan is reusable."
+  ]
+}

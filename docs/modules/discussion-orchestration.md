@@ -62,6 +62,18 @@ arm failures and continues the original schedule without retries; setup and
 observation failures still stop. The failed arm remains unscored/incomplete,
 and production Discussion behavior and tool permissions are unchanged.
 
+The [completed complex-task evaluation](../acceptance/qa-070-complex-discussion-results.md)
+retains all 12 attempted arms, 22 invocations/Runs, nine final answers and three
+tool-rejected arms without retries. Three complete pairs score 45/60 for Single
+and 22/60 for Discussion, using three/nine Runs and 140.228/202.479 seconds;
+all nine answers fail critical task acceptance. Both manifests are consumed.
+The Finalizer's restricted direct source access and dependence on potentially
+incomplete contributions are treatment differences, even though all four
+completed Finalizers received both entire contributions. These results do not
+isolate orchestration from information allocation/compression, establish real
+user success rates or authorize retirement. Preserve the maintenance boundary
+and Single-first advice; task complexity alone does not establish a benefit.
+
 ## Purpose
 
 Discussion Orchestration makes Agent-to-Agent conversation visible in a Room
