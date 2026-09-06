@@ -1,0 +1,1479 @@
+{
+  "version": 1,
+  "reportSha256": "bb688523d3173aa9e8b7b4dee220118a2f3712d09fdb101762adb3e100db5319",
+  "assessmentSha256": "cc221e71a104f178a6057d7e49e5bf6180c1f8538c26891dbed8d21695d97fc4",
+  "screeningSha256": "33ead08ea39ff0e2aa5decd1437d65b0876232a88843e0fc286c8ce5607c4c0f",
+  "scoringSha256": "5913055b39d31668c587d572927868bfa3c5f94f92563719a28fd2b0f38787b0",
+  "results": [
+    {
+      "slot": 0,
+      "runId": "run_qa074_windows_1",
+      "treatment": "A",
+      "repetition": 1,
+      "blindId": "answer-1",
+      "answerSha256": "2129a00e3c208edd1d6384f73192e359d14dfc0f66ab273686c6bd8b06269a60",
+      "outcome": "completed",
+      "elapsedMilliseconds": 17414,
+      "manipulation": {
+        "slot": 0,
+        "treatment": "A",
+        "repetition": 1,
+        "runId": "run_qa074_windows_1",
+        "setup": "passed",
+        "catalogObserved": false,
+        "catalogValid": false,
+        "sourceAccessGrantValid": false,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "not_applicable",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 17414
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "not_applicable",
+      "outputWordCount": 279,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 1,
+      "runId": "run_qa074_windows_2",
+      "treatment": "B",
+      "repetition": 1,
+      "blindId": "answer-9",
+      "answerSha256": "e17d3e4ac95141c05aa058f81fb996606eb2b801e7f25b4b906fbd4a37eea30e",
+      "outcome": "completed",
+      "elapsedMilliseconds": 16431,
+      "manipulation": {
+        "slot": 1,
+        "treatment": "B",
+        "repetition": 1,
+        "runId": "run_qa074_windows_2",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "optional",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 16431
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "partial"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "optional_not_read",
+      "outputWordCount": 300,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 2,
+      "runId": "run_qa074_windows_3",
+      "treatment": "C",
+      "repetition": 1,
+      "blindId": "answer-6",
+      "answerSha256": "9ec31541a11cd5d71e9a573e8d94f888fd62a97e15a8518ed6a1859aec0d9768",
+      "outcome": "completed",
+      "elapsedMilliseconds": 32004,
+      "manipulation": {
+        "slot": 2,
+        "treatment": "C",
+        "repetition": 1,
+        "runId": "run_qa074_windows_3",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:52:17.784Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:52:17.834Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:52:17.836Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:52:17.837Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 32004
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "partial"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "reading_complete_substantive_check_failed",
+      "outputWordCount": 304,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 3,
+      "runId": "run_qa074_windows_4",
+      "treatment": "B",
+      "repetition": 2,
+      "blindId": "answer-8",
+      "answerSha256": "b10550cba8c3cfb33e883a69948902e9c223c70ffc1b83030f83df3be589f373",
+      "outcome": "completed",
+      "elapsedMilliseconds": 17813,
+      "manipulation": {
+        "slot": 3,
+        "treatment": "B",
+        "repetition": 2,
+        "runId": "run_qa074_windows_4",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "optional",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 17813
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "optional_not_read",
+      "outputWordCount": 277,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": false
+    },
+    {
+      "slot": 4,
+      "runId": "run_qa074_windows_5",
+      "treatment": "C",
+      "repetition": 2,
+      "blindId": "answer-5",
+      "answerSha256": "9d99df55e0c9170fa75cc65d2509130509ce5aefc426217cc609d052d83a4688",
+      "outcome": "completed",
+      "elapsedMilliseconds": 30355,
+      "manipulation": {
+        "slot": 4,
+        "treatment": "C",
+        "repetition": 2,
+        "runId": "run_qa074_windows_5",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:07.367Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:07.369Z"
+          },
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:07.372Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:07.381Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 30355
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "partial"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "pass"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [
+        {
+          "id": "UA1",
+          "kind": "incorrect_predicate"
+        },
+        {
+          "id": "UA2",
+          "kind": "unsupported_source_location"
+        }
+      ],
+      "evidenceUseCompliance": "reading_complete_substantive_check_failed",
+      "outputWordCount": 265,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 5,
+      "runId": "run_qa074_windows_6",
+      "treatment": "A",
+      "repetition": 2,
+      "blindId": "answer-2",
+      "answerSha256": "36c2efff9accbd3396435b31fcef7f1fea977035afd908d701a4ae2627761954",
+      "outcome": "completed",
+      "elapsedMilliseconds": 16923,
+      "manipulation": {
+        "slot": 5,
+        "treatment": "A",
+        "repetition": 2,
+        "runId": "run_qa074_windows_6",
+        "setup": "passed",
+        "catalogObserved": false,
+        "catalogValid": false,
+        "sourceAccessGrantValid": false,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "not_applicable",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 16923
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "not_applicable",
+      "outputWordCount": 277,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 6,
+      "runId": "run_qa074_windows_7",
+      "treatment": "C",
+      "repetition": 3,
+      "blindId": "answer-7",
+      "answerSha256": "a5c22f3e8daea643d2e0678eeb9d76c56481423c408dc3a5f4320a5b4eaa0723",
+      "outcome": "completed",
+      "elapsedMilliseconds": 31874,
+      "manipulation": {
+        "slot": 6,
+        "treatment": "C",
+        "repetition": 3,
+        "runId": "run_qa074_windows_7",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": true,
+        "actualReaderReturns": 4,
+        "counts": {
+          "returned": 4,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 4
+        },
+        "fullSourcesBeforeAnswer": [
+          "windows-discovery",
+          "windows-availability",
+          "windows-enrollment",
+          "windows-console-preflight"
+        ],
+        "requiredReading": "complete",
+        "sourceReads": [
+          {
+            "evidenceRef": "windows-discovery",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 4572
+            },
+            "returnedBytes": 4572,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:54.825Z"
+          },
+          {
+            "evidenceRef": "windows-enrollment",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 504
+            },
+            "returnedBytes": 504,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:54.852Z"
+          },
+          {
+            "evidenceRef": "windows-availability",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 154
+            },
+            "returnedBytes": 154,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:54.853Z"
+          },
+          {
+            "evidenceRef": "windows-console-preflight",
+            "status": "returned",
+            "failureReason": null,
+            "requestedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedRange": {
+              "start": 0,
+              "end": 1041
+            },
+            "returnedBytes": 1041,
+            "truncated": false,
+            "observedAt": "2026-09-06T11:53:54.854Z"
+          }
+        ],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 31874
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "pass"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "pass"
+        },
+        {
+          "id": "P2",
+          "status": "pass"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "pass"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": true,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "read_and_substantive_check_pass",
+      "outputWordCount": 283,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 7,
+      "runId": "run_qa074_windows_8",
+      "treatment": "A",
+      "repetition": 3,
+      "blindId": "answer-4",
+      "answerSha256": "840dc89c0982f3a0571b20c84ccb0d8947cdb942579cc8826f5bcee9a59026ae",
+      "outcome": "completed",
+      "elapsedMilliseconds": 19813,
+      "manipulation": {
+        "slot": 7,
+        "treatment": "A",
+        "repetition": 3,
+        "runId": "run_qa074_windows_8",
+        "setup": "passed",
+        "catalogObserved": false,
+        "catalogValid": false,
+        "sourceAccessGrantValid": false,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "not_applicable",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 19813
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "pass"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "not_applicable",
+      "outputWordCount": 281,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    },
+    {
+      "slot": 8,
+      "runId": "run_qa074_windows_9",
+      "treatment": "B",
+      "repetition": 3,
+      "blindId": "answer-3",
+      "answerSha256": "6dfffda7341e302bfdee32641f28d89c908e9c66739be3f5becf4ea5c9f676c7",
+      "outcome": "completed",
+      "elapsedMilliseconds": 20423,
+      "manipulation": {
+        "slot": 8,
+        "treatment": "B",
+        "repetition": 3,
+        "runId": "run_qa074_windows_9",
+        "setup": "passed",
+        "catalogObserved": true,
+        "catalogValid": true,
+        "sourceAccessGrantValid": true,
+        "instructionValid": true,
+        "configurationValid": true,
+        "evidenceUseRuleSupplied": false,
+        "actualReaderReturns": 0,
+        "counts": {
+          "returned": 0,
+          "denied": 0,
+          "failed": 0,
+          "invalid": 0,
+          "truncated": 0,
+          "beforeAnswer": 0
+        },
+        "fullSourcesBeforeAnswer": [],
+        "requiredReading": "optional",
+        "sourceReads": [],
+        "delivered": true,
+        "outcome": "completed",
+        "elapsedMilliseconds": 20423
+      },
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail"
+        },
+        {
+          "id": "T2",
+          "status": "partial"
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial"
+        },
+        {
+          "id": "P2",
+          "status": "partial"
+        },
+        {
+          "id": "P3",
+          "status": "partial"
+        },
+        {
+          "id": "P4",
+          "status": "pass"
+        }
+      ],
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial"
+        },
+        {
+          "id": "U2",
+          "status": "pass"
+        },
+        {
+          "id": "U3",
+          "status": "partial"
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial"
+        },
+        {
+          "id": "D2",
+          "status": "partial"
+        },
+        {
+          "id": "D3",
+          "status": "partial"
+        },
+        {
+          "id": "D4",
+          "status": "pass"
+        }
+      ],
+      "targetCorrect": false,
+      "unsupportedAdditions": [],
+      "evidenceUseCompliance": "optional_not_read",
+      "outputWordCount": 296,
+      "outputWordInstructionMet": true,
+      "structuredAssessmentClosed": true
+    }
+  ],
+  "arms": [
+    {
+      "treatment": "A",
+      "repetitions": [
+        1,
+        2,
+        3
+      ],
+      "runsCompleted": 3,
+      "sourceReturns": [
+        0,
+        0,
+        0
+      ],
+      "targetCorrect": [
+        false,
+        false,
+        false
+      ],
+      "targetItems": {
+        "T1": [
+          "fail",
+          "fail",
+          "fail"
+        ],
+        "T2": [
+          "partial",
+          "partial",
+          "partial"
+        ]
+      },
+      "correctContentPreservation": [
+        [
+          "partial",
+          "partial",
+          "pass",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "pass",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "pass",
+          "pass"
+        ]
+      ],
+      "unsupportedAdditions": [
+        0,
+        0,
+        0
+      ],
+      "uncertaintyPreservation": [
+        [
+          "partial",
+          "pass",
+          "partial"
+        ],
+        [
+          "pass",
+          "pass",
+          "partial"
+        ],
+        [
+          "pass",
+          "pass",
+          "partial"
+        ]
+      ],
+      "deliverableCoverage": [
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ]
+      ],
+      "elapsedMilliseconds": [
+        17414,
+        16923,
+        19813
+      ],
+      "totalElapsedMilliseconds": 54150
+    },
+    {
+      "treatment": "B",
+      "repetitions": [
+        1,
+        2,
+        3
+      ],
+      "runsCompleted": 3,
+      "sourceReturns": [
+        0,
+        0,
+        0
+      ],
+      "targetCorrect": [
+        false,
+        false,
+        false
+      ],
+      "targetItems": {
+        "T1": [
+          "fail",
+          "fail",
+          "fail"
+        ],
+        "T2": [
+          "partial",
+          "partial",
+          "partial"
+        ]
+      },
+      "correctContentPreservation": [
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "pass",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ]
+      ],
+      "unsupportedAdditions": [
+        0,
+        0,
+        0
+      ],
+      "uncertaintyPreservation": [
+        [
+          "pass",
+          "pass",
+          "partial"
+        ],
+        [
+          "partial",
+          "pass",
+          "partial"
+        ],
+        [
+          "partial",
+          "pass",
+          "partial"
+        ]
+      ],
+      "deliverableCoverage": [
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ]
+      ],
+      "elapsedMilliseconds": [
+        16431,
+        17813,
+        20423
+      ],
+      "totalElapsedMilliseconds": 54667
+    },
+    {
+      "treatment": "C",
+      "repetitions": [
+        1,
+        2,
+        3
+      ],
+      "runsCompleted": 3,
+      "sourceReturns": [
+        4,
+        4,
+        4
+      ],
+      "targetCorrect": [
+        false,
+        false,
+        true
+      ],
+      "targetItems": {
+        "T1": [
+          "fail",
+          "fail",
+          "pass"
+        ],
+        "T2": [
+          "pass",
+          "pass",
+          "pass"
+        ]
+      },
+      "correctContentPreservation": [
+        [
+          "partial",
+          "pass",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "pass",
+          "partial",
+          "pass"
+        ],
+        [
+          "pass",
+          "pass",
+          "pass",
+          "pass"
+        ]
+      ],
+      "unsupportedAdditions": [
+        0,
+        2,
+        0
+      ],
+      "uncertaintyPreservation": [
+        [
+          "pass",
+          "pass",
+          "partial"
+        ],
+        [
+          "partial",
+          "pass",
+          "partial"
+        ],
+        [
+          "partial",
+          "pass",
+          "pass"
+        ]
+      ],
+      "deliverableCoverage": [
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "pass",
+          "partial",
+          "partial",
+          "pass"
+        ],
+        [
+          "partial",
+          "partial",
+          "partial",
+          "pass"
+        ]
+      ],
+      "elapsedMilliseconds": [
+        32004,
+        30355,
+        31874
+      ],
+      "totalElapsedMilliseconds": 94233
+    }
+  ],
+  "conclusions": {
+    "Q1": {
+      "status": "inconclusive_no_B_exposure",
+      "reason": "All three B setups were valid but produced zero source returns. Optional access alone did not trigger reading in this case; this does not test the benefit of actually obtaining source bytes or establish that access is ineffective."
+    },
+    "Q2": {
+      "status": "mixed_within_case_signal",
+      "reason": "All three C runs fully read four sources and retained the independent CLI predicate (T2 pass in 3/3, versus partial in all B answers). Only C repetition 3 resolved the missing-body dispute (T1): A=0/3, B=0/3, C=1/3 for both target items passing. This is an unstable item-level correction signal, not stable overall improvement. C repetition 2 introduced two material unsupported additions."
+    },
+    "mechanism": {
+      "status": "exposure_observed_sufficient_correction_not_established",
+      "reason": "C consistently induced full source returns. Two C answers nevertheless preserved an uncertainty resolved by those bytes. Returned completeness is established, but substantive instruction following and use of evidence remain incomplete. This does not uniquely isolate synthesis or establish model receipt/comprehension from receipts alone."
+    },
+    "acceptance": "No full policy/test deliverable passed all required dimensions; model self-assessment and criteria labels are not acceptance.",
+    "productBoundary": "No Discussion product-quality claim, no Targeted Review, no extra invocation. QA-074 is consumed; further experimentation requires new authorization and frozen inputs."
+  }
+}

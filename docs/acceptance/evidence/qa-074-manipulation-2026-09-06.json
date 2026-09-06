@@ -1,0 +1,520 @@
+{
+  "reportSha256": "bb688523d3173aa9e8b7b4dee220118a2f3712d09fdb101762adb3e100db5319",
+  "version": 1,
+  "identity": "qa-074-windows-access-use-v1",
+  "actualReaderReturns": 12,
+  "exposureGate": "observed",
+  "qualityAssessment": "separate_item_review_permitted",
+  "comparisons": {
+    "Q1": {
+      "eligibleForStableInterpretation": false,
+      "repetitions": [
+        {
+          "repetition": 1,
+          "eligible": false,
+          "reasons": [
+            "B_no_return_before_answer"
+          ]
+        },
+        {
+          "repetition": 2,
+          "eligible": false,
+          "reasons": [
+            "B_no_return_before_answer"
+          ]
+        },
+        {
+          "repetition": 3,
+          "eligible": false,
+          "reasons": [
+            "B_no_return_before_answer"
+          ]
+        }
+      ]
+    },
+    "Q2": {
+      "eligibleForStableInterpretation": true,
+      "repetitions": [
+        {
+          "repetition": 1,
+          "eligible": true,
+          "reasons": []
+        },
+        {
+          "repetition": 2,
+          "eligible": true,
+          "reasons": []
+        },
+        {
+          "repetition": 3,
+          "eligible": true,
+          "reasons": []
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "slot": 0,
+      "treatment": "A",
+      "repetition": 1,
+      "runId": "run_qa074_windows_1",
+      "setup": "passed",
+      "catalogObserved": false,
+      "catalogValid": false,
+      "sourceAccessGrantValid": false,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "not_applicable",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 17414
+    },
+    {
+      "slot": 1,
+      "treatment": "B",
+      "repetition": 1,
+      "runId": "run_qa074_windows_2",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "optional",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 16431
+    },
+    {
+      "slot": 2,
+      "treatment": "C",
+      "repetition": 1,
+      "runId": "run_qa074_windows_3",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "counts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "windows-discovery",
+        "windows-availability",
+        "windows-enrollment",
+        "windows-console-preflight"
+      ],
+      "requiredReading": "complete",
+      "sourceReads": [
+        {
+          "evidenceRef": "windows-discovery",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedBytes": 4572,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:52:17.784Z"
+        },
+        {
+          "evidenceRef": "windows-availability",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedBytes": 154,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:52:17.834Z"
+        },
+        {
+          "evidenceRef": "windows-enrollment",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedBytes": 504,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:52:17.836Z"
+        },
+        {
+          "evidenceRef": "windows-console-preflight",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedBytes": 1041,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:52:17.837Z"
+        }
+      ],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 32004
+    },
+    {
+      "slot": 3,
+      "treatment": "B",
+      "repetition": 2,
+      "runId": "run_qa074_windows_4",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "optional",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 17813
+    },
+    {
+      "slot": 4,
+      "treatment": "C",
+      "repetition": 2,
+      "runId": "run_qa074_windows_5",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "counts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "windows-discovery",
+        "windows-availability",
+        "windows-enrollment",
+        "windows-console-preflight"
+      ],
+      "requiredReading": "complete",
+      "sourceReads": [
+        {
+          "evidenceRef": "windows-enrollment",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedBytes": 504,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:07.367Z"
+        },
+        {
+          "evidenceRef": "windows-availability",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedBytes": 154,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:07.369Z"
+        },
+        {
+          "evidenceRef": "windows-discovery",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedBytes": 4572,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:07.372Z"
+        },
+        {
+          "evidenceRef": "windows-console-preflight",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedBytes": 1041,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:07.381Z"
+        }
+      ],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 30355
+    },
+    {
+      "slot": 5,
+      "treatment": "A",
+      "repetition": 2,
+      "runId": "run_qa074_windows_6",
+      "setup": "passed",
+      "catalogObserved": false,
+      "catalogValid": false,
+      "sourceAccessGrantValid": false,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "not_applicable",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 16923
+    },
+    {
+      "slot": 6,
+      "treatment": "C",
+      "repetition": 3,
+      "runId": "run_qa074_windows_7",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": true,
+      "actualReaderReturns": 4,
+      "counts": {
+        "returned": 4,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 4
+      },
+      "fullSourcesBeforeAnswer": [
+        "windows-discovery",
+        "windows-availability",
+        "windows-enrollment",
+        "windows-console-preflight"
+      ],
+      "requiredReading": "complete",
+      "sourceReads": [
+        {
+          "evidenceRef": "windows-discovery",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 4572
+          },
+          "returnedBytes": 4572,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:54.825Z"
+        },
+        {
+          "evidenceRef": "windows-enrollment",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 504
+          },
+          "returnedBytes": 504,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:54.852Z"
+        },
+        {
+          "evidenceRef": "windows-availability",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 154
+          },
+          "returnedBytes": 154,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:54.853Z"
+        },
+        {
+          "evidenceRef": "windows-console-preflight",
+          "status": "returned",
+          "failureReason": null,
+          "requestedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedRange": {
+            "start": 0,
+            "end": 1041
+          },
+          "returnedBytes": 1041,
+          "truncated": false,
+          "observedAt": "2026-09-06T11:53:54.854Z"
+        }
+      ],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 31874
+    },
+    {
+      "slot": 7,
+      "treatment": "A",
+      "repetition": 3,
+      "runId": "run_qa074_windows_8",
+      "setup": "passed",
+      "catalogObserved": false,
+      "catalogValid": false,
+      "sourceAccessGrantValid": false,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "not_applicable",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 19813
+    },
+    {
+      "slot": 8,
+      "treatment": "B",
+      "repetition": 3,
+      "runId": "run_qa074_windows_9",
+      "setup": "passed",
+      "catalogObserved": true,
+      "catalogValid": true,
+      "sourceAccessGrantValid": true,
+      "instructionValid": true,
+      "configurationValid": true,
+      "evidenceUseRuleSupplied": false,
+      "actualReaderReturns": 0,
+      "counts": {
+        "returned": 0,
+        "denied": 0,
+        "failed": 0,
+        "invalid": 0,
+        "truncated": 0,
+        "beforeAnswer": 0
+      },
+      "fullSourcesBeforeAnswer": [],
+      "requiredReading": "optional",
+      "sourceReads": [],
+      "delivered": true,
+      "outcome": "completed",
+      "elapsedMilliseconds": 20423
+    }
+  ]
+}

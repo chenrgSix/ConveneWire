@@ -98,3 +98,117 @@ audit checks pass. Documentation lint covers 405 files with zero issues.
 The tests cover optional unread B, complete C, incomplete/failed repetitions,
 tampered scopes/bytes, returned-range gaps and late reads. Negative-test data
 is cloned so a deliberately corrupted grant cannot mutate the next fixture.
+
+## Retained execution and manipulation
+
+The pre-invocation freeze commit is `ed516d3`. Exactly nine fresh sessions ran
+in the frozen order, without retry, replacement or mid-run changes. All nine
+Runs completed and all nine setup checks passed. QA-074 is now consumed.
+
+- [Original report](evidence/qa-074-access-use-2026-09-06.json): reservations,
+  exact outputs, progress, grants, reader lifecycle, tool events and receipts.
+- [Manipulation audit](evidence/qa-074-manipulation-2026-09-06.json): validated
+  source returns, coverage, setup and comparison-specific eligibility.
+- [Masked answer export](evidence/qa-074-blind-answers-2026-09-06.json) and
+  [item review](evidence/qa-074-blind-assessment-2026-09-06.json): answer hashes,
+  117 separate item judgments, reasons and exact quoted spans.
+- [Joined analysis](evidence/qa-074-analysis-2026-09-06.json): all dimensions,
+  repetitions, evidence-use compliance and bounded Q1/Q2 conclusions.
+
+| Slot | Arm / repetition | Valid source returns | Required reading | Seconds | T1 / T2 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | A / 1 | 0 | Not applicable | 17.414 | fail / partial |
+| 2 | B / 1 | 0 | Optional | 16.431 | fail / partial |
+| 3 | C / 1 | 4 | Complete | 32.004 | fail / pass |
+| 4 | B / 2 | 0 | Optional | 17.813 | fail / partial |
+| 5 | C / 2 | 4 | Complete | 30.355 | fail / pass |
+| 6 | A / 2 | 0 | Not applicable | 16.923 | fail / partial |
+| 7 | C / 3 | 4 | Complete | 31.874 | pass / pass |
+| 8 | A / 3 | 0 | Not applicable | 19.813 | fail / partial |
+| 9 | B / 3 | 0 | Optional | 20.423 | fail / partial |
+
+A had no reader catalog, grant or source return. Every B/C Run had the same
+matching reader definition and a valid exact Run/source grant. B never used
+the reader. C returned all four complete sources before every final answer:
+12 returned receipts, zero denials, source failures, invalid receipts or
+truncations. The experiment-wide exposure gate passed. Q1's actual B exposure
+gate did not; Q2's three comparison gates passed. Complete C reading satisfies
+the read subcondition, not substantive evidence-use compliance.
+
+T1 requires resolving the false claim that the `executableAvailable` body is
+missing or an unknown Windows branch remains. T2 requires retaining CLI's
+independent execute-bit rejection and Console's pre-probe readiness check.
+Both target items passed together in A 0/3, B 0/3 and C 1/3. T2 alone passed
+in C 3/3; all A/B answers were partial on that item. These are separate item
+observations, not an aggregate quality score.
+
+## Content preservation and remaining defects
+
+| Arm | Correct content fully retained, by repetition | Unsupported additions | Uncertainty U1/U2/U3 | Deliverables D1/D2/D3/D4 |
+| --- | --- | --- | --- | --- |
+| A | 2/4, 2/4, 2/4 | 0, 0, 0 | partial/pass/partial; pass/pass/partial; pass/pass/partial | All partial/partial/partial/pass |
+| B | 1/4, 2/4, 1/4 | 0, 0, 0 | pass/pass/partial; partial/pass/partial; partial/pass/partial | All partial/partial/partial/pass |
+| C | 2/4, 2/4, 4/4 | 0, 2, 0 | pass/pass/partial; partial/pass/partial; partial/pass/pass | partial/partial/partial/pass; pass/partial/partial/pass; partial/partial/partial/pass |
+
+Non-passing preservation items in this table are partial, not averaged into
+correction. P3 is partial where the proposed Unix regression would reject a
+`.cmd` file solely by extension, even though the historical predicate permits
+any regular file with execute bits. Wording that an extension alone is not
+authoritative is not treated as that unconditional rejection. Full reasons
+and exact language remain in the item review.
+
+C1 first states the correct availability predicate, then says the Windows
+implementation is not shown and might already branch by OS. C2 also retains
+that false uncertainty despite receiving the complete function. C3 removes
+it and preserves uncertainty about the future allowed launcher set instead.
+Thus substantive conflict checking passed in only one of the three C answers.
+
+C2 additionally describes CLI enrollment as requiring a regular file, while
+the excerpt actually checks `IsDir` plus execute bits. It also generates source
+links into an empty temporary workspace, including inconsistent directory
+spellings; only the named evidence IDs correspond to supplied sources. These
+are two separately recorded unsupported additions. Original text and hashes
+are preserved; generated local links are not validated artifact locations.
+The inherited missing-body dispute is not double-counted as a new addition.
+
+All nine answers still propose broad OS/PATHEXT launchability rather than the
+requested bounded, case-insensitive launcher policy, and omit important
+unsupported-extension/directory and caller regression cases. Those policy and
+test defects remain D2/D3 partial; they are not recast as fabricated historical
+implementation merely because they are proposals. No answer satisfies the
+complete required deliverable. C2 locates the `.exe`-only candidate builder,
+showing that coverage can improve while correctness remains incomplete.
+
+All outputs stay below the common word instruction under the existing adapter
+count. B2 also omits the closing assessment tag; this is recorded independently
+and does not retroactively change Run outcome or create an acceptance gate.
+No model-generated `goalSatisfied` or criterion label is treated as acceptance.
+Attempted elapsed totals are A 54.150 s, B 54.667 s and C 94.233 s; these are
+observations for this run, not equal-compute or general efficiency claims.
+
+## Interpretation and closure evidence
+
+**Q1 remains inconclusive about the benefit of obtaining original evidence.**
+In this sample, optional Access was configured correctly but never used. It
+did not trigger reading; the experiment does not establish that actual access
+to source bytes is ineffective.
+
+**Q2 shows a mixed within-case signal.** The explicit rule consistently induced
+complete reading and C retained the CLI predicate in all three answers. It
+resolved the main missing-body error in only one answer and introduced two
+unsupported additions in another. This is not a stable overall improvement,
+nor evidence of improved Discussion product quality.
+
+The remaining problem is observable after valid source returns: the Finalizer
+can retain a contradiction or an uncertainty that those sources resolve.
+Returned completeness has been checked; substantive instruction following and
+evidence use remain incomplete. Receipt data alone cannot prove comprehension
+or isolate synthesis as the sole cause. No Targeted Review or further real
+invocation is authorized by this result.
+
+All nine post-run screening/admission/audit tests pass. A separate artifact
+check joins every answer hash, all 117 item IDs/statuses/quoted spans, the
+scoring hash and the joined analysis back to the unchanged original report.
+Five owned test roots, including the live experiment root, were physically
+absent after cleanup. The 35 frozen pins, source inputs and QA-072 artifacts
+remain unchanged; no production code changed during this task.

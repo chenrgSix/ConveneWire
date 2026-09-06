@@ -1,0 +1,1310 @@
+{
+  "version": 1,
+  "reportSha256": "bb688523d3173aa9e8b7b4dee220118a2f3712d09fdb101762adb3e100db5319",
+  "scoringSha256": "5913055b39d31668c587d572927868bfa3c5f94f92563719a28fd2b0f38787b0",
+  "assessedAt": "2026-09-06T12:00:54.191Z",
+  "gradingProtocol": "Pre-frozen QA-074 rubric; answer-hash order reviewed before attaching treatment labels. Same operator knew operational counts; wording and one generated invocation path can reveal treatment. No independent evaluator or grading-model call. Inherited disputes are not double-counted as new additions, and bad proposed policies remain separately visible.",
+  "grades": [
+    {
+      "blindId": "answer-1",
+      "answerSha256": "2129a00e3c208edd1d6384f73192e359d14dfc0f66ab273686c6bd8b06269a60",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "the exact implementation of `executableAvailable` is not fully visible here"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "CLI enrollment also preflights `codex` using path resolution plus the same availability gate",
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#)."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#).",
+            "the exact implementation of `executableAvailable` is not fully visible here"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "CLI enrollment also preflights `codex` using path resolution plus the same availability gate",
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#)."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Preserves execute-bit gating and non-executing discovery. Non-authoritative extension wording is read as an extension alone not being sufficient.",
+          "quotes": [
+            "- Preserve non-executing discovery and Unix behavior.",
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#)."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Claims no completed platform validation but omits missing exact user-reported paths/logs.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available before Runtime."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery check: candidate resolution still happens without executing shells or probes.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available before Runtime."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- Windows: accept launchable native forms, including `.exe`, `.cmd`, and `.bat`, and anything resolved by Windows command lookup/PATHEXT, without requiring Unix permission bits.",
+            "the exact implementation of `executableAvailable` is not fully visible here"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#)."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- Windows: accept launchable native forms, including `.exe`, `.cmd`, and `.bat`, and anything resolved by Windows command lookup/PATHEXT, without requiring Unix permission bits."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available before Runtime."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime discovery/availability mismatch on Windows, not a Runtime permission issue. In `windows-discovery`, discovery resolves candidates via `LookPath` and absolute-path checks, but then requires `filepath.IsAbs(...) && executableAvailable(...)` before a launcher is accepted. In `windows-availability`, `executableAvailable` is shown to require a regular file with Unix execute bits (`0o111`), which is correct for Unix but would reject Windows native launchers and shims such as `codex.cmd` before the Runtime probe. In `windows-console-preflight`, the Console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so the same pre-Runtime gate can suppress an otherwise valid Windows install. In `windows-enrollment`, CLI enrollment also preflights `codex` using path resolution plus the same availability gate, so the rejection can happen before any Runtime-based validation. Evidence: [`windows-discovery`](#), [`windows-availability`](#), [`windows-console-preflight`](#), [`windows-enrollment`](#).",
+            "- Portable discovery check: candidate resolution still happens without executing shells or probes.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available before Runtime."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- Windows: accept launchable native forms, including `.exe`, `.cmd`, and `.bat`, and anything resolved by Windows command lookup/PATHEXT, without requiring Unix permission bits.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-2",
+      "answerSha256": "36c2efff9accbd3396435b31fcef7f1fea977035afd908d701a4ae2627761954",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "the supplied excerpt is too small to prove the exact predicate"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "the supplied excerpt does not expose the exact predicate",
+            "- `windows-console-preflight` in `bridge/internal/console/server.go`: the console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so rejection happens before any Runtime probe."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "- `windows-discovery` in `bridge/internal/console/runtime_discovery.go`: discovery resolves candidate paths without executing them, but it still feeds candidates through availability filtering before Runtime.",
+            "the supplied excerpt is too small to prove the exact predicate"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "the supplied excerpt does not expose the exact predicate",
+            "- `windows-console-preflight` in `bridge/internal/console/server.go`: the console marks an agent `ExecutableReady` only after `executableAvailable(executablePath)`, so rejection happens before any Runtime probe."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Preserves execute-bit gating and non-executing discovery. Non-authoritative extension wording is read as an extension alone not being sufficient.",
+          "quotes": [
+            "- `windows-discovery` in `bridge/internal/console/runtime_discovery.go`: discovery resolves candidate paths without executing them, but it still feeds candidates through availability filtering before Runtime.",
+            "- Keep Unix behavior unchanged: regular file plus execute bit remains required on Unix."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Explicitly preserves missing historical rejection/path observations and claims no observed platform validation.",
+          "quotes": [
+            "Unresolved evidence: the exact implementation of `executableAvailable` and the exact rejected Windows paths are not fully shown in the supplied excerpts, so those details remain assumptions rather than established facts."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery check: resolution still finds candidates without shell execution or profile sourcing.",
+            "- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by availability/preflight."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, treat launchable native entries as valid without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers.",
+            "the supplied excerpt is too small to prove the exact predicate"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "- `windows-discovery` in `bridge/internal/console/runtime_discovery.go`: discovery resolves candidate paths without executing them, but it still feeds candidates through availability filtering before Runtime."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, treat launchable native entries as valid without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by availability/preflight."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "- `windows-enrollment` in `bridge/cmd/agentroom-bridge/main.go`: the CLI enrollment path is another pre-Runtime discovery/validation site and is the most likely place where native launchers and `codex.cmd` were rejected first, but the supplied excerpt does not expose the exact predicate.",
+            "- Portable discovery check: resolution still finds candidates without shell execution or profile sourcing.",
+            "- Native Windows check: a discovered `codex.cmd` and a native launcher path are accepted by availability/preflight."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, treat launchable native entries as valid without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-3",
+      "answerSha256": "6dfffda7341e302bfdee32641f28d89c908e9c66739be3f5becf4ea5c9f676c7",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "The exact implementation of `executableAvailable` on Windows is not shown"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "I cannot independently verify that excerpt text from the manifest here",
+            "- In `windows-console-preflight`, the console reports `ExecutableReady` only when `executableAvailable(executablePath)` succeeds, so the preflight can reject a candidate before Runtime validation."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "- In `windows-discovery`, discovery is non-executing and first resolves candidates with `LookPath`, then filters them through `filepath.IsAbs(...) && executableAvailable(...)`. That means discovery is already doing an availability decision, not just path lookup.",
+            "The exact implementation of `executableAvailable` on Windows is not shown"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "I cannot independently verify that excerpt text from the manifest here",
+            "- In `windows-console-preflight`, the console reports `ExecutableReady` only when `executableAvailable(executablePath)` succeeds, so the preflight can reject a candidate before Runtime validation."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "partial",
+          "reason": "Preserves execute bits and non-executing discovery, but proposed unconditional Unix .cmd rejection would change the existing extension-agnostic regular-file/execute-bit rule.",
+          "quotes": [
+            "- In `windows-discovery`, discovery is non-executing and first resolves candidates with `LookPath`, then filters them through `filepath.IsAbs(...) && executableAvailable(...)`. That means discovery is already doing an availability decision, not just path lookup.",
+            "`.cmd` does not become executable on Unix"
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Claims no completed platform validation but omits missing exact user-reported paths/logs.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both accepted by preflight/availability logic."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery check: path resolution still works without executing anything.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both accepted by preflight/availability logic."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, do not require Unix permission bits; accept OS-launchable entries, including native launchers and `.cmd`/`.bat` shims resolved by the shell/PATHEXT.",
+            "The exact implementation of `executableAvailable` on Windows is not shown"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "- In `windows-discovery`, discovery is non-executing and first resolves candidates with `LookPath`, then filters them through `filepath.IsAbs(...) && executableAvailable(...)`. That means discovery is already doing an availability decision, not just path lookup."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, do not require Unix permission bits; accept OS-launchable entries, including native launchers and `.cmd`/`.bat` shims resolved by the shell/PATHEXT."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both accepted by preflight/availability logic."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "- The transcript’s `windows-enrollment` summary says the CLI enrollment path also resolves `codex` and then rejects it unless it has Unix execute bits. I cannot independently verify that excerpt text from the manifest here, so I treat that as partially unverified, but it is consistent with the same failure mode.",
+            "- Portable discovery check: path resolution still works without executing anything.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` launcher are both accepted by preflight/availability logic."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, do not require Unix permission bits; accept OS-launchable entries, including native launchers and `.cmd`/`.bat` shims resolved by the shell/PATHEXT.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        },
+        {
+          "kind": "unix_extension_regression",
+          "quote": "`.cmd` does not become executable on Unix",
+          "reason": "A regular Unix .cmd file with execute bits is not rejected merely for its extension by the historical predicate."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-4",
+      "answerSha256": "840dc89c0982f3a0571b20c84ccb0d8947cdb942579cc8826f5bcee9a59026ae",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "the exact body of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "enrollment in `windows-enrollment` performs CLI path validation before Runtime",
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`.",
+            "the exact body of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "enrollment in `windows-enrollment` performs CLI path validation before Runtime",
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Preserves execute-bit gating and non-executing discovery. Non-authoritative extension wording is read as an extension alone not being sufficient.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`.",
+            "- Unix: preserve the current regular-file + execute-bit rule."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Explicitly preserves missing historical rejection/path observations and claims no observed platform validation.",
+          "quotes": [
+            "Missing evidence remains: the exact rejection message from the historical Windows reports, and the precise implementation of `executableAvailable` on Windows."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery check: path lookup/resolution works without execution on both Unix and Windows.",
+            "- Native Windows check: an installed `codex.exe` or `codex.cmd` is accepted by availability logic before Runtime probe."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- Windows: accept launchable native entries via OS resolution, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits.",
+            "the exact body of `executableAvailable` is not shown"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- Windows: accept launchable native entries via OS resolution, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows check: an installed `codex.exe` or `codex.cmd` is accepted by availability logic before Runtime probe."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime availability gate, not a Runtime permission problem. The supplied evidence shows three relevant checks before Runtime probe: discovery in `windows-discovery` resolves candidates without executing shells; console preflight in `windows-console-preflight` marks an agent `ExecutableReady` only after `executableAvailable(...)`; and enrollment in `windows-enrollment` performs CLI path validation before Runtime. The supported pattern is that Windows users can be rejected during discovery/availability, before Runtime ever gets a chance to probe. Evidence refs: `windows-discovery`, `windows-console-preflight`, `windows-enrollment`, `windows-availability`.",
+            "- Portable discovery check: path lookup/resolution works without execution on both Unix and Windows.",
+            "- Native Windows check: an installed `codex.exe` or `codex.cmd` is accepted by availability logic before Runtime probe."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- Windows: accept launchable native entries via OS resolution, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-5",
+      "answerSha256": "9d99df55e0c9170fa75cc65d2509130509ce5aefc426217cc609d052d83a4688",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "the exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "then rejected unless `os.Stat` succeeds and `Mode().Perm()&0o111 != 0`",
+            "Diagnosis: the pre-Runtime gate is enforcing a Unix-style “regular file + execute bit” rule in two places, and that is the likely Windows failure. In `windows-enrollment`, `codex` is resolved with `exec.LookPath`, then rejected unless `os.Stat` succeeds and `Mode().Perm()&0o111 != 0`, so a valid Windows launcher or npm shim such as `codex.cmd` can be rejected before any Runtime probe. In `windows-console-preflight`, the console marks `ExecutableReady` solely from `executableAvailable(executablePath)`, so the same preflight can surface the agent as unavailable before runtime validation. Evidence: [windows-enrollment](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/cmd/agentroom-bridge/main.go), [windows-console-preflight](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go), [windows-availability](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go)."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "- Discovery: `discoverRuntimeFrom` uses `LookPath`, then absolute-path filtering and `executableAvailable`; Windows candidates only add `.exe` in `runtimeCandidates`. It also explicitly avoids shell/profile execution when scanning nvm bins. Evidence: [windows-discovery](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/runtime_discovery.go).",
+            "the exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "then rejected unless `os.Stat` succeeds and `Mode().Perm()&0o111 != 0`",
+            "Diagnosis: the pre-Runtime gate is enforcing a Unix-style “regular file + execute bit” rule in two places, and that is the likely Windows failure. In `windows-enrollment`, `codex` is resolved with `exec.LookPath`, then rejected unless `os.Stat` succeeds and `Mode().Perm()&0o111 != 0`, so a valid Windows launcher or npm shim such as `codex.cmd` can be rejected before any Runtime probe. In `windows-console-preflight`, the console marks `ExecutableReady` solely from `executableAvailable(executablePath)`, so the same preflight can surface the agent as unavailable before runtime validation. Evidence: [windows-enrollment](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/cmd/agentroom-bridge/main.go), [windows-console-preflight](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go), [windows-availability](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go)."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "partial",
+          "reason": "Preserves execute bits and non-executing discovery, but proposed unconditional Unix .cmd rejection would change the existing extension-agnostic regular-file/execute-bit rule.",
+          "quotes": [
+            "- Keep discovery non-executing and path-based.",
+            "`.cmd` is not accepted as a Unix executable"
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [
+        {
+          "id": "UA1",
+          "kind": "incorrect_predicate",
+          "claim": "the pre-Runtime gate is enforcing a Unix-style “regular file + execute bit” rule in two places",
+          "reason": "Enrollment checks Stat error, IsDir and execute bits; it does not test IsRegular. This strengthens the observed CLI predicate.",
+          "sources": [
+            "windows-enrollment",
+            "windows-availability"
+          ]
+        },
+        {
+          "id": "UA2",
+          "kind": "unsupported_source_location",
+          "claim": "/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/cmd/agentroom-bridge/main.go",
+          "reason": "Evidence was available through the fixed reader; these generated links claim source files under the empty temporary workspace, including inconsistent spellings. Source IDs remain usable but file targets are unsupported.",
+          "sources": [
+            "windows-discovery",
+            "windows-availability",
+            "windows-enrollment",
+            "windows-console-preflight"
+          ],
+          "otherTargets": [
+            "/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go",
+            "/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/runtime_discovery.go",
+            "/private/tmp/convene-wire-test-run-46zlH8/tmp/conveneewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go",
+            "/private/tmp/convene-wire-test-run-46zlH8/tmp/conveneewire-qa074-live-MIrsue/invocation-4/workspace/bridge/cmd/agentroom-bridge/main.go"
+          ]
+        }
+      ],
+      "unsupportedAssessment": "Two separate material additions. The inherited missing-body dispute is not double-counted as a new assertion.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Claims no completed platform validation but omits missing exact user-reported paths/logs.",
+          "quotes": [
+            "- Native Windows verification: `codex.cmd` and a native launcher both pass pre-Runtime availability."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable verification: discovery still resolves absolute paths and never shells out or sources profiles.",
+            "- Native Windows verification: `codex.cmd` and a native launcher both pass pre-Runtime availability."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, treat launchability as OS-native, not Unix-permission-based, so `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved launchers are acceptable if the OS can launch them.",
+            "the exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "pass",
+          "reason": "Names all relevant checks and the .exe-only candidate builder; the body-uncertainty error remains separately scored under T1/P1.",
+          "quotes": [
+            "- Discovery: `discoverRuntimeFrom` uses `LookPath`, then absolute-path filtering and `executableAvailable`; Windows candidates only add `.exe` in `runtimeCandidates`. It also explicitly avoids shell/profile execution when scanning nvm bins. Evidence: [windows-discovery](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/runtime_discovery.go).",
+            "Windows candidates only add `.exe` in `runtimeCandidates`"
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, treat launchability as OS-native, not Unix-permission-based, so `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved launchers are acceptable if the OS can launch them."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows verification: `codex.cmd` and a native launcher both pass pre-Runtime availability."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "Diagnosis: the pre-Runtime gate is enforcing a Unix-style “regular file + execute bit” rule in two places, and that is the likely Windows failure. In `windows-enrollment`, `codex` is resolved with `exec.LookPath`, then rejected unless `os.Stat` succeeds and `Mode().Perm()&0o111 != 0`, so a valid Windows launcher or npm shim such as `codex.cmd` can be rejected before any Runtime probe. In `windows-console-preflight`, the console marks `ExecutableReady` solely from `executableAvailable(executablePath)`, so the same preflight can surface the agent as unavailable before runtime validation. Evidence: [windows-enrollment](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/cmd/agentroom-bridge/main.go), [windows-console-preflight](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go), [windows-availability](/private/tmp/convene-wire-test-run-46zlH8/tmp/convenewire-qa074-live-MIrsue/invocation-4/workspace/bridge/internal/console/server.go).",
+            "- Portable verification: discovery still resolves absolute paths and never shells out or sources profiles.",
+            "- Native Windows verification: `codex.cmd` and a native launcher both pass pre-Runtime availability."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, treat launchability as OS-native, not Unix-permission-based, so `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved launchers are acceptable if the OS can launch them.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        },
+        {
+          "kind": "unix_extension_regression",
+          "quote": "`.cmd` is not accepted as a Unix executable",
+          "reason": "A regular Unix .cmd file with execute bits is not rejected merely for its extension by the historical predicate."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-6",
+      "answerSha256": "9ec31541a11cd5d71e9a573e8d94f888fd62a97e15a8518ed6a1859aec0d9768",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "The exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "CLI enrollment: `codex` is resolved with `exec.LookPath`, absolutized, then rejected unless it has Unix execute bits",
+            "- Console preflight: each agent is marked `ExecutableReady` solely via `executableAvailable(executablePath)` before any Runtime state is considered [windows-console-preflight]."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "- Discovery: `discoverRuntimeFrom` uses `exec.LookPath`, then falls back to absolute candidates, but every candidate must pass `filepath.IsAbs(...) && executableAvailable(...)` [windows-discovery].",
+            "The exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "CLI enrollment: `codex` is resolved with `exec.LookPath`, absolutized, then rejected unless it has Unix execute bits",
+            "- Console preflight: each agent is marked `ExecutableReady` solely via `executableAvailable(executablePath)` before any Runtime state is considered [windows-console-preflight]."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "partial",
+          "reason": "Preserves execute bits and non-executing discovery, but proposed unconditional Unix .cmd rejection would change the existing extension-agnostic regular-file/execute-bit rule.",
+          "quotes": [
+            "- Keep discovery non-executing and portable.",
+            "`.cmd` is not treated as a Unix executable"
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Explicitly preserves missing historical rejection/path observations and claims no observed platform validation.",
+          "quotes": [
+            "- The transcript that reported the rejected paths is not present here, so the specific failing filenames remain unverified."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery: confirm runtime discovery still resolves absolute paths without executing shells or sourcing profiles [windows-discovery].",
+            "- Windows verification: a discovered `codex.cmd` and a native launcher path are accepted by availability/enrollment checks before Runtime probing."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, replace the Unix-bit gate with a platform-native launchability check. The allowed set should include Windows launchers/shims that the OS can start, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits.",
+            "The exact Windows implementation of `executableAvailable` is not shown"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "- Discovery: `discoverRuntimeFrom` uses `exec.LookPath`, then falls back to absolute candidates, but every candidate must pass `filepath.IsAbs(...) && executableAvailable(...)` [windows-discovery]."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, replace the Unix-bit gate with a platform-native launchability check. The allowed set should include Windows launchers/shims that the OS can start, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Windows verification: a discovered `codex.cmd` and a native launcher path are accepted by availability/enrollment checks before Runtime probing."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "- CLI enrollment: `codex` is resolved with `exec.LookPath`, absolutized, then rejected unless it has Unix execute bits [windows-enrollment].",
+            "- Portable discovery: confirm runtime discovery still resolves absolute paths without executing shells or sourcing profiles [windows-discovery].",
+            "- Windows verification: a discovered `codex.cmd` and a native launcher path are accepted by availability/enrollment checks before Runtime probing."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, replace the Unix-bit gate with a platform-native launchability check. The allowed set should include Windows launchers/shims that the OS can start, including `.exe`, `.cmd`, and `.bat`, without requiring Unix permission bits.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        },
+        {
+          "kind": "unix_extension_regression",
+          "quote": "`.cmd` is not treated as a Unix executable",
+          "reason": "A regular Unix .cmd file with execute bits is not rejected merely for its extension by the historical predicate."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-7",
+      "answerSha256": "a5c22f3e8daea643d2e0678eeb9d76c56481423c408dc3a5f4320a5b4eaa0723",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "pass",
+          "reason": "Connects the supplied regular-file/execute-bit body to Console readiness without retaining an unknown OS branch.",
+          "quotes": [
+            "`executableAvailable` requires a regular file with execute bits via `Mode().Perm()&0o111 != 0`"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "then rejected if `os.Stat` fails or the execute-bit test fails",
+            "- That same check is used both in CLI enrollment and console preflight. In enrollment, `codex` is resolved with `exec.LookPath`, then rejected if `os.Stat` fails or the execute-bit test fails ([windows-enrollment]). In console preflight, `ExecutableReady` is set only from `executableAvailable(executablePath)` before any Runtime probe ([windows-console-preflight])."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "pass",
+          "reason": "Retains discovery delegation and the actual regular-file/execute-bit availability predicate.",
+          "quotes": [
+            "- Discovery is portable and non-executing: `discoverRuntimeFrom` first uses `exec.LookPath`, then falls back to absolute candidates, and `nvmVersionBins` explicitly avoids shells/profiles ([windows-discovery]).",
+            "`executableAvailable` requires a regular file with execute bits via `Mode().Perm()&0o111 != 0`"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "pass",
+          "reason": "Retains the independent CLI execute-bit rejection and Console executableAvailable readiness call.",
+          "quotes": [
+            "then rejected if `os.Stat` fails or the execute-bit test fails",
+            "- That same check is used both in CLI enrollment and console preflight. In enrollment, `codex` is resolved with `exec.LookPath`, then rejected if `os.Stat` fails or the execute-bit test fails ([windows-enrollment]). In console preflight, `ExecutableReady` is set only from `executableAvailable(executablePath)` before any Runtime probe ([windows-console-preflight])."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Preserves execute-bit gating and non-executing discovery. Non-authoritative extension wording is read as an extension alone not being sufficient.",
+          "quotes": [
+            "- Discovery is portable and non-executing: `discoverRuntimeFrom` first uses `exec.LookPath`, then falls back to absolute candidates, and `nvmVersionBins` explicitly avoids shells/profiles ([windows-discovery]).",
+            "- But validation is Unix-shaped: `executableAvailable` requires a regular file with execute bits via `Mode().Perm()&0o111 != 0` ([windows-availability])."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "  - Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Claims no completed platform validation but omits missing exact user-reported paths/logs.",
+          "quotes": [
+            "- Native Windows verification: a discovered `codex.cmd` or native launcher is accepted by the availability gate and reaches pre-Runtime readiness."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable verification: discovery returns absolute paths and never shells out or sources user startup files ([windows-discovery]).",
+            "- Native Windows verification: a discovered `codex.cmd` or native launcher is accepted by the availability gate and reaches pre-Runtime readiness."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "pass",
+          "reason": "Leaves future accepted launcher forms unresolved while treating the supplied current predicate as known.",
+          "quotes": [
+            "- On Windows, a valid launcher/shim such as `codex.cmd` can be discovered by path resolution but still be marked unavailable because the shared availability gate expects Unix execute bits.",
+            "- The evidence does not show the intended Windows launcher acceptance rule in detail, so the exact set of accepted forms beyond `.exe` and `.cmd`/`.bat` should be confirmed before broadening Windows validation further."
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "- Discovery is portable and non-executing: `discoverRuntimeFrom` first uses `exec.LookPath`, then falls back to absolute candidates, and `nvmVersionBins` explicitly avoids shells/profiles ([windows-discovery])."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, a valid launcher/shim such as `codex.cmd` can be discovered by path resolution but still be marked unavailable because the shared availability gate expects Unix execute bits."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows verification: a discovered `codex.cmd` or native launcher is accepted by the availability gate and reaches pre-Runtime readiness."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "- That same check is used both in CLI enrollment and console preflight. In enrollment, `codex` is resolved with `exec.LookPath`, then rejected if `os.Stat` fails or the execute-bit test fails ([windows-enrollment]). In console preflight, `ExecutableReady` is set only from `executableAvailable(executablePath)` before any Runtime probe ([windows-console-preflight]).",
+            "- Portable verification: discovery returns absolute paths and never shells out or sources user startup files ([windows-discovery]).",
+            "- Native Windows verification: a discovered `codex.cmd` or native launcher is accepted by the availability gate and reaches pre-Runtime readiness."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, a valid launcher/shim such as `codex.cmd` can be discovered by path resolution but still be marked unavailable because the shared availability gate expects Unix execute bits.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "pass",
+        "reason": "Resolves the availability-body conflict while preserving future launcher-policy uncertainty."
+      },
+      "structuredAssessmentClosed": true
+    },
+    {
+      "blindId": "answer-8",
+      "answerSha256": "b10550cba8c3cfb33e883a69948902e9c223c70ffc1b83030f83df3be589f373",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "the exact implementation of `executableAvailable` is not visible"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "The discussion also identifies the CLI enrollment path",
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics.",
+            "the exact implementation of `executableAvailable` is not visible"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "The discussion also identifies the CLI enrollment path",
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "pass",
+          "reason": "Preserves execute-bit gating and non-executing discovery. Non-authoritative extension wording is read as an extension alone not being sufficient.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics.",
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics."
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions; only align discovery/availability checks with platform launchability."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "partial",
+          "reason": "Claims no completed platform validation but omits missing exact user-reported paths/logs.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available by the preflight and enrollment paths."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable discovery check: verify the code resolves an absolute candidate path without spawning shells or probing Runtime.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available by the preflight and enrollment paths."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, accept launchable native forms without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries.",
+            "the exact implementation of `executableAvailable` is not visible"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, accept launchable native forms without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available by the preflight and enrollment paths."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "Diagnosis: the failure is a pre-Runtime launcher availability policy that is too Unix-specific for Windows. The discovery path in [`windows-discovery`](bridge/internal/console/runtime_discovery.go) resolves candidates without executing them, but the console-side availability gate in [`windows-availability`](bridge/internal/console/server.go) and the preflight in [`windows-console-preflight`](bridge/internal/console/server.go) are the relevant checks that can reject a candidate before Runtime. The discussion also identifies the CLI enrollment path in [`windows-enrollment`](bridge/cmd/agentroom-bridge/main.go) as part of the same pre-probe flow. The likely symptom is that valid Windows launchers or npm shims like `codex.cmd` are treated as unavailable because the policy appears to depend on Unix execute-bit semantics.",
+            "- Portable discovery check: verify the code resolves an absolute candidate path without spawning shells or probing Runtime.",
+            "- Native Windows check: a discovered `codex.cmd` and a native `.exe` are reported available by the preflight and enrollment paths."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, accept launchable native forms without Unix permission bits, including `.exe`, `.cmd`, `.bat`, and PATHEXT-resolved entries.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": false
+    },
+    {
+      "blindId": "answer-9",
+      "answerSha256": "e17d3e4ac95141c05aa058f81fb996606eb2b801e7f25b4b906fbd4a37eea30e",
+      "answerKind": "delivered",
+      "targetErrorCorrection": [
+        {
+          "id": "T1",
+          "status": "fail",
+          "reason": "Retains the disputed missing-body/unknown-Windows-branch claim although the original source contains the complete function. Any correct earlier predicate is contradicted by the final uncertainty.",
+          "quotes": [
+            "The exact implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "T2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "then applies the same availability check before proceeding",
+            "- Console preflight: `server.go` marks an agent `ExecutableReady` only if `executableAvailable(executablePath)` passes, so a failure there blocks the agent before Runtime validation ([windows-console-preflight])."
+          ]
+        }
+      ],
+      "correctContentPreservation": [
+        {
+          "id": "P1",
+          "status": "partial",
+          "reason": "Retains discovery or Unix policy but undermines the correct availability diagnosis by calling the body or Windows behavior unknown.",
+          "quotes": [
+            "- Discovery: `runtime_discovery.go` first uses `exec.LookPath` and then falls back to absolute candidates, but only keeps paths that satisfy `filepath.IsAbs(...) && executableAvailable(...)` ([windows-discovery]).",
+            "The exact implementation of `executableAvailable` is not shown"
+          ]
+        },
+        {
+          "id": "P2",
+          "status": "partial",
+          "reason": "Locates the Console preflight flow, but the independent CLI execute-bit predicate is omitted, conflated with availability, or downgraded as unverified.",
+          "quotes": [
+            "then applies the same availability check before proceeding",
+            "- Console preflight: `server.go` marks an agent `ExecutableReady` only if `executableAvailable(executablePath)` passes, so a failure there blocks the agent before Runtime validation ([windows-console-preflight])."
+          ]
+        },
+        {
+          "id": "P3",
+          "status": "partial",
+          "reason": "Preserves execute bits and non-executing discovery, but proposed unconditional Unix .cmd rejection would change the existing extension-agnostic regular-file/execute-bit rule.",
+          "quotes": [
+            "- Preserve non-executing discovery on all platforms.",
+            "`.cmd` is not treated as executable on Unix"
+          ]
+        },
+        {
+          "id": "P4",
+          "status": "pass",
+          "reason": "Leaves Runtime permissions unchanged and describes repairs/checks as proposals rather than executed changes or passed tests.",
+          "quotes": [
+            "- Do not change Runtime permissions."
+          ]
+        }
+      ],
+      "unsupportedAdditions": [],
+      "unsupportedAssessment": "No unambiguous new material fact identified beyond the inherited dispute. Broad proposed policies remain visible under D2, not as invented historical implementation.",
+      "uncertaintyPreservation": [
+        {
+          "id": "U1",
+          "status": "pass",
+          "reason": "Explicitly preserves missing historical rejection/path observations and claims no observed platform validation.",
+          "quotes": [
+            "- The transcript of the exact rejected launcher paths is not included, so the diagnosis is based on the supplied code excerpts and reported symptom."
+          ]
+        },
+        {
+          "id": "U2",
+          "status": "pass",
+          "reason": "Separates proposed portable checks from proposed Windows verification; neither is represented as completed native validation.",
+          "quotes": [
+            "- Portable verification: discovery resolves candidates without executing shells or sourcing profiles, and still prefers absolute, resolved paths ([windows-discovery]).",
+            "- Native Windows verification: a valid `codex.cmd` and a native `.exe` are both accepted by availability logic before Runtime."
+          ]
+        },
+        {
+          "id": "U3",
+          "status": "partial",
+          "reason": "Frames Windows launchability as a proposal but preserves an availability-body uncertainty already resolved by the source.",
+          "quotes": [
+            "- On Windows, treat launchability as platform-native, not Unix-permission-based. Accept `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers as valid if the OS can resolve them.",
+            "The exact implementation of `executableAvailable` is not shown"
+          ]
+        }
+      ],
+      "requiredDeliverableCoverage": [
+        {
+          "id": "D1",
+          "status": "partial",
+          "reason": "Names relevant callers but omits Windows known-directory candidates that append only .exe; some predicates also remain unspecified.",
+          "quotes": [
+            "- Discovery: `runtime_discovery.go` first uses `exec.LookPath` and then falls back to absolute candidates, but only keeps paths that satisfy `filepath.IsAbs(...) && executableAvailable(...)` ([windows-discovery])."
+          ]
+        },
+        {
+          "id": "D2",
+          "status": "partial",
+          "reason": "Preserves non-execution and Runtime scope but proposes broad OS/PATHEXT acceptance instead of a bounded case-insensitive Windows allowlist with a consistent regular-file policy.",
+          "quotes": [
+            "- On Windows, treat launchability as platform-native, not Unix-permission-based. Accept `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers as valid if the OS can resolve them."
+          ]
+        },
+        {
+          "id": "D3",
+          "status": "partial",
+          "reason": "Proposes Windows and Unix checks but omits unsupported-extension/directory negatives and complete caller regression coverage.",
+          "quotes": [
+            "- Native Windows verification: a valid `codex.cmd` and a native `.exe` are both accepted by availability logic before Runtime."
+          ]
+        },
+        {
+          "id": "D4",
+          "status": "pass",
+          "reason": "Cites discovery and independent Console/CLI IDs and separates proposed portable/native checks from completed work. Citation target validity is assessed separately.",
+          "quotes": [
+            "- Enrollment/CLI path: `main.go` enrolls `codex` via `exec.LookPath` and then applies the same availability check before proceeding ([windows-enrollment]).",
+            "- Portable verification: discovery resolves candidates without executing shells or sourcing profiles, and still prefers absolute, resolved paths ([windows-discovery]).",
+            "- Native Windows verification: a valid `codex.cmd` and a native `.exe` are both accepted by availability logic before Runtime."
+          ]
+        }
+      ],
+      "policyConcerns": [
+        {
+          "kind": "unbounded_windows_acceptance",
+          "quote": "- On Windows, treat launchability as platform-native, not Unix-permission-based. Accept `.exe`, `.cmd`, `.bat`, and other PATHEXT-resolved launchers as valid if the OS can resolve them.",
+          "reason": "Does not define the requested bounded case-insensitive launcher policy."
+        },
+        {
+          "kind": "unix_extension_regression",
+          "quote": "`.cmd` is not treated as executable on Unix",
+          "reason": "A regular Unix .cmd file with execute bits is not rejected merely for its extension by the historical predicate."
+        }
+      ],
+      "substantiveEvidenceCheck": {
+        "status": "fail",
+        "reason": "Retains the missing-body/unknown-Windows-branch claim; reading or citing alone is not substantive correction."
+      },
+      "structuredAssessmentClosed": true
+    }
+  ]
+}

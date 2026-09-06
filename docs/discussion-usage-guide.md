@@ -72,6 +72,7 @@ Result；同轮、未完成和补到的迟到贡献不混入已冻结的指令�
 | 历史工作区资料回放 | [QA-069](acceptance/qa-069-workspace-evidence-replay.md)：三组配对、全部失败与最终审核 |
 | 新构造复杂工程题 | [QA-070 详细评价](acceptance/qa-070-complex-discussion-results.md)：逐项评分、具体错误和原始答案索引 |
 | 固定证据访问 / 使用机制筛查 | [QA-072](acceptance/qa-072-evidence-access-use.md)：九次名额已消耗，七份答案、两次 C 工具边界失败；没有来源读取回执，Q1/Q2 尚无法归因，不构成产品质量提升证据 |
+| 修复后的新三臂筛查 | [QA-074](acceptance/qa-074-evidence-access-use.md)：九次均完成；B 有权限但三次均未读，C 三次均读全四份证据；完整目标纠错 A/B 为 0/3、C 为 1/3，Q1 缺少 B 实际取证、Q2 为混合信号；新授权已消耗 |
 | 逐项证据交付机制 | [QA-071](acceptance/qa-071-criterion-evidence-delivery.md)：Result 对照、Finalizer 索引与代码候选验证的确定性验收，不是模型质量实验 |
 
 各题包分别解释，不合并评分。样本来自一个请求模型配置和非盲任务内审核；
@@ -92,6 +93,7 @@ router、embedding selector 及对已评分题目的继续调参均暂停。
 - `npm run test:discussion-workspace` / `npm run test:discussion-complex`：对应题包的聚焦离线回归。
 - `npm run test:discussion-codex-bootstrap`：已安装 CLI 的无认证本地回环检查，不调用外部模型。
 - `npm run test:discussion-evidence-access`：QA-072 历史冻结校验、读取授权与回执，以及 [QA-073](acceptance/qa-073-evidence-reader-repair.md) 的工具发现、调用记录和最终答案区分；三臂 CLI 通过 HTTP / WebSocket 本地回环验证，不调用外部模型。实际模型调用计划已经关闭。
+- `npm run test:discussion-evidence-screening`：QA-074 的 manipulation gate、读取范围覆盖、单次授权和九次留存结果审计；不调用外部模型，QA-074 实验入口已消耗。
 
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。
