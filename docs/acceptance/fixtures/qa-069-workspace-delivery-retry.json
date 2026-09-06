@@ -30,10 +30,14 @@
   "arms": [
     "discussion"
   ],
-  "authorization": "owner-approved",
+  "authorization": "consumed",
   "baseline": {
     "reportIndex": 1,
     "resultIndex": 0
   },
-  "approvedOn": "2026-09-06"
+  "approvedOn": "2026-09-06",
+  "consumedBy": {
+    "path": "docs/acceptance/evidence/qa-069-workspace-delivery-completed-2026-09-06.json",
+    "sha256": "df95349fb78b41aac922ea1123c27d520d2644cc32b6d6d168f9534258ee5bad"
+  }
 }

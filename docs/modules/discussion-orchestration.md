@@ -34,10 +34,19 @@ Discussion, at most 16 across QA-069, reusing its completed Single Agent baselin
 This does not change the task packet, acceptance criteria or production policy.
 Benchmark denied-tool diagnostics retain only bounded kind/server/tool identity
 names, never arguments, output or executable text; they do not grant tools or
-change failure classification. The Owner-approved QA-069 replacement plan includes all
-15 spent invocations and allows three new calls, at most 18; real delivery
-execution rejects pending authorization before starting Runtime resources.
-This approval grants no production authority or additional automatic retry.
+change failure classification. The final Owner-approved QA-069 replacement plan
+completed the missing Discussion with three calls, using all 18 authorized phase
+invocations. Its manifest is now consumed; real delivery startup rejects before
+starting Runtime resources. The approval grants no additional retry.
+
+[Completed QA-069 evidence](../acceptance/qa-069-workspace-evidence-replay.md)
+retains all three historical pairs and failed attempts. Single Agent covers
+4/12 rubric criteria with 3 Runs and 78.068 seconds; Discussion covers 2/12 with
+9 Runs and 134.604 seconds. These are non-blind replay observations, not user
+success rates. Complete contributor transcripts did not prevent Finalizers
+from dropping available evidence. Maintain Single Agent first guidance and
+explicit collaboration controls; no model, prompt or routing tuning against
+this scored packet is authorized by experiment completion.
 
 ## Purpose
 

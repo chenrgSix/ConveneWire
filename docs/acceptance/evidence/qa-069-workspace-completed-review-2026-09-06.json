@@ -1,0 +1,566 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-09-06",
+  "reviewer": "Codex task agent; direct non-blind rubric review, no additional provider calls",
+  "independentHumanReview": false,
+  "blinded": false,
+  "sourceReports": [
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-startup-failure-2026-09-06.json",
+      "sha256": "e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+      "sha256": "8acf79c26404d63cb2e2723fd15f6a5de0218791ced1a08df29abe2e8f32b986"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "sha256": "c71775b477b0a4c7b789d402a645d6c3a14886e0e9f390947eb851df293fbb80"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-tool-rejection-2026-09-06.json",
+      "sha256": "79b6a0a8dab6bfda9ca1984024645ae1c82bb0771ea59d6493b088a8dbc34bfe"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-delivery-completed-2026-09-06.json",
+      "sha256": "df95349fb78b41aac922ea1123c27d520d2644cc32b6d6d168f9534258ee5bad"
+    }
+  ],
+  "priorReviews": [
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-review-2026-09-06.json",
+      "sha256": "f3aea3272767528dea5c468282a49ed61d1dc9ed47acdc7edc915ede65bc852f"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-069-workspace-tool-rejection-review-2026-09-06.json",
+      "sha256": "91f175a8941c6cdc5b7bf36a9b25876d7c62f72f890831d3220a5837255e6cd6"
+    }
+  ],
+  "packetPath": "docs/acceptance/fixtures/qa-069-workspace-cases.json",
+  "packetSha256": "421ed769d57717f6b87bca23a5bf68fb672a0fb27148fd6643e8dc12ef070241",
+  "transformation": "Separate final audit. All five raw reports and both historical reviews stay byte-identical. Previous seven reviewed rows are reused verbatim; append the unscored tool-rejection attempt and the newly completed delivery final. Failed contributions are never substituted for a final answer.",
+  "results": [
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-startup-failure-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "delivery",
+      "arm": "single_agent",
+      "runtimeSucceeded": false,
+      "finalAnswerSha256": null,
+      "coveredCriteria": null,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "delivery",
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "2f4d5fbdab6c0c1271ab90083deb0a88d1e824399f29e6d938400dea6b9a7265",
+      "coveredCriteria": 1,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection.",
+          "passed": false,
+          "evidence": "Calls the observed assessment structurally valid despite recommendation stop; does not join the enum violation with the Go decoder semantic-validation gap."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema.",
+          "passed": false,
+          "evidence": "Proposes forwarding/projection changes and preserving the assessment rather than validating optional metadata and preserving visible output on invalid metadata."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions.",
+          "passed": false,
+          "evidence": "Mentions invalid envelopes and terminal updates, but misses schema-invalid metadata beyond enums and completed Finalizer/output-Message binding."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions.",
+          "passed": true,
+          "evidence": "Cites delivery-observation, parser, schema and generated types; labels unproven delivery/projection causes and makes no claim of an applied or verified repair. Its separate schema-validity error still fails C1."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+      "resultIndex": 1,
+      "caseId": "delivery",
+      "arm": "discussion",
+      "runtimeSucceeded": false,
+      "finalAnswerSha256": null,
+      "coveredCriteria": null,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions.",
+          "passed": null,
+          "evidence": "No delivered final answer; participant contributions are not substituted."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "cancellation",
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "d88d1de2afd808b3149c7798aaa2f6ce7eb776a8e856002f1a15d3dc30fd45ca",
+      "coveredCriteria": 2,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify the five-second whole-test envelope includes setup, dispatch, cancellation and teardown, and the same-source CI difference does not prove a production defect.",
+          "passed": true,
+          "evidence": "Joins the five-second whole-test timeout and pre-start timing with same-source CI disagreement; explicitly rejects a proven production cancellation defect."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Separate bounded setup/provider-start allowance from a strict five-second cancel-to-abort gate plus bounded request settlement and shutdown; do not only enlarge the whole test.",
+          "passed": false,
+          "evidence": "Says keep cancellation strict and separate setup, but omits the five-second post-trigger limit and bounded request settlement/shutdown."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Prevent the provider 15-second deadline from being mistaken for client/shutdown cancellation; propose a negative or isolated cancellation regression for both triggers.",
+          "passed": false,
+          "evidence": "Mentions provider deadline 15000 without preventing it from masquerading as cancellation; omits separate shutdown regression and negative coverage."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite test and CI/runtime evidence and preserve uncertainty about runner contention; no claim that suggested code, native CI or a Release has been verified.",
+          "passed": true,
+          "evidence": "Cites test, policy, route and CI IDs and preserves uncertainty about time consumption; no claimed code/CI/Release verification."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "resultIndex": 1,
+      "caseId": "cancellation",
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "c38038fa07c3888769de6cec66d34e3291501c573e556f1768cc10fcbfa372cc",
+      "coveredCriteria": 2,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify the five-second whole-test envelope includes setup, dispatch, cancellation and teardown, and the same-source CI difference does not prove a production defect.",
+          "passed": true,
+          "evidence": "Identifies timeout 5000 as a whole-test budget with startup before the abort trigger and cites same-commit CI pass versus Release timeout; does not infer a production defect."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Separate bounded setup/provider-start allowance from a strict five-second cancel-to-abort gate plus bounded request settlement and shutdown; do not only enlarge the whole test.",
+          "passed": false,
+          "evidence": "Separates start from cancellation, but never specifies the strict five-second cancel-to-abort gate or bounded settlement/shutdown deadlines."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Prevent the provider 15-second deadline from being mistaken for client/shutdown cancellation; propose a negative or isolated cancellation regression for both triggers.",
+          "passed": false,
+          "evidence": "Mentions the 15000-ms provider policy and both triggers, but gives no check preventing provider-deadline abort from falsely satisfying cancellation, nor isolated/negative coverage for both triggers."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite test and CI/runtime evidence and preserve uncertainty about runner contention; no claim that suggested code, native CI or a Release has been verified.",
+          "passed": true,
+          "evidence": "Cites all four source IDs and leaves startup/scheduling/cancellation causes uncertain; proposed checks are not claimed as executed."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "resultIndex": 2,
+      "caseId": "windows",
+      "arm": "single_agent",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "866f13a7ec9cc1fd65275abfae45a69e64efa45618efabb51ab4dc31534cfa70",
+      "coveredCriteria": 1,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify Unix execute-bit gating in Console/discovery and CLI enrollment plus known-directory candidates trying only .exe on Windows.",
+          "passed": false,
+          "evidence": "Finds execute-bit gates in discovery, Console and enrollment, but misses runtimeCandidates appending only .exe on Windows."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Use one regular-file platform rule: Windows case-insensitive .exe/.com/.bat/.cmd, Unix execute bits; preserve PATH lookup and bounded discovery without auto-running candidates.",
+          "passed": false,
+          "evidence": "Keeps Unix behavior and regular-file validation but omits .com and case-insensitive extension matching, and does not fix the .exe-only fallback candidates."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Propose coverage for no-execute-bit Windows launchers, unsupported .ps1/directory rejection, Unix behavior, known candidates and enrollment/preflight callers.",
+          "passed": false,
+          "evidence": "Proposes native .exe/.cmd and portable discovery checks, but omits unsupported .ps1, case variants, the full candidate list and comprehensive caller regression."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite discovery and independent Console/CLI evidence; separate portable tests/cross-compilation from actual native Windows launch/preflight and do not claim this replay verifies those.",
+          "passed": true,
+          "evidence": "Cites all four independent source IDs, labels inferred failure points and separates proposed portable/native checks without claiming they ran."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+      "resultIndex": 3,
+      "caseId": "windows",
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "4669d77e77de90213ffa6b8b09d971214d7dd6ca0bca06469e06bcfed3f34633",
+      "coveredCriteria": 0,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Identify Unix execute-bit gating in Console/discovery and CLI enrollment plus known-directory candidates trying only .exe on Windows.",
+          "passed": false,
+          "evidence": "Misses .exe-only candidate generation and explicitly discards the independently evidenced enrollment/Console checks."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Use one regular-file platform rule: Windows case-insensitive .exe/.com/.bat/.cmd, Unix execute bits; preserve PATH lookup and bounded discovery without auto-running candidates.",
+          "passed": false,
+          "evidence": "Allows whatever the OS resolver accepts, omits explicit regular-file/.com/case-insensitive boundaries, and leaves known-directory fallback unfixed."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Propose coverage for no-execute-bit Windows launchers, unsupported .ps1/directory rejection, Unix behavior, known candidates and enrollment/preflight callers.",
+          "passed": false,
+          "evidence": "Only broad portable/native/Unix checks; no .ps1/directory negatives, full Windows launcher matrix or enrollment/preflight caller coverage."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite discovery and independent Console/CLI evidence; separate portable tests/cross-compilation from actual native Windows launch/preflight and do not claim this replay verifies those.",
+          "passed": false,
+          "evidence": "Falsely says windows-enrollment and windows-console-preflight were not evidenced in the supplied transcript. Both occur in the actual Finalizer Run instruction and were available for its own reader; no new read was made."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-tool-rejection-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "delivery",
+      "arm": "discussion",
+      "runtimeSucceeded": false,
+      "finalAnswerSha256": null,
+      "coveredCriteria": null,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection.",
+          "passed": null,
+          "evidence": "No Finalizer Run or delivered final answer; the completed Reviewer contribution is not substituted."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema.",
+          "passed": null,
+          "evidence": "No Finalizer Run or delivered final answer; the completed Reviewer contribution is not substituted."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions.",
+          "passed": null,
+          "evidence": "No Finalizer Run or delivered final answer; the completed Reviewer contribution is not substituted."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions.",
+          "passed": null,
+          "evidence": "No Finalizer Run or delivered final answer; the completed Reviewer contribution is not substituted."
+        }
+      ]
+    },
+    {
+      "sourcePath": "docs/acceptance/evidence/qa-069-workspace-delivery-completed-2026-09-06.json",
+      "resultIndex": 0,
+      "caseId": "delivery",
+      "arm": "discussion",
+      "runtimeSucceeded": true,
+      "finalAnswerSha256": "4d5ff357835e813dde86018fbcf098ae59208b67a528728641a3bc1ce5792b90",
+      "coveredCriteria": 0,
+      "totalCriteria": 4,
+      "criteria": [
+        {
+          "id": "C1",
+          "kind": "diagnosis",
+          "text": "Join the observed sequence-3 recommendation stop with the schema enum violation and the Go decoder missing semantic validation; do not blame provider latency or the Finalizer selection.",
+          "passed": false,
+          "evidence": "Does not join observed recommendation stop, the schema enum violation and missing Go semantic validation. Instead denies that the local sequence-3/4 versus Central sequence-2 observation is established, although Solver cites it in the accepted transcript."
+        },
+        {
+          "id": "C2",
+          "kind": "preservation",
+          "text": "Propose validating optional assessment before attaching it, preserving visible output on invalid metadata; do not coerce stop into approval or relax the wire schema.",
+          "passed": false,
+          "evidence": "Requests historical source and observation already cited by Solver; proposes no optional-assessment validation boundary or preservation of visible output on invalid metadata."
+        },
+        {
+          "id": "C3",
+          "kind": "coverage",
+          "text": "Cover invalid enum and other schema-invalid metadata, valid metadata, reply/completion delivery and Central final-answer binding with proposed regressions.",
+          "passed": false,
+          "evidence": "Offers general sequence/terminal-output checks but omits invalid enum and other schema-invalid metadata, valid metadata, and completed Finalizer/Run/output-Message binding."
+        },
+        {
+          "id": "C4",
+          "kind": "evidence",
+          "text": "Cite observation and code/schema document IDs and distinguish a supported diagnosis from unperformed repair, delivery verification and provider conclusions.",
+          "passed": false,
+          "evidence": "Cites only schema/type/enum and falsely says these are the only cited documents; the full accepted Solver contribution cites delivery-observation and delivery-parser. It avoids claiming an applied repair, but does not meet the compound evidence criterion."
+        }
+      ]
+    }
+  ],
+  "completePairs": [
+    {
+      "caseId": "delivery",
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+        "resultIndex": 0,
+        "coveredCriteria": 1,
+        "totalCriteria": 4,
+        "runs": 1,
+        "elapsedMilliseconds": 27081
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-delivery-completed-2026-09-06.json",
+        "resultIndex": 0,
+        "coveredCriteria": 0,
+        "totalCriteria": 4,
+        "runs": 3,
+        "elapsedMilliseconds": 42959
+      }
+    },
+    {
+      "caseId": "cancellation",
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+        "resultIndex": 1,
+        "coveredCriteria": 2,
+        "totalCriteria": 4,
+        "runs": 1,
+        "elapsedMilliseconds": 24355
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+        "resultIndex": 0,
+        "coveredCriteria": 2,
+        "totalCriteria": 4,
+        "runs": 3,
+        "elapsedMilliseconds": 46347
+      }
+    },
+    {
+      "caseId": "windows",
+      "single_agent": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+        "resultIndex": 2,
+        "coveredCriteria": 1,
+        "totalCriteria": 4,
+        "runs": 1,
+        "elapsedMilliseconds": 26632
+      },
+      "discussion": {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+        "resultIndex": 3,
+        "coveredCriteria": 0,
+        "totalCriteria": 4,
+        "runs": 3,
+        "elapsedMilliseconds": 45298
+      }
+    }
+  ],
+  "completePairTotals": {
+    "single_agent": {
+      "coveredCriteria": 4,
+      "totalCriteria": 12,
+      "runs": 3,
+      "elapsedMilliseconds": 78068
+    },
+    "discussion": {
+      "coveredCriteria": 2,
+      "totalCriteria": 12,
+      "runs": 9,
+      "elapsedMilliseconds": 134604
+    }
+  },
+  "phase": {
+    "authorizedMaximumInvocations": 18,
+    "actualInvocations": 18,
+    "remainingInvocations": 0,
+    "actualRuns": 18,
+    "runStates": {
+      "failed": 3,
+      "completed": 15
+    },
+    "allArmElapsedMilliseconds": 302223,
+    "failedAttempts": 3,
+    "failedArmRuns": 6,
+    "failedArmElapsedMilliseconds": 89551,
+    "completePairs": [
+      "delivery",
+      "cancellation",
+      "windows"
+    ],
+    "incompletePairs": [],
+    "furtherRetryAuthorized": false,
+    "timeBoundary": "Arm elapsed time sums; not phase wall-clock time or summed individual Run duration. Completed-pair totals exclude all three failed attempts."
+  },
+  "independentEvidence": [
+    {
+      "caseId": "delivery",
+      "observation": "In the completed delivery Discussion, Solver independently supplied local reply/completion sequences 3/4 versus Central working at sequence 2, citing delivery-observation and delivery-parser, but omitted the observed recommendation stop and wrongly proposed Central projection repair. Reviewer independently supplied the allowed continue/finish/wait_human enum, citing its schema/type/enum subset, and correctly limited what that subset alone establishes. Both entire contributions appear in the Finalizer Run instruction. Finalizer incorrectly treats the Reviewer subset limitation as a transcript-wide absence of source/observation, drops Solver citations and does not join the enum with the observed invalid metadata. Retrieval and context availability did not ensure evidence use. This does not establish a production transcript-delivery defect."
+    },
+    {
+      "caseId": "cancellation",
+      "observation": "Solver supplied the 5000-ms test versus 15000-ms provider policy and both trigger outcomes; Reviewer supplied request/response abort wiring plus same-commit CI observation. Finalizer combined timing/CI facts but omitted shutdown outcomes already present in Solver contribution and did not fill the strict time/false-positive checks."
+    },
+    {
+      "caseId": "windows",
+      "observation": "Solver supplied discovery/availability execute-bit gates; Reviewer independently supplied enrollment and Console call-site facts. Finalizer dropped the latter while calling them unevidenced, although the Run instruction includes the complete Reviewer contribution. Both contributors proposed an overbroad OS-resolver rule. Solver also fabricated filesystem Markdown links; fixed source IDs, not those paths, are the verifiable references."
+    }
+  ],
+  "sourceCoverage": {
+    "completedPairInvocations": 12,
+    "fullAssignedReads": 9,
+    "zeroReadFinalizers": 3,
+    "note": "Computed from accepted ID receipts versus frozen role assignments, including the older baseline without an evidenceCoverage field. All three Single baselines and six Discussion contributors read their assigned documents. All three completed Finalizers used no new reader call; accepted transcripts remained available. These are retrieval observations, not quality or Runtime-failure labels."
+  },
+  "verification": {
+    "sourceHashesMatchedGitByReport": [
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-startup-failure-2026-09-06.json",
+        "matchedSources": 16
+      },
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-read-gate-failure-2026-09-06.json",
+        "matchedSources": 17
+      },
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-remaining-2026-09-06.json",
+        "matchedSources": 20
+      },
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-tool-rejection-2026-09-06.json",
+        "matchedSources": 21
+      },
+      {
+        "sourcePath": "docs/acceptance/evidence/qa-069-workspace-delivery-completed-2026-09-06.json",
+        "matchedSources": 22
+      }
+    ],
+    "historicalExcerptsMatchedGit": 13,
+    "taskPromptHashesMatched": 9,
+    "latestTaskInputMatchesRetainedBaseline": true,
+    "latestFinalizerInstructionContainsBothEntireContributions": true,
+    "latestFinalization": {
+      "turnId": "turn_dthh0nMycHqbAsYSIy48nQ",
+      "runId": "run_VrvhdssEnQJynJbPxj51Dg",
+      "outputMessageId": "msg_UtDaGk2eZZqlIwt4Ci4gSA",
+      "state": "completed"
+    },
+    "finalizationBoundary": "The pinned live completedFinalAnswer helper required completed finalization Turn, matching completed Run/Agent and exact output Message before retaining the final. This audit checks retained finalization fields and answer equality, not a fresh database query after cleanup.",
+    "rawReportByteEquality": true,
+    "priorReviewedRowsUnchanged": true,
+    "temporaryRootAbsent": "convene-wire-test-run-TMxjLE",
+    "instructionBoundary": "Reports retain Central Run instructions and hashes of Bridge-projected stdin separately. These hashes are not expected to match: runtimePromptWithArtifacts appends the full unchanged Current request after normal Room/task context. Full projected stdin was not retained."
+  },
+  "limitations": [
+    "Three completed historical pairs and six final answers; none covers all four frozen rubric criteria. Completion of the experiment is not a quality pass or validation of multi-Agent benefit.",
+    "One requested model gpt-5.4-mini/low; observedProviderModel remains null. No provider-attested model identity, general model ranking or independent human blind review.",
+    "Different execution revisions and failure-stopped batches, including one reused baseline. No independent repeated trials, production repair acceptance or physical multi-machine proof.",
+    "Historical diagnostic rubric coverage is not real user task success, productivity or rework rate. All elapsed comparisons are local observations, not performance guarantees.",
+    "The earlier unapproved-tool identity remains unknown. Later bounded diagnostics and this successful attempt do not prove that earlier cause repaired.",
+    "Do not pool this replay with QA-067/068 closed-input comparisons or tune prompts, model or routing against this scored packet. The three-call v4 authorization is consumed."
+  ]
+}

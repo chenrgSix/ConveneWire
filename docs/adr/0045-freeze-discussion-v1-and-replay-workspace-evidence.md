@@ -49,7 +49,9 @@ authorized three new calls for only the missing delivery Discussion, at most
 16 across the phase, reusing the completed Single Agent baseline. Failed
 evidence remains immutable. That attempt used two calls and stopped; the
 Owner then explicitly approved a v4 delivery-only plan for three new calls,
-at most 18 across the phase. No further automatic retry is added.
+at most 18 across the phase. All three calls completed and consumed this final
+authorization; the current manifest rejects another real invocation. No further
+automatic retry is added.
 Non-blind task-agent grading is separate from runtime success. Real user
 rework and task success rates are not measured by this historical replay.
 
@@ -83,3 +85,13 @@ QA-069 requires source-pin, access-union, out-of-scope/over-limit reader and
 adapter regression checks, a synthetic real Server/Bridge traversal, the
 bounded real comparison, per-criterion evidence and physical cleanup.
 Conclusions must distinguish replay diagnosis from an applied/tested repair.
+
+The [completed QA-069 record](../acceptance/qa-069-workspace-evidence-replay.md)
+retains all three pairs: Single Agent covers 4/12 criteria with 3 Runs and
+78.068 seconds; Discussion covers 2/12 with 9 Runs and 134.604 seconds. Three
+failed attempts remain separate, adding 6 Runs and 89.551 seconds. All 18 phase
+invocations are accounted for. Successful source retrieval and complete
+contributor context did not ensure correct final evidence use. This completes
+the bounded experiment, without a quality pass or evidence to broaden routing.
+Keep the maintenance freeze and Single Agent first guidance; future work needs
+independent task evidence rather than tuning against this scored packet.

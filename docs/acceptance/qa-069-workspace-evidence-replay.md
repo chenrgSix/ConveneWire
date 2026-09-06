@@ -1,5 +1,37 @@
 # QA-069 Historical workspace evidence replay
 
+## Current result
+
+All three historical pairs are now available. The last Owner-approved three
+calls completed on 2026-09-06 at source `0fdeaa2`, consuming the final cap of
+18 phase invocations. The [raw delivery report](evidence/qa-069-workspace-delivery-completed-2026-09-06.json)
+and [complete review](evidence/qa-069-workspace-completed-review-2026-09-06.json)
+preserve the new final answer, all five raw reports and both prior reviews.
+Earlier incomplete/pending statements below describe their historical
+checkpoints; they are not the current result. TASKS.md remains the sole delivery
+register. No further real invocation is authorized by any exercised plan.
+
+| Case | Single criteria | Discussion criteria | Single Runs / seconds | Discussion Runs / seconds |
+| --- | --- | --- | --- | --- |
+| Delivery | 1/4 | 0/4 | 1 / 27.081 | 3 / 42.959 |
+| Cancellation | 2/4 | 2/4 | 1 / 24.355 | 3 / 46.347 |
+| Windows | 1/4 | 0/4 | 1 / 26.632 | 3 / 45.298 |
+| Complete-pair totals | 4/12 | 2/12 | 3 / 78.068 | 9 / 134.604 |
+
+All six delivered final answers were reviewed against unchanged criteria; none
+covers all four items. Discussion uses three times the Runs and about 1.72
+times the summed arm elapsed time in these completed pairs. The three failed
+attempts add 6 Runs and 89.551 seconds separately. Across the phase there are
+18 CLI invocations and 18 actual Runs: 15 completed and 3 failed. Total arm
+elapsed time is 302.223 seconds, not phase wall-clock time. Do not pool this
+historical replay with QA-067/068 or infer user success/rework rates.
+
+Completing this bounded experiment does not make its answers pass quality
+acceptance. The result supports keeping the v1 maintenance freeze and Single
+Agent first guidance, with explicit collaboration for independent evidence or
+responsibility needs. It does not justify additional routing or tuning against
+this scored packet. See the [updated usage guide](../discussion-usage-guide.md).
+
 ## Authority and frozen acceptance
 
 [ADR-0045](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md)
@@ -426,3 +458,76 @@ The 12 passing replacement-plan checks cover the unchanged implementation.
 Stop on the first failed attempt; no further calls or retry beyond this plan
 are authorized. Preserve the outcome and audit completion against the original
 three-pair gate.
+
+## Final delivery outcome and evidence review
+
+The approved v4 execution used exactly three new invocations. Both contributions
+and the Reviewer Finalizer completed; the new raw report has SHA-256
+`df95349fb78b41aac922ea1123c27d520d2644cc32b6d6d168f9534258ee5bad`.
+Its clean source is `0fdeaa24ad4f82d5e75db3186cb218fd0bd2b46e`, packet identity
+is `qa-069-historical-workspaces-v1`, and execution identity is
+`qa-069-evidence-cli-v4`. Requested model and effort remain gpt-5.4-mini/low;
+the observed provider model is unavailable. No additional model calls were
+used for grading. The consumed manifest pins this exact report and no longer
+passes real startup admission.
+
+The completed Finalizer is Run `run_VrvhdssEnQJynJbPxj51Dg`, with output Message
+`msg_UtDaGk2eZZqlIwt4Ci4gSA`. The pinned live answer helper requires the completed
+finalization Turn, matching completed Run/Agent and exact output Message before
+retaining a final answer. The audit checks the retained fields and final-answer
+equality; it does not claim a fresh database join after the temporary database
+was removed. The complete review reuses the prior seven reviewed rows verbatim,
+adds the unscored tool-rejection attempt, and grades only the new final answer.
+
+The new delivery final covers 0/4 frozen criteria. It does not diagnose the
+observed `recommendation: stop` enum violation or the missing Go semantic
+validation, propose safe optional-metadata validation with visible-output
+preservation, or cover the required invalid/valid metadata and final-output
+binding regressions. It also falsely says the transcript cites only schema
+documents. A 0/4 rubric result does not imply every sentence is false: it means
+none of the four complete acceptance items is met.
+
+Solver had read both assigned sources and cited local sequences 3/4 versus
+Central sequence 2, but omitted the observed `stop` value and wrongly proposed
+a Central projection repair. Reviewer read its three schema/type/enum sources
+and supplied `continue`, `finish` and `wait_human`, while identifying limitations
+of that subset. Both entire contributions occur in the actual Finalizer Run
+instruction. The Finalizer turns Reviewer's subset limitation into a false
+claim that historical observation/parser evidence is absent from the transcript.
+This supports an evidence-use failure, not a claim that the Server omitted
+contributor context or that routing caused it. The Finalizer made no new reader
+call, which remains an observation rather than a fabricated Runtime failure.
+
+Across the successful pairs, all three baselines and six contributors read
+their full assigned sources; all three Finalizers made no new reads. Raw
+receipts establish retrieval, not understanding. Earlier unapproved-tool
+identity remains unavailable: bounded diagnostics and this success do not
+reconstruct that call or prove its cause repaired. All prior failures remain
+immutable and excluded from the completed-pair quality totals.
+
+The final audit rechecked all 13 historical excerpts, all nine task-input
+hashes, all accepted read IDs/digests and source pins at every report's own
+commit (16, 17, 20, 21 and 22 respectively). Latest task input is byte-identical
+to the reused delivery baseline; all three latest CLI receipts exit successfully
+with no denied tools. Reports retain Central instructions and Bridge-projected
+stdin hashes separately, so this is not an assertion that those hashes match.
+Full projected stdin was not retained. Raw report bytes match the local capture,
+and the owned live root `convene-wire-test-run-TMxjLE` is physically absent.
+
+Final verification passed all nine focused workspace checks and three synthetic
+Server/Bridge flows (12, 8 and 3 Runs): 12 checks with no external provider.
+A separate invocation of the real entrypoint, with no provider executable on
+its child PATH, rejects the consumed plan before any Runtime/report creation.
+The final offline roots `convene-wire-test-run-91MrLw` and
+`convene-wire-test-run-FQ1HKp` are physically absent, as are all historical roots
+named in this record. All 396 maintained Markdown files and whitespace checks
+pass. The installed-CLI loopback and bounded diagnostic gates retain their
+earlier passing evidence; this closure changes only documentation, report
+retention and the exercised plan's authorization state, not Runtime code.
+
+The frozen completion conditions are now met: three paired results, all six
+final answers reviewed, independent facts and omissions recorded, bounded
+Run/time and failure accounting, updated owning documents and usage guidance,
+relevant offline verification and physical cleanup. Quality and real-world
+productivity remain separate, unpassed/unmeasured claims. Do not use these
+results as authorization for another tuning or model-invocation cycle.
