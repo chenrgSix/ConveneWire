@@ -200,7 +200,7 @@ type Grant struct {
 }
 
 type Input struct {
-	Artifact            ArtifactClass `json:"artifact"`
+	Artifact            InputArtifact `json:"artifact"`
 	BindingID           string        `json:"bindingId"`
 	DestinationAgentID  string        `json:"destinationAgentId"`
 	DestinationDeviceID string        `json:"destinationDeviceId"`
@@ -231,7 +231,7 @@ type Input struct {
 	SourceTree               *string          `json:"sourceTree"`
 }
 
-type ArtifactClass struct {
+type InputArtifact struct {
 	ArtifactID       string       `json:"artifactId"`
 	ArtifactRevision int64        `json:"artifactRevision"`
 	ByteLength       int64        `json:"byteLength"`
@@ -346,7 +346,7 @@ type ResultProposal struct {
 	NextActions            []ResultProposalNextAction     `json:"nextActions"`
 	OpenQuestions          []string                       `json:"openQuestions"`
 	OperationID            string                         `json:"operationId"`
-	Outcome                Outcome                        `json:"outcome"`
+	Outcome                ResultProposalOutcome          `json:"outcome"`
 	ProposedAtTaskRevision int64                          `json:"proposedAtTaskRevision"`
 	Risks                  []string                       `json:"risks"`
 	Sources                []ResultProposalSource         `json:"sources"`
@@ -392,7 +392,7 @@ type AgentResultProposalProposal struct {
 	NextActions            []PurpleNextAction     `json:"nextActions"`
 	OpenQuestions          []string               `json:"openQuestions"`
 	OperationID            string                 `json:"operationId"`
-	Outcome                Outcome                `json:"outcome"`
+	Outcome                ResultProposalOutcome  `json:"outcome"`
 	ProposedAtTaskRevision int64                  `json:"proposedAtTaskRevision"`
 	Risks                  []string               `json:"risks"`
 	Sources                []PurpleSource         `json:"sources"`
@@ -437,14 +437,14 @@ type ResultProjection struct {
 	Proposal ResultProjectionProposal `json:"proposal"`
 	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
 	// most nanosecond precision.
-	ProposedAt    time.Time             `json:"proposedAt"`
-	ProposedBy    ProposedBy            `json:"proposedBy"`
-	ResultID      string                `json:"resultId"`
-	ResultVersion int64                 `json:"resultVersion"`
-	Review        *Review               `json:"review"`
-	RoomID        string                `json:"roomId"`
-	State         ResultProjectionState `json:"state"`
-	TaskID        string                `json:"taskId"`
+	ProposedAt    time.Time                  `json:"proposedAt"`
+	ProposedBy    ResultProjectionProposedBy `json:"proposedBy"`
+	ResultID      string                     `json:"resultId"`
+	ResultVersion int64                      `json:"resultVersion"`
+	Review        *Review                    `json:"review"`
+	RoomID        string                     `json:"roomId"`
+	State         ResultProjectionState      `json:"state"`
+	TaskID        string                     `json:"taskId"`
 }
 
 type ResultProjectionProposal struct {
@@ -454,7 +454,7 @@ type ResultProjectionProposal struct {
 	NextActions            []FluffyNextAction     `json:"nextActions"`
 	OpenQuestions          []string               `json:"openQuestions"`
 	OperationID            string                 `json:"operationId"`
-	Outcome                Outcome                `json:"outcome"`
+	Outcome                ResultProposalOutcome  `json:"outcome"`
 	ProposedAtTaskRevision int64                  `json:"proposedAtTaskRevision"`
 	Risks                  []string               `json:"risks"`
 	Sources                []FluffySource         `json:"sources"`
@@ -486,7 +486,7 @@ type FluffySource struct {
 	DiscussionID  *string    `json:"discussionId,omitempty"`
 }
 
-type ProposedBy struct {
+type ResultProjectionProposedBy struct {
 	Kind         ProposedByKind `json:"kind"`
 	MemberID     *string        `json:"memberId,omitempty"`
 	AgentID      *string        `json:"agentId,omitempty"`
@@ -502,6 +502,151 @@ type Review struct {
 	ReviewedAt         time.Time `json:"reviewedAt"`
 	ReviewedByMemberID string    `json:"reviewedByMemberId"`
 	ReviewRevision     int64     `json:"reviewRevision"`
+}
+
+type ResultAcceptanceEvidence struct {
+	Artifacts                 []ArtifactElement                   `json:"artifacts"`
+	Criteria                  []ResultAcceptanceEvidenceCriterion `json:"criteria"`
+	CriteriaRevision          int64                               `json:"criteriaRevision"`
+	CurrentCriteriaRevision   int64                               `json:"currentCriteriaRevision"`
+	CurrentDefinitionRevision int64                               `json:"currentDefinitionRevision"`
+	DefinitionRevision        int64                               `json:"definitionRevision"`
+	HistoryLimit              float64                             `json:"historyLimit"`
+	OmittedResults            int64                               `json:"omittedResults"`
+	ResultID                  string                              `json:"resultId"`
+	ResultVersion             int64                               `json:"resultVersion"`
+	Stale                     bool                                `json:"stale"`
+	TaskID                    string                              `json:"taskId"`
+	Version                   float64                             `json:"version"`
+}
+
+type ArtifactElement struct {
+	ArtifactID        string             `json:"artifactId"`
+	ArtifactRevision  int64              `json:"artifactRevision"`
+	Candidates        []CandidateElement `json:"candidates"`
+	ContentSha256     *string            `json:"contentSha256"`
+	ContentSizeBytes  *int64             `json:"contentSizeBytes"`
+	OmittedCandidates int64              `json:"omittedCandidates"`
+	Type              string             `json:"type"`
+}
+
+type CandidateElement struct {
+	CandidateCommit  string            `json:"candidateCommit"`
+	CandidateTree    string            `json:"candidateTree"`
+	CheckpointID     string            `json:"checkpointId"`
+	InputDigest      string            `json:"inputDigest"`
+	NodeKey          string            `json:"nodeKey"`
+	OmittedReceipts  int64             `json:"omittedReceipts"`
+	PlanID           string            `json:"planId"`
+	PlanRevision     int64             `json:"planRevision"`
+	Receipts         []Receipt         `json:"receipts"`
+	RequiredProfiles []RequiredProfile `json:"requiredProfiles"`
+	RunID            string            `json:"runId"`
+	Status           Status            `json:"status"`
+}
+
+type Receipt struct {
+	OperationID    string         `json:"operationId"`
+	Outcome        ReceiptOutcome `json:"outcome"`
+	Profile        Profile        `json:"profile"`
+	ReceiptDigest  string         `json:"receiptDigest"`
+	VerificationID string         `json:"verificationId"`
+}
+
+type Profile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type RequiredProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type ResultAcceptanceEvidenceCriterion struct {
+	Candidate     *CriterionCandidate `json:"candidate"`
+	Contributions []Contribution      `json:"contributions"`
+	Criterion     CriterionCriterion  `json:"criterion"`
+	Diagnostics   []Diagnostic        `json:"diagnostics"`
+}
+
+type CriterionCandidate struct {
+	Claim         CandidateClaim        `json:"claim"`
+	ProposedBy    CandidateProposedBy   `json:"proposedBy"`
+	ResultID      string                `json:"resultId"`
+	ResultVersion int64                 `json:"resultVersion"`
+	Sources       []CandidateSource     `json:"sources"`
+	State         ResultProjectionState `json:"state"`
+}
+
+type CandidateClaim struct {
+	Coverage       Coverage `json:"coverage"`
+	CriterionKey   string   `json:"criterionKey"`
+	EvidenceRefIDS []string `json:"evidenceRefIds"`
+	Explanation    string   `json:"explanation"`
+}
+
+type CandidateProposedBy struct {
+	Kind         ProposedByKind `json:"kind"`
+	MemberID     *string        `json:"memberId,omitempty"`
+	AgentID      *string        `json:"agentId,omitempty"`
+	RunID        *string        `json:"runId,omitempty"`
+	DiscussionID *string        `json:"discussionId,omitempty"`
+}
+
+type CandidateSource struct {
+	ArtifactID    *string    `json:"artifactId,omitempty"`
+	EvidenceRefID string     `json:"evidenceRefId"`
+	Kind          SourceKind `json:"kind"`
+	RunID         *string    `json:"runId,omitempty"`
+	Sequence      *int64     `json:"sequence,omitempty"`
+	MessageID     *string    `json:"messageId,omitempty"`
+	MemoryID      *string    `json:"memoryId,omitempty"`
+	DiscussionID  *string    `json:"discussionId,omitempty"`
+}
+
+type Contribution struct {
+	Claim         ContributionClaim      `json:"claim"`
+	ProposedBy    ContributionProposedBy `json:"proposedBy"`
+	ResultID      string                 `json:"resultId"`
+	ResultVersion int64                  `json:"resultVersion"`
+	Sources       []ContributionSource   `json:"sources"`
+	State         ResultProjectionState  `json:"state"`
+}
+
+type ContributionClaim struct {
+	Coverage       Coverage `json:"coverage"`
+	CriterionKey   string   `json:"criterionKey"`
+	EvidenceRefIDS []string `json:"evidenceRefIds"`
+	Explanation    string   `json:"explanation"`
+}
+
+type ContributionProposedBy struct {
+	Kind         ProposedByKind `json:"kind"`
+	MemberID     *string        `json:"memberId,omitempty"`
+	AgentID      *string        `json:"agentId,omitempty"`
+	RunID        *string        `json:"runId,omitempty"`
+	DiscussionID *string        `json:"discussionId,omitempty"`
+}
+
+type ContributionSource struct {
+	ArtifactID    *string    `json:"artifactId,omitempty"`
+	EvidenceRefID string     `json:"evidenceRefId"`
+	Kind          SourceKind `json:"kind"`
+	RunID         *string    `json:"runId,omitempty"`
+	Sequence      *int64     `json:"sequence,omitempty"`
+	MessageID     *string    `json:"messageId,omitempty"`
+	MemoryID      *string    `json:"memoryId,omitempty"`
+	DiscussionID  *string    `json:"discussionId,omitempty"`
+}
+
+type CriterionCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
 }
 
 type WorkbenchQuery struct {
@@ -705,11 +850,11 @@ type RunAttemptProjectionState string
 const (
 	Delivered           RunAttemptProjectionState = "delivered"
 	Expired             RunAttemptProjectionState = "expired"
-	Failed              RunAttemptProjectionState = "failed"
 	InputRequired       RunAttemptProjectionState = "input_required"
 	Queued              RunAttemptProjectionState = "queued"
 	StateCanceled       RunAttemptProjectionState = "canceled"
 	StateCompleted      RunAttemptProjectionState = "completed"
+	StateFailed         RunAttemptProjectionState = "failed"
 	StateOutcomeUnknown RunAttemptProjectionState = "outcome_unknown"
 	StateWorking        RunAttemptProjectionState = "working"
 )
@@ -808,13 +953,13 @@ const (
 	Unresolved           Coverage = "unresolved"
 )
 
-type Outcome string
+type ResultProposalOutcome string
 
 const (
-	Informational       Outcome = "informational"
-	OutcomeNotSatisfied Outcome = "not_satisfied"
-	OutcomeSatisfied    Outcome = "satisfied"
-	Partial             Outcome = "partial"
+	Informational       ResultProposalOutcome = "informational"
+	OutcomeNotSatisfied ResultProposalOutcome = "not_satisfied"
+	OutcomeSatisfied    ResultProposalOutcome = "satisfied"
+	Partial             ResultProposalOutcome = "partial"
 )
 
 type SourceKind string
@@ -857,6 +1002,35 @@ const (
 	StateAccepted ResultProjectionState = "accepted"
 	StateRejected ResultProjectionState = "rejected"
 	Superseded    ResultProjectionState = "superseded"
+)
+
+type ReceiptOutcome string
+
+const (
+	OutcomeCanceled       ReceiptOutcome = "canceled"
+	OutcomeFailed         ReceiptOutcome = "failed"
+	OutcomeOutcomeUnknown ReceiptOutcome = "outcome_unknown"
+	OutcomePassed         ReceiptOutcome = "passed"
+	TimedOut              ReceiptOutcome = "timed_out"
+)
+
+type Status string
+
+const (
+	Incomplete    Status = "incomplete"
+	NotConfigured Status = "not_configured"
+	StatusFailed  Status = "failed"
+	StatusPassed  Status = "passed"
+	Unavailable   Status = "unavailable"
+)
+
+type Diagnostic string
+
+const (
+	ClaimWithoutEvidence         Diagnostic = "claim_without_evidence"
+	DifferingCoverage            Diagnostic = "differing_coverage"
+	EarlierEvidenceNotReferenced Diagnostic = "earlier_evidence_not_referenced"
+	MissingClaim                 Diagnostic = "missing_claim"
 )
 
 type ScopeEnum string

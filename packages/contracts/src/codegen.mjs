@@ -1509,6 +1509,7 @@ export async function generateContractTypes(packageRoot) {
     ["AgentResultProposal", "agentResultProposal"],
     ["ResultReviewCommand", "resultReviewCommand"],
     ["ResultProjection", "resultProjection"],
+    ["ResultAcceptanceEvidence", "resultAcceptanceEvidence"],
     ["WorkbenchQuery", "workbenchQuery"],
     ["WorkbenchPage", "workbenchPage"],
     ["LegacyTaskMapping", "legacyTaskMapping"],

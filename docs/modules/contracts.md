@@ -9,6 +9,18 @@ Old Bridge compatibility never allows silent downgrade of governed coding.
 [ADR-0039](../adr/0039-keep-repositories-client-owned.md) classifies retained
 Remote Provider contracts as Optional Extension wire, not Core conformance.
 
+`CON-025`, under
+[ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md), adds
+the closed `resultAcceptanceEvidence` response to the existing work schema.
+It retains canonical criterion revisions, attributed candidate/prior claims,
+exact Artifact and candidate pins, bounded local verification observations and
+explicit omitted counts. It carries no acceptance command or source bytes;
+existing Result proposals and Bridge envelopes remain byte-compatible. Shared
+positive/negative fixtures and generated Go round trips cover null claims,
+stale criteria, unknown verification and rejection of invented authority,
+unpinned candidates and local-path fields. Referential/proof correctness remains
+the Server's responsibility and is not established by schema validity.
+
 `CON-021` adds version-1 `work/execution-runtime.schema.json`: the governed Run
 manifest, exact input binding, capability, repository binding, local grant
 summary, repository operation/request receipt, checkpoint and verifier receipt.

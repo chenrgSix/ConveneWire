@@ -661,6 +661,348 @@
         "title": { "type": "string", "minLength": 1, "maxLength": 160 },
         "ownerMemberId": { "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/memberId" }
       }
+    },
+    "acceptanceContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resultId",
+        "resultVersion",
+        "state",
+        "proposedBy",
+        "claim",
+        "sources"
+      ],
+      "properties": {
+        "resultId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/resultId"
+        },
+        "resultVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "state": {
+          "enum": [
+            "proposed",
+            "accepted",
+            "rejected",
+            "superseded"
+          ]
+        },
+        "proposedBy": {
+          "$ref": "#/$defs/resultProjection/properties/proposedBy"
+        },
+        "claim": {
+          "$ref": "#/$defs/criterionClaim"
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          }
+        }
+      }
+    },
+    "acceptanceCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion",
+        "candidate",
+        "contributions",
+        "diagnostics"
+      ],
+      "properties": {
+        "criterion": {
+          "$ref": "#/$defs/criterion"
+        },
+        "candidate": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/acceptanceContribution"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contributions": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/acceptanceContribution"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "enum": [
+              "missing_claim",
+              "earlier_evidence_not_referenced",
+              "differing_coverage",
+              "claim_without_evidence"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "acceptanceVerificationProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileId",
+        "revision",
+        "digest"
+      ],
+      "properties": {
+        "profileId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/opaqueId"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "acceptanceVerificationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verificationId",
+        "operationId",
+        "receiptDigest",
+        "profile",
+        "outcome"
+      ],
+      "properties": {
+        "verificationId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/opaqueId"
+        },
+        "operationId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/operationId"
+        },
+        "receiptDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile": {
+          "$ref": "#/$defs/acceptanceVerificationProfile"
+        },
+        "outcome": {
+          "enum": [
+            "passed",
+            "failed",
+            "timed_out",
+            "canceled",
+            "outcome_unknown"
+          ]
+        }
+      }
+    },
+    "acceptanceCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "runId",
+        "planId",
+        "planRevision",
+        "nodeKey",
+        "candidateCommit",
+        "candidateTree",
+        "inputDigest",
+        "requiredProfiles",
+        "receipts",
+        "omittedReceipts",
+        "status"
+      ],
+      "properties": {
+        "checkpointId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/opaqueId"
+        },
+        "runId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/runId"
+        },
+        "planId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/opaqueId"
+        },
+        "planRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "nodeKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "candidateCommit": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        },
+        "candidateTree": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        },
+        "inputDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requiredProfiles": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/acceptanceVerificationProfile"
+          }
+        },
+        "receipts": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/acceptanceVerificationReceipt"
+          }
+        },
+        "omittedReceipts": {
+          "$ref": "#/$defs/nonNegativeRevision"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "incomplete",
+            "not_configured",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    "acceptanceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifactId",
+        "artifactRevision",
+        "type",
+        "contentSha256",
+        "contentSizeBytes",
+        "candidates",
+        "omittedCandidates"
+      ],
+      "properties": {
+        "artifactId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/artifactId"
+        },
+        "artifactRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "contentSha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contentSizeBytes": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/nonNegativeRevision"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/acceptanceCandidate"
+          }
+        },
+        "omittedCandidates": {
+          "$ref": "#/$defs/nonNegativeRevision"
+        }
+      }
+    },
+    "resultAcceptanceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "taskId",
+        "resultId",
+        "resultVersion",
+        "definitionRevision",
+        "criteriaRevision",
+        "currentDefinitionRevision",
+        "currentCriteriaRevision",
+        "stale",
+        "historyLimit",
+        "omittedResults",
+        "criteria",
+        "artifacts"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "taskId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/taskId"
+        },
+        "resultId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/resultId"
+        },
+        "resultVersion": {
+          "$ref": "#/$defs/revision"
+        },
+        "definitionRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "criteriaRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "currentDefinitionRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "currentCriteriaRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "historyLimit": {
+          "const": 10
+        },
+        "omittedResults": {
+          "$ref": "#/$defs/nonNegativeRevision"
+        },
+        "criteria": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/acceptanceCriterion"
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "maxItems": 1100,
+          "items": {
+            "$ref": "#/$defs/acceptanceArtifact"
+          }
+        }
+      }
     }
   }
 }

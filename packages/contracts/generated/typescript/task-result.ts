@@ -234,7 +234,7 @@ export interface Grant {
 }
 
 export interface Input {
-  artifact:            Artifact;
+  artifact:            InputArtifact;
   bindingId:           string;
   destinationAgentId:  string;
   destinationDeviceId: string;
@@ -269,7 +269,7 @@ export interface Input {
   sourceTree:               null | string;
 }
 
-export interface Artifact {
+export interface InputArtifact {
   artifactId:       string;
   artifactRevision: number;
   byteLength:       number;
@@ -408,7 +408,7 @@ export interface ResultProposal {
   nextActions:            ResultProposalNextAction[];
   openQuestions:          string[];
   operationId:            string;
-  outcome:                Outcome;
+  outcome:                ResultProposalOutcome;
   proposedAtTaskRevision: number;
   risks:                  string[];
   sources:                [ResultProposalSource, ...ResultProposalSource[]];
@@ -431,7 +431,7 @@ export interface ResultProposalNextAction {
   nextActionKey: string;
 }
 
-export type Outcome = "satisfied" | "partial" | "not_satisfied" | "informational";
+export type ResultProposalOutcome = "satisfied" | "partial" | "not_satisfied" | "informational";
 
 export interface ResultProposalSource {
   artifactId?:   string;
@@ -462,7 +462,7 @@ export interface AgentResultProposalProposal {
   nextActions:            PurpleNextAction[];
   openQuestions:          string[];
   operationId:            string;
-  outcome:                Outcome;
+  outcome:                ResultProposalOutcome;
   proposedAtTaskRevision: number;
   risks:                  string[];
   sources:                [PurpleSource, ...PurpleSource[]];
@@ -512,7 +512,7 @@ export interface ResultProjection {
    * most nanosecond precision.
    */
   proposedAt:    string;
-  proposedBy:    ProposedBy;
+  proposedBy:    ResultProjectionProposedBy;
   resultId:      string;
   resultVersion: number;
   review:        Review | null;
@@ -528,7 +528,7 @@ export interface ResultProjectionProposal {
   nextActions:            FluffyNextAction[];
   openQuestions:          string[];
   operationId:            string;
-  outcome:                Outcome;
+  outcome:                ResultProposalOutcome;
   proposedAtTaskRevision: number;
   risks:                  string[];
   sources:                [FluffySource, ...FluffySource[]];
@@ -560,7 +560,7 @@ export interface FluffySource {
   discussionId?: string;
 }
 
-export interface ProposedBy {
+export interface ResultProjectionProposedBy {
   kind:          ProposedByKind;
   memberId?:     string;
   agentId?:      string;
@@ -583,6 +583,157 @@ export interface Review {
 }
 
 export type ResultProjectionState = "proposed" | "accepted" | "rejected" | "superseded";
+
+export interface ResultAcceptanceEvidence {
+  artifacts:                 ArtifactElement[];
+  criteria:                  ResultAcceptanceEvidenceCriterion[];
+  criteriaRevision:          number;
+  currentCriteriaRevision:   number;
+  currentDefinitionRevision: number;
+  definitionRevision:        number;
+  historyLimit:              number;
+  omittedResults:            number;
+  resultId:                  string;
+  resultVersion:             number;
+  stale:                     boolean;
+  taskId:                    string;
+  version:                   number;
+}
+
+export interface ArtifactElement {
+  artifactId:        string;
+  artifactRevision:  number;
+  candidates:        CandidateElement[];
+  contentSha256:     null | string;
+  contentSizeBytes:  number | null;
+  omittedCandidates: number;
+  type:              string;
+}
+
+export interface CandidateElement {
+  candidateCommit:  string;
+  candidateTree:    string;
+  checkpointId:     string;
+  inputDigest:      string;
+  nodeKey:          string;
+  omittedReceipts:  number;
+  planId:           string;
+  planRevision:     number;
+  receipts:         Receipt[];
+  requiredProfiles: RequiredProfile[];
+  runId:            string;
+  status:           Status;
+}
+
+export interface Receipt {
+  operationId:    string;
+  outcome:        ReceiptOutcome;
+  profile:        Profile;
+  receiptDigest:  string;
+  verificationId: string;
+}
+
+export type ReceiptOutcome = "passed" | "failed" | "timed_out" | "canceled" | "outcome_unknown";
+
+export interface Profile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface RequiredProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export type Status = "passed" | "failed" | "incomplete" | "not_configured" | "unavailable";
+
+export interface ResultAcceptanceEvidenceCriterion {
+  candidate:     CriterionCandidate | null;
+  contributions: Contribution[];
+  criterion:     CriterionCriterion;
+  diagnostics:   Diagnostic[];
+}
+
+export interface CriterionCandidate {
+  claim:         CandidateClaim;
+  proposedBy:    CandidateProposedBy;
+  resultId:      string;
+  resultVersion: number;
+  sources:       CandidateSource[];
+  state:         ResultProjectionState;
+}
+
+export interface CandidateClaim {
+  coverage:       Coverage;
+  criterionKey:   string;
+  evidenceRefIds: string[];
+  explanation:    string;
+}
+
+export interface CandidateProposedBy {
+  kind:          ProposedByKind;
+  memberId?:     string;
+  agentId?:      string;
+  runId?:        string;
+  discussionId?: string;
+}
+
+export interface CandidateSource {
+  artifactId?:   string;
+  evidenceRefId: string;
+  kind:          SourceKind;
+  runId?:        string;
+  sequence?:     number;
+  messageId?:    string;
+  memoryId?:     string;
+  discussionId?: string;
+}
+
+export interface Contribution {
+  claim:         ContributionClaim;
+  proposedBy:    ContributionProposedBy;
+  resultId:      string;
+  resultVersion: number;
+  sources:       ContributionSource[];
+  state:         ResultProjectionState;
+}
+
+export interface ContributionClaim {
+  coverage:       Coverage;
+  criterionKey:   string;
+  evidenceRefIds: string[];
+  explanation:    string;
+}
+
+export interface ContributionProposedBy {
+  kind:          ProposedByKind;
+  memberId?:     string;
+  agentId?:      string;
+  runId?:        string;
+  discussionId?: string;
+}
+
+export interface ContributionSource {
+  artifactId?:   string;
+  evidenceRefId: string;
+  kind:          SourceKind;
+  runId?:        string;
+  sequence?:     number;
+  messageId?:    string;
+  memoryId?:     string;
+  discussionId?: string;
+}
+
+export interface CriterionCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export type Diagnostic = "missing_claim" | "earlier_evidence_not_referenced" | "differing_coverage" | "claim_without_evidence";
 
 export interface WorkbenchQuery {
   agentId?:       null | string;

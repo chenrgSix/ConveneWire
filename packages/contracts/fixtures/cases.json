@@ -2937,6 +2937,805 @@
         "commitSha": "ccccccccccccccccccccccccccccccccccccccccc"
       },
       "valid": false
+    },
+    {
+      "name": "valid candidate acceptance evidence with exact local verification",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "valid historical acceptance evidence retains unknown verification",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 2,
+        "currentCriteriaRevision": 2,
+        "stale": true,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": null,
+            "contributions": [
+              {
+                "resultId": "result_candidate0001",
+                "resultVersion": 2,
+                "state": "proposed",
+                "proposedBy": {
+                  "kind": "managed_agent",
+                  "agentId": "agent_builder0001",
+                  "runId": "run_builder0001"
+                },
+                "claim": {
+                  "criterionKey": "criterion_build0001",
+                  "coverage": "satisfied",
+                  "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                  "evidenceRefIds": [
+                    "evidence_patch0001"
+                  ]
+                },
+                "sources": [
+                  {
+                    "evidenceRefId": "evidence_patch0001",
+                    "kind": "artifact",
+                    "artifactId": "artifact_patch0001"
+                  }
+                ]
+              }
+            ],
+            "diagnostics": [
+              "missing_claim",
+              "earlier_evidence_not_referenced"
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "outcome_unknown"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "incomplete"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "acceptance evidence rejects automatic acceptance authority",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ],
+        "accepted": true
+      },
+      "valid": false
+    },
+    {
+      "name": "acceptance evidence rejects local path disclosure",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ],
+            "localPath": "/private/source"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "acceptance evidence rejects unpinned candidate",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "HEAD",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "acceptance evidence rejects invented claim coverage",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "verified",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "acceptance evidence rejects zero criteria revision",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 0,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "acceptance evidence rejects unknown verification outcome",
+      "schemaId": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/resultAcceptanceEvidence",
+      "instance": {
+        "version": 1,
+        "taskId": "task_delivery0001",
+        "resultId": "result_candidate0001",
+        "resultVersion": 2,
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "currentDefinitionRevision": 1,
+        "currentCriteriaRevision": 1,
+        "stale": false,
+        "historyLimit": 10,
+        "omittedResults": 0,
+        "criteria": [
+          {
+            "criterion": {
+              "criterionKey": "criterion_build0001",
+              "description": "Build the captured candidate",
+              "required": true,
+              "ordinal": 1
+            },
+            "candidate": {
+              "resultId": "result_candidate0001",
+              "resultVersion": 2,
+              "state": "proposed",
+              "proposedBy": {
+                "kind": "managed_agent",
+                "agentId": "agent_builder0001",
+                "runId": "run_builder0001"
+              },
+              "claim": {
+                "criterionKey": "criterion_build0001",
+                "coverage": "satisfied",
+                "explanation": "The captured patch passed the configured build. This is an attributed claim.",
+                "evidenceRefIds": [
+                  "evidence_patch0001"
+                ]
+              },
+              "sources": [
+                {
+                  "evidenceRefId": "evidence_patch0001",
+                  "kind": "artifact",
+                  "artifactId": "artifact_patch0001"
+                }
+              ]
+            },
+            "contributions": [],
+            "diagnostics": []
+          }
+        ],
+        "artifacts": [
+          {
+            "artifactId": "artifact_patch0001",
+            "artifactRevision": 1,
+            "type": "patch",
+            "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "contentSizeBytes": 128,
+            "omittedCandidates": 0,
+            "candidates": [
+              {
+                "checkpointId": "checkpoint_candidate0001",
+                "runId": "run_builder0001",
+                "planId": "plan_delivery0001",
+                "planRevision": 1,
+                "nodeKey": "build",
+                "candidateCommit": "cccccccccccccccccccccccccccccccccccccccc",
+                "candidateTree": "dddddddddddddddddddddddddddddddddddddddd",
+                "inputDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "requiredProfiles": [
+                  {
+                    "profileId": "profile_check0001",
+                    "revision": 1,
+                    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  }
+                ],
+                "receipts": [
+                  {
+                    "verificationId": "verification_build0001",
+                    "operationId": "op_verify_build0001",
+                    "receiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                    "profile": {
+                      "profileId": "profile_check0001",
+                      "revision": 1,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    },
+                    "outcome": "probably_passed"
+                  }
+                ],
+                "omittedReceipts": 0,
+                "status": "passed"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
     }
   ]
 }
