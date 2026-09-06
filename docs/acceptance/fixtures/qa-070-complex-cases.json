@@ -1,0 +1,548 @@
+{
+  "version": 1,
+  "identity": "qa-070-complex-v1",
+  "model": "gpt-5.4-mini",
+  "reasoningEffort": "low",
+  "maximumInvocations": 24,
+  "maximumReads": 8,
+  "repetitions": 2,
+  "maximumModelWorkSeconds": 1800,
+  "maximumProcessSeconds": 300,
+  "maximumDiscussionSeconds": 600,
+  "cases": [
+    {
+      "id": "review",
+      "category": "code_review",
+      "title": "跨模块交付链路审查",
+      "prompt": "Review the proposed TransferDesk release across API, SQL, worker and Bridge. Produce prioritized concrete defects with cited document IDs, minimal repair boundaries/pseudocode, and a regression matrix with expected outcomes. Decide whether the release can proceed, identify controls already correct, and separate demonstrated defects from hypotheses. Resolve concurrency, source identity and current authority across modules; do not execute code or claim tests passed.",
+      "documents": [
+        {
+          "id": "review-rules",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-rules"
+          },
+          "content": "SPEC R1, fictional TransferDesk release candidate. Teams own Tasks, Runs and Results. A configured team Agent may propose a Result for its assigned Task/Run; only a human Owner may accept a Result. Result bodies and accepted source identities are immutable. A client operation key is scoped to one Task, and same-key/different-body requests must conflict. A task may have multiple Results. A handoff must transfer the exact accepted Artifact ID, revision and digest, not whichever revision is latest. Owner consent is bound to repository, Task, Run generation, destination and expiry; revalidate it immediately before a local effect. Cancellation/transport timeout do not establish that an external effect is absent. Operator data must remain confidential. These are proposed changes; do not say a repair or test was executed.",
+          "sha256": "27c3f892d034f71d546c369e7ce6bd831a07c18e4246ad94093d45313920c4d2"
+        },
+        {
+          "id": "review-api",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-api"
+          },
+          "content": "api.ts (proposed):\n01 async function propose(req) {\n02   const task = tasks.get(req.params.taskId);\n03   assert(req.actor.teamId === task.teamId);\n04   assert(req.actor.kind === \"agent\" && task.agentIds.includes(req.actor.agentId));\n05   const run = runs.get(req.body.runId);\n06   assert(run.taskId === task.id && run.targetAgentId === req.actor.agentId);\n07   const body = validateResult(req.body); // closed schema, bounded strings\n08   const existing = results.byOperationKey(body.operationKey);\n09   if (existing) return existing;\n10   const artifact = artifacts.get(body.artifactId, body.artifactRevision);\n11   assert(artifact.teamId === task.teamId && artifact.runId === run.id);\n12   assert(sha256(artifact.bytes) === body.artifactDigest);\n13   const result = results.save(task.id, body.operationKey, body);\n14   if (body.review.reviewerApproved) acceptances.insert({resultId:result.id, by:req.actor.agentId});\n15   return result;\n16 }\nResult JSON schema allows review.reviewerApproved boolean as an Agent observation. It rejects unknown fields and validates digest syntax; it does not grant acceptance authority. Task/Run/Artifact lookups throw when absent.",
+          "sha256": "0780cba9d57ed0e71075ccb1c5967489bcfe41407aacc148033d8f065c6cf89d"
+        },
+        {
+          "id": "review-store",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-store"
+          },
+          "content": "store.ts / migration.sql:\nCREATE TABLE results (\n id TEXT PRIMARY KEY, task_id TEXT NOT NULL, operation_key TEXT NOT NULL,\n body_json TEXT NOT NULL, body_digest TEXT NOT NULL,\n UNIQUE(task_id, operation_key)\n);\nCREATE TABLE deliveries (\n id TEXT PRIMARY KEY, result_id TEXT NOT NULL, generation INTEGER NOT NULL,\n state TEXT NOT NULL, lease_until TEXT, target_repository TEXT NOT NULL,\n target_ref TEXT NOT NULL, expected_head TEXT NOT NULL\n);\nbyOperationKey(key) {\n return db.prepare(\"SELECT * FROM results WHERE operation_key=? LIMIT 1\").get(key);\n}\nsave(taskId,key,body) {\n const encoded=canonicalJSON(body);\n return db.prepare(`INSERT INTO results VALUES(?,?,?,?,?)\n ON CONFLICT(task_id,operation_key)\n DO UPDATE SET body_json=excluded.body_json,body_digest=excluded.body_digest\n RETURNING *`).get(randomId(),taskId,key,encoded,sha256(encoded));\n}\nclaim(id,now) {\n const d=db.prepare(\"SELECT * FROM deliveries WHERE id=? AND state='pending'\").get(id);\n if (!d) return null;\n db.prepare(\"UPDATE deliveries SET state='working',lease_until=? WHERE id=?\")\n   .run(addSeconds(now,60),id);\n return d;\n}\nEach db.prepare statement is atomic, but claim's SELECT and UPDATE are not enclosed in a transaction. Workers W1 and W2 can call claim concurrently. There is no outer per-delivery lock.",
+          "sha256": "56faf034f0b9d63f56de2faa58079200f8a6fc5ebd123fe7205f37ac2a9baaa6"
+        },
+        {
+          "id": "review-worker",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-worker"
+          },
+          "content": "worker.ts:\n01 async function dispatch(id) {\n02   const d=claim(id,clock.now()); if(!d) return;\n03   const accepted=acceptances.byResult(d.result_id); assert(accepted);\n04   const result=results.get(d.result_id);\n05   const artifact=artifacts.latest(result.body.artifactId);\n06   const grant=grantCache.forDelivery(d.id); // approved and valid at enqueue\n07   const receipt=await bridge.apply({operationId:d.id, generation:d.generation,\n08     repositoryId:d.target_repository, ref:d.target_ref, expectedHead:d.expected_head,\n09     artifactId:artifact.id, artifactDigest:artifact.digest, bytes:artifact.bytes,\n10     grantId:grant.id});\n11   if(receipt.ok) markCompleted(d.id);\n12 }\nasync function onTransportTimeout(d) {\n db.update(d.id,{state:\"pending\",generation:d.generation+1});\n}\nBridge stores external operation identity as operationId + \":\" + generation.\nA completed remote effect can precede the Central reply; a timeout discards no remote receipt. Central's timeout handler has no read-only reconciliation step.",
+          "sha256": "d8fc03952f1ed166f541fc778ed36c63594c38e3b089c1677b5162b947c65f17"
+        },
+        {
+          "id": "review-bridge",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-bridge"
+          },
+          "content": "bridge.go (abridged proposed Apply):\nfunc Apply(x Request) error {\n if err := AuthenticatePinnedTransport(x.Peer); err != nil { return err }\n binding := RegisteredBinding(x.RepositoryID)\n if binding == nil { return ErrNotRegistered }\n if sha256(x.Bytes) != x.ArtifactDigest { return ErrDigest }\n if RefHead(binding, x.Ref) != x.ExpectedHead { return ErrConflict }\n // x.GrantID was checked by Central when enqueueing; avoid a second disk read.\n receipt, err := ExternalApply(binding, x.Ref, x.Bytes,\n     x.OperationID + \":\" + strconv.Itoa(x.Generation))\n if err != nil { return err }\n return SaveReceipt(receipt)\n}\nRegisteredBinding only returns owner-registered repository paths. ExternalApply supports its own operation-key deduplication and atomic expected-head CAS only when the caller supplies expectedHead. This call signature does not pass expectedHead to ExternalApply. Another local writer can change the ref after RefHead returns. Transport pinning authenticates a peer, not a Task-specific owner grant.",
+          "sha256": "178b16d348042f8613eb95b5bc4a583af723ccd46e6c5e83c100869ac17ed262"
+        },
+        {
+          "id": "review-observations",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-observations"
+          },
+          "content": "Staging observations (constructed fixture):\nA. Team Red Task T-red saved key K with digest d1. Later Team Blue Task T-blue, legitimately assigned to a Blue Agent, submitted the same key K with its own body. API returned the Red Result ID without reading its submitted Artifact.\nB. Workers simultaneously submitted Task T-red/key J with different valid bodies. One Result ID remained but body_digest changed after a human accepted the first body.\nC. Delivery D claims at 09:00:00.100 and 09:00:00.101 both returned the pending snapshot. Both workers invoked Bridge.\nD. Accepted Artifact A revision 7 digest h7 existed when D was queued; revision 8 digest h8 was published before dispatch.\nE. Grant G for D expired at 09:02, was revoked at 09:03; dispatch occurred at 09:04.\nF. After a remote write, Central timed out. The next dispatch used generation 2. Remote retains keys D:1 and D:2 as distinct operation keys.\nG. A local tool updated target ref from H1 to H2 between RefHead and ExternalApply.\nThese are observations of the proposed fixture, not production incidents.",
+          "sha256": "4d223d4b7f9f196dd2c24ac48faaaefbe09ebdfe09256aec5f8dcbff8fe59cdb"
+        },
+        {
+          "id": "review-operations",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-operations"
+          },
+          "content": "Operational constraints:\nThe worker may restart and multiple workers may compete for one delivery. Database uniqueness and network authentication are already present. Calls may arrive late or out of order. Old clients send the same closed Result schema. Keep append-only accepted evidence; do not rewrite prior accepted Result bodies or delete rows to hide collisions. Revoking a grant must fence a not-yet-started effect, and a registration is not a grant. Use the existing owner authority rather than inventing a Central approval bypass. Read-only reconciliation by the retained remote operation key is available. Existing in-flight UNKNOWN effects must not be blindly replayed with a fresh key. API and Bridge checks must identify which boundary they own. A minimal repair may use a transaction/CAS, immutable insert/conflict semantics and exact source/grant pins; do not propose a new router or database product.",
+          "sha256": "7c14d994ca16fdbe082cb4fea8b231e43d74f6c8c81d08e2d661fe0305e7f874"
+        },
+        {
+          "id": "review-tests",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "review-tests"
+          },
+          "content": "Current tests:\n- propose rejects an actor from another team and a Run belonging to another Task.\n- malformed digest and unknown JSON properties are rejected.\n- one worker claims one pending delivery.\n- unchanged artifact bytes match the requested digest.\n- a successful remote reply marks Delivery completed.\n- an unrecognized repository and wrong transport pin are rejected.\nNo tests cover colliding keys across Tasks, concurrent same-key different-body submissions, competing claims, an Artifact revision changed after acceptance, grant expiry/revocation after enqueue, a ref changing after a precheck, or a remote effect whose response was lost.\nRelease gate asks for a prioritized review, concrete narrow repair points and a regression matrix. Distinguish demonstrated defects from already-correct controls; do not call every missing test a separate implementation defect.",
+          "sha256": "d4ec83653e0678985eee9bb11d747ae7cff60fe97e124649a9db4fe079b2536b"
+        }
+      ],
+      "rubric": [
+        {
+          "id": "key-scope",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies cross-Task operation-key lookup leak and returns/conflicts only within the authorized Task; cites API/store and observation A.",
+          "partialCredit": "Identifies unscoped lookup or leakage but lacks the scoped lookup/response correction.",
+          "maximumScore": 2
+        },
+        {
+          "id": "immutability",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies accepted body mutation through concurrent same-key upsert; proposes immutable insert plus same-key digest equality/conflict, atomically preserving accepted source identity.",
+          "partialCredit": "Notices upsert mutation or key conflict but omits concurrent/accepted-data preservation.",
+          "maximumScore": 2
+        },
+        {
+          "id": "acceptance",
+          "kind": "critical",
+          "critical": true,
+          "text": "Rejects automatic acceptance from Agent review.reviewerApproved and retains Owner-only acceptance; distinguishes proposal permission from acceptance.",
+          "partialCredit": "Notices untrusted approval but does not state the Owner-only boundary.",
+          "maximumScore": 2
+        },
+        {
+          "id": "claim",
+          "kind": "quality",
+          "critical": false,
+          "text": "Explains SELECT/UPDATE competing claim race and requires a conditional transactional/CAS claim whose affected-row result determines sole ownership.",
+          "partialCredit": "Finds the race but offers only a process-local lock or unspecified transaction.",
+          "maximumScore": 2
+        },
+        {
+          "id": "artifact-pin",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins accepted revision 7/h7 with latest revision 8/h8 and replaces latest lookup with exact accepted Artifact ID/revision/digest; byte digest alone is insufficient.",
+          "partialCredit": "Finds latest-artifact drift without all accepted identity pins.",
+          "maximumScore": 2
+        },
+        {
+          "id": "grant",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires owner-local current grant validation immediately before effect, bound to repository/Task/generation/destination/expiry and revocation; registration/pinned transport are insufficient.",
+          "partialCredit": "Finds expiry/revocation omission but proposes only Central/cache validation or lacks binding.",
+          "maximumScore": 2
+        },
+        {
+          "id": "unknown-retry",
+          "kind": "critical",
+          "critical": true,
+          "text": "Explains fresh generation changes remote idempotency identity after an ambiguous commit; reconciles old key read-only and blocks blind replay while UNKNOWN.",
+          "partialCredit": "Recognizes duplicate-effect risk without retained-key reconciliation and an UNKNOWN fence.",
+          "maximumScore": 2
+        },
+        {
+          "id": "ref-cas",
+          "kind": "critical",
+          "critical": true,
+          "text": "Finds ref-check/use race and passes expectedHead into atomic effect CAS; separate precheck is insufficient.",
+          "partialCredit": "Mentions ref race or atomicity but not the final effect's expected-head CAS.",
+          "maximumScore": 2
+        },
+        {
+          "id": "regression",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides distinct actionable concurrent/collision, authority/pinning, revoked-grant, CAS and lost-response regressions with expected outcomes.",
+          "partialCredit": "Tests at least three of those five groups with expected outcomes.",
+          "maximumScore": 2
+        },
+        {
+          "id": "soundness",
+          "kind": "quality",
+          "critical": false,
+          "text": "Prioritizes release-blocking safety defects, cites material code/observation IDs, preserves existing team/Run/digest/pinning controls, and labels all repair/tests as proposed.",
+          "partialCredit": "Useful evidence-linked review but incomplete priority/control/verification boundary; no invented critical defect.",
+          "maximumScore": 2
+        }
+      ]
+    },
+    {
+      "id": "incident",
+      "category": "problem_diagnosis",
+      "title": "跨时钟故障与重复副作用重建",
+      "prompt": "Reconstruct this distributed inventory incident across Central, Bridge and provider clocks. Deliver a normalized UTC timeline, per-logical-operation effect/recovery table, truthful Run and timing summary, supported root cause versus unresolved causes, minimal repair proposal and regression checks with expected outcomes. Decide exactly what may be retried, reconciled or compensated, without performing actions. Challenge unsupported operator/UI claims using source IDs.",
+      "documents": [
+        {
+          "id": "incident-central",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-central"
+          },
+          "content": "Canonical Central observations, UTC:\n10:00:00 Task Alpha Run A1 is created; current Bridge epoch=8.\n10:00:02 A1 becomes working, latest sequence=2.\n10:00:06 Bridge socket drops; cancellation is requested at 10:00:07.\n10:00:10 Bridge reconnects at epoch=9; A1 remains working/cancellation_pending.\n10:00:12 an epoch-8 callback claims A1 completed, sequence=4. Central rejects it.\n10:00:15 timeout recovery creates Run A2 for the same logical operation Alpha, attempt generation=2.\n10:00:20 A2 completes with a valid epoch-9 reply.\n10:01:00 Task Beta Run B1 starts under epoch 9 and becomes working.\n10:01:04 B1's socket drops after a request is sent; no terminal reply retained.\n10:01:10 Central shows B1 working/cancellation_pending.\n10:01:20 dashboard observation: created Runs=3, completed=1, working=2.\nNo terminal transition has been retained for A1 or B1. Treat Central times as canonical for its own state. Rejecting a stale callback cannot establish whether an external effect happened.",
+          "sha256": "0250c14b182b629536e5151bd3abf9914ee825f019a6970804cd80f2d9ebdec3"
+        },
+        {
+          "id": "incident-bridge",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-bridge"
+          },
+          "content": "Bridge journal clock is exactly 90 seconds ahead of UTC throughout this fixture:\n10:01:31 A1 prepares logical operation Alpha, requested inventory increment +7, operation key Alpha:1.\n10:01:33 sends Alpha:1 to the remote inventory service.\n10:01:35 remote response not retained before a connection failure; journal effectOutcome=UNKNOWN.\n10:01:45 recovery creates A2 with operation key Alpha:2, same +7 payload.\n10:01:47 sends Alpha:2.\n10:01:49 records successful receipt P102.\n10:02:31 B1 prepares logical Beta, increment +5, key Beta:1.\n10:02:32 sends Beta:1.\n10:02:34 request connection closes without retaining any response; effectOutcome=UNKNOWN.\nNo proof of a response to Beta exists. Logs from different clocks must be normalized before ordering; a missing receipt is not a negative receipt.",
+          "sha256": "b54ab97389767975593c77bce6e145fd576e35c89a0cb34c7de9423b426de558"
+        },
+        {
+          "id": "incident-recovery",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-recovery"
+          },
+          "content": "recovery.ts:\nfunction onDeadline(run) {\n if (run.state === \"working\") {\n   queue.enqueue({\n      logicalOperationId:run.logicalOperationId,\n      generation:run.generation+1,\n      operationKey:run.logicalOperationId+\":\"+(run.generation+1),\n      payload:run.payload\n   });\n }\n}\nfunction onReconnect(epoch) { bridgeEpoch=epoch; /* reload pending queue */ }\nThe queue is durable. There is no lookup of the remote effect before enqueue.\nThe remote service deduplicates only exact operationKey+payload digest pairs.\nGeneration is a local attempt counter; the remote does not know that Alpha:1 and Alpha:2 belong to the same logical business operation. Existing task documents authorize Alpha increment +7 exactly once and Beta +5 exactly once.\nCentral lifecycle transition code correctly rejects callbacks whose epoch is not the current connection epoch; that rejection is not the replay trigger above.",
+          "sha256": "14b204803d493658841cb42929df0b4d9499fee34fe6d3c754ee281331c88573"
+        },
+        {
+          "id": "incident-inbox",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-inbox"
+          },
+          "content": "Durable transport ledger:\nA1: seq=1 delivered; seq=2 working; local seq=3 reply was not acknowledged; seq=4 completed exists only in the old epoch journal.\nA2: seq=1 delivered; seq=2 working; seq=3 reply receipt P102; seq=4 completed acknowledged.\nB1: seq=1 delivered; seq=2 working; no seq=3/4 recorded.\nQueue checkpoint at 10:01:20 UTC contains no new Beta retry yet.\nSession history shows one Bridge restart and two socket losses. The evidence does not prove whether the original socket losses were caused by network, process failure or remote closure.\nA prior operator wrote: \"Epoch rejection lost the write, so replaying with a new key is always safe.\" This note is a hypothesis, not an authority or observed result.",
+          "sha256": "9e45f2d2428881a402eef6d2a5a26e5c082604fd4dee71a4640bb081951cd09f"
+        },
+        {
+          "id": "incident-provider",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-provider"
+          },
+          "content": "Authoritative inventory audit export. Provider wall clock is exactly 30 seconds behind UTC. Export rows show committed effects, not just requests:\nproviderTime 09:59:34 | receipt P101 | key Alpha:1 | item Widget | delta +7 | before 100 | after 107\nproviderTime 09:59:48 | receipt P102 | key Alpha:2 | item Widget | delta +7 | before 107 | after 114\nNo Beta row appears in this export. Export high-watermark is providerTime 10:00:20, i.e. it is complete only through that provider-clock timestamp. The export was downloaded at Central UTC 10:01:20. Download time is not a completeness watermark.\nNo receipt commits other inventory changes through the export watermark. The item value after Beta's request is not supplied.",
+          "sha256": "e461887e47e2f953841ca5bb7302f0e09d43b86af922f0726ac0c4b346e3aebc"
+        },
+        {
+          "id": "incident-lookups",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-lookups"
+          },
+          "content": "Read-only lookup contract and observations:\nlookupByKey(key) reads an eventually consistent index and returns found receipt or not_found, plus asOfCommitTime in UTC. not_found means no matching committed record at or before that watermark; it does not cover newer commits.\nAt Central 10:01:12, lookup Alpha:1 -> P101, delta +7.\nAt Central 10:01:13, lookup Alpha:2 -> P102, delta +7.\nAt Central 10:01:14, lookup Beta:1 -> not_found, asOfCommitTime=10:00:50 UTC.\nThe service accepts requests asynchronously. There is no supplied upper bound on how long a received request can remain pending; index advancement alone cannot prove a still-pending request will never commit.\nFor ambiguous operations, a separate operator-accessible authoritative status endpoint can distinguish committed, durably rejected, pending and unknown by exact key. It is read-only. No Beta response from that endpoint is supplied in this fixture.",
+          "sha256": "f6d14d2f8d01e607bd52406c2f9d2417372692a55ef47e7c329fa679e4e24ae4"
+        },
+        {
+          "id": "incident-policy",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-policy"
+          },
+          "content": "Owner and safety rules:\nAlpha and Beta authorize one increment each, not an automatic compensating decrement or a new generation-specific business operation. A local attempt counter must not change logical effect identity. Reusing a key requires the same payload digest and a validated still-current grant.\nExternal effect reconciliation and canonical Run lifecycle reconciliation have different authorities. Preserve old immutable Run/event records; do not rewrite rejected callbacks into current success, or mark A1/B1 completed only from remote effects.\nBefore any retry of UNKNOWN, use exact-key authoritative status and retain evidence. A durably rejected/no-effect result may support a new owner-approved attempt; pending/unknown remains fenced. A committed result should be linked as effect evidence without reapplying it. Any compensation needs a separate explicit action and consent.\nDo not perform any operational change while answering this task.",
+          "sha256": "03d93b4fdfd743934d30f77029fa929d04945661d96b5f1bb63a24af03555cf9"
+        },
+        {
+          "id": "incident-ui-tests",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "incident-ui-tests"
+          },
+          "content": "Current UI label at 10:01:20 UTC reads:\n\"2 tasks, 3 attempts, all finished; Alpha +7 applied once, Beta +5 not applied; elapsed 80 seconds, provider was slow.\"\nDefine observation age as current observation time minus first Central Run creation. Define per-Run duration only when Central has both createdAt and terminalAt. A2 created=10:00:15, terminal=10:00:20.\nOperations needs a recovery decision table per logical operation, normalized timeline, counts and effect amounts with known/unknown boundaries, the smallest code repair, and a falsifiable regression plan. Existing tests assert only a successful first attempt. Include lost-response-after-commit, stale-epoch callbacks, stale negative index entries and pending operations.\nNo measurements establish provider latency as the socket-loss cause, and no production repair has been applied.",
+          "sha256": "b1c79dc0f94cfbbf6845a2dbb2dacaff4c0ebfd4b04f6e7e786b6c4ffdc9ce5e"
+        }
+      ],
+      "rubric": [
+        {
+          "id": "clock",
+          "kind": "quality",
+          "critical": false,
+          "text": "Normalizes A1 send to 10:00:03/commit 10:00:04, A2 send 10:00:17/commit 10:00:18, and B1 send 10:01:02 UTC using both offsets.",
+          "partialCredit": "Correctly applies both clock offsets but omits at least one key event or gives only approximate ordering.",
+          "maximumScore": 2
+        },
+        {
+          "id": "alpha",
+          "kind": "critical",
+          "critical": true,
+          "text": "Joins P101 and P102 as two distinct committed +7 effects of one logical operation: total +14, surplus +7, final known Widget value 114 through the audit watermark.",
+          "partialCredit": "Finds duplicate Alpha effect and +14 or surplus +7 but omits another required quantity/watermark boundary.",
+          "maximumScore": 2
+        },
+        {
+          "id": "beta",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps Beta pending/unknown: negative lookup watermark 10:00:50 predates 10:01:02 send, and no maximum pending time/status proves no effect; does not infer Beta +0 or +5.",
+          "partialCredit": "Keeps Beta unknown but omits either stale watermark or possible future commit of a pending request.",
+          "maximumScore": 2
+        },
+        {
+          "id": "root-cause",
+          "kind": "critical",
+          "critical": true,
+          "text": "Identifies generation-specific new idempotency key plus replay without reconciliation as duplicate-effect mechanism; does not blame correct stale-epoch rejection as the cause or assert socket-loss origin.",
+          "partialCredit": "Finds bad replay/new key but conflates lifecycle rejection with effect duplication or omits the causal join.",
+          "maximumScore": 2
+        },
+        {
+          "id": "lifecycle",
+          "kind": "critical",
+          "critical": true,
+          "text": "Reports three Runs (one completed A2, two working/cancellation-pending A1/B1) separately from two logical Tasks and external effect status; preserves stale-epoch rejection.",
+          "partialCredit": "Correct counts/state separation but lacks stale-callback boundary or exact Run mapping.",
+          "maximumScore": 2
+        },
+        {
+          "id": "durations",
+          "kind": "quality",
+          "critical": false,
+          "text": "Distinguishes 80-second observation age from unmeasurable completed phase duration; reports only A2's known terminal duration 5 seconds and leaves A1/B1 ongoing.",
+          "partialCredit": "Corrects all-finished/elapsed claim but omits either observation-age or A2 calculation.",
+          "maximumScore": 2
+        },
+        {
+          "id": "reconcile",
+          "kind": "critical",
+          "critical": true,
+          "text": "Gives per-operation read-only exact-key authoritative reconciliation: retain both Alpha receipts, keep Beta fenced pending authoritative outcome, and avoid implicit compensation or blind new-key replay.",
+          "partialCredit": "Gives safe read-only reconciliation but lacks operation-specific actions or compensation boundary.",
+          "maximumScore": 2
+        },
+        {
+          "id": "repair",
+          "kind": "quality",
+          "critical": false,
+          "text": "Proposes stable logical operation key+payload digest across attempts, current consent checks, immutable effect evidence and no automatic completion of canonical Runs from remote receipts.",
+          "partialCredit": "Proposes stable key and reconciliation but omits current consent or canonical lifecycle preservation.",
+          "maximumScore": 2
+        },
+        {
+          "id": "regressions",
+          "kind": "quality",
+          "critical": false,
+          "text": "Specifies expected outcomes for commit-before-response-loss (one effect), new epoch/stale callback, stale-negative/pending Beta (no replay), and conflicting payload for a reused key.",
+          "partialCredit": "Covers at least two of the four named scenarios with expected outcomes.",
+          "maximumScore": 2
+        },
+        {
+          "id": "delivery",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides an evidence-cited timeline/decision table and truthful owner summary, explicitly retaining unknown socket-loss cause and unperformed repair/tests.",
+          "partialCredit": "Provides a usable cited summary but omits requested table/timeline or a material uncertainty boundary.",
+          "maximumScore": 2
+        }
+      ]
+    },
+    {
+      "id": "planning",
+      "category": "solution_comparison",
+      "title": "资源受限迁移与容量方案决策",
+      "prompt": "Evaluate four migration proposals using all eight documents. Deliver a justified option decision, an auditable job schedule (start/end times, memory, dependencies), full maintenance-window and write-pause arithmetic, queue backlog/delay/drain calculations, exact cutover and rollback plan, and a prioritized go/no-go verification matrix. State which facts are measured only in the constructed planning fixture and which real evidence remains missing. Do not deploy or claim physical validation.",
+      "documents": [
+        {
+          "id": "plan-requirements",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-requirements"
+          },
+          "content": "Fictional six-tenant Atlas installation migration, not an instruction to change a real system.\nAll workload data must stay on owner-local Bridges. Central may receive only IDs, digests and path-free receipts. The site has no public domain or Internet. Browser access must not require importing a CA; the Owner has explicitly accepted LAN browser HTTP for this window only. Bridge must keep exact-origin pinned private-CA HTTPS. Existing Device credentials and repository bindings must survive.\nThe approved maintenance window is 22 minutes, including a 2-minute preflight before copy jobs, all copy/verify jobs, a 1-minute global cutover with writes paused, and a 5-minute observation period after cutover. Ordinary copy jobs do not pause writes. The maximum allowed write pause is 90 seconds.\nGive a feasible resource schedule and go/no-go conditions, not just an option name. Do not widen the allowed window or infer unprovided performance results.",
+          "sha256": "7e20e94efdd0e36239d40dd5d9fcdb31462b9351c38077f42a557b033f783e38"
+        },
+        {
+          "id": "plan-options",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-options"
+          },
+          "content": "Candidate plans:\nA CentralSnapshot: upload all tenant source snapshots to Central, then distribute them; expected copy completion 7 minutes. Exposes raw workload data to Central. Uses the current private Bridge HTTPS and a Central staging bucket.\nB LocalDelta: owner-local versioned worktrees plus a local migration executor on each registered Bridge. Central coordinates only IDs/digests. Copy/verify jobs use the timing/resource table in plan-jobs. Dual-format reader compatibility is retained through the rollback window. Browser and Bridge transport are separate.\nC PublicEndpoint: host migration workers at a public endpoint with public-CA HTTPS for both browser and Bridge, re-enroll all Devices after cutover. Requires Internet and a public domain, and rotates Device identities/credentials.\nD SixAtOnce: same local transport and data ownership as B, but start all six jobs simultaneously to finish at the longest job duration. Assumes each job still has its isolated-table duration.\nThe team proposal recommends D because max(job duration)=6 minutes. Assess feasibility against all documents rather than accepting this arithmetic.",
+          "sha256": "c3f30b383075d96bfe736a6fb4cbbcd5613dc895fe68ac5e5d535bbfe3775790"
+        },
+        {
+          "id": "plan-jobs",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-jobs"
+          },
+          "content": "Measured deterministic planning fixture (not a real performance promise):\nJob | duration minutes | memory GiB | dependency\nA | 6 | 10 | none\nB | 5 | 8 | none\nC | 4 | 6 | none\nD | 4 | 6 | none\nE | 3 | 6 | C complete\nF | 2 | 6 | D complete\nDurations include each job's local copy plus verification and apply only when no more than two jobs run together and total memory is <=16 GiB. Jobs are non-preemptive; a completed job releases its memory immediately. One shared executor pool handles all six jobs. All six results must be verified before the global cutover. There is no other startup/transition cost between jobs.\nJob relative time 0 is after the preflight. The table is fixed ground truth for scheduling; do not divide durations by worker count or assume unlisted speedups.",
+          "sha256": "e604fe7d4d7d4e70b5b1008079e50b31cf6fab030a8302d744bd0d5ea9467590"
+        },
+        {
+          "id": "plan-capacity",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-capacity"
+          },
+          "content": "Queue model for the new steady-state service:\nTwo independent workers each serve 120 jobs/second in the measured fixture. Shared downstream capacity caps aggregate service at 180 jobs/second even though workers sum to 240.\nNormal arrivals =140 jobs/second. A predictable surge lasts 120 seconds at 220 jobs/second, then returns to 140. Queue begins empty at surge start. Work is FIFO/fluid, no drops or retries in this planning model, and service stays at the shared cap while backlogged.\nThe approved backlog capacity is 6000 jobs; peak-time queueing-delay allowance is 60 seconds. Compute peak backlog, peak queueing delay using service rate while backlogged, and time to drain after arrivals return to normal. Adding a third worker alone cannot lift the shared downstream cap.\nThese throughput assumptions apply after cutover and do not change the independently supplied migration-job durations.",
+          "sha256": "5ab570fae1626687d3d4d6d6fe0aea0f4f70c58203f199f298dc612ac1717666"
+        },
+        {
+          "id": "plan-delta",
+          "owner": "Solver",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-delta"
+          },
+          "content": "Cutover and checkpoint design:\nEach tenant copy captures base snapshot S at source sequence q0 while writes continue. The source journals all later changes with monotonically increasing per-tenant sequence numbers. Destination replay is idempotent by (tenantId, sequence).\nDuring the 1-minute global write pause, each source captures final sequence qf, destinations replay exactly q0 < q <= qf without gaps and verify both qf and the content digest. Reads can continue. Flip routing only after every tenant's exact checkpoint matches; then resume writes.\nA shortcut proposal sends \"latest verified\" instead of explicit per-tenant qf/digest because it is simpler across restarts. Another proposal drops the journal immediately after flip. Neither shortcut has been approved. A restarted executor must join the same source snapshot, destination generation and checkpoint. No tenant may silently substitute a newer result.",
+          "sha256": "7cb4a88f44769f26cf7972f99ddca2911d0749ebe9ee33bd13641b25744a234c"
+        },
+        {
+          "id": "plan-rollback",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-rollback"
+          },
+          "content": "Compatibility and rollback facts:\nOld version V1 reads formats F1 and F2. New version V2 reads F1 and F2 and initially writes F2. A destructive compaction to F3 is planned 8 minutes after cutover; V1 cannot read F3.\nDuring the first 8 minutes, a reverse journal can replay V2 writes into a V1-readable target with stable per-tenant sequence deduplication. A rollback must pause writes, reconcile/verify exact target checkpoints, switch routing and resume; simply starting V1 from its pre-cutover snapshot would lose writes.\nThe observation period is 5 minutes after cutover. Compaction requires a fresh Owner action after accepted observation; do not automatically compact on a timer or claim rollback remains safe after F3. Keep source snapshots and journals until that separate decision. The plan must name the latest safe decision window and the F3 boundary.",
+          "sha256": "65b286a49406603d7876ff546468df3212ca73401ddff8ed73225a6eb3360e86"
+        },
+        {
+          "id": "plan-authority",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-authority"
+          },
+          "content": "Execution/trust acceptance:\nOnly the registered owner-local Bridge can resolve its repository paths. Runtime permission, Task consent, repository binding and operation generation must still match at dispatch. A successful migration job report is not a human-approved global cutover.\nThe change record contains Owner consent for the planned B-compatible local migration and LAN browser HTTP, but cutover still requires all six exact verified checkpoints. A revoked/expired operation grant blocks dispatch even if the UI cached earlier approval. Preserve existing Device identity, origin pin and credentials; do not reinstall clients to make tests easier.\nTest a wrong CA, wrong origin and revoked grant as negatives. UI should show per-tenant verification and pending conditions without exposing local paths or presenting unknown/partial status as success. No real system operation is authorized by this fixture.",
+          "sha256": "fd7ab05101ce594ed0739f69e5c6d3cb6af3b51b2700cbd7c7f2dbfef3ef5d5d"
+        },
+        {
+          "id": "plan-acceptance",
+          "owner": "Reviewer",
+          "source": {
+            "kind": "constructed_engineering_fixture",
+            "identity": "qa-070-complex-v1",
+            "documentId": "plan-acceptance"
+          },
+          "content": "Release readiness information and requested output:\nPreflight already demonstrates synthetic schema and scheduling tests. No physical rehearsal has measured the 1-minute pause bound with production-size journals, and no real throughput measurement confirms the planning rates under this site's contention.\nProduce: a decision table for A/B/C/D; explicit start/end times for every job and memory/concurrency/dependency validation; total window and pause calculations; backlog/delay/drain calculations; safe exact-checkpoint cutover and rollback; and a prioritized verification/go-no-go matrix.\nYou may recommend B as the feasible design under the supplied planning assumptions, but must keep real rollout conditional on the missing rehearsal/capacity evidence. Do not claim the user task includes implementing a migration or that simulation is physical acceptance. Provide source-ID citations for key facts and arithmetic.",
+          "sha256": "79e622f670c0a4aa64fc3a57ba95a0dfc014f1cca8fb235d3a678c0314514997"
+        }
+      ],
+      "rubric": [
+        {
+          "id": "alternatives",
+          "kind": "critical",
+          "critical": true,
+          "text": "Selects B as conditionally feasible; rejects A's raw-data export, C's offline/domain/credential violations and D's concurrency/memory misuse, with source-supported reasons.",
+          "partialCredit": "Selects B and correctly rejects at least two alternatives but misses a material constraint.",
+          "maximumScore": 2
+        },
+        {
+          "id": "schedule",
+          "kind": "critical",
+          "critical": true,
+          "text": "Provides all six non-preemptive intervals completing within 14 minutes after preflight, with <=2 concurrent jobs, <=16 GiB and E-after-C/F-after-D; no assumed speedup.",
+          "partialCredit": "Provides an auditable resource/dependency-valid schedule taking more than 14 minutes, or a sound scheduling method without all intervals.",
+          "maximumScore": 2
+        },
+        {
+          "id": "window",
+          "kind": "quality",
+          "critical": false,
+          "text": "Computes own feasible schedule +2 preflight +1 cutover +5 observation within 22 minutes and identifies 60-second pause <=90 seconds; does not omit observation.",
+          "partialCredit": "Correct window or pause arithmetic but omits one required phase or condition.",
+          "maximumScore": 2
+        },
+        {
+          "id": "backlog",
+          "kind": "quality",
+          "critical": false,
+          "text": "Uses aggregate service 180 (not 240), peak excess 40/s for 120s giving 4800 jobs <6000.",
+          "partialCredit": "Uses 180 capacity and recognizes bounded backlog but lacks/errs on one exact backlog number.",
+          "maximumScore": 2
+        },
+        {
+          "id": "queue-time",
+          "kind": "quality",
+          "critical": false,
+          "text": "Calculates peak delay 4800/180=26.667s <60 and drain after surge 4800/(180-140)=120s; extra worker alone does not lift shared cap.",
+          "partialCredit": "Correctly calculates either delay or drain and recognizes shared cap, but omits or errs on the other.",
+          "maximumScore": 2
+        },
+        {
+          "id": "checkpoint",
+          "kind": "critical",
+          "critical": true,
+          "text": "Requires exact per-tenant snapshot/q0/qf/digest and destination generation, gap-free idempotent replay through final qf, all six verified before flip; rejects latest-verified substitution.",
+          "partialCredit": "Describes safe final catch-up and verification but misses immutable checkpoint identity or all-tenant barrier.",
+          "maximumScore": 2
+        },
+        {
+          "id": "rollback",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves/replays post-cutover writes before rollback and verifies checkpoints under pause; states safe pre-F3 boundary before 8 minutes, 5-minute observation, and fresh Owner compaction approval.",
+          "partialCredit": "Recognizes F3 incompatibility and need to preserve new writes but lacks rollback sequence or time/consent boundary.",
+          "maximumScore": 2
+        },
+        {
+          "id": "authority",
+          "kind": "critical",
+          "critical": true,
+          "text": "Preserves local raw data, path-free Central receipts, owner-local current grants and unchanged Device credentials/pinned HTTPS with separately accepted browser HTTP.",
+          "partialCredit": "Correct transport/data choice but misses current grants or identity preservation.",
+          "maximumScore": 2
+        },
+        {
+          "id": "verification",
+          "kind": "quality",
+          "critical": false,
+          "text": "Provides expected-outcome checks for schedule/resource negatives, wrong CA/origin, revoked grant, checkpoint gaps/restart and rollback writes/F3; distinguishes planning from physical rehearsal.",
+          "partialCredit": "Covers at least three of those five regression groups with expected outcomes.",
+          "maximumScore": 2
+        },
+        {
+          "id": "readiness",
+          "kind": "critical",
+          "critical": true,
+          "text": "Keeps real rollout conditional on missing pause-bound rehearsal and real contention/throughput evidence; does not promote synthetic results or theoretical feasible schedule into physical go-live approval.",
+          "partialCredit": "Keeps rollout conditional but names only one of the two missing physical evidence gates.",
+          "maximumScore": 2
+        }
+      ]
+    }
+  ]
+}

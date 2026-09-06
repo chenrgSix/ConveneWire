@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "identity": "qa-070-complex-plan-v1",
+  "packetPath": "docs/acceptance/fixtures/qa-070-complex-cases.json",
+  "packetSha256": "a20930527f86484503764dbd17a79117910a71830c21881e64ce6ef45c63043e",
+  "maximumInvocations": 24,
+  "authorization": "owner-requested",
+  "requestedOn": "2026-09-06",
+  "authorizationBasis": "Owner requested harder tasks, another test and detailed task-result comparison on 2026-09-06."
+}

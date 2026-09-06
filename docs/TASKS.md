@@ -681,6 +681,10 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
 | QA-069 | DONE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | [Completed replay evidence](acceptance/qa-069-workspace-evidence-replay.md) retains three complete historical pairs: Single/Discussion cover 4/12 and 2/12 criteria with 3/9 Runs and 78.068/134.604 seconds; all six finals reviewed, three failed attempts retained separately, all 18 approved invocations spent (15 completed/3 failed Runs); source/input/read hashes and original evidence verified, 12 offline checks, consumed-plan real-entrypoint rejection, 396-file docs lint and physical cleanup pass; owning docs and usage guidance updated, without a quality-benefit or real-user success claim |
 
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| QA-070 | ACTIVE | Compare complex engineering task results before a Discussion retirement decision | QA-069, ADP-019 | Owner requested harder tasks and detailed result evaluation; [frozen design](acceptance/qa-070-complex-discussion-comparison.md) defines three new eight-document cases, two repetitions, 24-call cap, unchanged model, equal evidence access and 20-point rubrics; packet, offline validation, real execution and detailed review remain required |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

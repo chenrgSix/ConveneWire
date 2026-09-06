@@ -48,6 +48,15 @@ from dropping available evidence. Maintain Single Agent first guidance and
 explicit collaboration controls; no model, prompt or routing tuning against
 this scored packet is authorized by experiment completion.
 
+[QA-070](../acceptance/qa-070-complex-discussion-comparison.md) is the Owner's
+subsequent request for harder tasks and detailed result comparison before a
+retirement decision. It uses new constructed evidence, three cases repeated
+twice, at most 24 calls, the same requested model and equal total source access.
+The new packet expands answer space and task complexity without changing
+production routing or finalization. Its non-blind task-result rubric, repeated
+answers and Run/time evidence remain separate from previous benchmarks and
+real customer success. No Discussion removal is authorized by that experiment.
+
 ## Purpose
 
 Discussion Orchestration makes Agent-to-Agent conversation visible in a Room
