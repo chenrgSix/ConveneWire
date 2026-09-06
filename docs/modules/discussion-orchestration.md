@@ -94,6 +94,19 @@ restart and a revoked-share scenario. Its tool/egress enforcement on one trusted
 host does not establish OS, physical-device or provider isolation. It adds no
 production permission policy, contribution store, completion gate or Wave.
 
+The retained [QA-079 result](../acceptance/qa-079-authority-separated-evidence.md)
+consumes all twelve authorized GPT-5.5/low sessions. Normal and post-commit
+coordinator restart scenarios preserve all sixteen approved observations and
+meet all fourteen public final-delivery criteria. Revocation prevents the
+operations payload and its buffered retry from entering Central, but the final
+session is stopped for `codex/list_mcp_resources`, outside the frozen tool
+allowlist, before any source return. That scenario has no final artifact and
+does not pass end-to-end acceptance. The completed experiment is not a claim
+that every scenario passed. The task-specific local verifier supplies the
+observations, and one test Owner/manual Agents plus direct ResultService calls
+do not establish independent owner authentication or Bridge transport E2E.
+Equal-compute remains deferred; consumed slots cannot be reopened as retries.
+
 - Prefix: `DISC`
 - Implementation: `apps/server/src/discussion/`
 - Owns: bounded multi-Agent Discussions, durable Waves, progress projection,

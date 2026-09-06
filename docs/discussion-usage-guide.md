@@ -117,5 +117,19 @@ Discussion 平均等待 116.4 秒，Single 为 69.9 秒，每次分别使用 3 �
 提示、结论表、逐项自评表、Targeted Review 或普通讨论轮次，生产 Discussion
 的调度、存储、完成策略和成员选择保持原边界。
 
+[QA-079](acceptance/qa-079-authority-separated-evidence.md) 改为测试原始资料
+不能集中时的协作：三个逻辑资料域独立读取，只有另行获准、经本地检查的字段
+经既有 Result 交给 Finalizer。十二次 GPT-5.5/low 会话已消耗。正常和提交后
+丢确认再恢复的场景，终稿均通过 14 项要求，获准的 16 个事实均保留。
+撤权场景阻止了运行域发布及缓冲重试，但 Finalizer 调用冻结允许集合之外的
+`list_mcp_resources` 后被监测器终止，零次来源返回、没有终稿；不能算完整通过。
+
+这是单一受信任主机上的工具/出口机制实验，使用同一测试 Owner 下的 manual
+Agent 和服务层 Result 调用，不能等同真实多人、多设备隔离或 Bridge 产品 E2E。
+任务专用程序已算出共享观察值，也没有证明一般推理增益。Equal-compute 后置，
+不新增生产权限规则或自动重试。维护只运行
+`node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/authority-collaboration.test.mjs scripts/bench/authority-experiment.test.mjs`
+及验收文档中的离线审计/评分复算入口；真实执行入口已关闭。
+
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。
