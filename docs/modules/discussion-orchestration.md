@@ -17,6 +17,14 @@ record are retained in
 - Owns: bounded multi-Agent Discussions, durable Waves, progress projection,
   budget leases, orchestration decisions, and finalization
 
+## Maintenance boundary
+
+[ADR-0045](../adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md)
+freezes v1 feature expansion while retaining reliability fixes and existing
+explicit controls. Everyday use starts with Single Agent as documented advice;
+no automatic startup gate or routing default changes. QA-069 separately checks
+historical workspace evidence retrieval with a fair union-access baseline.
+
 ## Purpose
 
 Discussion Orchestration makes Agent-to-Agent conversation visible in a Room

@@ -254,13 +254,15 @@ MVP 的合格参与者必须存在、处于 enabled 状态且与 Room 属于同�
 
 Agent 可报告目标满足度、置信度、问题、证据和建议，但不能直接设置下一状态或增加预算。仓库中的 `SemanticEvaluator` 目前只是 standalone 接口、规范化函数和契约测试，尚未注入 Discussion Orchestrator，因此 MVP 不会额外调用模型。未来接入时，它也只能返回规范化证据或 recommendation，不能选择 action 或写状态。中央 deterministic Orchestrator 综合系统事实、Agent Assessment、进展和预算，唯一决定 `continue`、`wait_human`、`pause`、`finalize`、`cancel` 或 `terminate`。
 
-Discussion Budget 同时记录 logical Waves、committed member execution slots、tokens、elapsed duration 和 estimated cost，并以短租约分段授权。一个普通 Wave 只消耗一次逻辑轮次预算，但按其持久化的 expected member 数量增加 `agentRunsUsed`；该字段表示已承诺的执行容量，不保证每个 slot 都启动了物理 Runtime 进程。MVP 尚未聚合 member token/cost telemetry，未知值保持 unknown。软边界要求解释当前进展并等待扩展；硬边界停止新普通 Wave。Finalization 使用普通 Wave 不可消费的独立 reserve，确保预算耗尽后仍能输出结论、Artifact、Decision Record 或 unresolved issues。
+Discussion Budget 记录 logical Waves、committed member execution slots 和 elapsed duration，并以短租约分段授权。一个普通 Wave 只消耗一次逻辑轮次预算，但按其持久化的 expected member 数量增加 `agentRunsUsed`；该字段表示已承诺的执行容量，不保证每个 slot 都启动了物理 Runtime 进程。[ADR-0043](docs/adr/0043-remove-discussion-token-cost-accounting.md) 已移除无法可靠观测的 token 与费用统计；实际 Run 生命周期与已承诺槽位分别展示。软边界要求解释当前进展并等待扩展；硬边界停止新普通 Wave。Finalization 使用普通 Wave 不可消费的独立 reserve，确保预算耗尽后仍能输出结论、Artifact、Decision Record 或 unresolved issues。
 
 连续多个 Wave aggregate 没有解决重要问题、增加有效证据、改变决策或降低分歧时形成 plateau。若没有高优先级未决问题，可自动 finalizing；否则进入 `waiting_human`，不能错误宣称完成。完成、暂停和本轮后停止在当前 Wave barrier 生效；立即取消同时中断全部 active member Runs。
 
 每个 member Run 使用稳定 `turnId` 作为唯一 `orchestrationKey`。重启恢复可以精确重建缺失 Run，而不通过 input Message 与 Agent 猜测；Wave closure、进展、预算、决策和 next Wave 由 aggregate version 原子 fencing，重复 callback 不会推进两次。
 
 详细契约见 [Discussion Orchestration Module](docs/modules/discussion-orchestration.md)、[ADR-0011](docs/adr/0011-central-orchestrator-controls-discussion.md) 与 [ADR-0012](docs/adr/0012-parallel-discussion-waves.md)。
+
+[ADR-0045](docs/adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md) 冻结 Discussion v1 功能扩张，保留可靠性维护与显式控制。日常任务先用单 Agent 是使用建议，不改变现有路由或 UI 默认值；跨工作区收益须由独立证据和公平对照验证。
 
 ### 5.5 离线行为
 
