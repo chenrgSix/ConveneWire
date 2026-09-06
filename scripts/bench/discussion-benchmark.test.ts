@@ -16,7 +16,7 @@ import { completedFinalAnswer } from "./discussion-answer.js";
 import { continuationPath, loadReviewContinuation } from "./discussion-continuation.js";
 import { fallbackCoverageProbe, replayInput, reviewedTaskInput, reviewPacket, reviewPacketPath,
   type Criterion } from "./discussion-review-packet.js";
-import { workspacePacket, packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
+import { workspacePacket, workspaceExecutionIdentity, packetPath as workspacePacketPath, prepareWorkspaces, workspaceTaskInput } from "./workspace-evidence.mjs";
 import { finalAnswerReviewChecklist } from "../../apps/server/src/discussion/finalization-instructions.js";
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -56,6 +56,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     model, observedProviderModel: null, reasoningEffort: "low", runtime: "codex exec via generic Bridge adapter",
     runtimeVersion: "", maximumRuns: samples.length * 4, maximumInvocations, maximumModelWorkSeconds: 1200,
     suite, packetIdentity: workspaceReplay ? workspacePacket.identity : reviewing ? reviewPacket.identity : undefined,
+    executionIdentity: workspaceReplay ? workspaceExecutionIdentity : undefined,
     continuation: continuation?.manifest,
     fixedReplays: reviewing && !continuation && !workspaceReplay ? reviewPacket.replays : undefined,
     replayResults: reviewing ? [] as Array<Record<string, unknown>> : undefined,
@@ -68,7 +69,7 @@ test("bounded real single-Agent and Discussion task pairs", {
     ...(reviewing ? ["scripts/bench/discussion-review-packet.ts", reviewPacketPath,
       "apps/server/src/discussion/finalization-instructions.ts",
       "docs/adr/0044-review-final-answers-and-test-discussion-value.md"] : []),
-    ...(workspaceReplay ? [workspacePacketPath, "scripts/bench/workspace-evidence.mjs", "scripts/bench/evidence-reader.mjs",
+    ...(workspaceReplay ? [workspacePacketPath, "scripts/bench/workspace-evidence.mjs", "scripts/bench/evidence-reader.mjs", "scripts/bench/evidence-codex-config.mjs",
       "scripts/bench/codex-evidence-answer.mjs", "docs/adr/0045-freeze-discussion-v1-and-replay-workspace-evidence.md",
       "docs/acceptance/qa-069-workspace-evidence-replay.md"] : []),
     ...(continuation ? ["scripts/bench/discussion-continuation.ts", continuationPath,

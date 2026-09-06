@@ -2,9 +2,9 @@
 import { closeSync, openSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
+import { evidenceCodexConfig } from "./evidence-codex-config.mjs";
 const [executable, model, quotaDirectory, maximum, role] = process.argv.slice(2);
 if (!executable || model !== "gpt-5.4-mini" || maximum !== "12" || !["Baseline", "Solver", "Reviewer"].includes(role)) {
   throw new Error("Invalid fixed workspace benchmark configuration");
@@ -30,22 +30,11 @@ if (reservedSlot === undefined) {
 const receiptDirectory = path.join(quotaDirectory, `receipt-${reservedSlot}`);
 mkdirSync(receiptDirectory);
 const metadata = { caseId: caseIds[0], role, instructionSha256: createHash("sha256").update(instruction).digest("hex"),
-  runtimeSucceeded: false, failure: null };
+  runtimeSucceeded: false, failure: null,
+  diagnostics: { exitCode: null, timedOut: false, itemKinds: [], failureReasons: [] } };
 const persist = () => writeFileSync(path.join(receiptDirectory, "invocation.json"), JSON.stringify(metadata));
 persist();
-const reader = fileURLToPath(new URL("./evidence-reader.mjs", import.meta.url));
-const config = [
-  'model_reasoning_effort="low"', 'approval_policy="never"', 'web_search="disabled"',
-  'tools.view_image=false', 'features.shell_tool=false', 'features.unified_exec=false',
-  'features.apps=false', 'features.plugins=false', 'features.remote_plugin=false',
-  'features.multi_agent=false', 'features.image_generation=false', 'features.view_image=false',
-  'features.skill_search=false', 'features.skill_mcp_dependency_install=false',
-  'features.skip_host_skill_discovery=true', 'features.memories=false',
-  `mcp_servers.evidence.command=${JSON.stringify(process.execPath)}`,
-  `mcp_servers.evidence.args=${JSON.stringify([reader, bundlePath, caseIds[0], receiptDirectory])}`,
-  'mcp_servers.evidence.enabled_tools=["read_evidence"]',
-  'mcp_servers.evidence.required=true'
-];
+const config = evidenceCodexConfig(bundlePath, caseIds[0], receiptDirectory);
 const child = spawn(executable, ["exec", "--json", "--sandbox", "read-only", "--ephemeral",
   "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "--model", model,
   ...config.flatMap((value) => ["-c", value]), "-"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -54,7 +43,15 @@ const terminal = new Promise((resolve) => {
   child.once("exit", (code) => resolve(code ?? 1));
 });
 let failed = false;
-const timer = setTimeout(() => { failed = true; child.kill("SIGKILL"); }, 300_000);
+const fail = (reason) => {
+  failed = true;
+  if (!metadata.diagnostics.failureReasons.includes(reason)) metadata.diagnostics.failureReasons.push(reason);
+};
+const timer = setTimeout(() => {
+  metadata.diagnostics.timedOut = true;
+  fail("process_timeout");
+  child.kill("SIGKILL");
+}, 300_000);
 child.stdin.on("error", () => {});
 child.stdin.end(instruction);
 child.stderr.resume(); // Never forward provider diagnostics, credentials or usage.
@@ -63,17 +60,30 @@ for await (const line of createInterface({ input: child.stdout })) {
   try {
     const event = JSON.parse(line);
     if (event.type === "item.completed" && event.item?.type === "agent_message") answer = event.item.text;
-    if (event.type === "turn.failed" || event.type === "error") failed = true;
-    if (event.type?.startsWith("item.") && event.item?.type && !["agent_message", "reasoning"].includes(event.item.type)) {
-      if (event.item.type !== "mcp_tool_call" || event.item.server !== "evidence" || event.item.tool !== "read_evidence") failed = true;
+    if (event.type === "turn.failed") fail("turn_failed");
+    if (event.type === "error") fail("cli_error");
+    if (event.type?.startsWith("item.") && event.item?.type) {
+      const kind = ["agent_message", "reasoning", "mcp_tool_call", "error"].includes(event.item.type) ? event.item.type : "other";
+      if (!metadata.diagnostics.itemKinds.includes(kind)) metadata.diagnostics.itemKinds.push(kind);
     }
-  } catch { failed = true; }
+    if (event.type?.startsWith("item.") && event.item?.type && !["agent_message", "reasoning"].includes(event.item.type)) {
+      if (event.item.type === "error") fail("item_error");
+      else if (event.item.type !== "mcp_tool_call" || event.item.server !== "evidence" || event.item.tool !== "read_evidence") fail("unapproved_tool");
+      else if (event.item.status === "failed" || event.item.error) fail("reader_call_failed");
+    }
+    persist();
+  } catch { fail("invalid_cli_event"); }
 }
 const result = await terminal;
 clearTimeout(timer);
+metadata.diagnostics.exitCode = result;
+if (result !== 0) fail("nonzero_exit");
 const reads = readdirSync(receiptDirectory).filter((name) => name.startsWith("read-"))
   .map((name) => JSON.parse(readFileSync(path.join(receiptDirectory, name), "utf8")));
-metadata.runtimeSucceeded = !failed && result === 0 && Boolean(answer.trim()) && reads.some((read) => read.accepted);
+if (!reads.some((read) => read.accepted)) fail("no_evidence_reads");
+if (reads.some((read) => !read.accepted)) fail("rejected_evidence_read");
+if (!answer.trim()) fail("no_final_answer");
+metadata.runtimeSucceeded = !failed;
 metadata.failure = metadata.runtimeSucceeded ? null : "Runtime failed, used an unapproved tool or produced no evidence reads/final answer";
 persist();
 if (metadata.runtimeSucceeded) process.stdout.write(answer.trim() + "\n");

@@ -679,7 +679,7 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | ADP-019 | DONE | Validate optional assessment before emitting Bridge events | QA-067 | Generated wire validation rejects unsupported enum/range/size/duplicate/null/nested metadata while preserving reply-only degradation; full Bridge tests and vet, Runtime race and 14 offline checks pass; four real Finalizers with invalid stop metadata now deliver answers and complete without structured approval; source failure evidence and owned-root cleanup retained |
 
 | GOV-033 | DONE | Freeze Discussion v1 maintenance and workspace replay | QA-068 | ADR-0045 and QA-069 define Single Agent first guidance, fair historical evidence access, three fixed incidents and 12-call limits; baseline budget prose aligned with ADR-0043 |
-| QA-069 | ACTIVE | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | Implementation, 19 benchmark checks, 396 Markdown files and cleanup pass; Owner explicitly authorized the exact QA-069 materials to OpenAI Codex on 2026-09-06; fixed 12-call real comparison and reviewed evidence remain required |
+| QA-069 | BLOCKED | Replay three historical incidents through scoped workspace readers | GOV-033, ADP-019 | First failed attempt retained with 16 source pins and zero reads; CLI bootstrap/diagnostic repair passes 19 benchmark plus two real-CLI loopback checks, 396 Markdown files and cleanup; completing three fresh pairs needs explicit approval to increase the total cap from 12 to 13 including the retained failure |
 
 ## Deferred Beyond MVP
 

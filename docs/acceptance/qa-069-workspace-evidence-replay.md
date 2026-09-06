@@ -25,15 +25,16 @@ ownership; all execution occurs on one host. Earlier QA records stay immutable.
 ## Bounded execution
 
 `npm run bench:discussion-workspace` must start from committed clean source
-after `npm run test:discussion-workspace` passes. It uses an isolated actual
+after `npm run test:discussion-workspace` and the explicit local
+`npm run test:discussion-codex-bootstrap` gate pass. It uses an isolated actual
 Server/Bridge and existing signed-in Codex CLI, requested gpt-5.4-mini, low
 effort. Three pairs allow exactly 12 model invocations: three Single Agent
 Runs and nine Discussion Runs. An atomic quota, 300-second process limit and
 20-minute model-work deadline bound execution. Stop later attempts at the first
 runtime failure. No retries, release, production data or token/cost accounting.
 
-The only model tool is `evidence.read_evidence`, a stdio MCP reader for fixed
-IDs. Each process has a maximum of eight reads, and records ID/digest receipts.
+The only configured MCP tool is `evidence.read_evidence`, a stdio reader for
+fixed IDs. Execution revision v2 permits its metadata discovery via tool search. Each process has a maximum of eight reads, and records ID/digest receipts.
 Single Agent may read all documents; Solver and Reviewer each get only their
 assigned subset. No path, URL, shell, write or model-selected role is accepted.
 Codex settings follow the official [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
@@ -114,3 +115,55 @@ authorizing those materials to the existing signed-in OpenAI Codex service for
 at most 12 model invocations. This resolves the external-execution blocker.
 The fixed packet, model, no-retry rule and acceptance criteria remain unchanged;
 real results still require execution and review.
+
+## First real attempt and offline diagnosis
+
+The authorized invocation at source `ed7508f` stopped on its first arm. The
+[unaltered report](evidence/qa-069-workspace-startup-failure-2026-09-06.json)
+records one reserved CLI invocation, one failed Single Agent Run, 18.971 seconds
+of arm elapsed time, zero reader receipts and no final answer. Five arms were unstarted; no quality
+criteria can be scored. The owned root `convene-wire-test-run-5tRSEl` was removed.
+The original adapter discarded provider diagnostics, so the exact original
+failure chain cannot be reconstructed or confidently attributed to one cause.
+
+An auth-free loopback provider with a disposable Codex home then exercised the
+actual installed CLI 0.153.3 without an external model. It reproduced two
+adapter assumptions that the synthetic CLI had missed: `skip_host_skill_discovery`
+emits an `item.completed` error-shaped startup warning, and MCP tools are
+available through client tool search with a namespace-qualified function call.
+The original whitelist rejects the warning, while the original task instruction
+forbids the required metadata discovery step. These are demonstrated preflight
+defects, not proof that they explain every part of the first provider failure.
+
+The repair explicitly suppresses that known startup warning, permits only
+metadata discovery of the fixed reader, retains compact diagnostic categories
+without provider text, and adds a real-CLI loopback discovery/read/final-answer
+gate. Only the fixed MCP reader is configured. Codex still advertises some native
+scaffolding; unapproved reported tool calls invalidate the invocation, and
+read-only sandboxing plus disabled shell/apps/plugins preserve the execution
+boundary. The test must not claim that no native tool was advertised.
+
+This is execution revision v2; task source/rubric bytes stay unchanged and its
+new instruction hash is retained separately. No real retry is authorized by
+this repair. The original 12-invocation phase has used one; completing three
+fresh pairs would need 12 more, a total of 13 including the retained failure.
+That one-invocation increase requires Owner approval before any continuation.
+
+The repair passed all 19 benchmark checks and two additional real-CLI loopback
+checks. The latter reproduce error-shaped startup-warning rejection even when
+the actual read succeeds, and verify the repaired configuration delivers the
+answer through deferred discovery and a namespace-qualified MCP call. Both use
+synthetic source, an empty temporary Codex home and a loopback-only provider;
+all six fixture HTTP requests had no Authorization header and called no model.
+These checks prove CLI/reader integration, not compatibility with the remote
+provider or task-answer quality. The two paths use the same exported
+configuration as the real benchmark adapter.
+
+All 396 maintained Markdown files and whitespace checks pass. Physical cleanup
+was verified for the real attempt, the CLI-bootstrap root
+`convene-wire-test-run-G5eKZ1` and the full regression root
+`convene-wire-test-run-XmraYK`. The retained report is byte-identical to the
+original ignored report; its 16 source hashes match Git at `ed7508f`, its task
+prompt hash matches, and all four rubric decisions remain unscored. The report
+SHA-256 is `e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c`.
+No external model calls were made after the first failed invocation.

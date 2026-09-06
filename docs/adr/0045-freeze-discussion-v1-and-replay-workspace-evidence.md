@@ -60,7 +60,10 @@ historical replay is the bounded next step and must remain labeled as such.
 No production protocol, migration or external publication changes. The reader
 serves only fixed, hash-checked document IDs, with eight reads per invocation;
 it accepts no filesystem paths, commands, URLs or model-selected scopes.
-Disable other Codex tools and user configuration. Credentials stay with the
+Disable shell, apps, plugins and user configuration. The fixed reader is the
+only permitted evidence source; client tool search may discover its metadata.
+Native CLI scaffolding can still be advertised and is not granted task
+authority. Unapproved reported calls invalidate the answer. Credentials stay with the
 existing CLI authentication and never enter evidence or Room output. Preserve
 owned process/data/cache cleanup, including failure paths.
 
