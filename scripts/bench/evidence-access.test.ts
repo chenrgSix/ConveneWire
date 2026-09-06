@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { chmodSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import http from "node:http";
@@ -12,7 +12,7 @@ import { createTestResources } from "../test/resources.mjs";
 import { loadReplay, renderReplay, sha256, treatmentInstruction } from "./evidence-access-replay.js";
 import { hash, readEvidence } from "./evidence-access-reader.mjs";
 import { makeAccess, runtimeConfig, invokeFinalizer } from "./evidence-access-runtime.mjs";
-import { claimPlan, verifyFreeze, reserveNext } from "./evidence-access-execute.js";
+import { assertPlanUnconsumed, claimPlan, verifyFreeze, reserveNext } from "./evidence-access-execute.js";
 
 const replay = loadReplay();
 const now = "2026-09-06T02:00:00.000Z";
@@ -205,7 +205,7 @@ test("installed CLI A/B/C bootstrap has only the intended tool delta and exact r
   }
 });
 
-test("runtime retains failed answers without substituting a retry", async t => {
+test("runtime retains failed progress without reporting a delivered answer or substituting a retry", async t => {
   const resources = await createTestResources(t, "convenewire-qa072-failure-");
   const fake = path.join(resources.directory, "fake.mjs");
   writeFileSync(fake, `#!${process.execPath}\nfor await(const x of process.stdin){}; console.log(JSON.stringify({type:"item.completed",item:{type:"agent_message",text:"Retain this failed answer."}})); console.log(JSON.stringify({type:"turn.failed"}));\n`);
@@ -213,8 +213,10 @@ test("runtime retains failed answers without substituting a retry", async t => {
   const directory = path.join(resources.directory, "failed"); mkdirSync(directory);
   const result = await invokeFinalizer({ resources, replay, scheduled: replay.fixture.order[0], executable: fake,
     directory, instruction: treatmentInstruction("A") });
-  assert.equal(result.outcome, "failed"); assert.equal(result.finalAnswer, "Retain this failed answer.");
-  assert.deepEqual(result.failures, ["turn.failed"]);
+  assert.equal(result.outcome, "failed"); assert.equal(result.finalAnswer, "");
+  assert.equal(result.finalAnswerAt, null);
+  assert.deepEqual(result.progressMessages.map((message: any) => message.text), ["Retain this failed answer."]);
+  assert.deepEqual(result.failures, ["turn.failed", "terminal_turn_incomplete", "no_final_answer"]);
 });
 
 
@@ -224,6 +226,63 @@ test("an already claimed phase cannot restart and changed pins reject admission"
   claimPlan({ state: "executing", attempts: [{ slot: 0, state: "reserved" }] }, report);
   assert.throws(() => claimPlan({ state: "executing", attempts: [] }, report), /EEXIST/u);
   assert.throws(() => verifyFreeze({ files: [{ path: "scripts/bench/evidence-access-reader.mjs", sha256: "wrong" }] }), /Changed frozen file/u);
+  assert.throws(() => assertPlanUnconsumed(), /QA-072 is consumed/u);
+  const closed = spawnSync(process.execPath, ["--import", "tsx", "scripts/bench/evidence-access-execute.ts", "--execute-qa072-frozen-nine"],
+    { encoding: "utf8", timeout: 10_000, env: { PATH: resources.directory } });
+  assert.equal(closed.status, 1);
+  assert.match(closed.stdout, /QA-072 is consumed/u);
+  assert.doesNotMatch(closed.stdout + closed.stderr, /ENOENT|Changed frozen file/u);
+});
+
+for (const mode of ["success", "missing_turn", "commentary", "failed_candidate", "byte_limit", "missing_catalog", "wrong_catalog"] as const) {
+  test(`terminal answer handling: ${mode}`, async t => {
+    const resources = await createTestResources(t, "convenewire-qa073-terminal-");
+    const fake = path.join(resources.directory, "fake.mjs");
+    const directory = path.join(resources.directory, "invocation"); mkdirSync(directory);
+    const text = mode === "byte_limit" ? "中".repeat(100) : "Retained text.";
+    const catalogMode = mode.endsWith("catalog");
+    writeFileSync(fake, `#!${process.execPath}
+import { writeFileSync } from "node:fs";
+for await (const input of process.stdin) {}
+writeFileSync(process.argv[process.argv.indexOf("--output-last-message") + 1], ${JSON.stringify(text)});
+console.log(JSON.stringify({ type: "item.completed", item: { id: "msg_1", type: "agent_message", phase: ${JSON.stringify(mode === "commentary" ? "commentary" : "final_answer")}, text: ${JSON.stringify(text)} } }));
+${mode === "missing_turn" ? "" : `console.log(JSON.stringify({ type: ${JSON.stringify(mode === "failed_candidate" ? "turn.failed" : "turn.completed")} }));`}
+`);
+    chmodSync(fake, 0o700);
+    if (mode === "wrong_catalog") writeFileSync(path.join(directory, "reader-lifecycle.jsonl"), JSON.stringify({ stage: "tools_listed", definitionSha256: "wrong" }) + "\n");
+    const bounded = structuredClone(replay); bounded.fixture.runtime.maximumAnswerBytes = 128;
+    const result = await invokeFinalizer({ resources, replay: bounded, scheduled: replay.fixture.order[catalogMode ? 1 : 0], executable: fake,
+      directory, instruction: treatmentInstruction(catalogMode ? "B" : "A") });
+    assert.equal(result.outcome, mode === "success" ? "completed" : "failed");
+    assert.equal(result.finalAnswer, mode === "success" ? text : "");
+    assert.ok(Buffer.byteLength(result.candidateAnswer) <= 128);
+    assert.ok(!result.candidateAnswer.includes("�"));
+    assert.equal(result.progressMessages.length, mode === "success" ? 0 : 1);
+    if (mode !== "success") assert.equal(result.finalAnswerAt, null);
+    const reason = { missing_turn: "terminal_turn_incomplete", commentary: "no_final_answer", failed_candidate: "turn.failed",
+      byte_limit: "answer_byte_limit", missing_catalog: "reader_catalog_unobserved", wrong_catalog: "reader_catalog_mismatch" };
+    if (mode !== "success") assert.ok(result.failures.includes(reason[mode]));
+  });
+}
+
+test("runtime publishes rejected started tool identity before stopping the process", async t => {
+  const resources = await createTestResources(t, "convenewire-qa073-started-");
+  const fake = path.join(resources.directory, "fake.mjs"), directory = path.join(resources.directory, "invocation");
+  mkdirSync(directory);
+  writeFileSync(fake, `#!${process.execPath}
+for await (const input of process.stdin) {}
+console.log(JSON.stringify({ type: "item.started", item: { id: "call_1", type: "mcp_tool_call", server: "foreign", tool: "list_resources", arguments: { secret: "NEVER_RETAIN" } } }));
+setInterval(() => {}, 1000);
+`);
+  chmodSync(fake, 0o700);
+  const snapshots: any[] = [];
+  const result = await invokeFinalizer({ resources, replay, scheduled: replay.fixture.order[0], executable: fake,
+    directory, instruction: treatmentInstruction("A"), onProgress: (partial: unknown) => snapshots.push(partial) });
+  assert.equal(result.outcome, "failed");
+  assert.equal(snapshots[0].toolEvents[0].tool, "list_resources");
+  assert.equal(snapshots[0].toolEvents[0].decision, "rejected");
+  assert.deepEqual(result.toolEvents, snapshots[0].toolEvents);
+  assert.ok(!JSON.stringify(result).includes("NEVER_RETAIN"));
 });
 
 for (const mode of ["unapproved", "timeout"] as const) test(`runtime ${mode} remains a distinct consumed failure`, async t => {

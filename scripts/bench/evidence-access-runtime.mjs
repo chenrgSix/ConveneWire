@@ -1,9 +1,10 @@
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, readSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { createInterface } from "node:readline";
 import { evidenceCodexConfig } from "./evidence-codex-config.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
-import { hash } from "./evidence-access-reader.mjs";
+import { evidenceToolDefinition, hash } from "./evidence-access-reader.mjs";
+import { boundedUtf8, createInvocationObserver } from "./evidence-invocation-observer.mjs";
 
 export function runtimeConfig(treatment, bundlePath, controlPath, receiptDirectory, runId, grantDigest) {
   const common = evidenceCodexConfig("", "", "").filter(value => !value.startsWith("mcp_servers."));
@@ -40,14 +41,16 @@ export async function invokeFinalizer({ resources, replay, scheduled, executable
   writeFileSync(controlPath, JSON.stringify(control), { mode: 0o600 });
   const config = runtimeConfig(scheduled.treatment, bundlePath, controlPath, receiptDirectory,
     scheduled.runId, hash(JSON.stringify(control.grant)));
-  const child = spawnTestProcess(resources, executable, ["exec", "--json", "--sandbox", "read-only", "--ephemeral",
+  const finalPath = path.join(directory, "terminal-answer.txt");
+  const child = spawnTestProcess(resources, executable, ["exec", "--json", "--output-last-message", finalPath, "--sandbox", "read-only", "--ephemeral",
     "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "--model", replay.fixture.runtime.model,
     ...[...config, ...configOverrides].flatMap(value => ["-c", value]), "-"],
   { cwd: workspace, env, stdio: ["pipe", "pipe", "pipe"] });
   const closed = new Promise(resolve => child.process.once("close", resolve));
-  const failures = [], itemKinds = [], toolCalls = [];
-  let finalAnswer = "", finalAnswerAt = null, timedOut = false;
-  const fail = reason => { if (!failures.includes(reason)) failures.push(reason); };
+  const observer = createInvocationObserver({ treatment: scheduled.treatment, ...replay.fixture.runtime });
+  const { state, fail } = observer;
+  const { failures, itemKinds, toolEvents, messages } = state;
+  let timedOut = false;
   const timer = setTimeout(() => { timedOut = true; fail("timeout"); void child.stop(); }, replay.fixture.runtime.timeoutMilliseconds);
   child.process.stdin.on("error", () => {});
   child.process.stdin.end(instruction);
@@ -57,32 +60,42 @@ export async function invokeFinalizer({ resources, replay, scheduled, executable
   try {
     for await (const line of createInterface({ input: child.process.stdout })) {
       let event;
-      try { event = JSON.parse(line); } catch { fail("invalid_cli_event"); continue; }
-      if (["turn.failed", "error"].includes(event.type)) fail(event.type);
-      if (!event.type?.startsWith("item.") || !event.item?.type) continue;
-      const item = event.item;
-      const kind = ["agent_message", "reasoning", "mcp_tool_call", "tool_search", "error"].includes(item.type) ? item.type : "other";
-      if (!itemKinds.includes(kind)) itemKinds.push(kind);
-      if (kind === "agent_message" && event.type === "item.completed") {
-        if (typeof item.text !== "string") { fail("invalid_answer"); continue; }
-        if (Buffer.byteLength(item.text) > replay.fixture.runtime.maximumAnswerBytes) fail("answer_byte_limit");
-        finalAnswer = Buffer.from(item.text).subarray(0, replay.fixture.runtime.maximumAnswerBytes).toString("utf8");
-        finalAnswerAt = new Date().toISOString();
-      } else if (kind === "mcp_tool_call") {
-        const allowed = scheduled.treatment !== "A" && item.server === "evidence" && item.tool === "read_evidence";
-        if (event.type === "item.completed") toolCalls.push({ allowed, status: item.status === "completed" ? "completed" : "failed" });
-        if (!allowed) { fail("unapproved_tool"); void child.stop(); }
-        else if (item.status === "failed" || item.error) fail("tool_return_failed");
-        if (toolCalls.length > replay.fixture.runtime.maximumReadCalls) { fail("tool_call_limit"); void child.stop(); }
-      } else if (kind === "other") { fail("unapproved_tool"); void child.stop(); }
-      else if (kind === "error") fail("item_error");
-      onProgress({ finalAnswer, finalAnswerAt, failures, itemKinds, toolCalls });
+      try { event = JSON.parse(line); } catch { fail("invalid_cli_event"); void child.stop(); continue; }
+      const stop = observer.observe(event);
+      // Record identity before initiating shutdown, including item.started rejections.
+      onProgress(structuredClone(state));
+      if (stop) void child.stop();
     }
   } finally { clearTimeout(timer); }
   const terminal = await child.terminal;
   await closed;
   if (terminal.code !== 0 || terminal.error) fail("process_failed");
-  if (!finalAnswer.trim()) fail("no_final_answer");
+  if (!state.turnCompleted || state.turnFailed) fail("terminal_turn_incomplete");
+  let candidateAnswer = "";
+  if (existsSync(finalPath)) {
+    const file = openSync(finalPath, "r");
+    try {
+      const bytes = Buffer.alloc(replay.fixture.runtime.maximumAnswerBytes + 1);
+      const length = readSync(file, bytes, 0, bytes.length, 0);
+      if (length > replay.fixture.runtime.maximumAnswerBytes) fail("answer_byte_limit");
+      candidateAnswer = boundedUtf8(bytes.subarray(0, length), replay.fixture.runtime.maximumAnswerBytes).trim();
+    } finally { closeSync(file); }
+  }
+  if (!candidateAnswer) fail("no_final_answer");
+  const matched = messages.findLast(message => message.text.trim() === candidateAnswer);
+  if (matched?.phase === "commentary") fail("no_final_answer");
+  const lifecyclePath = path.join(directory, "reader-lifecycle.jsonl");
+  const readerLifecycle = existsSync(lifecyclePath) ? readFileSync(lifecyclePath, "utf8").trim().split("\n").filter(Boolean).map(line => JSON.parse(line)) : [];
+  const catalogs = readerLifecycle.filter(event => event.stage === "tools_listed");
+  if (scheduled.treatment !== "A") {
+    if (!catalogs.length) fail("reader_catalog_unobserved");
+    if (catalogs.some(event => event.runId !== scheduled.runId || event.definitionSha256 !== hash(JSON.stringify(evidenceToolDefinition(bundle))))) {
+      fail("reader_catalog_mismatch");
+    }
+  }
+  const finalAnswer = failures.length === 0 ? candidateAnswer : "";
+  const finalAnswerAt = finalAnswer ? matched?.observedAt ?? new Date().toISOString() : null;
+  const progressMessages = messages.filter(message => !finalAnswer || message !== matched);
   const reads = readdirSync(receiptDirectory).sort().map(name => JSON.parse(readFileSync(path.join(receiptDirectory, name), "utf8")));
   control.run.state = "terminal";
   writeFileSync(controlPath, JSON.stringify(control), { mode: 0o600 });
@@ -96,5 +109,10 @@ export async function invokeFinalizer({ resources, replay, scheduled, executable
     finalAnswer, answerSha256: hash(finalAnswer),
     outputWordCount: answerBody ? answerBody.split(/\s+/u).length : 0,
     outputWordInstructionMet: !answerBody || answerBody.split(/\s+/u).length < replay.fixture.runtime.answerWordInstruction,
-    failures, itemKinds, toolCalls, grant: control.grant, reads };
+    candidateAnswer,
+    progressMessages, failures, itemKinds, toolEvents, omittedToolEvents: state.omittedToolEvents,
+    omittedMessages: state.omittedMessages, turnCompleted: state.turnCompleted, readerLifecycle,
+    evidenceAccess: { configured: scheduled.treatment !== "A", catalogListed: readerLifecycle.some(event => event.stage === "tools_listed"),
+      modelDiscovery: "not_observable_in_cli_json", sourceReturns: reads.filter(read => read.receipt.status === "returned").length },
+    grant: control.grant, reads };
 }

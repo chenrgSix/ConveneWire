@@ -91,7 +91,7 @@ router、embedding selector 及对已评分题目的继续调参均暂停。
 - `npm run test:discussion-benchmark`：全部基准适配器、题包与合成 Server/Bridge 回归。
 - `npm run test:discussion-workspace` / `npm run test:discussion-complex`：对应题包的聚焦离线回归。
 - `npm run test:discussion-codex-bootstrap`：已安装 CLI 的无认证本地回环检查，不调用外部模型。
-- `npm run test:discussion-evidence-access`：QA-072 的固定输入、读取授权、回执及三臂 CLI 回环回归；实际模型调用计划已经关闭。
+- `npm run test:discussion-evidence-access`：QA-072 历史冻结校验、读取授权与回执，以及 [QA-073](acceptance/qa-073-evidence-reader-repair.md) 的工具发现、调用记录和最终答案区分；三臂 CLI 通过 HTTP / WebSocket 本地回环验证，不调用外部模型。实际模型调用计划已经关闭。
 
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。

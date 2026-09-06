@@ -705,6 +705,8 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | GOV-037 | DONE | Freeze a bounded evidence-access/use mechanism experiment | QA-071 | ADR-0047 and QA-072 freeze one Windows case, verbatim contributions, four owner-scoped source excerpts, current base instruction, receipt schema, separate item scoring and 23 file pins; 11 new offline checks including real CLI A/B/C loopback plus 47 current Discussion regressions pass before model calls |
 | QA-072 | DONE | Execute one fixed case with three treatments and three repetitions | GOV-037 | [QA-072 retained evidence](acceptance/qa-072-evidence-access-use.md): 11 offline mechanism/CLI checks, 47 current Discussion regressions and two post-run audits pass; exactly nine attempts, seven answers and two failed C sessions retained with separate item judgments; no source reads, Q1/Q2 inconclusive and live tool-discovery telemetry limits explicit; frozen inputs and physical cleanup verified, plan consumed |
 
+| QA-073 | DONE | Repair evidence-reader visibility and experiment diagnostics without model calls | QA-072 | [QA-073](acceptance/qa-073-evidence-reader-repair.md): source-ID discovery defect reproduced and repaired; 30 checks pass including builtin WebSocket/custom HTTP A/B/C catalogs, actual source returns, bounded started/rejected events, terminal/progress separation and consumed admission; 23 historical code pins plus unchanged inputs/results audited, docs lint passes and 11 owned roots absent; no external model invocation or production policy change |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

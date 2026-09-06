@@ -11,6 +11,11 @@ is experiment tooling, with no new production endpoint, persisted contribution
 type, scheduler, selection, completion or acceptance policy. Execution and
 interpretation must follow [QA-072](../acceptance/qa-072-evidence-access-use.md).
 
+[QA-073](../acceptance/qa-073-evidence-reader-repair.md) repairs only experiment
+tool visibility and diagnostics using an auth-free loopback provider. It must
+retain the consumed QA-072 plan, original inputs/results and historical code
+identity. No new external-model invocation or production capability is granted.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds structured
 decision/plan proposals without execution or Result acceptance authority.
 Code review/test pipelines belong to Execution, not Wave semantics. Focused

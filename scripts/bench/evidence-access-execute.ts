@@ -1,7 +1,7 @@
 // One new owner-authorized plan. The retained journal is its non-reusable admission fence.
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { createTestResources } from "../test/resources.mjs";
@@ -10,6 +10,9 @@ import { invokeFinalizer } from "./evidence-access-runtime.mjs";
 
 export const lockPath = "docs/acceptance/fixtures/qa-072-freeze.json";
 export const reportPath = "docs/acceptance/evidence/qa-072-access-use-2026-09-06.json";
+export function assertPlanUnconsumed(destination = reportPath) {
+  assert.ok(!existsSync(destination), "QA-072 is consumed; no provider startup or same-plan replay is permitted");
+}
 export function verifyFreeze(frozen = JSON.parse(readFileSync(lockPath, "utf8"))) {
   for (const pin of frozen.files) assert.equal(sha256(readFileSync(pin.path)), pin.sha256, `Changed frozen file: ${pin.path}`);
   const replay = loadReplay();
@@ -29,6 +32,7 @@ export function reserveNext(report: { attempts: Array<{ slot: number; state: str
 }
 
 if (process.argv.includes("--execute-qa072-frozen-nine")) test("QA-072 bounded nine-Finalizer experiment", { timeout: 2_790_000 }, async t => {
+  assertPlanUnconsumed();
   const { frozen, replay } = verifyFreeze();
   assert.equal(replay.fixture.authorization, "owner-authorized-nine-finalizer-invocations");
   assert.equal(execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim(), "", "Commit and validate inputs first");

@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 const hash = value => createHash("sha256").update(value).digest("hex");
@@ -9,9 +10,15 @@ const json = name => JSON.parse(readFileSync(name, "utf8"));
 export function auditReport() {
   const fixture = json("docs/acceptance/fixtures/qa-072-evidence-access-use.json");
   const freeze = json("docs/acceptance/fixtures/qa-072-freeze.json");
-  for (const pin of freeze.files) assert.equal(hash(readFileSync(pin.path)), pin.sha256, pin.path);
   const reportPath = "docs/acceptance/evidence/qa-072-access-use-2026-09-06.json";
   const report = json(reportPath);
+  assert.match(report.sourceCommit, /^[0-9a-f]{40}$/u);
+  for (const pin of freeze.files) {
+    // Maintenance can repair shared code. The recorded run still used this exact Git version.
+    const historical = execFileSync("git", ["show", `${report.sourceCommit}:${pin.path}`]);
+    assert.equal(hash(historical), pin.sha256, `Historical source changed: ${pin.path}`);
+    if (pin.path.startsWith("docs/")) assert.equal(hash(readFileSync(pin.path)), pin.sha256, `Frozen input changed: ${pin.path}`);
+  }
   assert.equal(report.state, "consumed");
   assert.equal(report.results.length, 9); assert.equal(report.attempts.length, 9);
   assert.equal(report.freezeSha256, hash(readFileSync("docs/acceptance/fixtures/qa-072-freeze.json")));

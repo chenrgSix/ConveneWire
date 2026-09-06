@@ -1,6 +1,6 @@
 // Only this experiment's owner-authored grant is authority. Model arguments are selectors.
 import { createHash, randomUUID } from "node:crypto";
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -53,22 +53,42 @@ export function readEvidence({ bundle, grant, currentRun, call, attempt = 0, now
   return { receipt, content };
 }
 
-export async function serve(bundlePath, controlPath, receiptDirectory, expectedRunId, grantDigest) {
-  const bundle = JSON.parse(readFileSync(bundlePath, "utf8"));
-  const server = new Server({ name: "evidence", version: "2.0.0-experiment" }, { capabilities: { tools: {} } });
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [{ name: "read_evidence",
-    description: "Read an authorized fixed-version excerpt by identity and UTF-8 byte range. Returns bytes and a receipt, not a truth verdict. Omit range for the full permitted excerpt.",
+export function evidenceToolDefinition(bundle) {
+  return { name: "read_evidence",
+    description: "Evidence source reader for original fixed-version source excerpts. Use evidence.read_evidence to read a source by its evidenceRef and revision. " +
+      "Available evidence identities: " + bundle.documents.map(doc => doc.evidenceRef).join(", ") +
+      ". Returns authorized UTF-8 bytes and a receipt, not a truth verdict. Omit range for the full permitted excerpt.",
     inputSchema: { type: "object", properties: {
       evidenceRef: { type: "string", enum: bundle.documents.map(d => d.evidenceRef) },
       revision: { type: "string", enum: [...new Set(bundle.documents.map(d => d.revision))] },
       range: { type: "object", properties: { start: { type: "integer", minimum: 0 }, end: { type: "integer", minimum: 1 } }, required: ["start", "end"], additionalProperties: false }
     }, required: ["evidenceRef", "revision"], additionalProperties: false },
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false }
-  }] }));
+  };
+}
+
+export async function serve(bundlePath, controlPath, receiptDirectory, expectedRunId, grantDigest) {
+  const bundle = JSON.parse(readFileSync(bundlePath, "utf8"));
+  let observations = 0;
+  const observe = (stage, detail = {}) => {
+    if (observations++ >= 64) return;
+    appendFileSync(path.join(receiptDirectory, "../reader-lifecycle.jsonl"),
+      JSON.stringify({ version: 1, runId: expectedRunId, stage, ...detail, observedAt: new Date().toISOString() }) + "\n", { mode: 0o600 });
+  };
+  observe("startup");
+  const server = new Server({ name: "evidence", version: "2.1.0-experiment" }, { capabilities: { tools: {} } });
+  server.oninitialized = () => observe("initialized");
+  const definition = evidenceToolDefinition(bundle);
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    observe("tools_listed", { definitionSha256: hash(JSON.stringify(definition)),
+      tools: [{ name: definition.name, schemaSha256: hash(JSON.stringify(definition.inputSchema)) }] });
+    return { tools: [definition] };
+  });
   // Sequential handling makes the persisted count authoritative across restarts.
   let queue = Promise.resolve();
   server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
     const result = queue.then(() => {
+      observe("call_started", { recognizedTool: params.name === "read_evidence" });
       const control = JSON.parse(readFileSync(controlPath, "utf8"));
       if (control.run.runId !== expectedRunId || hash(JSON.stringify(control.grant)) !== grantDigest) {
         control.run = { ...control.run, runId: expectedRunId, state: "invalid" };
@@ -78,6 +98,7 @@ export async function serve(bundlePath, controlPath, receiptDirectory, expectedR
       // Persist before returning to MCP. This is a server return receipt, not delivery acknowledgement.
       writeFileSync(path.join(receiptDirectory, `read-${String(attempt).padStart(3, "0")}-${randomUUID()}.json`),
         JSON.stringify(returned), { flag: "wx", mode: 0o600 });
+      observe("call_returned", { status: returned.receipt.status, failureReason: returned.receipt.failureReason });
       return { ...(returned.receipt.status === "returned" ? {} : { isError: true }),
         content: [{ type: "text", text: JSON.stringify(returned) }] };
     });
