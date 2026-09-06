@@ -40,6 +40,9 @@ gpt-5.4-mini at low effort, at most 12 model invocations, 300 seconds per
 invocation and 20 minutes of model work. Stop at the first runtime failure;
 never silently retry or replace failed evidence. Retain actual Runs, elapsed
 time, raw answers, source reads, omissions and unsupported conclusions.
+After the first one-invocation failure and offline CLI repair, the Owner
+authorized QA-069 to use 12 new invocations, at most 13 across the phase
+including the retained failure. No automatic retry is added.
 Non-blind task-agent grading is separate from runtime success. Real user
 rework and task success rates are not measured by this historical replay.
 

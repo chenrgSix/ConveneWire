@@ -24,6 +24,9 @@ freezes v1 feature expansion while retaining reliability fixes and existing
 explicit controls. Everyday use starts with Single Agent as documented advice;
 no automatic startup gate or routing default changes. QA-069 separately checks
 historical workspace evidence retrieval with a fair union-access baseline.
+Its Owner-authorized continuation allows 12 new model invocations after the
+retained startup failure, at most 13 across the phase; this does not change
+production Discussion budgets or routing.
 
 ## Purpose
 

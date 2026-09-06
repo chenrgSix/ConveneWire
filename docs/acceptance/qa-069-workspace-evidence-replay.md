@@ -147,7 +147,12 @@ This is execution revision v2; task source/rubric bytes stay unchanged and its
 new instruction hash is retained separately. No real retry is authorized by
 this repair. The original 12-invocation phase has used one; completing three
 fresh pairs would need 12 more, a total of 13 including the retained failure.
-That one-invocation increase requires Owner approval before any continuation.
+The Owner explicitly replied “允许” to the request to raise the phase cap from
+12 to 13 on 2026-09-06. The continuation is therefore authorized for at most
+12 new invocations, with the original failed invocation retained separately.
+It starts from committed execution revision v2 and stops at its first runtime
+failure; no further retry or increase is included. Material-export consent
+continues to cover the same fixed sources and necessary task context.
 
 The repair passed all 19 benchmark checks and two additional real-CLI loopback
 checks. The latter reproduce error-shaped startup-warning rejection even when
@@ -167,3 +172,13 @@ original ignored report; its 16 source hashes match Git at `ed7508f`, its task
 prompt hash matches, and all four rubric decisions remain unscored. The report
 SHA-256 is `e16dfc45266c2605756221397cf96a50b9651657cbb0e77f9c26ba2f799f1f6c`.
 No external model calls were made after the first failed invocation.
+
+## Authorized continuation
+
+The continuation uses `npm run bench:discussion-workspace`, whose atomic quota
+still permits at most 12 new invocations. The total authorized phase limit is
+13 including the immutable first failure. All three pairs start afresh because
+the prior batch produced no completed arm. The three case prompts, source
+excerpts and rubrics are unchanged; execution revision v2's metadata-discovery
+instruction and startup configuration are separately identified in the report.
+The 21 passing preflight checks remain applicable to unchanged implementation.
