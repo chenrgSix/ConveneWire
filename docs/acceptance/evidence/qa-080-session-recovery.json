@@ -1,0 +1,886 @@
+{
+  "version": 1,
+  "identity": "qa-080-authority-session-recovery-v1",
+  "observedAt": "2026-09-07T01:31:22.810Z",
+  "sourceCommit": "7a7ee86b53bb4170c89d63323ec23023c8d67c96",
+  "implementationFiles": [
+    {
+      "path": "scripts/bench/authority-run-terminal.mts",
+      "sha256": "f518ce8c16a8d0deeed90d3599b37344a9c3a19fa5eb5d1c2c12dab828fd9451"
+    },
+    {
+      "path": "scripts/bench/authority-session-evidence.test.mjs",
+      "sha256": "aafd8aa10bed1ba4de8f38acbed5c0489c1a0a84bf018c3db764feaf699adb1f"
+    },
+    {
+      "path": "scripts/bench/authority-session-fixture.mjs",
+      "sha256": "1049d57fa3907d3f36f1d7506f32d63cf4def08f648e730362bac075ad553874"
+    },
+    {
+      "path": "scripts/bench/authority-session-observer.mjs",
+      "sha256": "de73652c3f89aa8d5cd43f40233e0d9283ca1375d732f079fd88fa974447f653"
+    },
+    {
+      "path": "scripts/bench/authority-session-observer.test.mjs",
+      "sha256": "8e03b86c8f5684f469e63c21483d1c3da5525a73723aa7b21e0b8a3fe1d0584a"
+    },
+    {
+      "path": "scripts/bench/authority-session-runtime.mjs",
+      "sha256": "b91283ff213329913d2cc22b31ec468b0790cefb78452db5117a4f973a2cf47f"
+    },
+    {
+      "path": "scripts/bench/authority-session.mjs",
+      "sha256": "57a1e4c3cb5589d0484b93c34e86b712fcea91c993b26df47259aa9319d72f28"
+    },
+    {
+      "path": "scripts/bench/authority-session.test.mjs",
+      "sha256": "dbf61c4a0af4055c8525da8a5cec434ee3b1c9e6647da47414fd0ea77a6722a3"
+    }
+  ],
+  "historicalRecords": [
+    {
+      "path": "docs/acceptance/evidence/qa-079-assessment.json",
+      "sha256": "6b7a7261854f65fd5c5eb2fbc077bcc7e45984b05bd05e4f736f3d7c6b20fd96"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-079-authority-experiment.json",
+      "sha256": "357522c13863e91a9207a130ad5001c7c03b95c6e25c20de4858193eb08e10fc"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-079-first-assessment.json",
+      "sha256": "ec607282fe6b28feb541ac194878c97b66f98dea1b46684b5d7249a10a378301"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-079-owner-code.json",
+      "sha256": "5035dfbe1f3e035f43e009a45347812568346d57d63a8cf20a79578b37d1cb61"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-079-owner-operations.json",
+      "sha256": "6f67a5737a118b19918a902c8dc96c0717be5971d94640f3d85317669d6c345c"
+    },
+    {
+      "path": "docs/acceptance/evidence/qa-079-owner-security.json",
+      "sha256": "3f5eb0db4890d78953eae2dd09c00759d2d65cec2feb22a9cc533af56cad99f7"
+    },
+    {
+      "path": "docs/acceptance/fixtures/qa-079/freeze.json",
+      "sha256": "27ac65793084ebeab8ee11b554fbf70655e3e9111249c428a77e15b07509f608"
+    }
+  ],
+  "runtime": {
+    "nodeVersion": "v22.23.1",
+    "cliVersion": "codex-cli 0.153.4",
+    "cliSha256": "a30ec314bbd0e3721632234d07db7c99855db3b9f1e32dbe8c791947f07e7629",
+    "provider": "Auth-free HTTP loopback fixed responses; no forwarding"
+  },
+  "externalModelCalls": 0,
+  "focusedTests": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0
+  },
+  "rows": [
+    {
+      "scenario": "discovery_then_read",
+      "observedAt": "2026-09-07T01:27:20.774Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 5,
+      "runtimeOutcome": "completed",
+      "persistence": "result_proposed",
+      "cause": null,
+      "sourceReturns": 1,
+      "sourceReachedFixtureProvider": true,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:17.533Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:17.534Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:17.535Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:17.536Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:17.540Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:17.542Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_6kfszbvSh8Ck_eNG1IT7RA",
+        "sequence": 3,
+        "event_type": "status",
+        "status": "completed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": null,
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:20.387Z",
+        "trace_id": "trace_sSGeA7t4lcI-Pqtfsbii1w",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 3,
+      "resultCount": 1
+    },
+    {
+      "scenario": "metadata_only",
+      "observedAt": "2026-09-07T01:27:24.520Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 3,
+      "runtimeOutcome": "completed",
+      "persistence": "terminal",
+      "cause": "EVIDENCE_INCOMPLETE",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:21.728Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:21.729Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:21.731Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:21.731Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_E6xCdkXBhL4Qe6dWQYoeQg",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_EVIDENCE_INCOMPLETE\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:23.560Z",
+        "trace_id": "trace_ado2XpPA-YAL46wLe5aKRQ",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "raw_read",
+      "observedAt": "2026-09-07T01:27:26.401Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 4,
+      "runtimeOutcome": "failed",
+      "persistence": "terminal",
+      "cause": "TOOL_PROTOCOL",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:25.476Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:25.477Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:25.479Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:25.479Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:25.482Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "failed",
+          "observedAt": "2026-09-07T01:27:25.484Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_yM4J3LZRPMT8H1R2Hn2-CQ",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_TOOL_PROTOCOL\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:25.486Z",
+        "trace_id": "trace_uqkwrb3sYRYzWTZ7l2Cbtw",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "revoked",
+      "observedAt": "2026-09-07T01:27:28.279Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 4,
+      "runtimeOutcome": "failed",
+      "persistence": "terminal",
+      "cause": "TOOL_PROTOCOL",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:27.350Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:27.350Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:27.352Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:27.353Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:27.356Z"
+        },
+        {
+          "itemId": "item_2",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "evidence",
+          "tool": "read_evidence",
+          "decision": "allowed",
+          "status": "failed",
+          "observedAt": "2026-09-07T01:27:27.358Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_wZVuwxH2QEA2EmpnSfR4Zg",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_TOOL_PROTOCOL\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:27.361Z",
+        "trace_id": "trace_iad_NnhXEXCve6NxtKXAFA",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "resource_read",
+      "observedAt": "2026-09-07T01:27:30.163Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 2,
+      "runtimeOutcome": "failed",
+      "persistence": "terminal",
+      "cause": "TOOL_PROTOCOL",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:29.233Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:29.233Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "evidence",
+          "tool": "read_mcp_resource",
+          "decision": "rejected",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:29.235Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_6Wlbk0WpwdIl3Vmd4BxZ6A",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_TOOL_PROTOCOL\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:29.237Z",
+        "trace_id": "trace_iUNysceLD5LmwPHUtLjcvQ",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "timeout",
+      "observedAt": "2026-09-07T01:27:33.134Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 1,
+      "runtimeOutcome": "timed_out",
+      "persistence": "terminal",
+      "cause": "TIMEOUT",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_1gLnpStv0CIcjy7BzF6J4A",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_TIMEOUT\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:32.196Z",
+        "trace_id": "trace_IDoQJanHx42Y7Jx-f8RnuA",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "cancel",
+      "observedAt": "2026-09-07T01:27:34.996Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 1,
+      "runtimeOutcome": "canceled",
+      "persistence": "terminal",
+      "cause": "CANCELED",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_4BaOS_IpEGtOcUuzb8VQCA",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "canceled",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_CANCELED\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:34.083Z",
+        "trace_id": "trace_R2ZMhEra6JP_VR2VSjzA8w",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "no_final",
+      "observedAt": "2026-09-07T01:27:38.972Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 3,
+      "runtimeOutcome": "failed",
+      "persistence": "terminal",
+      "cause": "NO_FINAL",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:35.948Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:35.948Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:35.950Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:35.950Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_cISnipoJjVzuPxkzt7Uk-w",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_NO_FINAL\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:38.029Z",
+        "trace_id": "trace_J0vOC6FVIIFi4pthJG0njA",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "progress_only",
+      "observedAt": "2026-09-07T01:27:43.142Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 3,
+      "runtimeOutcome": "completed",
+      "persistence": "terminal",
+      "cause": "EVIDENCE_INCOMPLETE",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [
+        "{\"resources\":[]}",
+        "{\"resourceTemplates\":[]}"
+      ],
+      "toolEvents": [
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:39.921Z"
+        },
+        {
+          "itemId": "item_0",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resources",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:39.921Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.started",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "in_progress",
+          "observedAt": "2026-09-07T01:27:39.923Z"
+        },
+        {
+          "itemId": "item_1",
+          "kind": "mcp_tool_call",
+          "rawKind": "mcp_tool_call",
+          "stage": "item.completed",
+          "server": "codex",
+          "tool": "list_mcp_resource_templates",
+          "decision": "metadata_only",
+          "status": "completed",
+          "observedAt": "2026-09-07T01:27:39.923Z"
+        }
+      ],
+      "terminalEvent": {
+        "run_id": "run_L8HTazfrPkMn_kLgmhsFEw",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_EVIDENCE_INCOMPLETE\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:42.197Z",
+        "trace_id": "trace_bC1fetVPXkcQCeUOOxcvdA",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "repeatedTerminalDisposition": "replayed"
+    },
+    {
+      "scenario": "spawn",
+      "observedAt": "2026-09-07T01:27:44.422Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 0,
+      "runtimeOutcome": "failed",
+      "persistence": "terminal",
+      "cause": "PROCESS",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_fxTsK4y85VzHjGE0l5gH-g",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_PROCESS\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:43.966Z",
+        "trace_id": "trace_DMqrjbh1apob4TaK_8UPEg",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0
+    },
+    {
+      "scenario": "throw",
+      "observedAt": "2026-09-07T01:27:45.707Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 0,
+      "runtimeOutcome": null,
+      "persistence": "terminal",
+      "cause": "HARNESS",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_FDrkdV4uohTA95Z1qYEZAA",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_HARNESS\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:45.249Z",
+        "trace_id": "trace_Zbim2vOrLiu7nfYOK4bvjA",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0
+    },
+    {
+      "scenario": "terminal_delivery_recovery",
+      "observedAt": "2026-09-07T01:27:47.231Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 0,
+      "runtimeOutcome": null,
+      "persistence": "terminal",
+      "cause": "TOOL_PROTOCOL",
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_NxWg3zXPtpeuVuepAR7oDQ",
+        "sequence": 2,
+        "event_type": "status",
+        "status": "failed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": "{\"code\":\"QA_AUTHORITY_TOOL_PROTOCOL\",\"message\":\"Bounded authority session ended without an accepted final output.\",\"retryable\":false}",
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:46.526Z",
+        "trace_id": "trace_AhyrKWmbuxOWN99VxvtO8Q",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 2,
+      "resultCount": 0,
+      "unavailablePersistence": "pending_terminal",
+      "lostAcknowledgementPersistence": "pending_terminal",
+      "replayDisposition": "replayed",
+      "immutableIntentSha256": "320add67ac7e214d2daf99727e39529ab3806e7a99da36d7be1586d5f8730221"
+    },
+    {
+      "scenario": "scope_and_existing_terminal",
+      "observedAt": "2026-09-07T01:27:49.921Z",
+      "externalModelCalls": 0,
+      "fixtureProviderRequests": 0,
+      "runtimeOutcome": null,
+      "persistence": "terminal_conflict",
+      "cause": null,
+      "sourceReturns": 0,
+      "sourceReachedFixtureProvider": false,
+      "metadataOutputs": [],
+      "toolEvents": [],
+      "terminalEvent": {
+        "run_id": "run_dWcIsUCpYvQpKk4GrPMwOA",
+        "sequence": 3,
+        "event_type": "status",
+        "status": "completed",
+        "content": null,
+        "output_reset": 0,
+        "error_json": null,
+        "assessment_json": null,
+        "activity_json": null,
+        "created_at": "2026-09-07T01:27:49.393Z",
+        "trace_id": "trace_xJMCigKb0hg96hEKh35bQg",
+        "session_json": null,
+        "clarification_json": null
+      },
+      "runEventCount": 3,
+      "resultCount": 1,
+      "rejectedScopeSubstitutions": 6,
+      "disposition": "preserved_existing_terminal"
+    }
+  ],
+  "limitations": [
+    "QA-only maintained Finalizer adapter, not production Discussion or authenticated Bridge transport.",
+    "Single trusted test host; no physical multi-owner or OS/provider isolation acceptance.",
+    "Directory metadata is not a source read and CLI completion is not semantic acceptance.",
+    "CLI can omit message phase and retain a commentary-only last message; missing required reads still prevent publication in the retained case.",
+    "Observed failures are persisted before replay; arbitrary controller death before intent persistence and disk corruption are not proven recoverable.",
+    "Historical QA-079 revoked Finalizer remains failed and ungraded; no new real-model screening was run."
+  ]
+}

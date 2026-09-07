@@ -114,6 +114,15 @@ replay through existing Run storage. It adds no model quality experiment or
 production Discussion policy. QA-079 inputs/outcomes remain frozen; physical
 multi-owner/device acceptance still requires a separate real task and grants.
 
+The [QA-080 retained checks](../acceptance/qa-080-authority-session-recovery.md)
+establish native metadata discovery followed by an authorized read, and safe
+terminal convergence for denied tools/reads, missing output, process failure,
+timeout and cancellation. Post-commit lost acknowledgements replay without a
+model invocation or duplicate terminal event; existing terminal states remain
+unchanged. These are installed-CLI loopback and disposable SQLite checks, not
+live-model quality or authenticated multi-device acceptance. The maintained
+adapter remains QA-only and does not replace production Bridge lifecycle code.
+
 - Prefix: `DISC`
 - Implementation: `apps/server/src/discussion/`
 - Owns: bounded multi-Agent Discussions, durable Waves, progress projection,

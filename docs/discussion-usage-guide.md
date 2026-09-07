@@ -131,5 +131,12 @@ Agent 和服务层 Result 调用，不能等同真实多人、多设备隔离或
 `node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/authority-collaboration.test.mjs scripts/bench/authority-experiment.test.mjs`
 及验收文档中的离线审计/评分复算入口；真实执行入口已关闭。
 
+[QA-080](acceptance/qa-080-authority-session-recovery.md) 已在维护适配器中
+补齐原生资源发现兼容与 Finalizer 失败收敛：发现目录与读取来源分开计数，
+失败/超时/取消进入既有 Central 终态，提交后丢确认只重放状态，不重跑模型。
+安装 CLI 的无认证回环和实际 SQLite 检查通过；原 QA-079 失败不改判。
+它尚未接入生产 Discussion 或认证 Bridge 回传，不能作为真实多 Owner、多设备
+验收。当前优先准备真实资料所有权与设备边界，等资源智力比较继续后置。
+
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。
