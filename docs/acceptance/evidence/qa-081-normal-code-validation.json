@@ -1,0 +1,37 @@
+{
+  "scenario": "normal",
+  "owner": "code",
+  "proposalSha256": "1f87e46e44bf9bb6bd0e324dd19391107cae03088469eae65d254b923085dd08",
+  "verifier": {
+    "version": 1,
+    "experimentId": "qa-079-authority-separated-ca-cutover-v1",
+    "authorityId": "authority_qa079_synthetic_owners_v1",
+    "taskId": "task_FzU5nuptINp0XyYpam9dCw",
+    "roomId": "room_MtJKlOOeW6z_O7LxiBTpwg",
+    "runId": "run__peNC_A1H8yU1M3mazk4jQ",
+    "recipientRunId": "run_J-j1s_n7oy96Mmki5g3H-Q",
+    "owner": "code",
+    "evidenceRef": "evidence_qa079_code_raw",
+    "revision": "4ac73f989a8455746317c0c77c5d78be4463322e",
+    "contentSha256": "04e39e67c7d4e000226cc61310a1360f5a0f98dc90a318a5115b4d9b721954dd",
+    "verifierSha256": "6c25ebd42eae2f348e027df1cd9c10769a5b227d20a5944286fd0b834982ac77",
+    "observedAt": "2026-09-07T02:09:17.489Z",
+    "values": {
+      "code_stage_keeps_old_issuer": true,
+      "code_gate_includes_offline": false,
+      "code_gate_checks_digest": false,
+      "code_retirement_checks_expiry": false
+    }
+  },
+  "observations": {
+    "protocolValid": true,
+    "correct": [
+      "code_stage_keeps_old_issuer",
+      "code_gate_includes_offline",
+      "code_gate_checks_digest",
+      "code_retirement_checks_expiry"
+    ],
+    "incorrect": [],
+    "missing": []
+  }
+}

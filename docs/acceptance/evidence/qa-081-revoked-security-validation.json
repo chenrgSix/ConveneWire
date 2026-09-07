@@ -1,0 +1,39 @@
+{
+  "scenario": "revoked",
+  "owner": "security",
+  "proposalSha256": "41e0bf2a3dcc6f6fef023b0039f48ff4030343705f2e9433bfa96ef0f45f4883",
+  "verifier": {
+    "version": 1,
+    "experimentId": "qa-079-authority-separated-ca-cutover-v1",
+    "authorityId": "authority_qa079_synthetic_owners_v1",
+    "taskId": "task_rxafFu_eLALuv4gFBzFCRw",
+    "roomId": "room_xM32U6DhwENna8FIVzecZg",
+    "runId": "run_TyEZsGq_nqkJZ_8YqyMc6w",
+    "recipientRunId": "run_9CrLdnZ1r0tpMhfoW36RpQ",
+    "owner": "security",
+    "evidenceRef": "evidence_qa079_security_raw",
+    "revision": "93ec6a43560bceebb4bfde60e6f4a55569aee7ca",
+    "contentSha256": "bf53c6e0b43db808094803048e054dbde1d27d28a6b000f940f66a83925b3433",
+    "verifierSha256": "6c25ebd42eae2f348e027df1cd9c10769a5b227d20a5944286fd0b834982ac77",
+    "observedAt": "2026-09-07T02:10:36.370Z",
+    "values": {
+      "policy_include_offline": true,
+      "policy_exact_ack": true,
+      "policy_minimum_overlap_hours": 24,
+      "policy_old_certificates_expired": true,
+      "policy_rollback_requires_old_trust_and_validity": true
+    }
+  },
+  "observations": {
+    "protocolValid": true,
+    "correct": [
+      "policy_include_offline",
+      "policy_exact_ack",
+      "policy_minimum_overlap_hours",
+      "policy_old_certificates_expired",
+      "policy_rollback_requires_old_trust_and_validity"
+    ],
+    "incorrect": [],
+    "missing": []
+  }
+}

@@ -138,5 +138,13 @@ Agent 和服务层 Result 调用，不能等同真实多人、多设备隔离或
 它尚未接入生产 Discussion 或认证 Bridge 回传，不能作为真实多 Owner、多设备
 验收。当前优先准备真实资料所有权与设备边界，等资源智力比较继续后置。
 
+[QA-081](acceptance/qa-081-independent-owner-observations.md) 已去掉成员输入里的
+本地验证答案，改为先留存成员原始回答，再由隐藏验证器检查。八次新会话全部
+完成，两组共 32 个观察值均独立答对；正常组完整通过，撤权组正常生成保留运行
+状态未知的终稿，9 个获准事实均保留，但“验证后再切换”的顺序表述有一项争议，
+不宣称完整通过。真实调用直接使用 reader，没有重现原生资源枚举。
+许可已经消耗；维护使用 `independent-owner.test.mjs` 及 QA-081 离线审计入口。
+这仍是单一受信任 QA 主机，不能证明独立 Owner 身份或多 Agent 优于 Single。
+
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。

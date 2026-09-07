@@ -1,0 +1,43 @@
+{
+  "scenario": "revoked",
+  "owner": "operations",
+  "proposalSha256": "aecca50162ec056c34355800f4b588afb0f47510a842511cc18dc721af337a49",
+  "verifier": {
+    "version": 1,
+    "experimentId": "qa-079-authority-separated-ca-cutover-v1",
+    "authorityId": "authority_qa079_synthetic_owners_v1",
+    "taskId": "task_rxafFu_eLALuv4gFBzFCRw",
+    "roomId": "room_xM32U6DhwENna8FIVzecZg",
+    "runId": "run_3TdPKBa7aZwQdhUHBZWT4A",
+    "recipientRunId": "run_9CrLdnZ1r0tpMhfoW36RpQ",
+    "owner": "operations",
+    "evidenceRef": "evidence_qa079_operations_raw",
+    "revision": "cd3f1122ce1dabef523b4e1732b4bc59e7956220",
+    "contentSha256": "0e8faa95a761a678d471c117097f7d0e435853ab3484e74d74da3d3be6bffefc",
+    "verifierSha256": "6c25ebd42eae2f348e027df1cd9c10769a5b227d20a5944286fd0b834982ac77",
+    "observedAt": "2026-09-07T02:10:35.047Z",
+    "values": {
+      "ops_nonrevoked_devices": 3,
+      "ops_exact_ack_devices": 1,
+      "ops_offline_nonrevoked_devices": 1,
+      "ops_overlap_hours": 26,
+      "ops_old_certificate_remaining_hours": 6,
+      "ops_active_issuer": "old",
+      "ops_snapshot_time": "2026-09-07T00:00:00.000Z"
+    }
+  },
+  "observations": {
+    "protocolValid": true,
+    "correct": [
+      "ops_nonrevoked_devices",
+      "ops_exact_ack_devices",
+      "ops_offline_nonrevoked_devices",
+      "ops_overlap_hours",
+      "ops_old_certificate_remaining_hours",
+      "ops_active_issuer",
+      "ops_snapshot_time"
+    ],
+    "incorrect": [],
+    "missing": []
+  }
+}
