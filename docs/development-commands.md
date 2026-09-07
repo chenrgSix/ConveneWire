@@ -268,3 +268,28 @@ Go test arguments, for example `& '.\privatefs.test.exe' '-test.v'` and
 `& '.\runtime.test.exe' '-test.v' '-test.run=Private'`. No machine-wide Go install
 is required for native execution of those cross-compiled tests. Preserve the
 binary digests and native output; remove only the owned test artifacts.
+
+## Physical two-identity disclosure (QA-085)
+
+This is an owner-authorized physical test, not a routine CI command or model
+experiment. Follow [the frozen procedure](acceptance/qa-085-physical-two-identity-disclosure.md).
+Provide an out-of-repository JSON file with absolute local `identityFile`,
+`knownHostsFile`, `windowsBinary`, `reportFile`, plus approved SSH `host`, Windows
+`workspace` and `node` executable. Verify the host key independently before using
+this configuration. The adapter neither learns a new host key nor reads the
+user's global SSH configuration. Its temporary Windows path currently requires
+an ASCII workspace without spaces. It creates only owned `.cache/qa085-*` roots.
+
+```bash
+CONVENE_WIRE_PHYSICAL_DISCLOSURE=1 \
+CONVENE_WIRE_QA085_CONFIG=/absolute/path/to/approved-local-config.json \
+node scripts/test/run-with-temp-root.mjs --timeout-ms 540000 -- \
+  node --import tsx --test tests/e2e/physical-disclosure.test.ts
+```
+
+The Windows executable must come from the recorded source revision. Build it
+with `GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o <owned-output> ./cmd/convenewire-bridge`
+from `bridge/`. The adapter builds the native Mac executable, verifies the copied
+Windows digest, and uses existing Node on each host. It installs no global tools,
+changes no OS accounts, and calls no external models. Its application test
+identities do not complete QA-084's independent-human-owner governance evidence.
