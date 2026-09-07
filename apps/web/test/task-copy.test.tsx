@@ -22,7 +22,8 @@ async function fixture(t: TestContext) {
   const testing = await import("@testing-library/react");
   testing.configure({ asyncUtilTimeout: 10_000 });
   t.after(async () => {
-    testing.cleanup(); globalThis.fetch = originalFetch;
+    await testing.act(async () => { testing.cleanup(); });
+    globalThis.fetch = originalFetch;
     await server.close(); dom.window.close();
     for (const key of ["document", "HTMLElement", "navigator", "window", "sessionStorage", "IS_REACT_ACT_ENVIRONMENT"]) {
       if (descriptors[key]) Object.defineProperty(globalThis, key, descriptors[key]!); else Reflect.deleteProperty(globalThis, key);
