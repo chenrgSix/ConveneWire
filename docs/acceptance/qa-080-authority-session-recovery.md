@@ -33,9 +33,51 @@ QA-079 的 Finalizer 调用了 `codex/list_mcp_resources`，冻结监测器只�
 这些配置不能直接证明原生资源发现的具体 CLI 事件形状或实际返回范围；本轮
 以安装版本的物理回环记录验证，不能仅靠文档或事件名称推断安全。
 
+## 维护实现
+
+- [authority-session-observer.mjs](../../scripts/bench/authority-session-observer.mjs)
+  对两个精确原生发现工具单独计数，保留真实工具身份；读取、失败、未完成和
+  身份变化分别处理。仍拒绝原生资源读取和其他服务器工具。
+- [authority-session-runtime.mjs](../../scripts/bench/authority-session-runtime.mjs)
+  承接新协议并支持取消；复用现有读取许可、reader 和隔离配置。
+- [authority-session.mjs](../../scripts/bench/authority-session.mjs) 的
+  `runAuthorityFinalizer` 监督一次已分配的 Finalizer，会话或读取失败先落盘终态
+  意图，再写 Central；正常输出继续走现有 ResultService。它不是生产调度器或
+  并发 admission gate，调用名额仍由外层明确计划控制。
+- [authority-run-terminal.mts](../../scripts/bench/authority-run-terminal.mts)
+  在实际 SQLite 事务中重核 Team/Room/Task/Run/Agent/请求成员，写入现有 Run
+  终态；不创建 Result、不覆盖其他既有终态。
+- [回环与故障测试](../../scripts/bench/authority-session.test.mjs) 使用本地
+  固定响应和实际安装 CLI；模型服务不参与。终态意图重放只调用本地状态写入器。
+
+失败意图与文件目录均同步落盘。Central 写入失败保留 `pending_terminal`；
+提交后丢确认可重放为 `replayed`，发现既有不同终态则保留它并报告
+`terminal_conflict`。这些都不触发另一次模型调用。它不是物理 Owner 主机丢失、
+控制器在保存意图之前崩溃、任意磁盘损坏或 Bridge 网络恢复的全面保证。
+
+旧 QA-079 runtime/observer、题包和首评是已消耗实验的冻结输入，因此未替换；
+未来受控协作验证使用上述维护入口，不重新打开历史实验。这次修复尚未接入
+生产 Discussion 或 Bridge。没有新增贡献存储、完成策略或模型提示机制。
+
+安装 CLI 的回环还揭示一项可观测性限制：provider 仅返回 `commentary` 时，
+CLI JSON 可能省略 phase，且写入 last-message 文件。本轮保留这个观察，不把
+该文件当成“模型确认已完整交付”的证明。未读来源的该例被监督器以
+`EVIDENCE_INCOMPLETE` 收敛；真正空终稿以 `NO_FINAL` 收敛。已读全来源后的
+语义完整性仍需要正式验收，不能由 CLI 成功或非空文件代替。
+
+维护命令：
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/authority-session-observer.test.mjs scripts/bench/authority-session.test.mjs scripts/bench/authority-session-evidence.test.mjs
+```
+
 ## 真实多 Owner、多设备阶段的准备
 
 需要负责人/设备别名及系统、各自独占的资料类型、不能集中原文的实际原因，
 以及允许进入共享 Room 的事实范围。凭据留在各 Owner 的设备，不交给实验作者。
 在这些信息明确后，再冻结实际任务、Bridge 身份、资料版本、接收范围、撤权和
 中断步骤、调用上限及完整交付标准。本轮离线通过不等于真实设备验收通过。
+
+还需验证 Owner 本地披露门与认证 Bridge 回传的衔接，证明原始资料及私有模型
+回复在回传前被隔离；现有 QA 的服务层直接调用不能填补这一证据。不能只换成
+两台机器，就把当前合成结果改名为多 Owner 产品验收。
