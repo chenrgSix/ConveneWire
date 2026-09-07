@@ -836,6 +836,12 @@ acceptance and from general Discussion recovery.
 
 ## Physical two-identity technical acceptance
 
+[QA-086](../acceptance/qa-086-v0.5.1.md) carries the accepted evidence into an
+owner-authorized stable release through exact-source main CI, protected native
+packaging, an immutable 12-asset set and independent public-download verification.
+Publication does not close physical/human/model acceptance. QA-087 repairs
+observed test-fixture blockers before selecting that release source.
+
 [QA-085](../acceptance/qa-085-physical-two-identity-disclosure.md) separately records
 the authorized macOS/Windows technical workflow with two application identities
 operated by one controller. Its retained committed-source run passes 16 check
