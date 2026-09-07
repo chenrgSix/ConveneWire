@@ -834,6 +834,15 @@ It has no model budget and does not reuse frozen QA-079/080/081 journals.
 separates local identity/transport evidence from physical multi-owner/device
 acceptance and from general Discussion recovery.
 
+## Physical two-identity technical acceptance
+
+[QA-085](../acceptance/qa-085-physical-two-identity-disclosure.md) separately records
+the authorized macOS/Windows technical workflow with two application identities
+operated by one controller. It must exercise real Bridge transport and protected
+Windows storage, negative authority, withheld evidence and restart/retry. It is
+not a substitute for independently administered real owners in QA-084 and does
+not consume or renew any historical model budget.
+
 ## Governed Discussion disclosure acceptance
 
 [QA-083](../acceptance/qa-083-discussion-disclosure.md) covers production Result

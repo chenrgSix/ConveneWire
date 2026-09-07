@@ -1544,6 +1544,15 @@ browser trust action belongs beside Central connection settings and is hidden
 as one unit whenever no current validated private-CA projection exists. This
 relocation changes no certificate, copy, entry-ticket or trust-store authority.
 
+## Windows private storage extension
+
+[ADR-0058](../adr/0058-protect-windows-private-output.md) defines BRG-076's native
+Windows protected DACL boundary for private candidates and prepared files. It
+requires creation-time protection, current-user ownership, protected bounded
+reads and rejection of weak ACLs and reparse paths. Delivery remains recorded
+only in TASKS.md; the initial POSIX restriction below is extended only after
+native validation. Ordinary Bridge stores and Runtime sandboxing are unchanged.
+
 ## Exact owner evidence disclosure
 
 [ADR-0056](../adr/0056-authorize-exact-evidence-disclosure.md) defines the
