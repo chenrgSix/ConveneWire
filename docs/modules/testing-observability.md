@@ -807,5 +807,12 @@ stable-package execution.
 
 ## Dependencies
 
+[ADR-0055](../adr/0055-screen-independent-owner-observations.md) scopes QA-081 to
+raw-only owner input and hidden post-proposal validation. Its new eight-session
+journal reuses the frozen fictional source/disclosure recipe and maintained
+QA runtime. Original owner correctness, released evidence and final acceptance
+are separate measures. No production authority, scheduling or storage changes;
+authenticated owners and in-flight revocation remain unverified.
+
 All modules. Verification uses public contracts and avoids reaching through
 ownership boundaries solely to make tests easier.
