@@ -63,3 +63,9 @@ any external model budget require separate concrete authorization. QA-084 remain
 planned for that acceptance. POSIX-only private storage and the absence of an OS
 sandbox remain ADR-0056 limits. No Windows ACL claim, Targeted Review, automatic
 startup, model quality comparison or general multi-Agent superiority is implied.
+
+[ADR-0058](0058-protect-windows-private-output.md) subsequently extends the private
+storage boundary to Windows native ACLs. Its QA-085 evidence covers physical
+macOS/Windows operation with two test identities controlled by one operator;
+QA-084's independent human-owner acceptance and the absence of an OS sandbox
+remain separate limits.

@@ -1,8 +1,10 @@
 # QA-085: Physical two-device, two-identity disclosure acceptance
 
 The goal and cases are frozen by [ADR-0058](../adr/0058-protect-windows-private-output.md).
-Delivery status exists only in [TASKS.md](../TASKS.md). This record is preparation;
-no physical execution or Windows ACL pass is claimed yet.
+Delivery status exists only in [TASKS.md](../TASKS.md). The frozen physical run
+passed on 2026-09-07 using source `5f67d269a598862f6e26ea7dc309036f654a722c`:
+two real macOS/Windows hosts, two separately issued application identities,
+two scenarios, eight deterministic Runs and zero external-model calls.
 
 Use the user-authorized macOS workspace and Windows project directory, distinct
 test Member sessions and Device credentials, fictional source snapshots and
@@ -22,6 +24,46 @@ The controller can exercise both independent test identities. This is physical
 technical acceptance, not [QA-084](qa-084-physical-disclosure-discussion.md)'s
 independently administered human-owner governance acceptance. No external-model,
 native desktop UI, installer or Single-versus-Discussion quality claim follows.
+
+## Retained execution evidence
+
+The [physical receipt](evidence/qa-085/physical.json) records all 16 check groups as
+passed, including actual final Messages, frozen input hashes, source-file hashes,
+platform metadata and Bridge binary digests. The [TAP output](evidence/qa-085/physical-tap.txt)
+records the final test pass in 30.47 seconds. The Windows binary was built from
+the clean committed source above, verified by its
+[embedded build identity](evidence/qa-085/windows-build-identity.txt), then checked
+again by hash on Windows before execution.
+
+| Case | Observed result |
+| --- | --- |
+| Two private sources | Each Bridge retained its own candidate; only exact approved releases entered Discussion |
+| Owner and Device isolation | Both cross-owner approval directions, wrong-Device grant access/publication, changed content and unissued grants were rejected |
+| Normal finalization | Shared reply retained digest validation and the blocked retirement state; raw source sentinels were absent from shared content |
+| Revoked Operations | Publication failed locally and at Central; the final reply preserved missing cutover/retirement status and requested a new authorized snapshot |
+| Offline/restart recovery | An offline Finalizer kept the same Run and instruction across reconnect; Central/Windows Bridge restart and exact publication retry created no duplicate Result or contribution |
+| Cleanup | Owned remote fixtures and native test staging were removed; test processes and tunnel stopped; the Windows checkout stayed unchanged |
+
+The Windows checkout remained at `da00abbfbfeeec6464792683bcaa0827ebe7baea`.
+Execution used portable binaries from `5f67d26`, without updating that checkout,
+installing a toolchain or replacing an installed service. The dedicated SSH
+enrollment remains available to the owner. Local task staging and temporary
+wrapper roots were removed after retaining the sanitized evidence.
+
+The [verification manifest](evidence/qa-085/verification.json) pins the retained
+artifacts by SHA-256 and records each gate, prior attempts and interpretation
+limits separately. [Native Windows output](evidence/qa-085/windows-native.txt)
+contains eight storage and six private Runtime top-level passes, with no skips.
+[Whole-Bridge output](evidence/qa-085/bridge-checks.txt) records 28 package suites
+and five race suites; `go vet ./...`, strict adapter typechecking and 24 existing
+disclosure/Discussion integration cases also passed. Details and earlier failed
+attempts are in [BRG-076](brg-076-windows-private-storage.md).
+
+The Finalizer is a deterministic Generic Runtime in this acceptance. Its final
+text checks the production evidence path and explicit unavailable-source input;
+it does not measure whether a model understands those inputs. The endpoint is a
+shared Discussion reply, not automatic human Task/Result acceptance. QA-084's
+independently administered human-owner procedure remains unexecuted.
 
 ## Frozen execution adapter
 

@@ -838,8 +838,10 @@ acceptance and from general Discussion recovery.
 
 [QA-085](../acceptance/qa-085-physical-two-identity-disclosure.md) separately records
 the authorized macOS/Windows technical workflow with two application identities
-operated by one controller. It must exercise real Bridge transport and protected
-Windows storage, negative authority, withheld evidence and restart/retry. It is
+operated by one controller. Its retained committed-source run passes 16 check
+groups across real Bridge transport and protected Windows storage, negative
+authority, withheld evidence, offline immutable input and restart/retry. The two
+deterministic scenarios use eight Runs and zero model calls. This evidence is
 not a substitute for independently administered real owners in QA-084 and does
 not consume or renew any historical model budget.
 

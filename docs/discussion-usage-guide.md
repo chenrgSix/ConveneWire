@@ -167,4 +167,8 @@ Agent。达到 Wave 截止时间或主动结束等待后，缺少的证据明确
 
 使用步骤见[开发命令](development-commands.md#discussion-disclosure-admission-disc-021)。
 [QA-083](acceptance/qa-083-discussion-disclosure.md) 验证本地真实 Bridge 进程链路；
-真实不同 Owner 和物理设备仍需 [QA-084](acceptance/qa-084-physical-disclosure-discussion.md)。
+[QA-085](acceptance/qa-085-physical-two-identity-disclosure.md) 已在真实 Mac/Windows
+两台设备、两个独立应用身份上通过授权汇合、越权拒绝、撤权及重启恢复验收，
+并验证 Windows 私有文件 ACL。此次由同一测试控制器操作，使用确定性 Runtime，
+不代表模型质量结论。两个人各自管理设备和授权的治理验收仍为
+[QA-084](acceptance/qa-084-physical-disclosure-discussion.md)。

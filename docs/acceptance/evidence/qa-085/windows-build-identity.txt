@@ -1,0 +1,20 @@
+<windows-test-bridge>: go1.26.7
+	path	convenewire.dev/bridge/cmd/convenewire-bridge
+	mod	convenewire.dev/bridge	(devel)	
+	dep	convenewire.dev/contracts	v0.0.0
+	=>	../packages/contracts	(devel)	
+	
+	dep	github.com/coder/websocket	v1.8.15	h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=
+	dep	github.com/santhosh-tekuri/jsonschema/v6	v6.0.3	h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
+	dep	golang.org/x/sys	v0.46.0	h1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=
+	dep	golang.org/x/text	v0.39.0	h1:UbZz4pLOvn600D6Oh6GGEI6VAmndrEBLv8/6BEXzyus=
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	CGO_ENABLED=0
+	build	GOARCH=amd64
+	build	GOOS=windows
+	build	GOAMD64=v1
+	build	vcs=git
+	build	vcs.revision=5f67d269a598862f6e26ea7dc309036f654a722c
+	build	vcs.time=2026-09-07T07:45:17Z
+	build	vcs.modified=false

@@ -39,14 +39,26 @@ incorrectly compared a literal SID string to Windows' canonical `LA` alias and
 `AI` flag rendering; it was corrected to compare the actual descriptor before
 and after the rejected operation. Production ACL checks already passed that run.
 
-The focused macOS Runtime/config/result/CLI suites and 24 existing Server/actual
-Bridge disclosure and Discussion cases passed. Native private Runtime cases also
-passed. Final whole-Bridge test/vet/race and the final native Runtime rerun are
-recorded below when complete. An initial 360-second aggregate limit and a
-150-second repository-only limit expired while the existing Git-heavy suite was
-still running. A concurrent race run also missed the existing Codex helper's
-two-second startup window; its runtime tests are being rerun without heavy package
-concurrency. These attempts are not counted as passed checks.
+The final [native Windows output](evidence/qa-085/windows-native.txt) also records
+six private Runtime top-level tests, with no skips, including the new assertion
+that unavailable private storage cannot start a Runtime. The focused macOS
+Runtime/config/result/CLI suites and 24 existing Server/actual Bridge disclosure
+and Discussion cases passed.
+
+The final [whole-Bridge checks](evidence/qa-085/bridge-checks.txt) passed all 28
+packages with tests, `go vet ./...`, and race tests for privatefs, runtime, result,
+delivery and connection. Packages ran serially with `-p 1`; the Git-heavy
+repository suite took 329.049 seconds and the Runtime race suite 54.776 seconds.
+No assertion or Runtime deadline was relaxed. The
+[verification manifest](evidence/qa-085/verification.json) records the exact
+source commit, native test binary digests, gates and retained artifact hashes.
+
+Earlier attempts are not counted as passes: a 360-second aggregate limit and a
+150-second repository-only diagnostic limit expired while the existing Git-heavy
+suite was still running. A concurrent race run missed the existing Codex helper's
+two-second startup/Session assertion; the unchanged serialized Runtime race suite
+subsequently passed. The final native rerun includes the corrected descriptor
+rendering assertion described above.
 
 [QA-085](qa-085-physical-two-identity-disclosure.md) records the separate physical
 two-device workflow. Native test execution does not establish a desktop installer,

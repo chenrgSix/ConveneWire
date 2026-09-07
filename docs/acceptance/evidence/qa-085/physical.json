@@ -1,0 +1,149 @@
+{
+  "task": "QA-085",
+  "version": 1,
+  "startedAt": "2026-09-07T07:48:26.018Z",
+  "controller": "one authorized test controller",
+  "owners": "two independent test Member/Device identities",
+  "runtime": "deterministic Generic; zero external-model calls",
+  "transport": "production HTTP/WebSocket over host-pinned SSH loopback tunnel",
+  "checks": [
+    {
+      "name": "distinct_members_and_device_credentials",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:27.456Z"
+    },
+    {
+      "name": "host_pinned_tunnel_reaches_production_central",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:28.311Z"
+    },
+    {
+      "name": "native_windows_binary_hash_verified",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:42.893Z"
+    },
+    {
+      "name": "two_physical_bridges_advertise_bound_private_agents",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:45.900Z"
+    },
+    {
+      "name": "normal_private_candidates_local_and_waiting",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:46.635Z",
+      "detail": {
+        "windowsProtectedDacl": true
+      }
+    },
+    {
+      "name": "cross_owner_approval_denied_both_directions",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:47.887Z"
+    },
+    {
+      "name": "cross_owner_device_grant_read_and_publication_denied",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:48.374Z"
+    },
+    {
+      "name": "changed_content_and_unissued_grant_denied",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:48.380Z"
+    },
+    {
+      "name": "offline_finalizer_input_frozen_before_delivery",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:49.311Z",
+      "detail": {
+        "finalRunId": "run_LCUW8OuwzK56V4000zogmA",
+        "instructionSha256": "887290009ffd32f163904c9c2397421ede4f46f140d6a7905cffccbeb361cb17"
+      }
+    },
+    {
+      "name": "windows_bridge_and_central_restart_exact_retry_no_duplicate",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:51.114Z"
+    },
+    {
+      "name": "normal_two_source_finalization",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:51.119Z",
+      "detail": {
+        "discussionId": "discussion_pFiMsZ7xwoNULHQXPpKjeA",
+        "finalRunId": "run_LCUW8OuwzK56V4000zogmA",
+        "finalMessageId": "msg_H8VIimiiKZ8R6xW-uK3ENg",
+        "finalText": "Authorized evidence combined: digest validation exists; retirement remains blocked.",
+        "finalInstructionSha256": "887290009ffd32f163904c9c2397421ede4f46f140d6a7905cffccbeb361cb17",
+        "turns": 4,
+        "rawSentinelsShared": false
+      }
+    },
+    {
+      "name": "offline_finalizer_reconnect_preserves_same_run_and_input",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:51.119Z"
+    },
+    {
+      "name": "revoked_private_candidates_local_and_waiting",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:51.760Z",
+      "detail": {
+        "windowsProtectedDacl": true
+      }
+    },
+    {
+      "name": "revoked_windows_disclosure_denied_locally_and_at_central",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:54.346Z"
+    },
+    {
+      "name": "revoked_final_preserves_uncertainty",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:54.553Z",
+      "detail": {
+        "discussionId": "discussion_-N4StmbYvK7AccK8stvIfA",
+        "finalRunId": "run_rKoqZYuCm-LoCClFsIkKwA",
+        "finalMessageId": "msg_6Onfnpl8syQEPzxsQK60dA",
+        "finalText": "Code digest validation exists. Operations evidence is unavailable; current cutover and retirement status cannot be determined. Request a new authorized Operations snapshot.",
+        "finalInstructionSha256": "b84b4e0d4e9c290f9889629b11f3cd46ce5ece49318c14cffd78b949f3ef5dc7",
+        "turns": 4,
+        "rawSentinelsShared": false
+      }
+    },
+    {
+      "name": "remote_owned_root_removed_and_checkout_unchanged",
+      "outcome": "pass",
+      "observedAt": "2026-09-07T07:48:56.224Z"
+    }
+  ],
+  "outcome": "passed",
+  "remoteCheckoutBase": "da00abbfbfeeec6464792683bcaa0827ebe7baea",
+  "localSource": "5f67d269a598862f6e26ea7dc309036f654a722c",
+  "sourceFileSha256": {
+    "tests/e2e/physical-disclosure-host.ts": "065c635344a9f6c7b32db242ac4fb56520cae6df9c95857293125f390524f8cb",
+    "tests/e2e/physical-disclosure.test.ts": "53fc8eb31e65b9238d64467b8f373a76f733c7d02306b663e1c98e408d6e6c66",
+    "tests/e2e/disclosure-discussion.test.ts": "f361a80ac037d4e9e0b754da63b363e814a3029db84e43d27ae133eb5f39dd4c",
+    "apps/server/test/evidence-disclosure-fixture.ts": "92561c667395af9dde370bedf10e37209e5113c57d68b49c49a7980591c82890",
+    "bridge/internal/privatefs/privatefs.go": "914e95174f8bb160ea6bbde0b3dd6f5c93d99a743046ae52ad24bdabc39e6550",
+    "bridge/internal/privatefs/privatefs_windows.go": "32b020d8d0ff49cc65296098249b89ed183481893fddf23a5e2643fe15c67563",
+    "bridge/internal/privatefs/privatefs_unix.go": "6af71f9584e97255330bb7be5c1f548b6536e44a8c84f700d9a1423b12b0fa06",
+    "bridge/internal/runtime/private_output.go": "adaa46fb24be534d657dbd810c5349e6978e15b6afd1d0feccfdcfceb6159dc0",
+    "bridge/cmd/convenewire-bridge/disclosure.go": "7a12ad1e8a7a4770ff47c24e5058afa5d03333f4358f332b17afd2fa20db97bc",
+    "bridge/internal/config/config.go": "0e1a35e3d63d8c14cae6bd62d07cf6f7567e99d6081d3c35348da6ad484cca6e",
+    "docs/adr/0058-protect-windows-private-output.md": "f6ff1e6e5024303a93f4d0ba66620af6127f25e859f6d54593245a56e06fe947"
+  },
+  "windowsBinarySha256": "7c36d91fa38babd519005b028e2fdea1d8ff9e92c2e0331da23f4cd3ee5de038",
+  "windowsRuntime": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v22.20.0"
+  },
+  "windowsMachine": {
+    "Manufacturer": "ASUS",
+    "Model": "System Product Name"
+  },
+  "sshHostPinSha256": "fecf3c15bb1e542c699ed9c51d4acce7e2ae00ce1864f42b464ff589ce4b80eb",
+  "controllerPlatform": "darwin",
+  "macBinarySha256": "2d8c4fc21f99390a49d9891fcfe85206ff99e8eaf98af3ecb03c68d226c390d5",
+  "finishedAt": "2026-09-07T07:48:56.234Z"
+}

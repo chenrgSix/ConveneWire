@@ -1,0 +1,18 @@
+[convenewire-test-run] root=<owned-test-root>
+TAP version 13
+# Subtest: QA-085 physical macOS/Windows disclosure and independent identity denials
+ok 1 - QA-085 physical macOS/Windows disclosure and independent identity denials
+  ---
+  duration_ms: 30473.80025
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 31399.026916
+[convenewire-test-run] cleaned=<owned-test-root>

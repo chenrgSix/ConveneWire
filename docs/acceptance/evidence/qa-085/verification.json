@@ -1,0 +1,74 @@
+{
+  "sourceCommit": "5f67d269a598862f6e26ea7dc309036f654a722c",
+  "windowsBridgeSha256": "7c36d91fa38babd519005b028e2fdea1d8ff9e92c2e0331da23f4cd3ee5de038",
+  "nativeTestBinaries": {
+    "privatefs.test.exe": "53c00916543b6162d7bbad19c29dbd135e3120ed4724199cff692b13c1ebe65f",
+    "runtime.test.exe": "22b61be1dadd48ef4684692127e3c3a3776bf34e5b65530e34b7a83cde47b11b"
+  },
+  "evidenceSha256": {
+    "windows-native.txt": "6f16d6b539e3e927022b42d42bbfa97ead101b903e2afca0f53c8992569cec34",
+    "physical.json": "0a76f4e60d9e002a0166a474ff21e5adc33401c10ec762590821b33b95b84e57",
+    "bridge-checks.txt": "3b7209c4da6afcf103d202dc019ec029db624d2f444185c10c3793c040379bdb",
+    "physical-tap.txt": "462ca3b46ff8ef05392fc3a47fc8ebc5b923d58a0d0111b685063acc82068949",
+    "windows-build-identity.txt": "503a38874c069b00322fce1cc463ca7971859b8c8f166b2b6d2ac16c38ba4609"
+  },
+  "gates": {
+    "windowsPrivatefsTopLevelTests": 8,
+    "windowsPrivateRuntimeTopLevelTests": 6,
+    "windowsSkippedTests": 0,
+    "macWholeBridgePackagesWithTests": 28,
+    "goVet": "passed",
+    "racePackages": [
+      "privatefs",
+      "runtime",
+      "result",
+      "delivery",
+      "connection"
+    ],
+    "existingDisclosureDiscussionIntegrationTests": 24,
+    "strictTypecheck": "passed",
+    "physicalSeparateAssertions": 16,
+    "physicalScenarios": 2,
+    "physicalRuns": 8,
+    "externalModelCalls": 0
+  },
+  "priorAttempts": [
+    {
+      "gate": "aggregate Go tests",
+      "outcome": "timeout at 360 seconds; not counted as pass"
+    },
+    {
+      "gate": "repository-only diagnostic",
+      "outcome": "timeout at 150 seconds; final unchanged repository suite passed in 329.049 seconds"
+    },
+    {
+      "gate": "concurrent race runtime",
+      "outcome": "existing two-second helper startup/Session assertion failed; unchanged serialized race suite passed; no assertion/deadline weakened"
+    },
+    {
+      "gate": "first native ACL no-repair assertion",
+      "outcome": "literal SID rendering assumption corrected to before/after descriptor equality; no production ACL relaxation"
+    },
+    {
+      "gate": "physical exploratory runs",
+      "outcome": "two passes before final committed-source run; not model repetitions or independent tasks"
+    }
+  ],
+  "cleanup": {
+    "windowsNativeStagingRemoved": true,
+    "windowsPhysicalFixtureRootsRemoved": true,
+    "windowsTestExecutablesStopped": true,
+    "windowsCheckoutUnchanged": true,
+    "macWrapperRootsRemoved": true,
+    "centralAndBridgeProcessesStoppedByOwnedResourceCleanup": true,
+    "sshEnrollmentRetained": true,
+    "macTaskStagingRemovedAfterArtifactVerification": true
+  },
+  "limitations": [
+    "single test controller with two application identities, not independently administered human owners",
+    "HTTP/WebSocket inside pinned SSH loopback tunnel, not LAN HTTPS installation acceptance",
+    "deterministic Generic Runtime, not model comprehension or comparative intelligence",
+    "shared final Message, not automatic human Task/Result acceptance",
+    "Windows checkout and installed services preserved; only temporary compiled binaries executed"
+  ]
+}

@@ -1,0 +1,40 @@
+[convenewire-test-run] root=<owned-test-root>
+go: downloading github.com/coder/websocket v1.8.15
+go: downloading golang.org/x/text v0.39.0
+go: downloading github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
+ok  	convenewire.dev/bridge/cmd/convenewire-bridge	5.228s
+ok  	convenewire.dev/bridge/internal/admission	6.501s
+ok  	convenewire.dev/bridge/internal/artifact	0.975s
+ok  	convenewire.dev/bridge/internal/autostart	0.534s
+ok  	convenewire.dev/bridge/internal/bridgecore	0.756s
+ok  	convenewire.dev/bridge/internal/browserlaunch	0.500s
+ok  	convenewire.dev/bridge/internal/buildidentity	0.490s
+ok  	convenewire.dev/bridge/internal/config	0.541s
+ok  	convenewire.dev/bridge/internal/connection	1.545s
+ok  	convenewire.dev/bridge/internal/console	4.333s
+ok  	convenewire.dev/bridge/internal/delivery	2.208s
+ok  	convenewire.dev/bridge/internal/desktopicons	0.492s
+ok  	convenewire.dev/bridge/internal/diagnostics	0.506s
+ok  	convenewire.dev/bridge/internal/durablefs	0.502s
+ok  	convenewire.dev/bridge/internal/enrollment	0.635s
+ok  	convenewire.dev/bridge/internal/identity	0.799s
+ok  	convenewire.dev/bridge/internal/integration	0.794s
+ok  	convenewire.dev/bridge/internal/launchable	0.495s
+?   	convenewire.dev/bridge/internal/operations	[no test files]
+ok  	convenewire.dev/bridge/internal/ownership	0.504s
+ok  	convenewire.dev/bridge/internal/pairing	1.187s
+ok  	convenewire.dev/bridge/internal/privatefs	0.511s
+ok  	convenewire.dev/bridge/internal/provisioning	0.735s
+ok  	convenewire.dev/bridge/internal/repository	329.049s
+ok  	convenewire.dev/bridge/internal/result	0.671s
+ok  	convenewire.dev/bridge/internal/runtime	14.695s
+ok  	convenewire.dev/bridge/internal/updatecheck	0.522s
+ok  	convenewire.dev/bridge/internal/verification	2.491s
+ok  	convenewire.dev/bridge/internal/workspace	0.467s
+ok  	convenewire.dev/bridge/internal/privatefs	1.661s
+ok  	convenewire.dev/bridge/internal/runtime	54.776s
+ok  	convenewire.dev/bridge/internal/result	3.207s
+ok  	convenewire.dev/bridge/internal/delivery	5.037s
+ok  	convenewire.dev/bridge/internal/connection	3.657s
+go: downloading golang.org/x/sys v0.46.0
+[convenewire-test-run] cleaned=<owned-test-root>

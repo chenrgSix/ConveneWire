@@ -1,0 +1,38 @@
+=== RUN   TestPrivateRoundTripAndBounds
+--- PASS: TestPrivateRoundTripAndBounds (0.00s)
+=== RUN   TestPrivateCreationHasOneWinner
+--- PASS: TestPrivateCreationHasOneWinner (0.00s)
+=== RUN   TestPrivateFileRejectsSymlinkWithoutChangingTarget
+--- PASS: TestPrivateFileRejectsSymlinkWithoutChangingTarget (0.00s)
+=== RUN   TestWindowsProtectionExistsBeforeContentWrite
+--- PASS: TestWindowsProtectionExistsBeforeContentWrite (0.00s)
+=== RUN   TestWindowsDescriptorRejectsForeignNullBroadOrInheritedAuthority
+--- PASS: TestWindowsDescriptorRejectsForeignNullBroadOrInheritedAuthority (0.00s)
+=== RUN   TestWindowsRejectsWidenedFileAndExistingDirectoryWithoutRepair
+--- PASS: TestWindowsRejectsWidenedFileAndExistingDirectoryWithoutRepair (0.00s)
+=== RUN   TestWindowsRejectsJunctionAncestorsAndHardlinks
+--- PASS: TestWindowsRejectsJunctionAncestorsAndHardlinks (0.01s)
+=== RUN   TestWindowsRejectsDeviceNetworkAndAlternateStreamPaths
+--- PASS: TestWindowsRejectsDeviceNetworkAndAlternateStreamPaths (0.00s)
+PASS
+=== RUN   TestGenericStreamParserResetsAndWithholdsPrivateTail
+--- PASS: TestGenericStreamParserResetsAndWithholdsPrivateTail (0.00s)
+=== RUN   TestPrivateOutputRetainsOnlyLocalCandidate
+--- PASS: TestPrivateOutputRetainsOnlyLocalCandidate (0.00s)
+=== RUN   TestPrivateFailuresAndMismatchNeverExposeDetails
+=== RUN   TestPrivateFailuresAndMismatchNeverExposeDetails/failed
+=== RUN   TestPrivateFailuresAndMismatchNeverExposeDetails/input_required
+=== RUN   TestPrivateFailuresAndMismatchNeverExposeDetails/outcome_unknown
+=== RUN   TestPrivateFailuresAndMismatchNeverExposeDetails/completed
+--- PASS: TestPrivateFailuresAndMismatchNeverExposeDetails (0.00s)
+    --- PASS: TestPrivateFailuresAndMismatchNeverExposeDetails/failed (0.00s)
+    --- PASS: TestPrivateFailuresAndMismatchNeverExposeDetails/input_required (0.00s)
+    --- PASS: TestPrivateFailuresAndMismatchNeverExposeDetails/outcome_unknown (0.00s)
+    --- PASS: TestPrivateFailuresAndMismatchNeverExposeDetails/completed (0.00s)
+=== RUN   TestPrivateCandidateConcurrentAndSymlinkReplacementRejected
+--- PASS: TestPrivateCandidateConcurrentAndSymlinkReplacementRejected (0.00s)
+=== RUN   TestPrivateModeChangesSessionFingerprint
+--- PASS: TestPrivateModeChangesSessionFingerprint (0.00s)
+=== RUN   TestPrivateStorageFailureNeverStartsRuntime
+--- PASS: TestPrivateStorageFailureNeverStartsRuntime (0.00s)
+PASS
