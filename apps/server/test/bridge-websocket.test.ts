@@ -1791,3 +1791,35 @@ test("Bridge rejects binary and invalid UTF-8 frames before JSON decoding", asyn
     await closeFixture(fixture);
   }
 });
+
+test("private output publication survives the production WebSocket capability mapping", async t => {
+  const fixture = await createFixture(t);
+  await acceptRun(fixture);
+  send(fixture.socket, envelope("run.status", {
+    runId: fixture.runId, traceId: fixture.traceId, agentId, sequence: 2, status: "working"
+  }));
+  send(fixture.socket, envelope("run.status", {
+    runId: fixture.runId, traceId: fixture.traceId, agentId, sequence: 3, status: "completed"
+  }));
+  await waitFor(() => runState(fixture, "completed"));
+  send(fixture.socket, envelope("agent.publish", {
+    agentId, deviceId: fixture.deviceId, ownerMemberId: fixture.ownerMemberId,
+    teamId: fixture.teamId, name: "Private protocol Agent", role: "Private facts",
+    runtimeScopeId: "d".repeat(64),
+    capabilities: { invocationMode: "managed", supportsStart: true, supportsInterrupt: true,
+      supportsHandoff: false, supportsResume: false, supportsStreaming: false, ownerPrivateOutput: true }
+  }));
+  await waitFor(async () => {
+    const response = await fixture.app.inject({ method: "GET", url: `/api/teams/${fixture.teamId}/agents`, headers: fixture.authorization });
+    return response.json().some((agent: { agentId: string; capabilities: { ownerPrivateOutput?: boolean } }) =>
+      agent.agentId === agentId && agent.capabilities.ownerPrivateOutput === true);
+  });
+  const received = nextMessage(fixture.socket);
+  const trigger = await fixture.app.inject({ method: "POST", url: `/api/rooms/${fixture.roomId}/messages`,
+    headers: fixture.authorization, payload: { content: "Collect a private candidate", mentionAgentId: agentId } });
+  assert.equal(trigger.statusCode, 200, trigger.body);
+  const delivery = await received;
+  assert.equal(delivery.type, "run.requested");
+  assert.equal(delivery.payload.ownerPrivateOutput, true);
+  assert.equal(delivery.payload.targetAgentId, agentId);
+});

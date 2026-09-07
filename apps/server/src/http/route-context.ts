@@ -80,6 +80,7 @@ import type { AgentTaskService } from "../task/agent-task-service.js";
 import type { ArtifactContentBindingService } from
   "../task/artifact-content-binding-service.js";
 import type { LongTermMemoryService } from "../task/long-term-memory-service.js";
+import type { EvidenceDisclosureService } from "../task/evidence-disclosure-service.js";
 import type { ResultService } from "../task/result-service.js";
 import type { TaskArtifactService } from "../task/task-artifact-service.js";
 import type { TaskClarificationService } from "../task/task-clarification-service.js";
@@ -155,6 +156,7 @@ export interface ServerRouteContext {
   runRepository: RunRepository;
   runs: RunService;
   results: ResultService;
+  evidenceDisclosures: EvidenceDisclosureService;
   taskArtifacts: TaskArtifactService;
   taskClarifications: TaskClarificationService;
   tasks: AgentTaskService;

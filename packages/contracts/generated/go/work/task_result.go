@@ -4,6 +4,84 @@ package workcontracts
 
 import "time"
 
+type EvidenceDisclosureIntent struct {
+	AgentID            string   `json:"agentId"`
+	Audience           Audience `json:"audience"`
+	ContentBytes       int64    `json:"contentBytes"`
+	ContentSha256      string   `json:"contentSha256"`
+	CriteriaRevision   int64    `json:"criteriaRevision"`
+	DefinitionRevision int64    `json:"definitionRevision"`
+	DeviceID           string   `json:"deviceId"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt   time.Time                      `json:"expiresAt"`
+	OperationID string                         `json:"operationId"`
+	RoomID      string                         `json:"roomId"`
+	RunID       string                         `json:"runId"`
+	Source      EvidenceDisclosureIntentSource `json:"source"`
+	TaskID      string                         `json:"taskId"`
+	Version     int64                          `json:"version"`
+}
+
+type EvidenceDisclosureIntentSource struct {
+	ContentSha256 string `json:"contentSha256"`
+	End           int64  `json:"end"`
+	EvidenceRef   string `json:"evidenceRef"`
+	Revision      string `json:"revision"`
+	Start         int64  `json:"start"`
+}
+
+type EvidenceDisclosureGrant struct {
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	CreatedAt     time.Time                    `json:"createdAt"`
+	GrantID       string                       `json:"grantId"`
+	Intent        Intent                       `json:"intent"`
+	OwnerMemberID string                       `json:"ownerMemberId"`
+	ResultID      *string                      `json:"resultId"`
+	Revision      int64                        `json:"revision"`
+	RevokedAt     *time.Time                   `json:"revokedAt"`
+	State         EvidenceDisclosureGrantState `json:"state"`
+	TeamID        string                       `json:"teamId"`
+}
+
+type Intent struct {
+	AgentID            string   `json:"agentId"`
+	Audience           Audience `json:"audience"`
+	ContentBytes       int64    `json:"contentBytes"`
+	ContentSha256      string   `json:"contentSha256"`
+	CriteriaRevision   int64    `json:"criteriaRevision"`
+	DefinitionRevision int64    `json:"definitionRevision"`
+	DeviceID           string   `json:"deviceId"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt   time.Time    `json:"expiresAt"`
+	OperationID string       `json:"operationId"`
+	RoomID      string       `json:"roomId"`
+	RunID       string       `json:"runId"`
+	Source      IntentSource `json:"source"`
+	TaskID      string       `json:"taskId"`
+	Version     int64        `json:"version"`
+}
+
+type IntentSource struct {
+	ContentSha256 string `json:"contentSha256"`
+	End           int64  `json:"end"`
+	EvidenceRef   string `json:"evidenceRef"`
+	Revision      string `json:"revision"`
+	Start         int64  `json:"start"`
+}
+
+type EvidenceDisclosurePublishCommand struct {
+	Content          string `json:"content"`
+	ExpectedRevision int64  `json:"expectedRevision"`
+	GrantID          string `json:"grantId"`
+}
+
+type EvidenceDisclosureRevokeCommand struct {
+	ExpectedRevision int64 `json:"expectedRevision"`
+}
+
 type TaskProjection struct {
 	Assignments        []TaskProjectionAssignment      `json:"assignments"`
 	AttentionReasons   []TaskProjectionAttentionReason `json:"attentionReasons"`
@@ -753,6 +831,19 @@ type ChildTaskFromResultCommand struct {
 	Title         string `json:"title"`
 }
 
+type Audience string
+
+const (
+	RoomMembers Audience = "room_members"
+)
+
+type EvidenceDisclosureGrantState string
+
+const (
+	Revoked     EvidenceDisclosureGrantState = "revoked"
+	StateActive EvidenceDisclosureGrantState = "active"
+)
+
 type Role string
 
 const (
@@ -794,8 +885,8 @@ const (
 type LifecycleState string
 
 const (
-	Active                  LifecycleState = "active"
 	Draft                   LifecycleState = "draft"
+	LifecycleStateActive    LifecycleState = "active"
 	LifecycleStateCanceled  LifecycleState = "canceled"
 	LifecycleStateCompleted LifecycleState = "completed"
 	LifecycleStateReview    LifecycleState = "review"

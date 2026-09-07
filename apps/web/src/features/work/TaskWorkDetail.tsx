@@ -1,3 +1,4 @@
+import { EvidenceDisclosurePanel } from "./EvidenceDisclosurePanel.js";
 import { TaskCopyControl } from "../task/TaskCopyControl.js";
 import { MarkdownMessage } from "../../MarkdownMessage.js";
 import { ResultReportActions } from "./ResultReportActions.js";
@@ -656,13 +657,13 @@ export function TaskWorkDetail({
           token={token}
         />}
 
-        {tab === "evidence" && <ExecutionEvidencePanel
+        {tab === "evidence" && <><EvidenceDisclosurePanel key={`${taskId}:${currentMember?.memberId}:${token}`} taskId={taskId} roomId={task.roomId} token={token} locale={locale} /><ExecutionEvidencePanel
           currentMember={currentMember}
           locale={locale}
           onChanged={onChanged}
           task={task}
           token={token}
-        />}
+        /></>}
 
         {tab === "results" && (
           <div className="work-result-list">

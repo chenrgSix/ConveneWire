@@ -5,6 +5,228 @@
   "description": "Closed cross-boundary work-model contracts. These objects carry no local path, command, environment, provider credential, or mutable display identity authority.",
   "$ref": "#/$defs/resultProposal",
   "$defs": {
+    "disclosureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grant",
+        "result",
+        "replayed"
+      ],
+      "properties": {
+        "grant": {
+          "$ref": "#/$defs/disclosureGrant"
+        },
+        "result": {
+          "$ref": "#/$defs/resultProjection"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "disclosureSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceRef",
+        "revision",
+        "contentSha256",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "evidenceRef": {
+          "$ref": "#/$defs/evidenceRefId"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+        },
+        "contentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "disclosureIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "operationId",
+        "deviceId",
+        "agentId",
+        "runId",
+        "taskId",
+        "roomId",
+        "definitionRevision",
+        "criteriaRevision",
+        "source",
+        "contentSha256",
+        "contentBytes",
+        "audience",
+        "expiresAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "deviceId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/deviceId"
+        },
+        "agentId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/agentId"
+        },
+        "runId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/runId"
+        },
+        "taskId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/taskId"
+        },
+        "roomId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/roomId"
+        },
+        "definitionRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "criteriaRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "source": {
+          "$ref": "#/$defs/disclosureSource"
+        },
+        "contentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16384
+        },
+        "audience": {
+          "const": "room_members"
+        },
+        "expiresAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        }
+      }
+    },
+    "disclosureGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "ownerMemberId",
+        "teamId",
+        "revision",
+        "state",
+        "intent",
+        "createdAt",
+        "revokedAt",
+        "resultId"
+      ],
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "pattern": "^disclosure_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/memberId"
+        },
+        "teamId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/teamId"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "state": {
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "intent": {
+          "$ref": "#/$defs/disclosureIntent"
+        },
+        "createdAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "revokedAt": {
+          "oneOf": [
+            {
+              "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resultId": {
+          "oneOf": [
+            {
+              "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/resultId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "disclosurePublishCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "expectedRevision",
+        "content"
+      ],
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "pattern": "^disclosure_[A-Za-z0-9_-]{8,128}$"
+        },
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        }
+      }
+    },
+    "disclosureRevokeCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedRevision"
+      ],
+      "properties": {
+        "expectedRevision": {
+          "$ref": "#/$defs/revision"
+        }
+      }
+    },
     "revision": {
       "type": "integer",
       "minimum": 1,

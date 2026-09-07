@@ -18,6 +18,7 @@ interface Connection {
   deviceId: string;
   epoch: number;
   governedExecutionAgents: Map<string, GovernedExecutionCapability>;
+  privateOutputAgents: Set<string>;
   supportsAgentProvisioning: boolean;
   governedExecution?: GovernedExecutionCapability;
   socket: BridgeSocket;
@@ -55,6 +56,7 @@ export class BridgeConnectionRegistry {
         governedExecution: structuredClone(capabilities.governedExecution) as GovernedExecutionCapability
       } : {}),
       governedExecutionAgents: new Map(),
+      privateOutputAgents: new Set(),
       socket
     });
     return true;
@@ -71,6 +73,9 @@ export class BridgeConnectionRegistry {
     if (!connection) {
       return false;
     }
+    const envelope = message as { type?: string; payload?: { targetAgentId?: string; ownerPrivateOutput?: boolean } };
+    if (envelope?.type === "run.requested" && envelope.payload?.ownerPrivateOutput === true &&
+      !connection.privateOutputAgents.has(envelope.payload.targetAgentId ?? "")) return false;
     if (hasGovernedExecution(message)) {
       const agentId = governedExecutionAgentId(message);
       const manifest = governedExecutionManifest(message);
@@ -89,6 +94,14 @@ export class BridgeConnectionRegistry {
 
   public activeEpoch(deviceId: string): number | undefined {
     return this.connections.get(deviceId)?.epoch;
+  }
+
+  public recordPrivateOutputAgent(deviceId: string, epoch: number, agentId: string, enabled: boolean): boolean {
+    const connection = this.connections.get(deviceId);
+    if (!connection || connection.epoch !== epoch) return false;
+    if (enabled) connection.privateOutputAgents.add(agentId);
+    else connection.privateOutputAgents.delete(agentId);
+    return true;
   }
 
   public supportsAgentProvisioning(deviceId: string): boolean {

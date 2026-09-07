@@ -45,6 +45,12 @@ func (e RuntimeExecutor) ExecuteAdmitted(ctx context.Context, record Record,
 
 func (e RuntimeExecutor) executeAdapter(ctx context.Context, record Record,
 	adapter bridgeruntime.Adapter, send Sender, resolveArtifacts bool) error {
+	privateMode, _ := adapter.(interface{ OwnerPrivateOutput() bool })
+	localPrivate := privateMode != nil && privateMode.OwnerPrivateOutput()
+	wirePrivate := record.Request.OwnerPrivateOutput != nil && *record.Request.OwnerPrivateOutput
+	if localPrivate != wirePrivate {
+		return e.failBeforeRuntime(ctx, record, send, "PRIVATE_OUTPUT_WITHHELD", "Private output remains on the owner device.")
+	}
 	var artifacts []bridgeruntime.VerifiedArtifactAlias
 	var artifactErr error
 	if resolveArtifacts && e.ResolveArtifacts != nil {
@@ -365,6 +371,10 @@ func (e RuntimeExecutor) failBeforeRuntime(
 	code string,
 	messageText string,
 ) error {
+	if record.Request.OwnerPrivateOutput != nil && *record.Request.OwnerPrivateOutput {
+		code = "PRIVATE_OUTPUT_WITHHELD"
+		messageText = "Private output remains on the owner device."
+	}
 	latest, err := e.Inbox.Get(record.RunID)
 	if err != nil {
 		return err
@@ -547,6 +557,9 @@ func (e RuntimeExecutor) emitUnknown(ctx context.Context, record Record, send Se
 				Code: code, Message: "Runtime outcome could not be determined.", Retryable: false,
 			},
 		},
+	}
+	if record.Request.OwnerPrivateOutput != nil && *record.Request.OwnerPrivateOutput {
+		message.Payload.Error = bridgeruntime.PrivateOutputError()
 	}
 	if _, err := e.Inbox.AppendEvent(record.RunID, StateOutcomeUnknown, sequence, message, now); err != nil {
 		return err
@@ -880,6 +893,9 @@ func (e RuntimeExecutor) recover(ctx context.Context, send Sender, governedAlrea
 						Retryable: false,
 					},
 				},
+			}
+			if record.Request.OwnerPrivateOutput != nil && *record.Request.OwnerPrivateOutput {
+				message.Payload.Error = bridgeruntime.PrivateOutputError()
 			}
 			if _, err := e.Inbox.AppendEvent(record.RunID, StateOutcomeUnknown, sequence, message, now); err != nil {
 				return err

@@ -358,6 +358,7 @@ export function registerBridgeSocketRoutes({
                 ? { runtimeScopeId: publicationPayload.runtimeScopeId }
                 : {}),
               capabilities: {
+                ...(capabilities.ownerPrivateOutput === true ? { ownerPrivateOutput: true } : {}),
                 ...(governedExecution !== undefined
                   ? { governedExecution }
                   : {}),
@@ -389,7 +390,8 @@ export function registerBridgeSocketRoutes({
               now: clock()
             })
           );
-          if (!bridgeConnections.recordGovernedAgentCapability(
+          if (!bridgeConnections.recordPrivateOutputAgent(devicePrincipal.deviceId, registeredEpoch,
+            publicationPayload.agentId as string, capabilities.ownerPrivateOutput === true) || !bridgeConnections.recordGovernedAgentCapability(
             devicePrincipal.deviceId,
             registeredEpoch,
             publicationPayload.agentId as string,

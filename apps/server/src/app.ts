@@ -1,3 +1,5 @@
+import { EvidenceDisclosureService } from "./task/evidence-disclosure-service.js";
+import { registerEvidenceDisclosureRoutes } from "./http/evidence-disclosure-routes.js";
 import path from "node:path";
 
 import fastifyStatic from "@fastify/static";
@@ -536,6 +538,7 @@ export async function createServerApp(
     core,
     auth
   );
+  const evidenceDisclosures = new EvidenceDisclosureService(database, auth, core, runRepository, taskRepository, results);
   const manualTaskWork = new ManualTaskWorkService(
     core,
     taskRepository,
@@ -1247,6 +1250,7 @@ export async function createServerApp(
     runRepository,
     runs,
     results,
+    evidenceDisclosures,
     taskArtifacts,
     taskClarifications,
     tasks,
@@ -1271,6 +1275,7 @@ export async function createServerApp(
   registerExecutionPlanRoutes(routeContext);
   registerRemoteEvidenceRoutes(routeContext);
   registerResultRoutes(routeContext);
+  registerEvidenceDisclosureRoutes(routeContext);
   registerWorkbenchRoutes(routeContext);
   registerRegistryRoutes(routeContext);
   registerHostedAgentRoutes(routeContext);

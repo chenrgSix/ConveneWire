@@ -59,6 +59,7 @@ function normalizedWorkspaceAlias(value: string | undefined): string | null {
 }
 
 function validateCapabilities(input: PublishAgentInput): void {
+  if (input.capabilities.ownerPrivateOutput !== undefined) throw new Error("Private output mode is published only by its Bridge");
   if (input.capabilities.governedExecution !== undefined) {
     assertExecutionCommand(
       "executionCapability",
@@ -305,6 +306,12 @@ export class AgentService {
     if (!input.capabilities.supportsStart) {
       throw new Error("Managed Bridge Agent must support start");
     }
+    if (input.capabilities.ownerPrivateOutput === true && (
+      !input.runtimeScopeId || input.capabilities.supportsStreaming ||
+      input.capabilities.supportsHandoff || input.capabilities.supportsRoomContextCoverage ||
+      input.capabilities.supportsArtifactPublication || input.capabilities.supportsDiscussionSupplementalEvidence ||
+      input.capabilities.governedExecution
+    )) throw new Error("Private output requires a scoped Bridge with content publication disabled");
     if (input.capabilities.governedExecution !== undefined) {
       assertExecutionCommand(
         "executionCapability",

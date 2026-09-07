@@ -1,5 +1,93 @@
 // Code generated from JSON Schema; DO NOT EDIT.
 
+export interface EvidenceDisclosureIntent {
+  agentId:            string;
+  audience:           Audience;
+  contentBytes:       number;
+  contentSha256:      string;
+  criteriaRevision:   number;
+  definitionRevision: number;
+  deviceId:           string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:   string;
+  operationId: string;
+  roomId:      string;
+  runId:       string;
+  source:      EvidenceDisclosureIntentSource;
+  taskId:      string;
+  version:     number;
+}
+
+export type Audience = "room_members";
+
+export interface EvidenceDisclosureIntentSource {
+  contentSha256: string;
+  end:           number;
+  evidenceRef:   string;
+  revision:      string;
+  start:         number;
+}
+
+export interface EvidenceDisclosureGrant {
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  createdAt:     string;
+  grantId:       string;
+  intent:        Intent;
+  ownerMemberId: string;
+  resultId:      null | string;
+  revision:      number;
+  revokedAt:     null | string;
+  state:         EvidenceDisclosureGrantState;
+  teamId:        string;
+}
+
+export interface Intent {
+  agentId:            string;
+  audience:           Audience;
+  contentBytes:       number;
+  contentSha256:      string;
+  criteriaRevision:   number;
+  definitionRevision: number;
+  deviceId:           string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:   string;
+  operationId: string;
+  roomId:      string;
+  runId:       string;
+  source:      IntentSource;
+  taskId:      string;
+  version:     number;
+}
+
+export interface IntentSource {
+  contentSha256: string;
+  end:           number;
+  evidenceRef:   string;
+  revision:      string;
+  start:         number;
+}
+
+export type EvidenceDisclosureGrantState = "active" | "revoked";
+
+export interface EvidenceDisclosurePublishCommand {
+  content:          string;
+  expectedRevision: number;
+  grantId:          string;
+}
+
+export interface EvidenceDisclosureRevokeCommand {
+  expectedRevision: number;
+}
+
 export interface TaskProjection {
   assignments:        TaskProjectionAssignment[];
   attentionReasons:   TaskProjectionAttentionReason[];

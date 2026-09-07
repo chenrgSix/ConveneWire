@@ -8,6 +8,8 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  goDisclosureSchema: await readFile(path.join(generatedRoot, "go", "runtime", "disclosure-schema.json"), "utf8"),
+  goDisclosureRuntime: await readFile(path.join(generatedRoot, "go", "runtime", "disclosure.go"), "utf8"),
   goExecutionSchema: await readFile(path.join(generatedRoot, "go", "runtime", "execution-schema.json"), "utf8"),
   goExecutionRuntime: await readFile(path.join(generatedRoot, "go", "runtime", "execution.go"), "utf8"),
   executionTypescript: await readFile(
@@ -66,6 +68,7 @@ const actual = {
 };
 
 for (const output of [
+  "goDisclosureSchema", "goDisclosureRuntime",
   "goExecutionSchema",
   "goExecutionRuntime",
   "executionTypescript",

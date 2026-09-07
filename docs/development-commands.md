@@ -144,3 +144,74 @@ commands. Bridge repository operations use `gofmt`, `go test ./...` and
 `go vet ./...` from `bridge/`; concurrency-sensitive packages also require
 `go test -race`. These modules follow ADR-0036 and must not advertise unfinished
 capabilities or treat generated contracts as runtime acceptance.
+
+## Exact owner evidence disclosure (SEC-015)
+
+This opt-in path uses an already paired Bridge and the source owner's full Web
+session. It does not require model calls. Set `ownerPrivateOutput: true` on a
+selected local Agent and restart its Bridge to advertise the mode. Ordinary
+Agents are unchanged. Private collection currently requires POSIX owner-only
+storage; Windows configuration rejects this opt-in until native ACL acceptance
+is implemented. Do not enable governed execution on the same private Agent.
+
+A completed private Run saves its candidate under
+`<dataDir>/private-output/<runId>.txt` with owner-only permissions. Inspect it
+locally and select the exact UTF-8 release text (1–16384 bytes, no leading or
+trailing whitespace). Retain a fixed regular-file source snapshot up to 4 MiB.
+Use opaque source IDs, never private paths as IDs.
+
+```bash
+convenewire-bridge disclosure prepare \
+  --config /owner/bridge.json --agent PrivateResearcher \
+  --run-id run_REPLACE_WITH_COMPLETED_RUN \
+  --source-file /owner/frozen-source.txt \
+  --release-file /owner/selected-release.txt \
+  --evidence-ref evidence_REPLACE_WITH_OPAQUE_ID \
+  --bundle /owner/release-bundle.json
+```
+
+The command makes no network request. It derives Device/Agent/Run/Task/Room and
+Task revisions from pairing and the completed local inbox record. Optional
+`--source-start` / `--source-end` specify a half-open byte range; the default is
+the whole snapshot. `--source-revision` defaults to the snapshot SHA-256; an
+explicit fixed Git revision is an owner attestation, not Central verification.
+The one-hour request, exact content and local source path remain in the private
+bundle. Only `<bundle>.request.json` contains the metadata for Central.
+
+In the Task's **Evidence → Private evidence disclosure** panel, paste that
+request file, inspect the digest, byte count, source/version/range and destination,
+confirm the reviewed local text, then approve. Only the Device's actual owner
+can approve, using a full session; a Team administrator or Device token cannot
+substitute for that consent. Copy the returned grant ID.
+
+```bash
+convenewire-bridge disclosure publish \
+  --config /owner/bridge.json --agent PrivateResearcher \
+  --bundle /owner/release-bundle.json \
+  --grant-id disclosure_REPLACE_WITH_APPROVED_GRANT
+```
+
+Bridge verifies the unchanged source snapshot and exact local text, reads current
+Central authority, then sends only the approved text and grant revision. A
+changed source, range, destination, Device, owner, content or expired/revoked grant
+prevents a new publication. Keep the bundle and source for explicit retry. If a
+previous publication committed, retry resolves its Result using an authenticated
+GET and does not retransmit the text. There is no automatic content POST retry.
+
+The same panel revokes future publication. Revocation is effective only after
+Central acknowledges it, and does not recall an already committed Result or
+bytes already in flight. Result acceptance remains a separate human action.
+Delete local candidate/bundle/snapshot files only as an explicit owner cleanup;
+local deletion does not revoke the Central grant or recall a Result.
+
+Focused verification, using disposable sources and no external model:
+
+```bash
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- \
+  node --import tsx --test apps/server/test/evidence-disclosure.test.ts
+node scripts/test/run-with-temp-root.mjs --cwd apps/web --timeout-ms 120000 -- \
+  node --import tsx --test test/evidence-disclosure-panel.test.tsx
+node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- \
+  go test -race ./internal/runtime ./internal/result ./internal/delivery ./internal/connection
+npm run test --workspace @convene-wire/contracts
+```

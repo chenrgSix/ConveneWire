@@ -70,3 +70,27 @@ Physical owners/devices and production installation require their own explicit
 consent and acceptance; local independent credentials do not substitute for
 that evidence. New model comparisons, implicit disclosure, semantic validators
 for arbitrary claims, Review Waves and new completion gates are excluded.
+
+## Implementation boundary
+
+Private capability negotiation is per live connection epoch, not merely the
+persisted Agent record. A reconnect or older Bridge cannot inherit that capability.
+Private mode changes the native session fingerprint and disables session resume,
+streaming, supplemental contribution publication, Artifact publication and
+handoff. The Runtime wrapper is a Bridge transport boundary; it is not an OS
+sandbox for arbitrary child-process network calls. Owners must retain control
+of their Runtime tools and filesystem/credential isolation.
+
+The initial local store requires POSIX owner-only permissions. Windows private
+mode is explicitly rejected at configuration validation until Windows ACL
+support and native acceptance exist; ordinary Windows Bridge behavior remains
+unchanged. There is no claim of physical Windows acceptance.
+
+The first released Result contains the exact text as an informational summary
+and cites the private Run's content-free completion event. Source identity,
+revision and range stay bound in the authoritative grant. They are source-owner
+attestations, not proofs that the summary follows from the private source.
+Existing Room Result reads and `team.list_task_results` expose only the released
+Result to an authorized consumer. Private Runs are not automatically admitted as
+Discussion turns or injected into Finalizer instructions; production Discussion
+scheduling, contribution acceptance and recovery remain unchanged.

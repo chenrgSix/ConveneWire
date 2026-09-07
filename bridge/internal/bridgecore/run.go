@@ -123,6 +123,9 @@ func RunObservedWithProvisioning(
 			}
 		}
 		if adapters[agentID] != nil {
+			if configured.OwnerPrivateOutput {
+				adapters[agentID] = bridgeruntime.PrivateOutputAdapter{Inner: adapters[agentID], DataDir: loaded.DataDir}
+			}
 			resumeAgentNames[configured.Name] = adapters[agentID].Capabilities().SupportsResume
 			streamingAgentNames[configured.Name] = adapters[agentID].Capabilities().SupportsStreaming
 			roomContextCoverageAgentNames[configured.Name] =

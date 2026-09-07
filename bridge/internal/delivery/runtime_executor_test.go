@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -827,5 +828,77 @@ func TestRuntimeExecutorRejectsActiveIncompatibleMetadataBeforeSending(t *testin
 				t.Fatalf("active incompatible record created quarantine: %v", err)
 			}
 		})
+	}
+}
+
+func TestPrivateOutputModeMismatchFailsBeforeRuntime(t *testing.T) {
+	for _, wirePrivate := range []bool{true, false} {
+		t.Run(fmt.Sprint(wirePrivate), func(t *testing.T) {
+			inbox, err := Open(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			request, _ := runtimeArtifactFixture()
+			request.ContextPlan = nil
+			request.OwnerPrivateOutput = &wirePrivate
+			record, _, err := inbox.Accept(request, time.Now().UTC())
+			if err != nil {
+				t.Fatal(err)
+			}
+			fake := &bridgeruntime.FakeAdapter{}
+			var adapter bridgeruntime.Adapter = fake
+			if !wirePrivate {
+				adapter = bridgeruntime.PrivateOutputAdapter{Inner: fake, DataDir: t.TempDir()}
+			}
+			executor := RuntimeExecutor{Inbox: inbox, Adapters: map[string]bridgeruntime.Adapter{request.TargetAgentID: adapter}}
+			var sent []any
+			if err := executor.Execute(context.Background(), record, func(_ context.Context, v any) error { sent = append(sent, v); return nil }); err != nil {
+				t.Fatal(err)
+			}
+			if len(fake.Requests()) != 0 || len(sent) != 1 {
+				t.Fatal("mismatched Runtime started")
+			}
+			status := sent[0].(contracts.RunStatusMessage)
+			if status.Payload.Status != contracts.Failed || status.Payload.Error.Code != "PRIVATE_OUTPUT_WITHHELD" {
+				t.Fatal(status)
+			}
+		})
+	}
+}
+
+func TestPrivateRecoveryUsesContentFreeTerminalError(t *testing.T) {
+	inbox, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	request, _ := runtimeArtifactFixture()
+	request.ContextPlan = nil
+	private := true
+	request.OwnerPrivateOutput = &private
+	record, _, err := inbox.Accept(request, time.Now().UTC())
+	if err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := Open(inbox.directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	executor := RuntimeExecutor{Inbox: reopened}
+	if err := executor.Recover(context.Background(), func(context.Context, any) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+	latest, err := reopened.Get(record.RunID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if latest.State != StateOutcomeUnknown {
+		t.Fatal("private recovery did not terminate")
+	}
+	var event contracts.RunStatusMessage
+	if err := json.Unmarshal(latest.Events[len(latest.Events)-1], &event); err != nil {
+		t.Fatal(err)
+	}
+	if event.Payload.Error == nil || event.Payload.Error.Code != "PRIVATE_OUTPUT_WITHHELD" || event.Payload.Error.Message != "Private output remains on the owner device." {
+		t.Fatal("private recovery leaked another error envelope")
 	}
 }

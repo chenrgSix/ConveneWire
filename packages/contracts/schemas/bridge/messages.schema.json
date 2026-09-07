@@ -611,6 +611,7 @@
         "supportsHandoff"
       ],
       "properties": {
+        "ownerPrivateOutput": {"type": "boolean", "description": "Explicit owner-private output mode. The Bridge retains candidate text locally and emits only content-free status; disclosure requires a separate exact-content owner grant."},
         "governedExecution": {
           "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/capability"
         },
@@ -1820,6 +1821,7 @@
         "deadline"
       ],
       "properties": {
+        "ownerPrivateOutput": {"type": "boolean", "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."},
         "runId": {
           "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/runId"
         },

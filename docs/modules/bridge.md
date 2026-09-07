@@ -1552,3 +1552,12 @@ of exact disclosed bytes and Room audience, current-authority Bridge publication
 into existing Result, and atomic revoke/retry behavior. Identity and consent are
 separate; source binding is owner-attested, not semantic proof. QA-082 covers
 independent credentials locally; physical owners/devices require separate evidence.
+
+SEC-015's `ownerPrivateOutput` flag is configured locally, advertised in each
+connection epoch and frozen in Run delivery. The private adapter withholds all
+content events and saves a bounded completed candidate locally. Native sessions
+cannot cross the private/ordinary mode boundary. Old/reconnected Bridges without
+current private capability receive no private delivery. Explicit
+`disclosure prepare` / `disclosure publish` reuse pairing credentials and the
+production Result HTTP transport. Commands, POSIX storage requirements and the
+owner Web approval workflow are in [development commands](../development-commands.md#exact-owner-evidence-disclosure-sec-015).

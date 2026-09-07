@@ -1,0 +1,986 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentroom.dev/schemas/runtime/disclosure.json",
+  "$defs": {
+    "disclosureIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "operationId",
+        "deviceId",
+        "agentId",
+        "runId",
+        "taskId",
+        "roomId",
+        "definitionRevision",
+        "criteriaRevision",
+        "source",
+        "contentSha256",
+        "contentBytes",
+        "audience",
+        "expiresAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "taskId": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomId": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+        },
+        "definitionRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "criteriaRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidenceRef",
+            "revision",
+            "contentSha256",
+            "start",
+            "end"
+          ],
+          "properties": {
+            "evidenceRef": {
+              "type": "string",
+              "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+            },
+            "revision": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+            },
+            "contentSha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4194304
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4194304
+            }
+          }
+        },
+        "contentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contentBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16384
+        },
+        "audience": {
+          "const": "room_members"
+        },
+        "expiresAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        }
+      }
+    },
+    "disclosureGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "ownerMemberId",
+        "teamId",
+        "revision",
+        "state",
+        "intent",
+        "createdAt",
+        "revokedAt",
+        "resultId"
+      ],
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "pattern": "^disclosure_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "intent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "operationId",
+            "deviceId",
+            "agentId",
+            "runId",
+            "taskId",
+            "roomId",
+            "definitionRevision",
+            "criteriaRevision",
+            "source",
+            "contentSha256",
+            "contentBytes",
+            "audience",
+            "expiresAt"
+          ],
+          "properties": {
+            "version": {
+              "const": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            },
+            "operationId": {
+              "type": "string",
+              "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+            },
+            "deviceId": {
+              "type": "string",
+              "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+            },
+            "agentId": {
+              "type": "string",
+              "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+            },
+            "runId": {
+              "type": "string",
+              "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+            },
+            "taskId": {
+              "type": "string",
+              "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            },
+            "definitionRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "criteriaRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidenceRef",
+                "revision",
+                "contentSha256",
+                "start",
+                "end"
+              ],
+              "properties": {
+                "evidenceRef": {
+                  "type": "string",
+                  "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                },
+                "revision": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+                },
+                "contentSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "start": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4194304
+                },
+                "end": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4194304
+                }
+              }
+            },
+            "contentSha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "contentBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16384
+            },
+            "audience": {
+              "const": "room_members"
+            },
+            "expiresAt": {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            }
+          }
+        },
+        "createdAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "revokedAt": {
+          "oneOf": [
+            {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resultId": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "disclosurePublishCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "expectedRevision",
+        "content"
+      ],
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "pattern": "^disclosure_[A-Za-z0-9_-]{8,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        }
+      }
+    },
+    "disclosureRevokeCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedRevision"
+      ],
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "disclosureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grant",
+        "result",
+        "replayed"
+      ],
+      "properties": {
+        "grant": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "grantId",
+            "ownerMemberId",
+            "teamId",
+            "revision",
+            "state",
+            "intent",
+            "createdAt",
+            "revokedAt",
+            "resultId"
+          ],
+          "properties": {
+            "grantId": {
+              "type": "string",
+              "pattern": "^disclosure_[A-Za-z0-9_-]{8,128}$"
+            },
+            "ownerMemberId": {
+              "type": "string",
+              "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+            },
+            "teamId": {
+              "type": "string",
+              "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "state": {
+              "enum": [
+                "active",
+                "revoked"
+              ]
+            },
+            "intent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "operationId",
+                "deviceId",
+                "agentId",
+                "runId",
+                "taskId",
+                "roomId",
+                "definitionRevision",
+                "criteriaRevision",
+                "source",
+                "contentSha256",
+                "contentBytes",
+                "audience",
+                "expiresAt"
+              ],
+              "properties": {
+                "version": {
+                  "const": 1,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1
+                },
+                "operationId": {
+                  "type": "string",
+                  "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+                },
+                "deviceId": {
+                  "type": "string",
+                  "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+                },
+                "agentId": {
+                  "type": "string",
+                  "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                },
+                "runId": {
+                  "type": "string",
+                  "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                },
+                "taskId": {
+                  "type": "string",
+                  "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+                },
+                "roomId": {
+                  "type": "string",
+                  "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+                },
+                "definitionRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "criteriaRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "evidenceRef",
+                    "revision",
+                    "contentSha256",
+                    "start",
+                    "end"
+                  ],
+                  "properties": {
+                    "evidenceRef": {
+                      "type": "string",
+                      "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                    },
+                    "revision": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"
+                    },
+                    "contentSha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4194304
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 4194304
+                    }
+                  }
+                },
+                "contentSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "contentBytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16384
+                },
+                "audience": {
+                  "const": "room_members"
+                },
+                "expiresAt": {
+                  "title": "ConveneWire UTC Timestamp",
+                  "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                }
+              }
+            },
+            "createdAt": {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            },
+            "revokedAt": {
+              "oneOf": [
+                {
+                  "title": "ConveneWire UTC Timestamp",
+                  "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "resultId": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resultId",
+            "resultVersion",
+            "taskId",
+            "roomId",
+            "state",
+            "proposal",
+            "review",
+            "proposedBy",
+            "proposedAt"
+          ],
+          "properties": {
+            "resultId": {
+              "type": "string",
+              "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+            },
+            "resultVersion": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "taskId": {
+              "type": "string",
+              "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            },
+            "state": {
+              "enum": [
+                "proposed",
+                "accepted",
+                "rejected",
+                "superseded"
+              ]
+            },
+            "proposal": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "operationId",
+                "taskId",
+                "definitionRevision",
+                "criteriaRevision",
+                "proposedAtTaskRevision",
+                "supersedesResultId",
+                "outcome",
+                "summary",
+                "risks",
+                "openQuestions",
+                "nextActions",
+                "sources",
+                "criterionClaims"
+              ],
+              "properties": {
+                "operationId": {
+                  "type": "string",
+                  "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+                },
+                "taskId": {
+                  "type": "string",
+                  "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+                },
+                "definitionRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "criteriaRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "proposedAtTaskRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "supersedesResultId": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "outcome": {
+                  "enum": [
+                    "satisfied",
+                    "partial",
+                    "not_satisfied",
+                    "informational"
+                  ]
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20000
+                },
+                "risks": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "openQuestions": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "nextActions": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "nextActionKey",
+                      "description"
+                    ],
+                    "properties": {
+                      "nextActionKey": {
+                        "type": "string",
+                        "pattern": "^next_[A-Za-z0-9_-]{8,64}$"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                },
+                "sources": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "evidenceRefId",
+                          "kind",
+                          "artifactId"
+                        ],
+                        "properties": {
+                          "evidenceRefId": {
+                            "type": "string",
+                            "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                          },
+                          "kind": {
+                            "const": "artifact"
+                          },
+                          "artifactId": {
+                            "type": "string",
+                            "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "evidenceRefId",
+                          "kind",
+                          "runId",
+                          "sequence"
+                        ],
+                        "properties": {
+                          "evidenceRefId": {
+                            "type": "string",
+                            "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                          },
+                          "kind": {
+                            "const": "run_event"
+                          },
+                          "runId": {
+                            "type": "string",
+                            "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "sequence": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "evidenceRefId",
+                          "kind",
+                          "messageId"
+                        ],
+                        "properties": {
+                          "evidenceRefId": {
+                            "type": "string",
+                            "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                          },
+                          "kind": {
+                            "const": "message"
+                          },
+                          "messageId": {
+                            "type": "string",
+                            "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "evidenceRefId",
+                          "kind",
+                          "memoryId"
+                        ],
+                        "properties": {
+                          "evidenceRefId": {
+                            "type": "string",
+                            "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                          },
+                          "kind": {
+                            "const": "memory"
+                          },
+                          "memoryId": {
+                            "type": "string",
+                            "pattern": "^memory_[A-Za-z0-9_-]{8,128}$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "evidenceRefId",
+                          "kind",
+                          "discussionId"
+                        ],
+                        "properties": {
+                          "evidenceRefId": {
+                            "type": "string",
+                            "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                          },
+                          "kind": {
+                            "const": "discussion"
+                          },
+                          "discussionId": {
+                            "type": "string",
+                            "pattern": "^discussion_[A-Za-z0-9_-]{8,128}$"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "criterionClaims": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "criterionKey",
+                      "coverage",
+                      "explanation",
+                      "evidenceRefIds"
+                    ],
+                    "properties": {
+                      "criterionKey": {
+                        "type": "string",
+                        "pattern": "^criterion_[A-Za-z0-9_-]{8,64}$"
+                      },
+                      "coverage": {
+                        "enum": [
+                          "satisfied",
+                          "unresolved",
+                          "not_satisfied",
+                          "not_applicable"
+                        ]
+                      },
+                      "explanation": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000
+                      },
+                      "evidenceRefIds": {
+                        "type": "array",
+                        "maxItems": 100,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^evidence_[A-Za-z0-9_-]{8,64}$"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "review": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "decision",
+                    "reviewRevision",
+                    "reviewedByMemberId",
+                    "reason",
+                    "reviewedAt"
+                  ],
+                  "properties": {
+                    "decision": {
+                      "enum": [
+                        "accepted",
+                        "rejected"
+                      ]
+                    },
+                    "reviewRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "reviewedByMemberId": {
+                      "type": "string",
+                      "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "reviewedAt": {
+                      "title": "ConveneWire UTC Timestamp",
+                      "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "proposedBy": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "memberId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "member"
+                    },
+                    "memberId": {
+                      "type": "string",
+                      "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "agentId",
+                    "runId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "manual_agent",
+                        "managed_agent"
+                      ]
+                    },
+                    "agentId": {
+                      "type": "string",
+                      "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                    },
+                    "runId": {
+                      "type": "string",
+                      "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "discussionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "orchestrator"
+                    },
+                    "discussionId": {
+                      "type": "string",
+                      "pattern": "^discussion_[A-Za-z0-9_-]{8,128}$"
+                    }
+                  }
+                }
+              ]
+            },
+            "proposedAt": {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            }
+          }
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

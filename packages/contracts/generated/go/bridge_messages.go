@@ -214,10 +214,13 @@ type AgentPublishPayload struct {
 }
 
 type Capabilities struct {
-	GovernedExecution               *CapabilitiesGovernedExecution `json:"governedExecution,omitempty"`
-	InvocationMode                  InvocationMode                 `json:"invocationMode"`
-	SupportsArtifactMaterialization *bool                          `json:"supportsArtifactMaterialization,omitempty"`
-	SupportsArtifactPublication     *bool                          `json:"supportsArtifactPublication,omitempty"`
+	GovernedExecution *CapabilitiesGovernedExecution `json:"governedExecution,omitempty"`
+	InvocationMode    InvocationMode                 `json:"invocationMode"`
+	// Explicit owner-private output mode. The Bridge retains candidate text locally and emits
+	// only content-free status; disclosure requires a separate exact-content owner grant.
+	OwnerPrivateOutput              *bool `json:"ownerPrivateOutput,omitempty"`
+	SupportsArtifactMaterialization *bool `json:"supportsArtifactMaterialization,omitempty"`
+	SupportsArtifactPublication     *bool `json:"supportsArtifactPublication,omitempty"`
 	// Whether this managed Runtime can replay the content-free late Discussion evidence
 	// operation offered in run.requested. Omission means unsupported.
 	SupportsDiscussionSupplementalEvidence *bool `json:"supportsDiscussionSupplementalEvidence,omitempty"`
@@ -383,8 +386,10 @@ type RunRequestedPayload struct {
 	DiscussionSupplementalEvidence *DiscussionSupplementalEvidenceClass `json:"discussionSupplementalEvidence,omitempty"`
 	IdempotencyKey                 string                               `json:"idempotencyKey"`
 	Instruction                    string                               `json:"instruction"`
-	ParentRunID                    *string                              `json:"parentRunId,omitempty"`
-	RequesterMemberID              string                               `json:"requesterMemberId"`
+	// Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup.
+	OwnerPrivateOutput *bool   `json:"ownerPrivateOutput,omitempty"`
+	ParentRunID        *string `json:"parentRunId,omitempty"`
+	RequesterMemberID  string  `json:"requesterMemberId"`
 	// Server-owned coverage ending with one separate current request. Bridge derives
 	// session-local consumption from this bundle.
 	RoomContextBundle *ServerRoomContextBundle `json:"roomContextBundle,omitempty"`

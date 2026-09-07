@@ -453,3 +453,12 @@ of exact disclosed bytes and Room audience, current-authority Bridge publication
 into existing Result, and atomic revoke/retry behavior. Identity and consent are
 separate; source binding is owner-attested, not semantic proof. QA-082 covers
 independent credentials locally; physical owners/devices require separate evidence.
+
+SEC-015 uses Central's existing authenticated Member/Device chain. Full owner
+sessions approve immutable metadata; the Device credential can read only its own
+grants and submit exact approved bytes. Current Room/Task/Agent/Device/credential
+scope and revocation are rechecked inside the publication transaction. The grant
+certifies consent and attribution, not semantic correctness. The capability is a
+Bridge transport boundary, not a sandbox for arbitrary Runtime network access.
+The initial owner-only local store is POSIX; Windows private-mode opt-in is
+rejected pending native ACL implementation and acceptance.

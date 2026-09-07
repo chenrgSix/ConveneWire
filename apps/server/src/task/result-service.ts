@@ -1,4 +1,5 @@
 import type Database from "better-sqlite3";
+import { disclosureContentDigest } from "@convene-wire/contracts/disclosure-validation";
 
 import type {
   ResultProjection,
@@ -96,6 +97,9 @@ export class ResultService {
     this.acceptanceEvidence = new AcceptanceEvidenceService(database, results, taskRepository);
   }
 
+  /** Internal projection after EvidenceDisclosureService has revalidated the authenticated reader. */
+  public getForDisclosure(resultId: string): ResultProjection { return this.requireResult(resultId); }
+
   public getAcceptanceEvidence(principal: WebPrincipal, resultId: string) {
     this.get(principal, resultId);
     return this.acceptanceEvidence.forResult(resultId);
@@ -139,8 +143,21 @@ export class ResultService {
       runId: string;
       proposal: ResultProposal;
     },
-    now: string
+    now: string,
+    disclosureGrantId?: string
   ): ResultProjection {
+    const delivery = this.database.prepare("SELECT payload_json FROM run_deliveries WHERE run_id = ?").get(input.runId) as { payload_json: string } | undefined;
+    const privateOutput = (delivery && JSON.parse(delivery.payload_json).ownerPrivateOutput === true) ||
+      this.core.getAgent(input.agentId)?.capabilities.ownerPrivateOutput === true;
+    if (privateOutput) {
+      if (!disclosureGrantId || !this.database.inTransaction) throw new Error("Private output requires an authorized disclosure transaction");
+      const grant = this.database.prepare(`SELECT intent_json FROM evidence_disclosure_grants WHERE grant_id = ? AND operation_id = ?
+        AND device_id = ? AND owner_member_id = ? AND agent_id = ? AND run_id = ? AND state = 'active' AND result_id IS NULL`)
+        .get(disclosureGrantId, input.proposal.operationId, principal.deviceId, principal.ownerMemberId, input.agentId, input.runId) as { intent_json: string } | undefined;
+      if (!grant) throw new Error("Disclosure grant does not authorize this Result");
+      const intent = JSON.parse(grant.intent_json);
+      if (Date.parse(intent.expiresAt) <= Date.parse(now) || intent.contentSha256 !== disclosureContentDigest(input.proposal.summary)) throw new Error("Disclosure content or authority changed");
+    } else if (disclosureGrantId) throw new Error("Disclosure requires a frozen private-output Run");
     const agent = this.core.getAgent(input.agentId);
     if (!agent || agent.deviceId !== principal.deviceId) {
       throw new Error("Managed Result Agent is outside the authenticated Device");
@@ -151,7 +168,7 @@ export class ResultService {
       runId: input.runId,
       actorKind: "managed_agent",
       proposal: input.proposal
-    }, now);
+    }, now, disclosureGrantId);
   }
 
   public proposeManualAgent(
@@ -182,7 +199,8 @@ export class ResultService {
       actorKind: "manual_agent" | "managed_agent";
       proposal: ResultProposal;
     },
-    now: string
+    now: string,
+    disclosureGrantId?: string
   ): ResultProjection {
     const proposal = this.validateProposal(input.proposal);
     const task = this.requireTask(proposal.taskId);
@@ -215,7 +233,7 @@ export class ResultService {
       kind: input.actorKind,
       agentId: input.agentId,
       runId: input.runId
-    }, now);
+    }, now, disclosureGrantId);
   }
 
   public proposeOrchestrator(
@@ -311,8 +329,11 @@ export class ResultService {
     task: AgentTaskRecord,
     proposal: ResultProposal,
     actor: ResultActor,
-    now: string
+    now: string,
+    disclosureGrantId?: string
   ): ResultProjection {
+    const reserved = this.database.prepare("SELECT grant_id FROM evidence_disclosure_grants WHERE operation_id = ?").get(proposal.operationId) as { grant_id: string } | undefined;
+    if (reserved && reserved.grant_id !== disclosureGrantId) throw new Error("Result operation is reserved for exact disclosure");
     const result = this.results.create({
       roomId: task.roomId,
       proposal,

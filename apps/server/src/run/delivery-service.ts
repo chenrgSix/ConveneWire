@@ -31,6 +31,7 @@ export interface DiscussionSupplementalEvidenceOffer {
 }
 
 export interface DeliveryPayload {
+  ownerPrivateOutput?: boolean;
   runId: string;
   traceId: string;
   roomId: string;
@@ -308,6 +309,8 @@ export class DeliveryService {
     }
   }
 
+  public isOwnerPrivate(runId: string): boolean { return this.getByRun(runId)?.payload.ownerPrivateOutput === true; }
+
   public getRuntimeScope(runId: string): string | undefined {
     return this.getByRun(runId)?.payload.session?.runtimeScopeId;
   }
@@ -458,6 +461,7 @@ export class DeliveryService {
     const discussionSupplementalEvidence =
       this.discussionSupplementalEvidenceOffer(run.runId, agent);
     const payload: DeliveryPayload = {
+      ...(agent.capabilities.ownerPrivateOutput === true ? { ownerPrivateOutput: true } : {}),
       runId: run.runId,
       traceId: run.traceId,
       roomId: run.roomId,

@@ -59,6 +59,7 @@ export interface DeviceRecord {
 }
 
 export interface AgentCapabilities {
+  ownerPrivateOutput?: boolean;
   governedExecution?: GovernedExecutionCapability;
   supportsHandoff: boolean;
   supportsInterrupt: boolean;

@@ -528,3 +528,11 @@ of exact disclosed bytes and Room audience, current-authority Bridge publication
 into existing Result, and atomic revoke/retry behavior. Identity and consent are
 separate; source binding is owner-attested, not semantic proof. QA-082 covers
 independent credentials locally; physical owners/devices require separate evidence.
+
+SEC-015 releases exact owner-approved text as an ordinary informational Result.
+It neither accepts the Result nor completes the Task. A disclosure grant reserves
+one operation ID; changed content or another proposer cannot reuse it. Publication
+and grant linkage commit together, with revocation ordered by the same Central
+transaction. Existing Room Result reads and the manual Agent's
+`team.list_task_results` consume these Results under their existing permissions.
+No private Run is automatically converted into a Discussion contribution.

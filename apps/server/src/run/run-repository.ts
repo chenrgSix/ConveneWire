@@ -1442,6 +1442,11 @@ export class RunRepository {
     });
   }
 
+  public isOwnerPrivateOutput(runId: string): boolean {
+    const delivery = this.database.prepare("SELECT payload_json FROM run_deliveries WHERE run_id = ?").get(runId) as { payload_json: string } | undefined;
+    return Boolean(delivery && JSON.parse(delivery.payload_json).ownerPrivateOutput === true);
+  }
+
   public listEvents(runId: string, afterSequence = 0): RunEventRecord[] {
     const rows = this.database.prepare(`
       SELECT * FROM run_events

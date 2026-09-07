@@ -224,6 +224,7 @@ export class WorkspaceLeaseService {
       "workspaceGeneration" | "artifactType"> &
       Partial<Pick<ArtifactPublicationRecord, "verificationOperationId">>,
     now: string): WorkspaceLeaseView {
+    if (this.runs.isOwnerPrivateOutput(input.runId)) throw new Error("Private Run requires exact evidence disclosure");
     const lease = this.getForDevice(principal, leaseId, now);
     if (input.artifactType === "commit" && lease.mode !== "read_capture") {
       throw new Error("Commit Artifact publication requires a capture lease");

@@ -282,8 +282,13 @@ export interface AgentPublishPayload {
 }
 
 export interface Capabilities {
-  governedExecution?:               CapabilitiesGovernedExecution;
-  invocationMode:                   InvocationMode;
+  governedExecution?: CapabilitiesGovernedExecution;
+  invocationMode:     InvocationMode;
+  /**
+   * Explicit owner-private output mode. The Bridge retains candidate text locally and emits
+   * only content-free status; disclosure requires a separate exact-content owner grant.
+   */
+  ownerPrivateOutput?:              boolean;
   supportsArtifactMaterialization?: boolean;
   supportsArtifactPublication?:     boolean;
   /**
@@ -505,8 +510,12 @@ export interface RunRequestedPayload {
   discussionSupplementalEvidence?: DiscussionSupplementalEvidence;
   idempotencyKey:                  string;
   instruction:                     string;
-  parentRunId?:                    string;
-  requesterMemberId:               string;
+  /**
+   * Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup.
+   */
+  ownerPrivateOutput?: boolean;
+  parentRunId?:        string;
+  requesterMemberId:   string;
   /**
    * Server-owned coverage ending with one separate current request. Bridge derives
    * session-local consumption from this bundle.

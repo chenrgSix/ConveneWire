@@ -357,6 +357,9 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 			SupportsStreaming: c.StreamingAgentNames[configured.Name],
 		}
 		if grants := preparedRuns.GovernedExecutionGrants[configured.Name]; len(grants) != 0 {
+			if configured.OwnerPrivateOutput {
+				return false, errors.New("private output does not support governed execution")
+			}
 			for _, grant := range grants {
 				if grant.AgentID != agentID {
 					return false, errors.New("Bridge Run preparation returned a governed grant for another Agent")
@@ -373,12 +376,16 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 		capabilities.SupportsRoomContextCoverage = &supportsRoomContextCoverage
 		supportsWorkspaceLeases := true
 		capabilities.SupportsWorkspaceLeases = &supportsWorkspaceLeases
-		supportsArtifactPublication := true
+		supportsArtifactPublication := !configured.OwnerPrivateOutput
 		capabilities.SupportsArtifactPublication = &supportsArtifactPublication
 		supportsArtifactMaterialization :=
 			c.ArtifactMaterializationAgentNames[configured.Name]
 		capabilities.SupportsArtifactMaterialization = &supportsArtifactMaterialization
-		supportsDiscussionSupplementalEvidence := true
+		supportsDiscussionSupplementalEvidence := !configured.OwnerPrivateOutput
+		if configured.OwnerPrivateOutput {
+			privateOutput := true
+			capabilities.OwnerPrivateOutput = &privateOutput
+		}
 		capabilities.SupportsDiscussionSupplementalEvidence =
 			&supportsDiscussionSupplementalEvidence
 		runtimePolicy := publishedRuntimePolicy(configured)

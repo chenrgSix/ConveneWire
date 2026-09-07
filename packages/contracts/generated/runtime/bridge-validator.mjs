@@ -222,6 +222,7 @@ const canonicalPropertyTrees = {
           "role": {},
           "capabilities": {
             "p": {
+              "ownerPrivateOutput": {},
               "governedExecution": {
                 "p": {
                   "version": {
@@ -402,6 +403,7 @@ const canonicalPropertyTrees = {
       "type": {},
       "payload": {
         "p": {
+          "ownerPrivateOutput": {},
           "runId": {},
           "traceId": {},
           "roomId": {},

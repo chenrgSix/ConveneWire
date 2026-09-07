@@ -123,6 +123,8 @@ func run(args []string) error {
 		return runArtifact(args[1:])
 	case "result":
 		return runResult(args[1:])
+	case "disclosure":
+		return runDisclosure(args[1:])
 	case "repository":
 		return runRepository(args[1:])
 	case "run":
@@ -179,6 +181,9 @@ func runResult(args []string) error {
 	selected, err := configuredAgent(loaded.Agents, strings.TrimSpace(*agentName))
 	if err != nil {
 		return err
+	}
+	if selected.OwnerPrivateOutput {
+		return fmt.Errorf("private output requires disclosure prepare and explicit owner approval")
 	}
 	identities, err := identity.LoadOrCreate(loaded.DataDir, loaded.Agents)
 	if err != nil {

@@ -73,7 +73,7 @@ export class BridgeRunEventService {
     private readonly evidenceConsumption?: ResultEvidenceConsumptionRepository,
     private readonly delivery?: Pick<
       DeliveryService, "validateRoomContextConsumption" | "getRuntimeScope"
-    >
+    > & Partial<Pick<DeliveryService, "isOwnerPrivate">>
   ) {}
 
   public applyStatus(
@@ -108,6 +108,10 @@ export class BridgeRunEventService {
       input.agentId,
       terminalStatuses.has(input.status)
     );
+    if (this.isOwnerPrivate(run) && (input.session || input.clarification ||
+      (input.error && (input.error.code !== "PRIVATE_OUTPUT_WITHHELD" || input.error.message !== "Private output remains on the owner device." || input.error.details || input.error.retryable)))) {
+      throw new Error("Private Run status must be content-free");
+    }
     const cancellation = this.runs.getCancellationIntent(run.runId);
     const preAdmissionCancellationAck =
       input.status === "canceled" &&
@@ -284,6 +288,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (
       input.content.trim().length === 0 ||
@@ -340,6 +345,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (
       input.activityId.trim().length === 0 ||
@@ -385,6 +391,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (
       input.content.length === 0 ||
@@ -422,6 +429,10 @@ export class BridgeRunEventService {
       throw new Error("Runtime provisional output exceeds 20000 characters");
     }
     return this.runs.applyEvent(run.runId, outputEvent, now);
+  }
+
+  private isOwnerPrivate(run: RunRecord): boolean {
+    return this.delivery?.isOwnerPrivate?.(run.runId) ?? this.core.getAgent(run.targetAgentId)?.capabilities.ownerPrivateOutput === true;
   }
 
   private requireOwnedRun(

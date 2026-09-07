@@ -1500,6 +1500,10 @@ export async function generateContractTypes(packageRoot) {
     ]
   ]);
   const workCodegen = createDefinitionCodegenSchemas(workSchema, [
+    ["EvidenceDisclosureIntent", "disclosureIntent"],
+    ["EvidenceDisclosureGrant", "disclosureGrant"],
+    ["EvidenceDisclosurePublishCommand", "disclosurePublishCommand"],
+    ["EvidenceDisclosureRevokeCommand", "disclosureRevokeCommand"],
     ["TaskProjection", "taskProjection"],
     ["TaskDefinitionCommand", "taskDefinitionCommand"],
     ["RunAttemptProjection", "runAttemptProjection"],
@@ -1745,6 +1749,13 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
+    goDisclosureSchema: `${JSON.stringify({
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      $id: "https://agentroom.dev/schemas/runtime/disclosure.json",
+      $defs: Object.fromEntries(["disclosureIntent", "disclosureGrant", "disclosurePublishCommand", "disclosureRevokeCommand", "disclosureReceipt"].map(kind =>
+        [kind, removeNestedSchemaIdentities(dereference(workSchema.$defs[kind], workSchema, schemas), false)]))
+    }, null, 2)}\n`,
+    goDisclosureRuntime: formatGo(await readFile(path.join(packageRoot, "src/go-disclosure-runtime.go.template"), "utf8")),
     goExecutionSchema: `${JSON.stringify({
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://agentroom.dev/schemas/runtime/go-execution.json",

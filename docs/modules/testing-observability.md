@@ -825,3 +825,11 @@ of exact disclosed bytes and Room audience, current-authority Bridge publication
 into existing Result, and atomic revoke/retry behavior. Identity and consent are
 separate; source binding is owner-attested, not semantic proof. QA-082 covers
 independent credentials locally; physical owners/devices require separate evidence.
+
+QA-082 uses current production entrypoints and separate Member/Device credentials,
+including an actual Go client against disposable Central HTTP, an in-flight
+request paused after receipt but before commit, and lost-ACK/restart recovery.
+It has no model budget and does not reuse frozen QA-079/080/081 journals.
+[The acceptance record](../acceptance/qa-082-authenticated-evidence-disclosure.md)
+separates local identity/transport evidence from physical multi-owner/device
+acceptance and from general Discussion recovery.

@@ -1,0 +1,270 @@
+{
+  "cases": [
+    {
+      "name": "exact intent",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 100
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": true
+    },
+    {
+      "name": "caller supplied authority",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 100
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z",
+        "publicKey": "self-issued"
+      },
+      "valid": false
+    },
+    {
+      "name": "empty source range",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 0
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "reverse source range",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 100,
+          "end": 50
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "unbounded source range",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 4194305
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "raw source path",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "/private/source",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 100
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "floating revision",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "HEAD",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 100
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "room_members",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "foreign audience",
+      "kind": "disclosureIntent",
+      "value": {
+        "version": 1,
+        "operationId": "op_disclosure_contract0001",
+        "agentId": "agent_disclosure_contract01",
+        "deviceId": "device_disclosure_contract01",
+        "runId": "run_disclosure_contract01",
+        "taskId": "task_disclosure_contract01",
+        "roomId": "room_disclosure_contract01",
+        "definitionRevision": 1,
+        "criteriaRevision": 1,
+        "source": {
+          "evidenceRef": "evidence_disclosure_contract01",
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contentSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "start": 0,
+          "end": 100
+        },
+        "contentSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "contentBytes": 20,
+        "audience": "everyone",
+        "expiresAt": "2026-09-07T10:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "extra grant state",
+      "kind": "disclosurePublishCommand",
+      "value": {
+        "grantId": "disclosure_contract0001",
+        "expectedRevision": 1,
+        "content": "Released.",
+        "grantState": {
+          "active": true
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "bounded publish",
+      "kind": "disclosurePublishCommand",
+      "value": {
+        "grantId": "disclosure_contract0001",
+        "expectedRevision": 1,
+        "content": "\u660e\u786e\u540c\u610f\u7684\u5185\u5bb9\u3002"
+      },
+      "valid": true
+    },
+    {
+      "name": "surrogate",
+      "kind": "disclosurePublishCommand",
+      "value": {
+        "grantId": "disclosure_contract0001",
+        "expectedRevision": 1,
+        "content": "\ud800"
+      },
+      "valid": false
+    },
+    {
+      "name": "revoke exact revision",
+      "kind": "disclosureRevokeCommand",
+      "value": {
+        "expectedRevision": 1
+      },
+      "valid": true
+    },
+    {
+      "name": "negative revision",
+      "kind": "disclosureRevokeCommand",
+      "value": {
+        "expectedRevision": -1
+      },
+      "valid": false
+    }
+  ]
+}
