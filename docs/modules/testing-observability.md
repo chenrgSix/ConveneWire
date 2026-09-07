@@ -841,6 +841,9 @@ owner-authorized stable release through exact-source main CI, protected native
 packaging, an immutable 12-asset set and independent public-download verification.
 Publication does not close physical/human/model acceptance. QA-087 repairs
 observed test-fixture blockers before selecting that release source.
+QA-088 supplies complete Git history in the CI and Release repository gates so
+offline frozen excerpts can be checked against their original commits; the
+Release's selected checkout SHA and historical journals remain immutable.
 
 [QA-085](../acceptance/qa-085-physical-two-identity-disclosure.md) separately records
 the authorized macOS/Windows technical workflow with two application identities
