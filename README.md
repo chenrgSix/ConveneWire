@@ -31,7 +31,7 @@ answer satisfies the task.
 - Current baseline:
   [convenewire_network_design_v0.2.md](convenewire_network_design_v0.2.md)
 - Stable release:
-  [ConveneWire v0.5.0](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.0)
+  [ConveneWire v0.5.1](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.1)
 - Historical evaluation candidate:
   [ConveneWire v0.5.0-rc.6](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.0-rc.6)
 - Historical baseline:
@@ -46,7 +46,7 @@ answer satisfies the task.
 - Security and clean-room audit:
   [docs/acceptance/qa-005-security-clean-room-audit.md](docs/acceptance/qa-005-security-clean-room-audit.md)
 
-Stable v0.5.0 includes Central HTTP Agents and the
+Stable v0.5.1 includes Central HTTP Agents and the
 [product experience iteration](docs/acceptance/qa-040-product-experience.md).
 It additionally packages
 [client owner collaboration entry](docs/adr/0035-connect-client-owners-to-team-collaboration.md)
@@ -57,9 +57,14 @@ interface and an advanced private-HTTPS browser-trust assistant under Bridge
 settings. It includes the streamlined 12-asset
 distribution, one verified source-build Central archive and the accepted
 Discussion review, instruction, evidence and lexical-novelty integrity fixes.
+This update adds owner-authorized private Result admission into Discussion,
+Windows private-file ACLs and clearer Task/Result evidence workflows.
+[QA-085](docs/acceptance/qa-085-physical-two-identity-disclosure.md) records real
+Mac/Windows technical acceptance with two application identities and deterministic
+Runtimes; independent human-owner governance and model quality remain separate.
 Install Central, Web and Bridge from the same release. Before upgrading,
-read the [upgrade and verification notes](docs/releases/v0.5.0.md), take a
-verified Central backup and retain the v0.4.2 packages and secrets. Website
+read the [upgrade and verification notes](docs/releases/v0.5.1.md), take a
+verified Central backup and retain the v0.5.0 packages and secrets. Website
 publication is not an application Release. Stable admission is limited to
 self-hosted trusted small Teams; packages remain unsigned and updates manual.
 

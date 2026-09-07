@@ -1,0 +1,22 @@
+v0.5.1
+
+<packaged-macos-cli>: go1.26.7
+	path	convenewire.dev/bridge/cmd/convenewire-bridge
+	mod	convenewire.dev/bridge	(devel)	
+	dep	convenewire.dev/contracts	v0.0.0
+	=>	../packages/contracts	(devel)	
+	
+	dep	github.com/coder/websocket	v1.8.15	h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=
+	dep	github.com/santhosh-tekuri/jsonschema/v6	v6.0.3	h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
+	dep	golang.org/x/text	v0.39.0	h1:UbZz4pLOvn600D6Oh6GGEI6VAmndrEBLv8/6BEXzyus=
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	-trimpath=true
+	build	CGO_ENABLED=0
+	build	GOARCH=arm64
+	build	GOOS=darwin
+	build	GOARM64=v8.0
+	build	vcs=git
+	build	vcs.revision=c061502985ef8bce4058a73733618492ca3616d8
+	build	vcs.time=2026-09-07T08:47:34Z
+	build	vcs.modified=false

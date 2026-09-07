@@ -1,0 +1,11 @@
+[convenewire-test-run] root=<owned-test-root>
+convenewire-bridge_0.5.1_linux_amd64.tar.gz: OK
+convenewire-bridge_0.5.1_linux_arm64.tar.gz: OK
+convenewire-bridge-desktop_0.5.1_darwin_arm64.zip: OK
+convenewire-bridge-desktop_0.5.1_windows_amd64.zip: OK
+convenewire-bridge-desktop_0.5.1_windows_amd64_setup.exe: OK
+convenewire-central_0.5.1_source.tar.gz: OK
+convenewire-central_0.5.1_source.SHA256SUMS.sha256: OK
+Verified Central source release for v0.5.1
+Verified 12 release assets for v0.5.1
+[convenewire-test-run] cleaned=<owned-test-root>

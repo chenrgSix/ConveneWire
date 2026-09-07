@@ -1,0 +1,215 @@
+{
+  "tag": "v0.5.1",
+  "tagObject": "0f088bc2ea80ba0746548d6d5885b9db1b7bafd2",
+  "sourceCommit": "c061502985ef8bce4058a73733618492ca3616d8",
+  "publishedAt": "2026-09-07T09:14:17Z",
+  "releaseId": 383952663,
+  "releaseUrl": "https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.1",
+  "draft": false,
+  "prerelease": false,
+  "latestVerified": true,
+  "ci": {
+    "id": 34102491087,
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/34102491087",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101679872036,
+        "name": "Desktop macOS",
+        "conclusion": "success"
+      },
+      {
+        "id": 101679872211,
+        "name": "Go",
+        "conclusion": "success"
+      },
+      {
+        "id": 101679872234,
+        "name": "Repository",
+        "conclusion": "success"
+      },
+      {
+        "id": 101679872326,
+        "name": "Desktop Windows",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "releaseWorkflow": {
+    "id": 34103517270,
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/34103517270",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 101683185770,
+        "name": "Validate draft Release",
+        "conclusion": "success"
+      },
+      {
+        "id": 101683222711,
+        "name": "Repository release gates",
+        "conclusion": "success"
+      },
+      {
+        "id": 101683222763,
+        "name": "Go release gates",
+        "conclusion": "success"
+      },
+      {
+        "id": 101685686513,
+        "name": "Build linux/arm64",
+        "conclusion": "success"
+      },
+      {
+        "id": 101685686559,
+        "name": "Build desktop Windows/amd64",
+        "conclusion": "success"
+      },
+      {
+        "id": 101685686587,
+        "name": "Build desktop macOS/arm64",
+        "conclusion": "success"
+      },
+      {
+        "id": 101685686625,
+        "name": "Build linux/amd64",
+        "conclusion": "success"
+      },
+      {
+        "id": 101685686714,
+        "name": "Build Central source release",
+        "conclusion": "success"
+      },
+      {
+        "id": 101686509911,
+        "name": "Attach ConveneWire binaries",
+        "conclusion": "success"
+      },
+      {
+        "id": 101686617313,
+        "name": "Verify uploaded Release",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "assetCount": 12,
+  "totalBytes": 49347908,
+  "outerSha256": "b56eeded1040025b641aba45f5dfc361d96b4cbd7bc4d0ea1665fed79cb1805f",
+  "assets": [
+    {
+      "id": 548506170,
+      "name": "COMMERCIAL-LICENSE.md",
+      "bytes": 2070,
+      "sha256": "9c652c6c66e86b99729fd52b1fb8b83e73f7f28a1741a4038125f8ff510e4dca",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/COMMERCIAL-LICENSE.md"
+    },
+    {
+      "id": 548506182,
+      "name": "convenewire-bridge-desktop_0.5.1_darwin_arm64.zip",
+      "bytes": 9633196,
+      "sha256": "ec77a4fe6a9b06f201cdc5e47732f192a2aca1c09a89c59158b64c430920fd30",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-bridge-desktop_0.5.1_darwin_arm64.zip"
+    },
+    {
+      "id": 548506186,
+      "name": "convenewire-bridge-desktop_0.5.1_windows_amd64.zip",
+      "bytes": 10858454,
+      "sha256": "f3a694893375d01d1e523d92d0aa65f10eefe4e37863300a23870c7de393c3bb",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-bridge-desktop_0.5.1_windows_amd64.zip"
+    },
+    {
+      "id": 548506189,
+      "name": "convenewire-bridge-desktop_0.5.1_windows_amd64_setup.exe",
+      "bytes": 9890628,
+      "sha256": "620ca41eb5385fd0daa30d3e8dc0f9fff4b0f7964344e00e3474e9a59c1f414a",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-bridge-desktop_0.5.1_windows_amd64_setup.exe"
+    },
+    {
+      "id": 548506191,
+      "name": "convenewire-bridge_0.5.1_linux_amd64.tar.gz",
+      "bytes": 4538941,
+      "sha256": "e4d23a825724b4a8d25342bdbe83e8943b71e0bd13a08209dc926371ddbeca66",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-bridge_0.5.1_linux_amd64.tar.gz"
+    },
+    {
+      "id": 548506190,
+      "name": "convenewire-bridge_0.5.1_linux_arm64.tar.gz",
+      "bytes": 4106618,
+      "sha256": "e2bc24862ed9833648d6f7da589a2ca1f61a7040a6ceffb66fd980820d6d0e0f",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-bridge_0.5.1_linux_arm64.tar.gz"
+    },
+    {
+      "id": 548506201,
+      "name": "convenewire-central_0.5.1_source.SHA256SUMS.sha256",
+      "bytes": 77,
+      "sha256": "dab7733af3e6982fa6e63e50532f602d30e6091d7f8b44fed9f4c105457e5785",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-central_0.5.1_source.SHA256SUMS.sha256"
+    },
+    {
+      "id": 548506203,
+      "name": "convenewire-central_0.5.1_source.tar.gz",
+      "bytes": 10305891,
+      "sha256": "242abc4249c86e157cb5fcf8c29173dc8197a8cccb39756d5d53b6a36bc142a9",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/convenewire-central_0.5.1_source.tar.gz"
+    },
+    {
+      "id": 548506167,
+      "name": "LICENSE",
+      "bytes": 9471,
+      "sha256": "91ba8b540a0674ed2cf6ff4fe7a277ebd92e672eead5edd6f9c1994d3a854ef5",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/LICENSE"
+    },
+    {
+      "id": 548506171,
+      "name": "NOTICE",
+      "bytes": 293,
+      "sha256": "e693f578273a8055378dc63d5fa0d92235a0bfc30de871550a3dcf04fa5af7c5",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/NOTICE"
+    },
+    {
+      "id": 548506169,
+      "name": "SHA256SUMS",
+      "bytes": 799,
+      "sha256": "b56eeded1040025b641aba45f5dfc361d96b4cbd7bc4d0ea1665fed79cb1805f",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/SHA256SUMS"
+    },
+    {
+      "id": 548506168,
+      "name": "TRADEMARKS.md",
+      "bytes": 1470,
+      "sha256": "a5ab3ac04b9bd5c8970956b8b07bf105048e94f9c2a303f81a66b7975624156d",
+      "url": "https://github.com/chenrgSix/ConveneWire/releases/download/v0.5.1/TRADEMARKS.md"
+    }
+  ],
+  "checks": {
+    "authenticatedDraftVerifier": "passed",
+    "anonymousPublicFileDigests": "passed",
+    "anonymousPublicTaggedVerifier": "passed",
+    "publishedMacCliVersionAndSource": "passed",
+    "windowsNativeUpgradeBaseline": "v0.5.0",
+    "externalModelCalls": 0
+  },
+  "priorCiAttempts": [
+    {
+      "id": 34099885604,
+      "source": "97f967f",
+      "outcome": "failed: migration-88 fixture expectations and React teardown; QA-087"
+    },
+    {
+      "id": 34101498615,
+      "source": "8ee7d33",
+      "outcome": "failed: historical Git objects absent from depth-one checkout; QA-088"
+    }
+  ],
+  "artifactSha256": {
+    "draft-verification.txt": "819c15502c4d0c1f3991881422a49989f0504fde1e704b9cd63f1eb47ea8f238",
+    "public-verification.txt": "819c15502c4d0c1f3991881422a49989f0504fde1e704b9cd63f1eb47ea8f238",
+    "packaged-cli-version.txt": "916c38034facf963605fad83e5f836cbd030c2dcfdc042985a6889aa2a6f1811"
+  },
+  "limits": [
+    "trusted-small-Team stable scope; unsigned packages and manual upgrades",
+    "physical QA-085 used deterministic Runtimes and two application identities under one controller",
+    "independent human-owner governance and model-quality claims remain separate",
+    "publication does not upgrade an existing installation"
+  ]
+}

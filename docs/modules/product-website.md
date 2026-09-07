@@ -55,8 +55,12 @@ generic asset. Installation links and stable-version claims must be rechecked
 when application packages change.
 
 Stable-version copy follows the actual verified application Release. Moving a
-download link to `v0.5.0` does not promise later main-branch changes or remove
+download link to `v0.5.1` does not promise later main-branch changes or remove
 the HTTP-only Agent, provider-credential, backup and physical-acceptance limits.
+QA-086 updates the stable and previous-version links only after verified v0.5.1
+publication. It preserves the distinction between physical two-test-identity
+transport and independent human-owner or model-quality acceptance; exact Pages
+source and public-byte comparison remain separate publication evidence.
 
 ## Verification
 
