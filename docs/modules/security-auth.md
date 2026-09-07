@@ -444,3 +444,12 @@ Contracts. Every transport and domain service depends on Security decisions.
 ## Client owner collaboration entry
 
 Security owns ADR-0035 member-aware pairing, independent client access grants, 60-second single-use browser tickets and Team-scoped Web sessions capped at ordinary-member authority. Device-only credentials cannot impersonate a human. Existing Devices receive no grants automatically; explicit re-pairing confirms real ownership. Grant, Device, credential, membership and Team eligibility are revalidated on every derived session authentication. Account recovery and durable credential issuance remain outside these sessions.
+
+## Exact owner evidence disclosure
+
+[ADR-0056](../adr/0056-authorize-exact-evidence-disclosure.md) defines the
+SEC-015 production slice: owner-private collection, full owner-session approval
+of exact disclosed bytes and Room audience, current-authority Bridge publication
+into existing Result, and atomic revoke/retry behavior. Identity and consent are
+separate; source binding is owner-attested, not semantic proof. QA-082 covers
+independent credentials locally; physical owners/devices require separate evidence.

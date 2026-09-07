@@ -519,3 +519,12 @@ behavioral milestones.
 Contracts, Team/Room, Registry, Persistence, Security, Workspace Coordination,
 and Artifact Content Transport. Run and Discussion
 Orchestration consume Task identity but keep ownership of execution state.
+
+## Exact owner evidence disclosure
+
+[ADR-0056](../adr/0056-authorize-exact-evidence-disclosure.md) defines the
+SEC-015 production slice: owner-private collection, full owner-session approval
+of exact disclosed bytes and Room audience, current-authority Bridge publication
+into existing Result, and atomic revoke/retry behavior. Identity and consent are
+separate; source binding is owner-attested, not semantic proof. QA-082 covers
+independent credentials locally; physical owners/devices require separate evidence.

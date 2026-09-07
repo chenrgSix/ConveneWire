@@ -731,3 +731,10 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | FUT-004 | DONE | Promote Artifact and structured-result transport | implemented by TASK-003 when Message-only collaboration proved insufficient |
 | FUT-005 | PLANNED | Attach to an existing visible Runtime Session | Runtime exposes a stable supported contract |
 | FUT-006 | PLANNED | Add an optional Relay/Tunnel network mode | direct-HTTPS onboarding metrics justify a separately accepted transport, privacy, address-ownership, credential-isolation and availability contract |
+
+## Authenticated evidence disclosure
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| SEC-015 | ACTIVE | Authorize exact owner evidence and fence private Bridge output | SEC-013, BRG-044, TASK-014, QA-081 | ADR-0056; generated contracts, exact owner consent, private output boundary, actual Bridge/Result publication, atomic revoke and replay, focused negative and interoperability checks plus documentation and local commits |
+| QA-082 | READY | Accept authenticated disclosure with independent credentials | SEC-015 | [Production-path acceptance](acceptance/qa-082-authenticated-evidence-disclosure.md); disposable two-Member/Device integration, source scope, egress, revoked and ambiguous-commit checks; no external model or physical-owner claim |

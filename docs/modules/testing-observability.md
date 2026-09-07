@@ -816,3 +816,12 @@ authenticated owners and in-flight revocation remain unverified.
 
 All modules. Verification uses public contracts and avoids reaching through
 ownership boundaries solely to make tests easier.
+
+## Exact owner evidence disclosure
+
+[ADR-0056](../adr/0056-authorize-exact-evidence-disclosure.md) defines the
+SEC-015 production slice: owner-private collection, full owner-session approval
+of exact disclosed bytes and Room audience, current-authority Bridge publication
+into existing Result, and atomic revoke/retry behavior. Identity and consent are
+separate; source binding is owner-attested, not semantic proof. QA-082 covers
+independent credentials locally; physical owners/devices require separate evidence.

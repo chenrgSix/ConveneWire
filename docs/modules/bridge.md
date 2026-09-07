@@ -1543,3 +1543,12 @@ ordinary overview keeps Team and Room entry only; the advanced private-HTTPS
 browser trust action belongs beside Central connection settings and is hidden
 as one unit whenever no current validated private-CA projection exists. This
 relocation changes no certificate, copy, entry-ticket or trust-store authority.
+
+## Exact owner evidence disclosure
+
+[ADR-0056](../adr/0056-authorize-exact-evidence-disclosure.md) defines the
+SEC-015 production slice: owner-private collection, full owner-session approval
+of exact disclosed bytes and Room audience, current-authority Bridge publication
+into existing Result, and atomic revoke/retry behavior. Identity and consent are
+separate; source binding is owner-attested, not semantic proof. QA-082 covers
+independent credentials locally; physical owners/devices require separate evidence.
