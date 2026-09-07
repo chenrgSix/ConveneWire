@@ -215,3 +215,28 @@ node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- \
   go test -race ./internal/runtime ./internal/result ./internal/delivery ./internal/connection
 npm run test --workspace @convene-wire/contracts
 ```
+
+## Discussion disclosure admission (DISC-021)
+
+To use the existing private workflow in Discussion, assign the private Agents and
+at least one shared-output Finalizer to an active Task. Select all eligible
+participants and all-settled completion when every owner should contribute; private
+Agents do not support read-only quorum. Allow sufficient Wave time for owner review.
+Use the SEC-015 prepare/approve/publish commands above for each completed private
+Run. The turn waits for release, then automatically admits its exact Result.
+Finish or the Wave deadline closes missing evidence without another Runtime call.
+
+Provider-free local checks:
+
+```bash
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- \
+  node --import tsx --test apps/server/test/discussion-disclosure.test.ts
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- \
+  node --import tsx --test tests/e2e/disclosure-discussion.test.ts
+node scripts/test/run-with-temp-root.mjs --cwd apps/web --timeout-ms 120000 -- \
+  node --import tsx --test test/discussion-wave-status.test.tsx
+```
+
+The cross-process test builds two real Go Bridges but uses synthetic Runtime output
+and disposable credentials on one host. Physical devices and external models require
+the separate [QA-084 preparation](acceptance/qa-084-physical-disclosure-discussion.md).

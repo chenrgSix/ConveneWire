@@ -535,4 +535,7 @@ one operation ID; changed content or another proposer cannot reuse it. Publicati
 and grant linkage commit together, with revocation ordered by the same Central
 transaction. Existing Room Result reads and the manual Agent's
 `team.list_task_results` consume these Results under their existing permissions.
-No private Run is automatically converted into a Discussion contribution.
+[ADR-0057](../adr/0057-admit-authorized-disclosure-to-discussion.md) extends that
+initial boundary for existing private Discussion turns: a committed exact Result
+may be admitted once, preserving its canonical reference and source provenance.
+Private candidate output still cannot become a contribution without owner release.

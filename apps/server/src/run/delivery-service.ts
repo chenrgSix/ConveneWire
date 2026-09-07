@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import type Database from "better-sqlite3";
+import { canDeliverDisclosureDiscussion } from "../discussion/discussion-disclosure-evidence.js";
 
 import type { BridgeConnectionRegistry } from "../bridge/bridge-connection-registry.js";
 import type { CoreRepository } from "../data/core-repository.js";
@@ -162,6 +163,13 @@ export class DeliveryService {
       return this.getByRun(runId);
     }
     const run = this.runs.getRun(runId);
+    if (run && !canDeliverDisclosureDiscussion(this.database, runId)) {
+      if (run.state === "queued") this.runs.applyEvent(runId, {
+        type: "status", sequence: run.lastSequence + 1, status: "failed",
+        error: { code: "DISCLOSURE_CONSUMER_UNAVAILABLE", message: "Discussion evidence consumer is no longer authorized.", retryable: false }
+      }, this.clock());
+      return undefined;
+    }
     if (run?.state === "queued" && Date.parse(run.deadlineAt) <= Date.parse(this.clock())) {
       this.runs.expireQueued(run.roomId, this.clock());
       return undefined;
@@ -224,6 +232,7 @@ export class DeliveryService {
       !run ||
       !agent ||
       !delivery ||
+      !canDeliverDisclosureDiscussion(this.database, runId) ||
       run.traceId !== traceId ||
       delivery.traceId !== traceId ||
       run.targetAgentId !== agentId ||

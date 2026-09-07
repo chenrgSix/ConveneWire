@@ -1561,3 +1561,12 @@ current private capability receive no private delivery. Explicit
 `disclosure prepare` / `disclosure publish` reuse pairing credentials and the
 production Result HTTP transport. Commands, POSIX storage requirements and the
 owner Web approval workflow are in [development commands](../development-commands.md#exact-owner-evidence-disclosure-sec-015).
+
+## Private Discussion contributions
+
+[ADR-0057](../adr/0057-admit-authorized-disclosure-to-discussion.md) reuses the
+SEC-015 local candidate and explicit prepare/publish commands. Central waits for
+the resulting approved Result; Bridge does not keep a Runtime active while waiting
+for consent and does not publish private output as an ordinary reply. Existing
+wire contracts are unchanged. Reconnect delivery checks current evidence-consumer
+authority; Windows private mode remains unsupported.

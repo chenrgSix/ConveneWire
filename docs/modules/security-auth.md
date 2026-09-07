@@ -462,3 +462,12 @@ certifies consent and attribution, not semantic correctness. The capability is a
 Bridge transport boundary, not a sandbox for arbitrary Runtime network access.
 The initial owner-only local store is POSIX; Windows private-mode opt-in is
 rejected pending native ACL implementation and acceptance.
+
+## Discussion disclosure consumption
+
+[ADR-0057](../adr/0057-admit-authorized-disclosure-to-discussion.md) allows only
+committed Room-audience Result text into Discussion inputs. It preserves source
+owner consent and current consumer membership/assignment, Device state and Task
+revision checks at dispatch, retry and acceptance. Input freezing never grants
+new read authority. Earlier transmitted content cannot be recalled, and source
+binding remains an owner attestation rather than semantic proof.

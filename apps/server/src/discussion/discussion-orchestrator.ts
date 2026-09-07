@@ -185,7 +185,7 @@ export class DiscussionOrchestrator {
       clock,
       referenceSources
     );
-    this.settlement = new WaveSettlementService(core, repository, runs);
+    this.settlement = new WaveSettlementService(core, repository, runs, referenceSources.disclosures);
   }
 
   public create(
@@ -270,6 +270,9 @@ export class DiscussionOrchestrator {
     const policy = resolvePolicy(input.policy);
     const mode = input.mode ?? "round_robin";
     const outputMode = input.outputMode ?? "final_answer";
+    if (outputMode !== "none" && participantAgents.every(agent => agent.capabilities.ownerPrivateOutput === true)) {
+      throw new Error("Discussion final output requires a shared-output Finalizer participant");
+    }
     if (mode !== "round_robin" && mode !== "review") {
       throw new Error("Discussion mode must be round_robin or review");
     }
@@ -530,6 +533,10 @@ export class DiscussionOrchestrator {
   }
 
   public onRunTerminal(runId: string): DiscussionMutationResult | null {
+    return this.repository.atomic(() => this.onRunTerminalWithinTransaction(runId));
+  }
+
+  private onRunTerminalWithinTransaction(runId: string): DiscussionMutationResult | null {
     const settlement = this.settlement.settle(runId, this.clock());
     if (!settlement) return null;
     const discussion = this.requireDiscussion(settlement.discussionId);
@@ -554,8 +561,8 @@ export class DiscussionOrchestrator {
     return this.advanceSettledWave(
       discussion,
       settlement.wave,
-      settlement.turns.filter(({ turnId }) => acceptedTurnIds.has(turnId)),
-      settlement.turns,
+      turns.filter(({ turnId }) => acceptedTurnIds.has(turnId)),
+      turns,
       seal
     );
   }
@@ -743,6 +750,14 @@ export class DiscussionOrchestrator {
 
   public sweepDueWaves(): RunRecord[] {
     const scheduled = new Map<string, RunRecord>();
+    // Committed Results are the durable notification. A lost HTTP response or restart
+    // cannot lose admission; callbacks remain an optional latency optimization.
+    for (const wave of this.repository.listOpenWaves()) {
+      for (const turn of this.repository.listTurnsForWave(wave.waveId)) {
+        if (!turn.runId || terminalTurnStates.has(turn.state) || !this.runs.isOwnerPrivateOutput(turn.runId)) continue;
+        for (const run of this.onRunTerminal(turn.runId)?.scheduledRuns ?? []) scheduled.set(run.runId, run);
+      }
+    }
     for (const run of this.reconcileDueQuorums(Date.parse(this.clock()))) {
       scheduled.set(run.runId, run);
     }
@@ -832,11 +847,11 @@ export class DiscussionOrchestrator {
     );
     const successfulResults = projectionTurns.flatMap((turn) => {
       if (turn.state !== "completed" || !turn.outputMessageId) return [];
-      const output = this.core.getMessage(turn.outputMessageId);
-      if (!output) return [];
+      const reply = this.evidence.contributionReply(turn);
+      if (reply === undefined) return [];
       return [{
         participantOrdinal: turn.waveMemberOrdinal ?? 0,
-        reply: output.content,
+        reply,
         assessment: turn.assessment,
         speakerIsReviewer: participantByAgent.get(turn.speakerAgentId)?.role === "reviewer",
         verifiedEvidenceRefs: this.evidence.verifyEvidenceRefs(
@@ -1088,7 +1103,7 @@ export class DiscussionOrchestrator {
       discussion,
       this.repository.listParticipants(discussion.discussionId),
       discussion.currentWave ?? 0
-    );
+    ).filter(({ agentId }) => this.core.getAgent(agentId)?.capabilities.ownerPrivateOutput !== true);
     if (participants.length === 0) {
       this.evidence.appendFallbackConclusion(
         discussion,
@@ -1377,6 +1392,7 @@ export class DiscussionOrchestrator {
   ): boolean {
     return Boolean(
       agent?.enabled && agent.integrationMode === "managed" && agent.deviceId &&
+      agent.capabilities.ownerPrivateOutput !== true &&
       agent.runtimePolicy?.filesystemAccess === "read-only" &&
       agent.capabilities.supportsDiscussionSupplementalEvidence === true &&
       this.core.getDevice(agent.deviceId)?.status === "active"

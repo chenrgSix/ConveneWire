@@ -81,7 +81,7 @@ const agents = [{
 function installFixture(input: {
   clarificationAnswers?: string[];
   clarifications?: Array<Record<string, unknown>>;
-  discussionState: "waiting_human" | "completed";
+  discussionState: "active" | "waiting_human" | "completed";
   currentWave: number;
   messages?: unknown[];
   runs: unknown[];
@@ -275,6 +275,29 @@ test("waiting Discussion keeps the just-closed partial Wave visible", async () =
     cleanup();
     dom.window.close();
   }
+});
+
+test("completed private Runtime remains a waiting contribution until owner release", async () => {
+  const dom = installDom();
+  installFixture({ currentWave: 1, discussionState: "active",
+    runs: [{ runId: "run_private", state: "completed", targetAgentId: agents[0]!.agentId,
+      triggerMessageId: "message_private", updatedAt: "2026-08-24T00:02:00.000Z" }],
+    turns: [{ kind: "discussion", runId: "run_private", speakerAgentId: agents[0]!.agentId,
+      state: "working", terminalReason: "awaiting_owner_disclosure", turnId: "turn_private",
+      waveId: "wave_private", waveMemberOrdinal: 0 }],
+    waves: [{ expectedMembers: 1, ordinal: 1, phase: "contribution", state: "open", waveId: "wave_private" }]
+  });
+  const { cleanup, fireEvent, render, within } = await import("@testing-library/react");
+  try {
+    const view = render(<App />);
+    fireEvent.click((await view.findAllByRole("button", { name: "对话" }))[0]!);
+    const panel = await view.findByRole("region", { name: "当前智能体讨论" });
+    within(panel).getByLabelText("智能体进度 0/1");
+    fireEvent.click(within(panel).getByRole("button", { name: /展开讨论详情/u }));
+    within(panel).getByText("等待授权发布");
+    within(panel).getByText("原因：私有运行已完成，等待所属成员授权发布");
+    within(panel).getByText("0/1 已结束");
+  } finally { cleanup(); dom.window.close(); }
 });
 
 test("quorum policy, selection, seal and content-free late evidence remain auditable", async () => {

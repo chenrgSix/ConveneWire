@@ -148,3 +148,23 @@ Agent 和服务层 Result 调用，不能等同真实多人、多设备隔离或
 
 [ADR-0043](adr/0043-remove-discussion-token-cost-accounting.md) 继续排除 token
 和费用统计，保留实际 Run、轮次、槽位与耗时。交付状态只在 [TASKS.md](TASKS.md)。
+
+## 已授权私有证据接入 Discussion
+
+[ADR-0057](adr/0057-admit-authorized-disclosure-to-discussion.md) 将已授权 Result
+接回生产 Discussion。私有 Agent 完成后，本轮等待资料所属成员检查并批准具体
+内容，再由 Bridge 发布 Result；该 Result 自动成为原 turn 的固定证据引用。
+Finalizer 必须是能够发布共享答案的 Agent，输入同时保留来源身份、版本和未决项。
+
+运行完成不等于已经贡献证据。等待期间界面显示“等待授权发布”，不会重复启动
+Agent。达到 Wave 截止时间或主动结束等待后，缺少的证据明确记为未解决；迟到发布
+仍可在 Task 中读取，但不会改写已关闭的 turn 或已生成的 Finalizer 输入。
+
+建议在需要每个资料域参与时选择全部符合条件的成员和 all-settled 策略，留足
+人工审核时间。私有 Agent 不适用 read-only quorum。批准面向 Room 成员，不是
+仅限某个 Finalizer，也不等于证明内容正确或接受交付。输入超过预算会明确标注
+省略或截断，不能据此声称完整证据已被使用。
+
+使用步骤见[开发命令](development-commands.md#discussion-disclosure-admission-disc-021)。
+[QA-083](acceptance/qa-083-discussion-disclosure.md) 验证本地真实 Bridge 进程链路；
+真实不同 Owner 和物理设备仍需 [QA-084](acceptance/qa-084-physical-disclosure-discussion.md)。

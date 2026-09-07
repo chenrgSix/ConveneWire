@@ -528,6 +528,13 @@ export class DiscussionRepository {
     };
   }
 
+  public awaitDisclosure(turnId: string, now: string): void {
+    this.database.prepare(`UPDATE discussion_turns SET state = 'working',
+      terminal_reason = 'awaiting_owner_disclosure', updated_at = ?
+      WHERE turn_id = ? AND state NOT IN ('completed', 'failed', 'canceled')
+        AND terminal_reason IS NOT 'awaiting_owner_disclosure'`).run(now, turnId);
+  }
+
   public findTurnByRun(runId: string): DiscussionTurn | undefined {
     const row = this.database.prepare(`
       SELECT * FROM discussion_turns WHERE run_id = ?

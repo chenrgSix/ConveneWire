@@ -34,6 +34,7 @@ function waveMemberState(
   if (turn.state === "completed") return "completed";
   if (turn.state === "failed") return "failed";
   if (turn.state === "canceled") return "canceled";
+  if (turn.terminalReason === "awaiting_owner_disclosure") return "working";
   if (run) {
     if (run.state === "completed") return "completed";
     if (run.state === "canceled") return "canceled";
@@ -102,6 +103,10 @@ function terminalReasonLabel(reason: string, locale: Locale): string {
   const normalized = reason.replaceAll("_", " ");
   if (locale === "en") {
     const labels: Record<string, string> = {
+      awaiting_owner_disclosure: "Run complete; waiting for owner-approved evidence",
+      disclosure_released: "Owner-approved Result admitted",
+      disclosure_unavailable: "No eligible evidence released before closing",
+      disclosure_canceled: "Disclosure contribution canceled",
       completed_without_reply: "Completed without a reply",
       agent_unavailable: "Agent unavailable",
       discussion_canceled_before_dispatch: "Discussion canceled before dispatch",
@@ -116,6 +121,10 @@ function terminalReasonLabel(reason: string, locale: Locale): string {
     return labels[reason] ?? normalized;
   }
   const labels: Record<string, string> = {
+    awaiting_owner_disclosure: "私有运行已完成，等待所属成员授权发布",
+    disclosure_released: "已接纳授权发布的 Result",
+    disclosure_unavailable: "本轮结束前没有可接纳的授权证据",
+    disclosure_canceled: "已取消本轮私有贡献",
     completed_without_reply: "已结束但没有返回回复",
     agent_unavailable: "智能体不可用",
     discussion_canceled_before_dispatch: "投递前讨论已取消",
@@ -296,7 +305,9 @@ export function DiscussionStatus({
                           <small>{locale === "zh-CN" ? "原因：" : "Reason: "}{terminalReasonLabel(turn.terminalReason, locale)}</small>
                         )}
                       </span>
-                      <span>{waveMemberStateLabel(state, locale)}</span>
+                      <span>{turn.terminalReason === "awaiting_owner_disclosure"
+                        ? (locale === "zh-CN" ? "等待授权发布" : "Awaiting owner release")
+                        : waveMemberStateLabel(state, locale)}</span>
                     </li>
                   ))}
                 </ul>

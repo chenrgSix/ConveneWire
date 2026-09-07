@@ -3,7 +3,7 @@ import { assertDisclosure } from "@convene-wire/contracts/disclosure-validation"
 import { bearerToken, noStore } from "./http-helpers.js";
 import type { ServerRouteContext } from "./route-context.js";
 
-export function registerEvidenceDisclosureRoutes({ app, auth, principal, clock, evidenceDisclosures, teamChanges }: ServerRouteContext): void {
+export function registerEvidenceDisclosureRoutes({ app, auth, principal, clock, evidenceDisclosures, teamChanges, advanceDiscussion }: ServerRouteContext): void {
   app.post("/api/evidence-disclosures", async (request, reply) => {
     assertDisclosure("disclosureIntent", request.body);
     const grant = evidenceDisclosures.approve(principal(request), request.body as EvidenceDisclosureIntent, clock());
@@ -25,6 +25,10 @@ export function registerEvidenceDisclosureRoutes({ app, auth, principal, clock, 
     const device = auth.authenticateDevice(bearerToken(request), clock());
     assertDisclosure("disclosurePublishCommand", request.body);
     const receipt = evidenceDisclosures.publish(device, request.body as EvidenceDisclosurePublishCommand, clock());
+    // Publication remains committed if scheduling fails; the ordinary sweep/recovery
+    // reconciles from the Result rather than asking the owner to disclose again.
+    try { await advanceDiscussion(receipt.grant.intent.runId); }
+    catch { app.log.error({ event: "discussion.disclosure.reconcile_pending", runId: receipt.grant.intent.runId }, "Disclosure committed; Discussion reconciliation pending"); }
     teamChanges.notify(device.teamId, { kind: "room", roomId: receipt.result.roomId });
     noStore(reply); return receipt;
   });

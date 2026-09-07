@@ -833,3 +833,11 @@ It has no model budget and does not reuse frozen QA-079/080/081 journals.
 [The acceptance record](../acceptance/qa-082-authenticated-evidence-disclosure.md)
 separates local identity/transport evidence from physical multi-owner/device
 acceptance and from general Discussion recovery.
+
+## Governed Discussion disclosure acceptance
+
+[QA-083](../acceptance/qa-083-discussion-disclosure.md) covers production Result
+admission, bounded owner waiting, immutable inputs, consumer authority and recovery,
+including two actual Go Bridge processes on one disposable host. No model quality
+or physical multi-owner inference follows. [QA-084](../acceptance/qa-084-physical-disclosure-discussion.md)
+prepares separately authorized physical acceptance without running it.

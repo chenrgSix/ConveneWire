@@ -144,6 +144,7 @@ import { IntegratedCommitMaterializer } from
 import { registerTeamRoomRoutes } from "./http/team-room-routes.js";
 import { registerWorkbenchRoutes } from "./http/workbench-routes.js";
 import { DiscussionOrchestrator } from "./discussion/discussion-orchestrator.js";
+import { canDeliverDisclosureDiscussion, DiscussionDisclosureEvidence } from "./discussion/discussion-disclosure-evidence.js";
 import { DiscussionRepository } from "./discussion/discussion-repository.js";
 import { DiscussionSupplementalEvidenceService } from
   "./discussion/discussion-supplemental-evidence-service.js";
@@ -753,7 +754,8 @@ export async function createServerApp(
       artifacts: artifactRepository,
       results: resultRepository,
       memories: memoryEntries,
-      acceptance: results.acceptanceEvidence
+      acceptance: results.acceptanceEvidence,
+      disclosures: new DiscussionDisclosureEvidence(database, resultRepository)
     }
   );
   let discussionSweepTimer: ReturnType<typeof setInterval> | undefined;
@@ -769,6 +771,13 @@ export async function createServerApp(
     if (new Set([
       "completed", "failed", "canceled", "expired", "outcome_unknown"
     ]).has(run.state)) return run;
+    if (!canDeliverDisclosureDiscussion(database, run.runId)) {
+      const failed = runRepository.applyEvent(run.runId, { type: "status", sequence: run.lastSequence + 1,
+        status: "failed", error: { code: "DISCLOSURE_CONSUMER_UNAVAILABLE",
+          message: "Discussion evidence consumer is no longer authorized.", retryable: false } }, clock()).run;
+      await advanceDiscussion(failed.runId);
+      return failed;
+    }
     const agent = core.getAgent(run.targetAgentId);
     const adapter = fakeAdapters.get(run.targetAgentId);
     if (adapter) {

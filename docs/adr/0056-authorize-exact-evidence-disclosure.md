@@ -94,3 +94,8 @@ Existing Room Result reads and `team.list_task_results` expose only the released
 Result to an authorized consumer. Private Runs are not automatically admitted as
 Discussion turns or injected into Finalizer instructions; production Discussion
 scheduling, contribution acceptance and recovery remain unchanged.
+
+ADR-0057 extends this initial scope with exact released Result admission for
+private Discussion turns. Its waiting, input-freezing and consumer-authorization
+rules replace the automatic-admission exclusion for that bounded path; the local
+output, exact disclosure consent and publication-revocation boundaries remain.
