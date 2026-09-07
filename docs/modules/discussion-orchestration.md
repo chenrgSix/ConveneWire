@@ -653,3 +653,12 @@ and `DISC-009`; structured finalization-to-plan delivery is completed by
 
 Contracts, Team/Room, Run Orchestration, Runtime Adapters, Persistence,
 Security, Web UI, and Testing/Observability.
+
+## Authorized private Result admission
+
+[ADR-0057](../adr/0057-admit-authorized-disclosure-to-discussion.md) defines
+DISC-021: existing private contribution turns wait within their Wave deadline for
+an exact owner-approved Result. The canonical turn retains its admitted Result
+reference; existing Run instructions freeze bounded released evidence and missing
+sources for a shared-output Finalizer. No private Runtime body or implicit consent
+may enter the shared path. Delivery status is recorded only in TASKS.md.
