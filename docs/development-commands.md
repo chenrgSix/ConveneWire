@@ -150,9 +150,12 @@ capabilities or treat generated contracts as runtime acceptance.
 This opt-in path uses an already paired Bridge and the source owner's full Web
 session. It does not require model calls. Set `ownerPrivateOutput: true` on a
 selected local Agent and restart its Bridge to advertise the mode. Ordinary
-Agents are unchanged. Private collection currently requires POSIX owner-only
-storage; Windows configuration rejects this opt-in until native ACL acceptance
-is implemented. Do not enable governed execution on the same private Agent.
+Agents are unchanged. Private collection requires POSIX owner-only storage or
+Windows local storage with a protected current-user/LocalSystem DACL, as defined
+by [ADR-0058](adr/0058-protect-windows-private-output.md). Windows refuses weak
+existing ACLs, linked/reparse paths and volumes without persistent ACLs. It does
+not silently repair existing files or support UNC private stores. Do not enable
+governed execution on the same private Agent.
 
 A completed private Run saves its candidate under
 `<dataDir>/private-output/<runId>.txt` with owner-only permissions. Inspect it
@@ -240,3 +243,28 @@ node scripts/test/run-with-temp-root.mjs --cwd apps/web --timeout-ms 120000 -- \
 The cross-process test builds two real Go Bridges but uses synthetic Runtime output
 and disposable credentials on one host. Physical devices and external models require
 the separate [QA-084 preparation](acceptance/qa-084-physical-disclosure-discussion.md).
+
+## Windows private storage (BRG-076)
+
+Use an existing local data directory. The Bridge creates its protected
+`private-output` child before Runtime startup and exclusively creates candidate
+files. Prepared bundles use the same private-file boundary. An existing weak
+private directory is rejected; the owner must deliberately choose or repair the
+local location. Windows administrators and processes under the same account are
+not isolated from each other by this feature.
+
+Focused disposable verification:
+
+```bash
+node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- \
+  go test -race ./internal/privatefs ./internal/runtime ./internal/result
+```
+
+For native Windows execution, build test executables with
+`GOOS=windows GOARCH=amd64 go test -c` for `./internal/privatefs` and
+`./internal/runtime`, then copy only those binaries to an approved test root.
+Set process-local `TEMP` and `TMP` to an owned subdirectory. In PowerShell quote
+Go test arguments, for example `& '.\privatefs.test.exe' '-test.v'` and
+`& '.\runtime.test.exe' '-test.v' '-test.run=Private'`. No machine-wide Go install
+is required for native execution of those cross-compiled tests. Preserve the
+binary digests and native output; remove only the owned test artifacts.

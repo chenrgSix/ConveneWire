@@ -5,7 +5,7 @@ in TASKS.md. QA-083's two local Bridge processes do not satisfy this acceptance.
 
 ## Required owner decisions
 
-Identify two actual owners, each one's POSIX device and private workspace, the
+Identify two actual owners, each one's supported device and private workspace, the
 target Central installation and exact installed build. Each owner authorizes their
 own installation/configuration and selects a non-sensitive fixed source snapshot
 plus exact text permitted to enter the shared Room. No credential or private
@@ -14,8 +14,11 @@ source needs to be transferred to the other owner or Central.
 Use a shared-output Finalizer on an authorized device. If a real model is used,
 freeze its model/effort, tools, data handling and invocation budget beforehand.
 Do not reuse historical benchmark permission. A deterministic Runtime can instead
-verify transport; its outcome must be labeled accordingly. Windows private mode
-is unsupported until its separate ACL implementation and native acceptance.
+verify transport; its outcome must be labeled accordingly. Windows requires the
+separate [BRG-076 ACL implementation and native evidence](brg-076-windows-private-storage.md).
+[QA-085](qa-085-physical-two-identity-disclosure.md) exercises physical devices with
+two test identities operated by one controller; it does not complete this
+independently administered real-owner governance acceptance.
 
 ## Exercise
 

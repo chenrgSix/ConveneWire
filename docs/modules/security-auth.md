@@ -460,8 +460,19 @@ grants and submit exact approved bytes. Current Room/Task/Agent/Device/credentia
 scope and revocation are rechecked inside the publication transaction. The grant
 certifies consent and attribution, not semantic correctness. The capability is a
 Bridge transport boundary, not a sandbox for arbitrary Runtime network access.
-The initial owner-only local store is POSIX; Windows private-mode opt-in is
-rejected pending native ACL implementation and acceptance.
+The initial owner-only local store used POSIX permissions; the Windows extension
+below adds the separate native ACL boundary.
+
+## Windows owner-private storage
+
+[ADR-0058](../adr/0058-protect-windows-private-output.md) extends the initial
+POSIX-only store: Windows private candidates and prepared files require an
+explicit protected DACL at creation, current-user ownership and only current-user
+plus LocalSystem access. Open-handle checks reject weak ACLs, reparse traversal,
+alternate streams and hardlinked private files. Reads of default candidates and
+prepared bundles revalidate protection. No public content is used to repair a
+private object, and unavailable storage prevents Runtime startup. Host admins,
+LocalSystem and same-user processes remain outside the local isolation claim.
 
 ## Discussion disclosure consumption
 

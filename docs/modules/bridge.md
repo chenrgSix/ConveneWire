@@ -1550,8 +1550,9 @@ relocation changes no certificate, copy, entry-ticket or trust-store authority.
 Windows protected DACL boundary for private candidates and prepared files. It
 requires creation-time protection, current-user ownership, protected bounded
 reads and rejection of weak ACLs and reparse paths. Delivery remains recorded
-only in TASKS.md; the initial POSIX restriction below is extended only after
-native validation. Ordinary Bridge stores and Runtime sandboxing are unchanged.
+only in TASKS.md; [native evidence](../acceptance/brg-076-windows-private-storage.md)
+records the extension of the initial POSIX restriction. Ordinary Bridge stores
+and Runtime sandboxing are unchanged.
 
 ## Exact owner evidence disclosure
 
@@ -1568,7 +1569,7 @@ content events and saves a bounded completed candidate locally. Native sessions
 cannot cross the private/ordinary mode boundary. Old/reconnected Bridges without
 current private capability receive no private delivery. Explicit
 `disclosure prepare` / `disclosure publish` reuse pairing credentials and the
-production Result HTTP transport. Commands, POSIX storage requirements and the
+production Result HTTP transport. Commands, platform-specific private storage and the
 owner Web approval workflow are in [development commands](../development-commands.md#exact-owner-evidence-disclosure-sec-015).
 
 ## Private Discussion contributions
@@ -1578,4 +1579,4 @@ SEC-015 local candidate and explicit prepare/publish commands. Central waits for
 the resulting approved Result; Bridge does not keep a Runtime active while waiting
 for consent and does not publish private output as an ordinary reply. Existing
 wire contracts are unchanged. Reconnect delivery checks current evidence-consumer
-authority; Windows private mode remains unsupported.
+authority. Windows private storage follows the separate ADR-0058 ACL boundary.

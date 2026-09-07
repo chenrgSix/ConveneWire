@@ -6,12 +6,12 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	goruntime "runtime"
 	"strings"
 	"sync"
 	"testing"
 
 	"convenewire.dev/bridge/internal/config"
+	"convenewire.dev/bridge/internal/privatefs"
 	contracts "convenewire.dev/contracts/generated/go"
 )
 
@@ -42,9 +42,6 @@ func (a privateTestAdapter) Execute(ctx context.Context, r Request, emit EmitFun
 }
 func privateStatus(status contracts.RunExecutionStatus) *contracts.RunExecutionStatus { return &status }
 func TestPrivateOutputRetainsOnlyLocalCandidate(t *testing.T) {
-	if goruntime.GOOS == "windows" {
-		t.Skip("private mode rejects Windows until ACL support exists")
-	}
 	directory := t.TempDir()
 	private := true
 	sentinel := "PRIVATE_SOURCE_CANARY"
@@ -67,13 +64,9 @@ func TestPrivateOutputRetainsOnlyLocalCandidate(t *testing.T) {
 		t.Fatalf("unexpected transport: %s", encoded)
 	}
 	target, _ := PrivateCandidatePath(directory, "run_private_test0001")
-	data, err := os.ReadFile(target)
+	data, err := privatefs.ReadFile(target, 64<<10)
 	if err != nil || string(data) != sentinel {
 		t.Fatal("missing local candidate", err)
-	}
-	info, _ := os.Stat(target)
-	if info.Mode().Perm() != 0600 {
-		t.Fatal("candidate permissions")
 	}
 	if adapter.Capabilities().SupportsResume || adapter.Capabilities().SupportsStreaming {
 		t.Fatal("unsafe capabilities")
@@ -101,9 +94,6 @@ func TestPrivateFailuresAndMismatchNeverExposeDetails(t *testing.T) {
 	}
 }
 func TestPrivateCandidateConcurrentAndSymlinkReplacementRejected(t *testing.T) {
-	if goruntime.GOOS == "windows" {
-		t.Skip("private mode rejects Windows until ACL support exists")
-	}
 	dir := t.TempDir()
 	var wg sync.WaitGroup
 	success := make(chan bool, 2)
@@ -152,5 +142,21 @@ func TestPrivateModeChangesSessionFingerprint(t *testing.T) {
 	}
 	if private == normal {
 		t.Fatal("private session can resume in ordinary mode")
+	}
+}
+
+func TestPrivateStorageFailureNeverStartsRuntime(t *testing.T) {
+	blocked := filepath.Join(t.TempDir(), "not-a-directory")
+	if err := os.WriteFile(blocked, []byte("preserve"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	private, calls := true, 0
+	a := PrivateOutputAdapter{DataDir: blocked, Inner: privateTestAdapter{calls: &calls}}
+	var final Event
+	err := a.Execute(context.Background(), Request{Run: contracts.RunRequestedPayload{
+		RunID: "run_private_storage0001", OwnerPrivateOutput: &private,
+	}}, func(_ context.Context, event Event) error { final = event; return nil })
+	if err != nil || calls != 0 || final.Status == nil || *final.Status != contracts.Failed || final.Error == nil || final.Error.Code != "PRIVATE_OUTPUT_WITHHELD" {
+		t.Fatalf("unsafe storage preflight: calls=%d event=%+v err=%v", calls, final, err)
 	}
 }

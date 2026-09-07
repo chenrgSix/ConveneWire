@@ -99,3 +99,8 @@ ADR-0057 extends this initial scope with exact released Result admission for
 private Discussion turns. Its waiting, input-freezing and consumer-authorization
 rules replace the automatic-admission exclusion for that bounded path; the local
 output, exact disclosure consent and publication-revocation boundaries remain.
+
+ADR-0058 extends the initial POSIX-only local store with creation-time Windows
+protected ACLs and native verification. Its local storage checks replace the
+Windows configuration exclusion for that bounded path; it does not add an OS
+sandbox, weaken disclosure consent or imply independent-human-owner acceptance.

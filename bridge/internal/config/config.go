@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -551,10 +550,6 @@ func (c Config) validateAgentProvisioning() error {
 }
 
 func (a AgentConfig) validate() error {
-	if a.OwnerPrivateOutput && runtime.GOOS == "windows" {
-		return fmt.Errorf("ownerPrivateOutput requires POSIX owner-only storage; Windows ACL acceptance is not implemented")
-	}
-
 	if strings.TrimSpace(a.Name) == "" || utf8.RuneCountInString(a.Name) > 80 {
 		return fmt.Errorf("name must contain 1 to 80 characters")
 	}

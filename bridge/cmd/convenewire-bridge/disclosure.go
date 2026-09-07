@@ -16,6 +16,7 @@ import (
 	"convenewire.dev/bridge/internal/delivery"
 	"convenewire.dev/bridge/internal/identity"
 	"convenewire.dev/bridge/internal/pairing"
+	"convenewire.dev/bridge/internal/privatefs"
 	bridgeresult "convenewire.dev/bridge/internal/result"
 	bridgeruntime "convenewire.dev/bridge/internal/runtime"
 	runtimecontracts "convenewire.dev/contracts/generated/go/runtime"
@@ -71,7 +72,7 @@ func runDisclosure(args []string) error {
 		return err
 	}
 	if args[0] == "publish" {
-		encoded, err := bridgeresult.ReadLocalDisclosureFile(*bundlePath, 128<<10)
+		encoded, err := privatefs.ReadFile(*bundlePath, 128<<10)
 		if err != nil {
 			return err
 		}
@@ -111,13 +112,18 @@ func runDisclosure(args []string) error {
 		record.Request.OwnerPrivateOutput == nil || !*record.Request.OwnerPrivateOutput || record.Request.TaskID == nil || record.Request.ContextManifest == nil {
 		return errors.New("prepare requires a completed private Run with a frozen Task manifest")
 	}
-	if *releasePath == "" {
+	defaultCandidate := *releasePath == ""
+	if defaultCandidate {
 		*releasePath, err = bridgeruntime.PrivateCandidatePath(cfg.DataDir, *runID)
 		if err != nil {
 			return err
 		}
 	}
-	content, err := bridgeresult.ReadLocalDisclosureFile(*releasePath, 16384)
+	readRelease := bridgeresult.ReadLocalDisclosureFile
+	if defaultCandidate {
+		readRelease = privatefs.ReadFile
+	}
+	content, err := readRelease(*releasePath, 16384)
 	if err != nil {
 		return err
 	}

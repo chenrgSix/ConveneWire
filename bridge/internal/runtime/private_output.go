@@ -3,14 +3,12 @@ package runtime
 import (
 	"context"
 	"errors"
-	"fmt"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"unicode/utf8"
 
-	"convenewire.dev/bridge/internal/durablefs"
+	"convenewire.dev/bridge/internal/privatefs"
 	contracts "convenewire.dev/contracts/generated/go"
 )
 
@@ -33,6 +31,10 @@ func (a PrivateOutputAdapter) Execute(ctx context.Context, request Request, emit
 	if request.Run.OwnerPrivateOutput == nil || !*request.Run.OwnerPrivateOutput ||
 		(request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
 		return errors.New("private output delivery mode mismatch")
+	}
+	if err := privatefs.EnsureDirectory(filepath.Join(a.DataDir, "private-output")); err != nil {
+		status := contracts.Failed
+		return emit(ctx, Event{Status: &status, Error: PrivateOutputError()})
 	}
 	// Native resume is disabled as well as its advertised capability. A private
 	// transcript must never be handed to an ordinary execution after a mode change.
@@ -114,12 +116,8 @@ func StorePrivateCandidate(dataDir, runID string, content []byte) error {
 		return err
 	}
 	directory := filepath.Dir(target)
-	if err := os.MkdirAll(directory, 0700); err != nil {
+	if err := privatefs.EnsureDirectory(directory); err != nil {
 		return err
-	}
-	info, err := os.Lstat(directory)
-	if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm()&0077 != 0 {
-		return errors.New("private output directory is not owner-only")
 	}
 	return WritePrivateFile(target, content)
 }
@@ -127,29 +125,5 @@ func StorePrivateCandidate(dataDir, runID string, content []byte) error {
 // Exclusive creation refuses replacement and symlinks. Partial writes are never
 // treated as a completed candidate by the Runtime or a prepared disclosure.
 func WritePrivateFile(target string, content []byte) error {
-	file, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if err != nil {
-		return errors.New("private file already exists or cannot be created")
-	}
-	ok := false
-	defer func() {
-		file.Close()
-		if !ok {
-			os.Remove(target)
-		}
-	}()
-	if _, err := file.Write(content); err != nil {
-		return fmt.Errorf("write private file: %w", err)
-	}
-	if err := file.Sync(); err != nil {
-		return err
-	}
-	if err := file.Close(); err != nil {
-		return err
-	}
-	if err := durablefs.SyncParent(target); err != nil {
-		return err
-	}
-	ok = true
-	return nil
+	return privatefs.WriteFile(target, content)
 }
