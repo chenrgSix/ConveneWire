@@ -55,6 +55,7 @@ preserve the P0-P9 roadmap defined by the v0.2 architecture baseline:
 | GOV-001 | DONE | Initialize Git repository | none | `main` exists with clean history |
 | GOV-002 | DONE | Establish v0.2 architecture baseline | GOV-001 | v0.2 document committed |
 | GOV-003 | DONE | Define repository standards | GOV-002 | README, contributing, lint, ADR rules |
+| GOV-042 | DONE | Adapt project agent instructions for Astra | GOV-003 | [Source review and scope](reviews/gov-042-astra-instructions.md), root instructions reduced from 20,853 to 5,206 bytes, all 80 command entries and boundaries preserved in a contextual reference, 421-file Markdown lint, 19 local links/anchors and whitespace checks pass; only one new task ID, no global configuration, runtime, historical evidence or model experiment change |
 | GOV-004 | DONE | Split architecture into module documents | GOV-003 | module index and task register committed |
 | GOV-005 | DONE | Define adaptive Discussion orchestration baseline | GOV-004 | accepted ADR, module boundary, state machine, budget, and verification matrix agree |
 | GOV-006 | DONE | Adopt noncommercial source-available licensing | GOV-003 | standard license, Required Notice, commercial policy, contribution boundary, metadata, and release packaging agree |

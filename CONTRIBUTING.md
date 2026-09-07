@@ -2,10 +2,12 @@
 
 ## Before Making Changes
 
-Read the current architecture baseline and check the working tree before
-editing. Keep unrelated user changes intact. Changes to trust boundaries,
-wire protocols, persistence ownership, runtime lifecycle, or public APIs
-require an ADR before implementation.
+Check the working tree and preserve unrelated user changes. Read the affected
+implementation and relevant module documentation; consult the current baseline
+and accepted ADRs when the change touches architecture or authority. Small
+documentation and formatting edits do not require a full architecture review.
+Changes to trust boundaries, wire protocols, persistence ownership, runtime
+lifecycle, or public APIs require an ADR before implementation.
 
 Do not copy Hermes Studio source, assets, schemas, or tests. Public behavior
 and open standards may inform an independently designed implementation.
@@ -82,6 +84,12 @@ and out-of-order events. Security-sensitive changes must include a negative test
 
 Before opening a pull request, run the relevant formatter, unit tests, contract
 tests, and Markdown checks. Record commands and results in the PR description.
+Select checks for the changed surface; documentation-only edits need Markdown,
+changed-link and whitespace checks unless they alter executable examples or
+contracts. After required checks pass, broaden or repeat testing only when a
+new change, failure or unresolved concern warrants it. See
+[Development and Operations Commands](docs/development-commands.md) for commands
+and their execution boundaries.
 
 The central installation controller uses Go 1.26.7. From
 `ops/convenewirectl/`, run `gofmt -w .`, `go test ./...`, `go vet ./...`, and
