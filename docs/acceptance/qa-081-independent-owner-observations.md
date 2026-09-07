@@ -24,4 +24,35 @@ omitted value. A missing final artifact receives no semantic quality score.
 This is a single trusted-host mechanism screening with a task-specific hidden
 verifier. It does not establish authenticated independent owners, in-flight
 revocation, production Discussion recovery or an advantage over Single Agent.
+The [plan](fixtures/qa-081/plan.json) pins the runtime, schedule and assessment
+rules. The unchanged [reference](fixtures/qa-079/reference.md) and
+[rubric](fixtures/qa-079/scoring.json) remain evaluator-only. Read receipts prove
+returned bytes, not comprehension. All original proposals are retained before
+the hidden verifier begins; a wrong proposal is rejected as a whole and an
+omission stays missing. The first semantic assessment keeps exact quotations
+for every pass and grades each released atomic fact separately.
+
+## Commands and authorization
+
+Offline maintenance:
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/independent-owner.test.mjs
+node scripts/bench/independent-experiment.mjs --audit-qa081
+node scripts/bench/independent-experiment.mjs --assess-qa081
+```
+
+The audit/assessment commands require retained results. Freeze once with
+`node scripts/bench/independent-experiment.mjs --freeze-qa081` and commit all
+pinned inputs before execution. The Owner-approved one-use execution is:
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 2160000 -- node scripts/bench/independent-experiment.mjs --execute-qa081-frozen-eight
+```
+
+This entrypoint is not a routine test. The exclusive journal consumes permission
+before any invocation; interruption or incomplete slots cannot reopen it.
+No pilot, retry or additional model grader is authorized. Initial outcome and
+all attempted slots stay recorded even when the scenario fails.
+
 Execution records and results will be appended after the frozen plan is consumed.

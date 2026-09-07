@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "identity": "qa-081-independent-owner-observations-v1",
+  "recipeIdentity": "qa-079-authority-separated-ca-cutover-v1",
+  "authorization": {
+    "ownerInstruction": "\u53ef\u4ee5\uff0c\u5b9a\u597d\u76ee\u6807\u5f00\u59cb\u5427",
+    "maximumSessions": 8,
+    "noRetry": true,
+    "scope": "Normal and revoked raw-only owner observation screening; no additional or replacement sessions"
+  },
+  "runtime": {
+    "model": "gpt-5.5",
+    "reasoningEffort": "low",
+    "timeoutMilliseconds": 300000,
+    "maximumReadCalls": 8,
+    "maximumReturnBytes": 16384,
+    "maximumAnswerBytes": 32768,
+    "answerWordInstruction": 32769,
+    "retries": 0
+  },
+  "scenarios": [
+    "normal",
+    "revoked"
+  ],
+  "schedule": [
+    {
+      "slot": 0,
+      "scenario": "normal",
+      "role": "code",
+      "treatment": "B"
+    },
+    {
+      "slot": 1,
+      "scenario": "normal",
+      "role": "security",
+      "treatment": "B"
+    },
+    {
+      "slot": 2,
+      "scenario": "normal",
+      "role": "operations",
+      "treatment": "B"
+    },
+    {
+      "slot": 3,
+      "scenario": "normal",
+      "role": "finalizer",
+      "treatment": "B"
+    },
+    {
+      "slot": 4,
+      "scenario": "revoked",
+      "role": "code",
+      "treatment": "B"
+    },
+    {
+      "slot": 5,
+      "scenario": "revoked",
+      "role": "security",
+      "treatment": "B"
+    },
+    {
+      "slot": 6,
+      "scenario": "revoked",
+      "role": "operations",
+      "treatment": "B"
+    },
+    {
+      "slot": 7,
+      "scenario": "revoked",
+      "role": "finalizer",
+      "treatment": "B"
+    }
+  ],
+  "ownerInstruction": "Read the complete original source available to your reader. Independently derive the permitted observations from that source. Return exactly one JSON object with only an observations array of objects containing checkId and value. Use only the permitted IDs and their declared types. Include every observation supported by the source; omit unknown observations. No extra keys, prose, excerpts, private names or internal identifiers. Your own source is the only authorized source. Local reading does not authorize disclosure. This is a public observation proposal, not internal reasoning.",
+  "reference": "docs/acceptance/fixtures/qa-079/reference.md",
+  "scoring": "docs/acceptance/fixtures/qa-079/scoring.json",
+  "interpretation": [
+    "One case per scenario; no causal historical comparison or statistical stability claim.",
+    "Raw original owner correctness is scored before the hidden validator; no omitted values are filled.",
+    "Final quality is evaluated only on an actual artifact, independently from runtime and egress.",
+    "Full pass requires all 14 public criteria; 10 critical criteria are separate.",
+    "Revoked operations remains unknown; request authorized evidence without bypass.",
+    "Trust is the local QA harness, not an independently authenticated owner credential.",
+    "Only revoke-before-send is tested; no in-flight publication or production Discussion recovery claim."
+  ],
+  "grading": {
+    "originalOwner": [
+      "protocolValid",
+      "correct check IDs",
+      "incorrect check IDs",
+      "missing check IDs"
+    ],
+    "final": [
+      "all 14 public criteria",
+      "10 critical criteria",
+      "each actually released atomic fact retained",
+      "unsupported additions with exact quotes",
+      "behavior errors with exact quotes",
+      "unknown and unavailable evidence preserved"
+    ],
+    "method": "Same assistant authors and manually grades the synthetic case after invocation. Retain the first assessment once. Pass quotations must occur verbatim in final answers. Equivalent semantic wording accepted; no private extra acceptance conjuncts. Amendments, if any, are appended separately, never overwrite first grades.",
+    "completeScenario": "Full deliverable pass AND all original owner fields independently correct with complete source reads AND actual final Result publication AND revoked path exercised when applicable. A helpful final with upstream omissions is reported separately.",
+    "readReceipts": "Prove bytes returned under the grant, not model understanding.",
+    "noArtifact": "Do not treat a missing final answer as zero-quality content. Record runtime and persistence separately."
+  }
+}
