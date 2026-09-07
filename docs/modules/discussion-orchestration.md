@@ -107,6 +107,13 @@ observations, and one test Owner/manual Agents plus direct ResultService calls
 do not establish independent owner authentication or Bridge transport E2E.
 Equal-compute remains deferred; consumed slots cannot be reopened as retries.
 
+[ADR-0054](../adr/0054-close-authority-session-protocol-failures.md) scopes
+QA-080 to a maintained authority-session adapter: bounded native metadata
+discovery, unchanged scoped source reads and content-free terminal failure
+replay through existing Run storage. It adds no model quality experiment or
+production Discussion policy. QA-079 inputs/outcomes remain frozen; physical
+multi-owner/device acceptance still requires a separate real task and grants.
+
 - Prefix: `DISC`
 - Implementation: `apps/server/src/discussion/`
 - Owns: bounded multi-Agent Discussions, durable Waves, progress projection,
