@@ -1,0 +1,59 @@
+{
+  "sourceCommit": "2c5ba3bca2d4ca470905678a1b2ab218a528b41d",
+  "workflowId": 34105519609,
+  "workflowUrl": "https://github.com/chenrgSix/ConveneWire/actions/runs/34105519609",
+  "publicUrl": "https://chenrgsix.github.io/ConveneWire/",
+  "outcome": "passed",
+  "deploymentControl": {
+    "path": ".nojekyll",
+    "bytes": 0,
+    "publicAsset": false
+  },
+  "files": [
+    {
+      "path": "404.html",
+      "bytes": 2343,
+      "sha256": "b77a15382b3e5209f58acda9179f09beab7e4a2ce94d3439e2ef6797ec2d07a3"
+    },
+    {
+      "path": "assets/guide.js",
+      "bytes": 911,
+      "sha256": "5dc84907aa45803cf2b34865086fbfee00794a3b750986ef31d94c05402adf24"
+    },
+    {
+      "path": "assets/mark.svg",
+      "bytes": 339,
+      "sha256": "137f3b79ae54eee6a188e37809c39df24a088b608124c4d863b23c66b06d0357"
+    },
+    {
+      "path": "assets/site.css",
+      "bytes": 18161,
+      "sha256": "754b8c7f5ca6e10d461f35357b08d0c130e2c4a1af6f89e4045872ec78b38ab4"
+    },
+    {
+      "path": "guide/index.html",
+      "bytes": 14699,
+      "sha256": "016854c261d604f8838eaccaf0dde60c549fb6d2c3884974211ef37516c4cf4d"
+    },
+    {
+      "path": "index.html",
+      "bytes": 15122,
+      "sha256": "8a2cd1be159e9b8dee1daae3af0212827b0ba23ce601212cbd8663be50a59ba3"
+    },
+    {
+      "path": "robots.txt",
+      "bytes": 84,
+      "sha256": "1bf4151d1b8bd01e3cbd2c9642c79293f1c380d69421e556990b6e2039eca8d8"
+    },
+    {
+      "path": "sitemap.xml",
+      "bytes": 239,
+      "sha256": "71fdc01a04b39f2b803c6984ffbfa06b080f0c48639b34db10081e9a2105d50b"
+    },
+    {
+      "path": "version.json",
+      "bytes": 126,
+      "sha256": "d2be97c3d10d78d8156d7c1a127fe6ef1ef4751c18585b31802006be64dc4942"
+    }
+  ]
+}

@@ -204,12 +204,28 @@
   "artifactSha256": {
     "draft-verification.txt": "819c15502c4d0c1f3991881422a49989f0504fde1e704b9cd63f1eb47ea8f238",
     "public-verification.txt": "819c15502c4d0c1f3991881422a49989f0504fde1e704b9cd63f1eb47ea8f238",
-    "packaged-cli-version.txt": "916c38034facf963605fad83e5f836cbd030c2dcfdc042985a6889aa2a6f1811"
+    "packaged-cli-version.txt": "916c38034facf963605fad83e5f836cbd030c2dcfdc042985a6889aa2a6f1811",
+    "website.json": "63ce9a89e96b68555d97ad70f629e66214f503a7c8665993d5c10eb78d471f2e"
   },
   "limits": [
     "trusted-small-Team stable scope; unsigned packages and manual upgrades",
     "physical QA-085 used deterministic Runtimes and two application identities under one controller",
     "independent human-owner governance and model-quality claims remain separate",
     "publication does not upgrade an existing installation"
-  ]
+  ],
+  "website": {
+    "sourceCommit": "2c5ba3bca2d4ca470905678a1b2ab218a528b41d",
+    "workflowId": 34105519609,
+    "publicUrl": "https://chenrgsix.github.io/ConveneWire/",
+    "publicFilesMatched": 9,
+    "localStaticTestsPassed": 15
+  },
+  "cleanup": {
+    "taskDownloadAndCacheRootRemoved": true,
+    "historyCloneRemoved": true,
+    "sitePreviewWorktreeRemoved": true,
+    "verifierWrapperRootsRemoved": true,
+    "packagedVersionHelperRemoved": true,
+    "existingInstallationsUnchanged": true
+  }
 }
