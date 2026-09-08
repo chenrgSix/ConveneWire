@@ -1786,6 +1786,10 @@
                       "supportsHandoff"
                     ],
                     "properties": {
+                      "supportsConversationWork": {
+                        "type": "boolean",
+                        "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."
+                      },
                       "workPolicyOffers": {
                         "type": "array",
                         "minItems": 0,
@@ -2770,6 +2774,10 @@
                   "deadline"
                 ],
                 "properties": {
+                  "conversationWork": {
+                    "type": "boolean",
+                    "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."
+                  },
                   "ownerPrivateOutput": {
                     "type": "boolean",
                     "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."
@@ -5519,6 +5527,31 @@
                         "minLength": 1,
                         "maxLength": 20000
                       },
+                      "developmentProposal": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "title",
+                          "criteria"
+                        ],
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160
+                          },
+                          "criteria": {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": 8,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      },
                       "assessment": {
                         "type": "object",
                         "additionalProperties": false,
@@ -7240,6 +7273,10 @@
         "supportsHandoff"
       ],
       "properties": {
+        "supportsConversationWork": {
+          "type": "boolean",
+          "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."
+        },
         "workPolicyOffers": {
           "type": "array",
           "minItems": 0,
@@ -8367,6 +8404,10 @@
             "supportsHandoff"
           ],
           "properties": {
+            "supportsConversationWork": {
+              "type": "boolean",
+              "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."
+            },
             "workPolicyOffers": {
               "type": "array",
               "minItems": 0,
@@ -12327,6 +12368,31 @@
         }
       }
     },
+    "developmentProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "criteria"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      }
+    },
     "runRequestedPayload": {
       "type": "object",
       "additionalProperties": true,
@@ -12344,6 +12410,10 @@
         "deadline"
       ],
       "properties": {
+        "conversationWork": {
+          "type": "boolean",
+          "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."
+        },
         "ownerPrivateOutput": {
           "type": "boolean",
           "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."
@@ -15347,6 +15417,31 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 20000
+            },
+            "developmentProposal": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "criteria"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "criteria": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                }
+              }
             },
             "assessment": {
               "type": "object",

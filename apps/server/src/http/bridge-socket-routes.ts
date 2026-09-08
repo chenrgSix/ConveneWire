@@ -376,6 +376,7 @@ export function registerBridgeSocketRoutes({
                 supportsStreaming: capabilities.supportsStreaming === true,
                 supportsRoomContextCoverage:
                   capabilities.supportsRoomContextCoverage === true,
+                supportsConversationWork: capabilities.supportsConversationWork === true,
                 supportsWorkspaceLeases:
                   capabilities.supportsWorkspaceLeases === true,
                 supportsArtifactPublication:
@@ -688,6 +689,7 @@ export function registerBridgeSocketRoutes({
             agentId: message.payload.agentId,
             sequence: message.payload.sequence as number,
             content: message.payload.content,
+            ...(message.payload.developmentProposal === undefined ? {} : { developmentProposal: message.payload.developmentProposal }),
             ...(message.payload.assessment === undefined
               ? {}
               : { assessment: message.payload.assessment })

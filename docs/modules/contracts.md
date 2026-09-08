@@ -1,5 +1,15 @@
 # Contracts Module
 
+`RUN-019`, under [ADR-0061](../adr/0061-continue-development-from-conversation.md),
+adds optional managed `supportsConversationWork`, frozen `run.requested`
+`conversationWork` and a closed `run.reply.developmentProposal`. The proposal
+contains only a title (1–160 code points) and 1–8 criteria (1–2000 code points
+each). It cannot carry commands, grants, project selection or source replacement.
+Central requires the exact capable single-Agent human delivery and successful
+source completion before existing work-policy negotiation. Legacy omitted fields
+remain valid. Shared positive/negative fixtures and typed Go round trips cover
+this additive contract; the proposal itself grants no execution authority.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) introduces closed
 decision/plan contracts and later capability-negotiated execution/input/grant/
 repository/verifier envelopes. JSON Schema remains the wire authority with

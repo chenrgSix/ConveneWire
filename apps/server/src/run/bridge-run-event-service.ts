@@ -9,6 +9,7 @@ import type {
 } from "../runtime/runtime-adapter.js";
 import type { DeliveryService } from "./delivery-service.js";
 import { parseAgentAssessment } from "../discussion/progress-evaluator.js";
+import type { ConversationWorkService } from "../execution/conversation-work-service.js";
 import type {
   AppliedRunEvent,
   RunRecord,
@@ -73,7 +74,8 @@ export class BridgeRunEventService {
     private readonly evidenceConsumption?: ResultEvidenceConsumptionRepository,
     private readonly delivery?: Pick<
       DeliveryService, "validateRoomContextConsumption" | "getRuntimeScope"
-    > & Partial<Pick<DeliveryService, "isOwnerPrivate">>
+    > & Partial<Pick<DeliveryService, "isOwnerPrivate">>,
+    private readonly conversationWork?: Pick<ConversationWorkService, "applyReply">
   ) {}
 
   public applyStatus(
@@ -282,6 +284,7 @@ export class BridgeRunEventService {
       sequence: number;
       content: string;
       assessment?: unknown;
+      developmentProposal?: unknown;
     },
     now: string
   ): AppliedRunEvent {
@@ -318,12 +321,14 @@ export class BridgeRunEventService {
             : {})
         }
       : null;
-    return this.runs.applyReply(run.runId, {
+    const apply = () => this.runs.applyReply(run.runId, {
       type: "reply",
       sequence: input.sequence,
       content: safeContent,
       ...(assessment ? { assessment: { ...assessment } } : {})
     }, now);
+    if (input.developmentProposal !== undefined && !this.conversationWork) throw new Error("Conversation development is unavailable");
+    return this.conversationWork ? this.conversationWork.applyReply(principal, input, apply, now) : apply();
   }
 
   public applyActivity(

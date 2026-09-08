@@ -1,4 +1,5 @@
 import type Database from "better-sqlite3";
+import { conversationSourceValid } from "./conversation-work-service.js";
 import type {
   ExecutionNodeRetryAuthorization,
   GovernedExecutionCapabilityReadyGrant,
@@ -876,8 +877,8 @@ implements GovernedMessageAdmissionPort {
   }
 
   private developmentAuthorized(planId: string, revision: number): boolean {
-    const row = this.database.prepare("SELECT state, plan_revision FROM development_work_authorizations WHERE plan_id = ?")
-      .get(planId) as { state: string; plan_revision: number } | undefined;
-    return !row || (row.state === "authorized" && row.plan_revision === revision);
+    const row = this.database.prepare("SELECT state, plan_revision, operation_id FROM development_work_authorizations WHERE plan_id = ?")
+      .get(planId) as { state: string; plan_revision: number; operation_id: string } | undefined;
+    return !row || (row.state === "authorized" && row.plan_revision === revision && conversationSourceValid(this.database, row.operation_id));
   }
 }

@@ -58,6 +58,19 @@ async function createFixture(t: TestContext, maximumMigration?: number) {
   resources.defer(() => { if (database.open) database.close(); });
   const transactions = new SqliteTransactionBoundary(database);
   const core = new CoreRepository(database, transactions);
+  if (maximumMigration !== undefined && maximumMigration < 89) {
+    // Seed the historical schema without using columns introduced by newer writers.
+    t.mock.method(core, "createAgent", (agent) => {
+      database.prepare(`INSERT INTO agents (agent_id, team_id, owner_member_id, device_id,
+        name, role, integration_mode, capabilities_json, enabled, presence, created_at, updated_at,
+        runtime_scope_id, workspace_ref, workspace_generation, runtime_policy_json, workspace_alias)
+        VALUES (@agentId, @teamId, @ownerMemberId, @deviceId, @name, @role, @integrationMode,
+        @capabilitiesJson, 1, @presence, @createdAt, @updatedAt, @runtimeScopeId, @workspaceRef,
+        @workspaceGeneration, NULL, NULL)`).run({...agent, capabilitiesJson: JSON.stringify(agent.capabilities)});
+      database.prepare(`INSERT INTO room_agent_participants (room_id, agent_id, added_at)
+        SELECT room_id, ?, ? FROM rooms WHERE team_id = ?`).run(agent.agentId, agent.createdAt, agent.teamId);
+    });
+  }
   const auth = new AuthService(database);
   const teams = new TeamRoomService(core, auth);
   const registry = new MemberDeviceService(core, auth);
@@ -207,7 +220,7 @@ test("capture lease migration preserves populated legacy publications, blobs and
     database.close();
     const migrated = await migrateDatabase(f.databasePath);
     assert.deepEqual(migrated.appliedVersions,
-      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88]);
+      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -273,7 +286,7 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     database.close();
     const result = await migrateDatabase(f.databasePath);
     assert.deepEqual(result.appliedVersions,
-      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88]);
+      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -474,7 +487,18 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
       "discussion_supplemental_evidence_immutable_update",
       "discussion_supplemental_evidence_immutable_delete",
       "evidence_disclosure_grants",
-      "evidence_disclosure_task"
+      "evidence_disclosure_task",
+      "development_work_authorizations",
+      "development_work_pending_device",
+      "development_work_immutable_request",
+      "development_work_terminal_receipt",
+      "development_work_no_delete",
+      "conversation_development_requests",
+      "conversation_development_pending",
+      "conversation_development_source_task",
+      "conversation_development_immutable",
+      "conversation_development_no_delete",
+      "conversation_development_reserve_budget"
     ]);
     assert.deepEqual(objects()
       .filter(({ name }) => !admissionObjects.has(name))

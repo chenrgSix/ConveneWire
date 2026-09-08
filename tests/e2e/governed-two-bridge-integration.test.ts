@@ -3079,7 +3079,7 @@ test("parallel Bridges retain one CAS winner, one conflict, and exact fan-in", {
   }
 });
 
-test("standing policy completes two unattended development Tasks with physical candidate receipts", {
+test("conversation completes two unattended development Tasks with physical candidate receipts", {
   timeout: 240_000,
   skip: process.platform !== "darwin" || Boolean(packagedImage) ? "local macOS source acceptance" : false
 }, async (t) => {
@@ -3106,8 +3106,18 @@ test("standing policy completes two unattended development Tasks with physical c
     // The deterministic Runtime writes a real candidate page; it never calls a model.
     const helper = await readFile(codex.helper, "utf8");
     const page = `<!doctype html><meta charset="utf-8"><title>候选页面</title><style>body{font:20px sans-serif;padding:48px;background:#f7f7ef}input,button{font:inherit;padding:12px;margin:8px}</style><h1>自动交付候选</h1><input id="goal"><button id="save" onclick="document.querySelector('#result').textContent=document.querySelector('#goal').value">保存</button><p id="result">等待输入</p>`;
-    await writeFile(codex.helper, helper.replace("reply = 'physical build completed';",
-      `await writeFile(path.join(cwd, 'src/index.html'), ${JSON.stringify(page)}); reply = 'physical build completed';`));
+    await writeFile(codex.helper, helper
+      .replace("const send =", "let requestedSandbox = '';\nconst send =")
+      .replace("const threadId = request.params?.threadId", "requestedSandbox = request.params?.sandbox; const threadId = request.params?.threadId")
+      .replace("if (sourceRoot && path.resolve(cwd) === path.resolve(sourceRoot)) {", `if (instruction.includes('read-only conversation stage')) {
+        if(requestedSandbox !== 'read-only') process.exit(61);
+        const current = instruction.split('Current request:').at(-1);
+        if(current.includes('只读审查')) reply = '只读审查已完成，没有修改文件。';
+        else { const index = current.includes('第 2 个') ? 2 : 1;
+          reply = '<convenewire-development>'+JSON.stringify({title:'日常开发 '+index,criteria:['输入与按钮断言通过并保留候选提交']})+'</convenewire-development>'; }
+      } else if (sourceRoot && path.resolve(cwd) === path.resolve(sourceRoot)) {`)
+      .replace("reply = 'physical build completed';",
+        `await writeFile(path.join(cwd, 'src/index.html'), ${JSON.stringify(page)}); reply = 'physical build completed';`));
     await execFileAsync(process.execPath, ["--check", codex.helper]);
     const verifier = await createVerifier(directory);
     await prepareBridge(binary);
@@ -3177,6 +3187,10 @@ test("standing policy completes two unattended development Tasks with physical c
     if(browser) {
       await browser.send("Page.addScriptToEvaluateOnNewDocument",{source:`if(location.origin===${JSON.stringify(serverUrl)}){localStorage.setItem('agent-room.local-user',${JSON.stringify(JSON.stringify(bootstrap.user))});localStorage.setItem('agent-room.theme','light');}`});
     }
+    const reading = await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/messages`,{content:"只读审查这个项目，不修改文件",mentionAgentId:agent.agentId,clientMessageId:"client_qa090read0001"},token);
+    await waitFor(async()=> (await requestJSON<RunView[]>(serverUrl,"GET",`/api/rooms/${roomId}/runs`,undefined,token)).some(v=>v.runId===reading.runs[0].runId&&v.state==="completed")?true:undefined);
+    assert.equal((await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-tasks`,undefined,token)).items.length,0);
+    assert.equal(await git(source,["status","--porcelain"]),"");
     for(let index=1;index<=2;index++) {
       stage = `unattended Task ${index}`;
       const command={operationId:`op_qa089task000${index}`,agentId:agent.agentId,policyId:option.policy.policyId,policyDigest:option.policy.digest,baseCommit,
@@ -3184,15 +3198,14 @@ test("standing policy completes two unattended development Tasks with physical c
       let work:any;
       if(browser) {
         await browser.navigate(`${serverUrl}/?team=${teamId}&room=${roomId}&view=room`);
-        await browser.until("document.querySelector('.development-entry') !== null");
-        await browser.evaluate("document.querySelector('.development-entry').click()");
-        await browser.until("document.querySelector('.development-policy') !== null");
-        await browser.evaluate(`(() => {const f=document.querySelector('.development-form');const fields=[...f.querySelectorAll('input,textarea')];const values=${JSON.stringify([command.title,command.goal,command.criteria.join("\n")])};fields.forEach((e,i)=>{Object.getOwnPropertyDescriptor(e.tagName==='INPUT'?HTMLInputElement.prototype:HTMLTextAreaElement.prototype,'value').set.call(e,values[i]);e.dispatchEvent(new Event('input',{bubbles:true}));});})()`);
-        if(index===1) {await capture("room-development-ready.png");await browser.viewport(900,900);await capture("room-development-compact.png");await browser.viewport(1440,1000);}
-        await browser.evaluate("document.querySelector('.development-form').requestSubmit()");
-        work=await waitFor(async () => (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-tasks`,undefined,token)).items.find((v:any)=>v.title===command.title));
-        command.operationId=work.operationId;
-      } else work=await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/development-tasks`,command,token);
+        await browser.until("document.querySelector('.composer textarea') !== null");
+        assert.equal(await browser.evaluate("document.querySelector('.development-entry') === null"),true);
+        await browser.evaluate(`(() => {const e=document.querySelector('.composer textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(e,${JSON.stringify('@自动开发 Agent '+command.goal)});e.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+        await browser.until("document.querySelector('.composer-send:not(:disabled)') !== null");
+        if(index===1) {await capture("room-conversation-ready.png");await browser.viewport(900,900);await capture("room-conversation-compact.png");await browser.viewport(1440,1000);}
+        await browser.evaluate("document.querySelector('.composer').requestSubmit()");
+      } else await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/messages`,{content:command.goal,mentionAgentId:agent.agentId,clientMessageId:`client_qa090task000${index}`},token);
+      work=await waitFor(async () => (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-tasks`,undefined,token)).items.find((v:any)=>v.title===command.title));
       const run=await waitFor(async()=> (await requestJSON<RunView[]>(serverUrl,"GET",`/api/rooms/${roomId}/runs`,undefined,token)).find(v=>v.taskId===work.taskId&&["completed","failed","canceled","expired","outcome_unknown"].includes(v.state)),60000);
       assert.equal(run.state,"completed");
       const evidence=await requestJSON<any>(serverUrl,"GET",`/api/tasks/${work.rootTaskId}/execution-evidence?limit=50`,undefined,token);
@@ -3208,8 +3221,8 @@ test("standing policy completes two unattended development Tasks with physical c
         assert.equal(preview.browser.startup,"passed");assert.equal(preview.browser.screenshot.state,"captured");assert.equal(preview.browser.visualReview,"not_performed");
         if(evidenceDirectory) await writeFile(path.join(evidenceDirectory,`candidate-${index}.png`),Buffer.from(preview.browser.screenshot.dataUrl.split(",")[1],"base64"));
         if(index===1) {
-          await browser.until("document.querySelector('.development-history button') !== null");
-          await browser.evaluate("document.querySelector('.development-history button').click()");
+          await browser.until(`document.querySelector('a[href*="workTask=${work.rootTaskId}"]') !== null`);
+          await browser.evaluate(`document.querySelector('a[href*="workTask=${work.rootTaskId}"]').click()`);
           await browser.until(`new URL(location.href).searchParams.get('workTask') === ${JSON.stringify(work.rootTaskId)} && new URL(location.href).searchParams.get('room') === ${JSON.stringify(roomId)}`);
           await browser.until("[...document.querySelectorAll('[role=tab]')].some(e=>e.textContent==='证据')");
           await browser.evaluate("[...document.querySelectorAll('[role=tab]')].find(e=>e.textContent==='证据').click()");
@@ -3221,7 +3234,11 @@ test("standing policy completes two unattended development Tasks with physical c
           await capture("room-browser-evidence.png");
         }
       }
-      const replay=await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/development-tasks`,command,token); assert.equal(replay.taskId,work.taskId);
+      if(!browser) {
+        await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/messages`,{content:command.goal,mentionAgentId:agent.agentId,clientMessageId:`client_qa090task000${index}`},token);
+        assert.equal((await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-tasks`,undefined,token)).items.length,index);
+      }
+      await waitFor(async()=> (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/messages`,undefined,token)).items.some((m:any)=>m.taskId===reading.runs[0].taskId&&m.content.includes(work.rootTaskId))?true:undefined);
       operations.push({taskId:work.taskId,runId:run.runId,state:run.state,verifications:node.verifications.map((v:any)=>({profileId:v.receipt.profile.profileId,outcome:v.receipt.outcome}))});
       // A full Bridge owner-process restart preserves policy and history before Task 2.
       if(index===1) {await local.process.stop();local=await startConsole();await waitFor(async()=> (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-options`,undefined,token)).options.some((v:any)=>v.state==="available")?true:undefined);}
@@ -3242,7 +3259,7 @@ test("standing policy completes two unattended development Tasks with physical c
     } else await requestJSON(local.origin,"POST",`/api/work-policies/${policy.spec.policyId}/revoke`,{expectedRevision:1,expectedDigest:policy.digest,confirm:true},local.token);
     await waitFor(async()=> (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-options`,undefined,token)).options.every((v:any)=>v.state==="unavailable")?true:undefined);
     const counts=databaseRead(databasePath,db=>({runs:(db.prepare("SELECT count(*) n FROM runs").get() as any).n,grants:(db.prepare("SELECT count(*) n FROM development_work_authorizations").get() as any).n,checkpoints:(db.prepare("SELECT count(*) n FROM repository_checkpoints").get() as any).n}));
-    assert.deepEqual(counts,{runs:2,grants:2,checkpoints:2});
+    assert.deepEqual(counts,{runs:5,grants:2,checkpoints:2});
     assert.equal(await git(source,["rev-parse","HEAD"]),baseCommit);assert.equal(await git(source,["status","--porcelain"]),"");
     const summary={version:1,kind:"physical_fixture_no_model",operations,counts,sourceUnchanged:true,parentRevoked:true,browserVerified:Boolean(browser)};
     if(evidenceDirectory) await writeJSON(path.join(evidenceDirectory,"two-task-summary.json"),summary);

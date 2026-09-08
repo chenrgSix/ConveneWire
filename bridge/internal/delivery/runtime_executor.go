@@ -248,7 +248,8 @@ func (e RuntimeExecutor) executeAdapter(ctx context.Context, record Record,
 				RunID: record.RunID, AgentID: record.Request.TargetAgentID,
 				TraceID:  record.Request.TraceID,
 				Sequence: sequence, Content: content,
-				Assessment: redactRuntimeAssessment(event.Assessment, artifacts),
+				Assessment:          redactRuntimeAssessment(event.Assessment, artifacts),
+				DevelopmentProposal: redactDevelopmentProposal(event.DevelopmentProposal, artifacts),
 			},
 		}
 		if _, err := e.Inbox.AppendEvent(record.RunID, currentState, sequence, message, now); err != nil {
@@ -1018,4 +1019,15 @@ func runtimeMessageID() string {
 		panic(err)
 	}
 	return "msg_" + base64.RawURLEncoding.EncodeToString(buffer)
+}
+
+func redactDevelopmentProposal(proposal *contracts.DevelopmentProposal, artifacts []bridgeruntime.VerifiedArtifactAlias) *contracts.DevelopmentProposal {
+	if proposal == nil {
+		return nil
+	}
+	result := &contracts.DevelopmentProposal{Title: bridgeruntime.RedactRuntimeText(proposal.Title, artifacts)}
+	for _, criterion := range proposal.Criteria {
+		result.Criteria = append(result.Criteria, bridgeruntime.RedactRuntimeText(criterion, artifacts))
+	}
+	return result
 }

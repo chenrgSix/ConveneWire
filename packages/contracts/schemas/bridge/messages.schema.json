@@ -683,6 +683,7 @@
         "supportsHandoff"
       ],
       "properties": {
+        "supportsConversationWork": {"type": "boolean", "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."},
         "workPolicyOffers": {"type":"array","minItems":0,"maxItems":64,"items":{"$ref":"https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workPolicyOffer"},"description":"Owner-local standing policy offers. Omission means unsupported. An offer is not an exact Task grant or Runtime admission."},
         "ownerPrivateOutput": {"type": "boolean", "description": "Explicit owner-private output mode. The Bridge retains candidate text locally and emits only content-free status; disclosure requires a separate exact-content owner grant."},
         "governedExecution": {
@@ -1884,6 +1885,15 @@
         }
       }
     },
+    "developmentProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "criteria"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "criteria": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 2000}}
+      }
+    },
     "runRequestedPayload": {
       "type": "object",
       "additionalProperties": true,
@@ -1901,6 +1911,7 @@
         "deadline"
       ],
       "properties": {
+        "conversationWork": {"type": "boolean", "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."},
         "ownerPrivateOutput": {"type": "boolean", "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."},
         "runId": {
           "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/runId"
@@ -2339,6 +2350,7 @@
               "minLength": 1,
               "maxLength": 20000
             },
+            "developmentProposal": {"$ref": "#/$defs/developmentProposal"},
             "assessment": {
               "$ref": "#/$defs/agentAssessment"
             }

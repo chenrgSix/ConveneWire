@@ -396,6 +396,9 @@ type Capabilities struct {
 	OwnerPrivateOutput              *bool `json:"ownerPrivateOutput,omitempty"`
 	SupportsArtifactMaterialization *bool `json:"supportsArtifactMaterialization,omitempty"`
 	SupportsArtifactPublication     *bool `json:"supportsArtifactPublication,omitempty"`
+	// Supports read-only direct conversation and a bounded semantic development proposal.
+	// Omission preserves legacy execution.
+	SupportsConversationWork *bool `json:"supportsConversationWork,omitempty"`
 	// Whether this managed Runtime can replay the content-free late Discussion evidence
 	// operation offered in run.requested. Omission means unsupported.
 	SupportsDiscussionSupplementalEvidence *bool `json:"supportsDiscussionSupplementalEvidence,omitempty"`
@@ -613,6 +616,9 @@ type RunRequestedPayload struct {
 	ContextManifest *ContextManifest    `json:"contextManifest,omitempty"`
 	ContextMessages []ContextMessage    `json:"contextMessages"`
 	ContextPlan     *RuntimeContextPlan `json:"contextPlan,omitempty"`
+	// Run a read-only conversational turn. A structured developmentProposal may request
+	// continuation under an existing owner policy; it grants no write permission.
+	ConversationWork *bool `json:"conversationWork,omitempty"`
 	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
 	// most nanosecond precision.
 	Deadline                       time.Time                            `json:"deadline"`
@@ -1143,12 +1149,13 @@ type RunReplyMessage struct {
 }
 
 type RunReplyPayload struct {
-	AgentID    string      `json:"agentId"`
-	RunID      string      `json:"runId"`
-	Sequence   int64       `json:"sequence"`
-	TraceID    string      `json:"traceId"`
-	Assessment *Assessment `json:"assessment,omitempty"`
-	Content    string      `json:"content"`
+	AgentID             string               `json:"agentId"`
+	RunID               string               `json:"runId"`
+	Sequence            int64                `json:"sequence"`
+	TraceID             string               `json:"traceId"`
+	Assessment          *Assessment          `json:"assessment,omitempty"`
+	Content             string               `json:"content"`
+	DevelopmentProposal *DevelopmentProposal `json:"developmentProposal,omitempty"`
 }
 
 type Assessment struct {
@@ -1167,6 +1174,11 @@ type OpenQuestionElement struct {
 	ID         string     `json:"id"`
 	Importance Importance `json:"importance"`
 	Question   string     `json:"question"`
+}
+
+type DevelopmentProposal struct {
+	Criteria []string `json:"criteria"`
+	Title    string   `json:"title"`
 }
 
 // Fields shared by versioned cross-process messages.

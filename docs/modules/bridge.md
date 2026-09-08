@@ -1,5 +1,16 @@
 # Local Bridge
 
+[ADR-0061](../adr/0061-continue-development-from-conversation.md) adds ordinary
+conversation continuation for managed Codex Agents. A capability-bound initial
+turn uses a read-only sandbox without changing the owner's configuration. The
+same turn answers analysis requests or emits a complete bounded development
+proposal; quoted markers, malformed payloads and extra authority fields cannot
+start work. Private output, handoff, Discussion and governed execution retain
+their existing paths. Central later supplies the exact derived grant and
+isolated workspace through the existing execution gate. No new Runtime command
+or local approval mechanism is introduced. See the
+[conversation acceptance](../acceptance/run-019-conversation-development.md).
+
 [ADR-0060](../adr/0060-preauthorize-local-work-policies.md) defines the
 owner-configured standing work policy: a paired device derives exact Task
 grants automatically within a preauthorized scope. The local Console form selects

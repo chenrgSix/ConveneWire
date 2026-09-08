@@ -32,6 +32,7 @@ export interface DiscussionSupplementalEvidenceOffer {
 }
 
 export interface DeliveryPayload {
+  conversationWork?: boolean;
   ownerPrivateOutput?: boolean;
   runId: string;
   traceId: string;
@@ -470,6 +471,13 @@ export class DeliveryService {
     const discussionSupplementalEvidence =
       this.discussionSupplementalEvidenceOffer(run.runId, agent);
     const payload: DeliveryPayload = {
+      ...(agent.capabilities.supportsConversationWork === true &&
+        agent.capabilities.ownerPrivateOutput !== true && !contextManifest.execution &&
+        !run.parentRunId && trigger.senderType === "member" &&
+        trigger.senderId === run.requesterMemberId && trigger.mentions.length === 1 &&
+        trigger.mentions[0]?.targetAgentId === agent.agentId &&
+        !this.database.prepare("SELECT 1 FROM discussion_turns WHERE run_id = ?").get(run.runId)
+        ? { conversationWork: true } : {}),
       ...(agent.capabilities.ownerPrivateOutput === true ? { ownerPrivateOutput: true } : {}),
       runId: run.runId,
       traceId: run.traceId,

@@ -67,6 +67,7 @@ export interface AgentCapabilities {
   supportsStart: boolean;
   supportsStreaming: boolean;
   supportsRoomContextCoverage?: boolean;
+  supportsConversationWork?: boolean;
   supportsWorkspaceLeases?: boolean;
   supportsArtifactPublication?: boolean;
   supportsArtifactMaterialization?: boolean;

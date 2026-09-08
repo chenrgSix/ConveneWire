@@ -101,6 +101,7 @@ import { ExecutionPlanSupersessionService } from
 import { ExecutionSourceRepository } from "./execution/execution-source-repository.js";
 import { ExecutionPlanService } from "./execution/execution-plan-service.js";
 import { DevelopmentWorkService } from "./execution/development-work-service.js";
+import { ConversationWorkService } from "./execution/conversation-work-service.js";
 import { ExecutionPlanDraftWriter } from
   "./execution/execution-plan-draft-writer.js";
 import { ExecutionNodeControlService } from
@@ -553,6 +554,8 @@ export async function createServerApp(
   );
   const developmentWork = new DevelopmentWorkService(database, transactions, auth, core, tasks,
     taskRepository, executionPlans, executionPlanRepository, messages, bridgeConnections, notifyExecutionChanged);
+  const conversationWork = new ConversationWorkService(database, transactions, core, runRepository,
+    taskRepository, developmentWork, notifyExecutionChanged);
   const executionEvidenceAdoptions =
     new ExecutionEvidenceAdoptionRepository(database);
   const executionPlanSupersessions = new ExecutionPlanSupersessionService(
@@ -714,7 +717,8 @@ export async function createServerApp(
     core,
     runRepository,
     resultEvidenceConsumption,
-    delivery
+    delivery,
+    conversationWork
   );
   const handoffs = new HandoffService(core, runRepository, taskRepository);
   const cancellations = new CancellationService(
@@ -896,6 +900,7 @@ export async function createServerApp(
     if (executionSweepInFlight) return;
     executionSweepInFlight = true;
     try {
+      conversationWork.sweep(clock());
       developmentWork.sweep(clock());
       for (const run of executionScheduler.sweep()) await dispatchRun(run);
     } finally {

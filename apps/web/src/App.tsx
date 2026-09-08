@@ -56,7 +56,6 @@ import {
 import { TaskClarifications } from "./features/task/TaskClarifications.js";
 import { MemoryCandidateReview } from "./features/task/MemoryCandidateReview.js";
 import { ArtifactPreviewPanel } from "./features/task/ArtifactPreviewPanel.js";
-import { DevelopmentWorkEntry } from "./features/room/DevelopmentWorkEntry.js";
 import { TaskCreateDialog, TaskSelector } from "./features/task/TaskControls.js";
 import { parseTaskCriteria } from "./features/task/task-criteria.js";
 import { TaskWorkDetail, type TaskWorkDetailTab } from "./features/work/TaskWorkDetail.js";
@@ -1707,10 +1706,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             )}
           </div>
           <div className="workspace-controls">
-            {activeView === "room" && selectedRoom && currentMember && <DevelopmentWorkEntry
-              key={`${selectedRoom.roomId}:${currentMember.memberId}:${session?.token}`}
-              roomId={selectedRoom.roomId} memberId={currentMember.memberId} token={session?.token} locale={locale}
-              onCreated={() => void refreshWorkbenchState()} onOpenTask={(roomId, taskId) => openWorkbenchTask(taskId, roomId)} />}
+
             <button className="header-account" onClick={() => selectWorkspaceView("security")} type="button" aria-label={locale === "zh-CN" ? "打开账户与安全" : "Open account & security"}>
               {session?.displayName.slice(0, 1).toUpperCase()}
             </button>

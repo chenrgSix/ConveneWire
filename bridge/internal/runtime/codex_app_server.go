@@ -24,6 +24,10 @@ var (
 )
 
 func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emit EmitFunc) error {
+	if conversationWork(request.Run) && (request.Run.OwnerPrivateOutput != nil && *request.Run.OwnerPrivateOutput ||
+		request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
+		return emitCodexFailure(ctx, emit, "CONVERSATION_WORK_INVALID", "Conversation and execution authority cannot be combined.")
+	}
 	if err := validateCodexCommand(c.Config.Command); err != nil {
 		return emitCodexFailure(ctx, emit, "CODEX_COMMAND_INVALID", err.Error())
 	}
@@ -132,8 +136,12 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		return emitCodexFailure(ctx, emit, "CODEX_START_FAILED", "Codex initialization could not be sent.")
 	}
 
+	parserConfig := c.Config
+	if conversationWork(request.Run) {
+		parserConfig.Sandbox = "read-only"
+	}
 	parser := newCodexAppServerSessionParser(
-		c.Config, runtimePromptWithArtifacts(promptRun, request.Artifacts),
+		parserConfig, runtimePromptWithArtifacts(promptRun, request.Artifacts),
 		c.Sessions, sessionKey, resumeThreadID,
 	)
 	parser.bootstrapInstruction = runtimePromptWithArtifacts(bootstrapRun, request.Artifacts)
@@ -273,6 +281,19 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 	}
 	if len([]byte(parser.reply)) > maxRuntimeOutput {
 		return emitCodexFailureAfterAcceptance(ctx, emit, parser, "CODEX_REPLY_LIMIT", "Codex reply exceeded 20000 bytes.", nil)
+	}
+	if conversationWork(request.Run) {
+		proposal, proposalErr := parseDevelopmentProposal(parser.reply)
+		if proposalErr != nil {
+			return emitCodexFailureAfterAcceptance(ctx, emit, parser, "DEVELOPMENT_PROPOSAL_INVALID", "The development proposal was incomplete; no execution was authorized.", nil)
+		}
+		if proposal != nil {
+			if err := emit(ctx, Event{Reply: "正在根据你的要求准备开发执行，进展和交付结果会回到当前对话。", DevelopmentProposal: proposal}); err != nil {
+				return err
+			}
+			completed := contracts.Completed
+			return emit(ctx, Event{Status: &completed, Session: parser.logicalSessionStatus()})
+		}
 	}
 	reply, clarification := parseTaskClarificationEnvelope(parser.reply)
 	if clarification != nil {

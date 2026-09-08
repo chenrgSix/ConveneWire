@@ -61,7 +61,7 @@ func parseTaskClarificationEnvelope(
 
 func stripPrivateEnvelopePreview(value string) string {
 	boundary := len(value)
-	for _, marker := range []string{assessmentOpen, clarificationOpen} {
+	for _, marker := range []string{assessmentOpen, clarificationOpen, developmentOpen} {
 		if index := strings.Index(value, marker); index >= 0 && index < boundary {
 			boundary = index
 		}

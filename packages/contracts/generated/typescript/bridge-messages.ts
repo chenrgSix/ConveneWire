@@ -499,6 +499,11 @@ export interface Capabilities {
   supportsArtifactMaterialization?: boolean;
   supportsArtifactPublication?:     boolean;
   /**
+   * Supports read-only direct conversation and a bounded semantic development proposal.
+   * Omission preserves legacy execution.
+   */
+  supportsConversationWork?: boolean;
+  /**
    * Whether this managed Runtime can replay the content-free late Discussion evidence
    * operation offered in run.requested. Omission means unsupported.
    */
@@ -775,6 +780,11 @@ export interface RunRequestedPayload {
   contextManifest?: ContextManifest;
   contextMessages:  ContextMessage[];
   contextPlan?:     RuntimeContextPlan;
+  /**
+   * Run a read-only conversational turn. A structured developmentProposal may request
+   * continuation under an existing owner policy; it grants no write permission.
+   */
+  conversationWork?: boolean;
   /**
    * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
    * most nanosecond precision.
@@ -1431,12 +1441,13 @@ export interface RunReplyMessage {
 }
 
 export interface RunReplyPayload {
-  agentId:     string;
-  runId:       string;
-  sequence:    number;
-  traceId:     string;
-  assessment?: Assessment;
-  content:     string;
+  agentId:              string;
+  runId:                string;
+  sequence:             number;
+  traceId:              string;
+  assessment?:          Assessment;
+  content:              string;
+  developmentProposal?: DevelopmentProposal;
   [property: string]: unknown;
 }
 
@@ -1463,6 +1474,11 @@ export interface OpenQuestion {
 export type Importance = "low" | "medium" | "high";
 
 export type Recommendation = "continue" | "finish" | "wait_human";
+
+export interface DevelopmentProposal {
+  criteria: [string, ...string[]];
+  title:    string;
+}
 
 export type RunReplyMessageType = "run.reply";
 

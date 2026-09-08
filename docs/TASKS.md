@@ -760,8 +760,8 @@ or a registration receipt alone.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| RUN-019 | IN_PROGRESS | Continue authorized development from ordinary Agent conversation | EXEC-012, CON-026, WEB-077 | ADR-0061; pending contract, read-only intent, durable continuation, source context/budget and authority regression evidence |
-| WEB-078 | IN_PROGRESS | Remove the separate development form and retain conversation delivery | RUN-019 | Pending production composer, no-form, inline blocker/delivery and installed preview verification |
+| RUN-019 | DONE | Continue authorized development from ordinary Agent conversation | EXEC-012, CON-026, WEB-077 | [Conversation evidence](acceptance/run-019-conversation-development.md): optional TS/Go contracts, read-only Runtime stage, immutable source continuation/context, reserved budget and authority fences; 23 development regressions and physical browser/Git/command scenario passed without model calls |
+| WEB-078 | IN_PROGRESS | Remove the separate development form and retain conversation delivery | RUN-019 | [Production composer and browser evidence](acceptance/run-019-conversation-development.md): separate form removed, inline blocker/delivery links, 324 Web tests and real browser submissions passed; installed preview verification remains |
 
 ## Deferred Beyond MVP
 

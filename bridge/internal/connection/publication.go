@@ -60,6 +60,8 @@ func (c Client) agentPublication(configured config.AgentConfig, agentID string, 
 	supportsRoomContextCoverage :=
 		c.RoomContextCoverageAgentNames[configured.Name]
 	capabilities.SupportsRoomContextCoverage = &supportsRoomContextCoverage
+	supportsConversationWork := configured.Adapter == "codex" && !configured.OwnerPrivateOutput
+	capabilities.SupportsConversationWork = &supportsConversationWork
 	supportsWorkspaceLeases := true
 	capabilities.SupportsWorkspaceLeases = &supportsWorkspaceLeases
 	supportsArtifactPublication := !configured.OwnerPrivateOutput

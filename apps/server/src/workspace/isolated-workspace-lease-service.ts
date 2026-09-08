@@ -8,6 +8,7 @@ import type {
 import { assertExecutionCommand, canonicalExecutionJSON, executionOperationDigest } from "@convene-wire/contracts/execution-validation";
 import type { BridgeConnectionRegistry } from "../bridge/bridge-connection-registry.js";
 import { ExecutionError } from "../execution/execution-error.js";
+import { conversationSourceValid } from "../execution/conversation-work-service.js";
 import type { ExecutionPlanRepository } from "../execution/execution-plan-repository.js";
 import { AuthorizationError, type DevicePrincipal } from "../security/auth-service.js";
 
@@ -113,6 +114,9 @@ export class IsolatedWorkspaceLeaseService {
       return fail("RUNTIME_AUTHORITY_CONFLICT");
     }
     const current = this.requireActiveForDevice(principal, request.leaseId, now);
+    const conversation = this.database.prepare(`SELECT w.operation_id FROM development_work_authorizations w
+      JOIN execution_run_admissions a ON a.plan_id = w.plan_id WHERE a.run_id = ?`).get(request.runId) as { operation_id: string } | undefined;
+    if (conversation && !conversationSourceValid(this.database, conversation.operation_id)) return fail("RUNTIME_AUTHORITY_CANCELED");
     if (this.database.prepare("SELECT 1 FROM run_cancellation_intents WHERE run_id = ?").get(request.runId)) {
       return fail("RUNTIME_AUTHORITY_CANCELED");
     }

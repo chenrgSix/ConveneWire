@@ -462,6 +462,7 @@ const canonicalPropertyTrees = {
           "role": {},
           "capabilities": {
             "p": {
+              "supportsConversationWork": {},
               "workPolicyOffers": {
                 "i": {
                   "p": {
@@ -741,6 +742,7 @@ const canonicalPropertyTrees = {
       "type": {},
       "payload": {
         "p": {
+          "conversationWork": {},
           "ownerPrivateOutput": {},
           "runId": {},
           "traceId": {},
@@ -1535,6 +1537,14 @@ const canonicalPropertyTrees = {
             "u": "9007199254740991"
           },
           "content": {},
+          "developmentProposal": {
+            "p": {
+              "title": {},
+              "criteria": {
+                "i": {}
+              }
+            }
+          },
           "assessment": {
             "p": {
               "goalSatisfied": {},

@@ -1328,24 +1328,11 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .client-entry-identity { font-size: 1.15rem; overflow-wrap: anywhere; }
 .client-entry-shell .secondary-action { margin-top: 12px; width: 100%; }
 
-.development-form { display: grid; gap: 16px; margin: 18px 0; }
-.development-form fieldset { border: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
-.development-form label { display: grid; gap: 6px; }
-.development-policy { display: grid; gap: 6px; padding: 14px; border: 1px solid var(--cw-border, #434b3c); border-radius: 12px; overflow-wrap: anywhere; font-size: 13px; }
-.development-blocker { font-size: 13px; line-height: 1.6; }
-.development-blocker small { overflow-wrap: anywhere; }
-.development-history article { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--cw-border, #434b3c); }
 .browser-verification { min-width: 0; padding: 12px 0; overflow-wrap: anywhere; }
 .browser-verification img { display: block; max-width: 100%; height: auto; border: 1px solid var(--cw-border, #434b3c); border-radius: 8px; margin-top: 12px; }
 .browser-verification dl > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .browser-verification dd { margin: 0; }
 
-.development-entry { padding: 7px 12px; }
-.development-form input, .development-form textarea, .development-form select { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--cw-border-strong, #434b3c); border-radius: 9px; background: var(--cw-surface-inset, #1b2119); color: var(--cw-text, #edf1eb); font-size: 14px; line-height: 1.5; }
-.development-form textarea { resize: vertical; }
-.development-form button:disabled { opacity: .55; cursor: default; }
-.development-form label { font-size: 13px; font-weight: 650; }
-:root[data-theme="light"] .development-form input, :root[data-theme="light"] .development-form textarea, :root[data-theme="light"] .development-form select { background: #f2f5f1; border-color: #c7d0be; color: #243025; }
 .work-evidence-grid li, .verification-log-preview { min-width: 0; max-width: 100%; }
 .verification-log-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 .browser-verification { width: 100%; color: var(--cw-text, #edf1eb); }

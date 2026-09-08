@@ -1,0 +1,150 @@
+{
+  "cases": [
+    {
+      "name": "read-only conversation delivery",
+      "valid": true,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "conversationWork": true
+        }
+      }
+    },
+    {
+      "name": "bounded semantic proposal",
+      "valid": true,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation02",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.reply",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "agentId": "agent_conversation01",
+          "sequence": 3,
+          "content": "Preparing work",
+          "developmentProposal": {
+            "title": "Repair input",
+            "criteria": [
+              "Preserve keyboard behavior"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "arbitrary command",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation02",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.reply",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "agentId": "agent_conversation01",
+          "sequence": 3,
+          "content": "Preparing work",
+          "developmentProposal": {
+            "title": "Repair",
+            "criteria": [
+              "Pass"
+            ],
+            "command": "git push"
+          }
+        }
+      }
+    },
+    {
+      "name": "empty criteria",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation02",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.reply",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "agentId": "agent_conversation01",
+          "sequence": 3,
+          "content": "Preparing work",
+          "developmentProposal": {
+            "title": "Repair",
+            "criteria": []
+          }
+        }
+      }
+    },
+    {
+      "name": "oversized title",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation02",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.reply",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "agentId": "agent_conversation01",
+          "sequence": 3,
+          "content": "Preparing work",
+          "developmentProposal": {
+            "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "criteria": [
+              "Pass"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "unbounded criteria",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation02",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.reply",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "agentId": "agent_conversation01",
+          "sequence": 3,
+          "content": "Preparing work",
+          "developmentProposal": {
+            "title": "Repair",
+            "criteria": [
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass",
+              "Pass"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

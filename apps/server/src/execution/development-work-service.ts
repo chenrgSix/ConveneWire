@@ -10,6 +10,7 @@ import type { AgentTaskService } from "../task/agent-task-service.js";
 import type { AgentTaskRepository } from "../task/task-repository.js";
 import type { MessageService } from "../team-room/message-service.js";
 import { ExecutionError } from "./execution-error.js";
+import { conversationSourceValid } from "./conversation-work-service.js";
 import type { ExecutionPlanRepository } from "./execution-plan-repository.js";
 import type { ExecutionPlanService } from "./execution-plan-service.js";
 
@@ -98,7 +99,8 @@ export class DevelopmentWorkService {
     });
   }
 
-  public create(principal: WebPrincipal, roomId: string, value: unknown, now: string) {
+  public create(principal: WebPrincipal, roomId: string, value: unknown, now: string,
+    continuation?: { maxRunAttempts: number; maxTaskDurationSeconds: number }) {
     const input = command(value);
     const member = this.auth.requireRoomMember(principal, roomId);
     const digest = executionOperationDigest({ roomId, memberId: member.memberId, command: input });
@@ -122,10 +124,12 @@ export class DevelopmentWorkService {
       const pending = this.database.prepare("SELECT count(*) AS count FROM development_work_authorizations WHERE device_id = ? AND state = 'pending'")
         .get(agent.deviceId) as { count: number };
       if (pending.count >= 8) throw new ExecutionError("DEVELOPMENT_DEVICE_BUSY", 409);
-      const seconds = Math.min(offer.spec.maxTaskDurationSeconds, Math.floor((Date.parse(offer.spec.expiresAt) - Date.parse(now)) / 1_000));
+      const seconds = Math.min(offer.spec.maxTaskDurationSeconds, continuation?.maxTaskDurationSeconds ?? Infinity,
+        Math.floor((Date.parse(offer.spec.expiresAt) - Date.parse(now)) / 1_000));
       if (seconds < 60) throw new ExecutionError("DEVELOPMENT_POLICY_EXPIRING", 409);
       const parent = { authorizationId: input.operationId, policyId: offer.spec.policyId, policyDigest: offer.digest,
-        revision: 1 as const, initiatorMemberId: member.memberId, maxRunAttempts: offer.spec.maxRunAttempts, maxConcurrency: 1 };
+        revision: 1 as const, initiatorMemberId: member.memberId,
+        maxRunAttempts: Math.min(offer.spec.maxRunAttempts, continuation?.maxRunAttempts ?? Infinity), maxConcurrency: 1 };
       const budget = { maxRunAttempts: parent.maxRunAttempts, maxExecutionDurationSeconds: seconds };
       const root = this.tasks.create(member, { roomId, title: input.title, goal: input.goal, budgetPolicy: budget }, now);
       const message = this.messages.createMemberMessage(member, { roomId, taskId: root.taskId, content: input.goal, now });
@@ -180,7 +184,7 @@ export class DevelopmentWorkService {
       this.transactions.afterCommit(() => this.changed(roomId));
       return this.row(input.operationId)!;
     });
-    this.resendForDevice(row.device_id, now);
+    this.transactions.afterCommit(() => this.resendForDevice(row.device_id, now));
     return this.view(this.row(row.operation_id)!);
   }
 
@@ -273,7 +277,7 @@ export class DevelopmentWorkService {
     const plan = this.planRepository.get(row.plan_id);
     const initiator = this.core.getMember(row.initiator_member_id);
     const room = this.core.getRoom(row.room_id);
-    const canceled = !task || !root || !plan || !initiator || !room || Boolean(room.archivedAt) || !this.core.isRoomMember(row.room_id, row.initiator_member_id) ||
+    const canceled = !conversationSourceValid(this.database, row.operation_id) || !task || !root || !plan || !initiator || !room || Boolean(room.archivedAt) || !this.core.isRoomMember(row.room_id, row.initiator_member_id) ||
       task.ownerMemberId !== row.initiator_member_id || [task.lifecycleState, root.lifecycleState].some((state) => state === "canceled" || state === "completed") ||
       plan.current.revision !== request.spec.planRevision || plan.current.digest !== request.spec.planDigest ||
       plan.state === "canceled" || task.definitionRevision !== request.spec.definitionRevision || task.criteriaRevision !== request.spec.criteriaRevision;

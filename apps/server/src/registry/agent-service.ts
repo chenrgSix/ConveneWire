@@ -123,6 +123,7 @@ function validateCapabilities(input: PublishAgentInput): void {
     if (
       input.capabilities.supportsResume ||
       input.capabilities.supportsRoomContextCoverage === true ||
+      input.capabilities.supportsConversationWork === true ||
       input.capabilities.supportsWorkspaceLeases === true ||
       input.capabilities.supportsArtifactPublication === true ||
       input.capabilities.supportsArtifactMaterialization === true ||
@@ -314,7 +315,7 @@ export class AgentService {
     }
     if (input.capabilities.ownerPrivateOutput === true && (
       !input.runtimeScopeId || input.capabilities.supportsStreaming ||
-      input.capabilities.supportsHandoff || input.capabilities.supportsRoomContextCoverage ||
+      input.capabilities.supportsHandoff || input.capabilities.supportsRoomContextCoverage || input.capabilities.supportsConversationWork ||
       input.capabilities.supportsArtifactPublication || input.capabilities.supportsDiscussionSupplementalEvidence ||
       input.capabilities.governedExecution
     )) throw new Error("Private output requires a scoped Bridge with content publication disabled");
