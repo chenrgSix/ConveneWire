@@ -1,5 +1,10 @@
 # Web UI
 
+[ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
+owner-local full-trust choice for Codex execution, mirrored to Central and pinned
+per Run. Default-off consent, local revocation, pairing/revision checks and
+ordinary task authority remain mandatory. SEC-016 tracks implementation.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) extends Work with
 plan proposal/edit/approval, dependencies and input pins, verification,
 integration and recovery surfaces. Existing Task/Run/Result details remain the

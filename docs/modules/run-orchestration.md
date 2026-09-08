@@ -1,5 +1,10 @@
 # Run Orchestration Module
 
+[ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
+owner-local full-trust choice for Codex execution, mirrored to Central and pinned
+per Run. Default-off consent, local revocation, pairing/revision checks and
+ordinary task authority remain mandatory. SEC-016 tracks implementation.
+
 [ADR-0061](../adr/0061-continue-development-from-conversation.md) binds a capable
 Codex Agent's read-only development proposal to the exact original human Run.
 Central retains one immutable proposal, waits for successful completion and
