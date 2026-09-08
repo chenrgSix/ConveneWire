@@ -77,8 +77,22 @@ were visually inspected.
 
 ## Installed preview
 
-Local packaging and installation verification are pending. The actual owner's
-full-trust setting will remain off; the owner must explicitly enable it locally.
+The owner-authorized local preview is installed as `v0.5.3-local.da7349f`, source
+`da7349f764c2ab314e1d1ab7adbf2f29eab7eddd`. All eight installed client files
+match the native build. Central source release verification and controller
+upgrade passed after verified backup. Doctor confirms exact running release,
+HTTPS readiness and WebSocket ingress. Original-CA HTTPS served assets contain
+the trust display and omit the separate development entry.
+
+All 30 existing client JSON files are byte-identical. Business counts, installation
+identity, trust epoch and original CA are unchanged; schema remains 91. Three
+original Agents reconnected ready and Central observed the exact new Bridge
+source commit. The actual owner's trust remains off, and its published Agents
+have no full-trust pin. No real authorization or model call was created.
+
+Private recovery records and old application are retained in the ignored
+`var/local-upgrades/v0.5.3-local.da7349f-20260909` directory. Its verified Central
+release directory is referenced by the active installation and must be retained.
 Live model interpretation, Windows/Linux, CI and external publication are outside
 this evidence. Native installed-window screenshot acceptance is not claimed.
 
