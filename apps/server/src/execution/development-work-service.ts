@@ -301,7 +301,8 @@ export class DevelopmentWorkService {
   private row(id: string) { return this.database.prepare("SELECT * FROM development_work_authorizations WHERE operation_id = ?").get(id) as WorkRow | undefined; }
   private operation(id: string, purpose: string) { return `op_${executionOperationDigest({ authorizationId: id, purpose })}`; }
   private view(row: WorkRow) {
-    return { operationId: row.operation_id, rootTaskId: row.root_task_id, taskId: row.task_id, planId: row.plan_id,
+    return { operationId: row.operation_id, title: this.taskRepository.get(row.root_task_id)?.title ?? row.task_id,
+      rootTaskId: row.root_task_id, taskId: row.task_id, planId: row.plan_id,
       agentId: row.agent_id, deviceId: row.device_id, state: row.state, reason: row.reason, createdAt: row.created_at, updatedAt: row.updated_at };
   }
 }

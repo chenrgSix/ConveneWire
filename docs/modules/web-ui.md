@@ -872,3 +872,19 @@ member reasons, actual Run lifecycle counts and elapsed wall time separately
 from budget slots; unknown token and currency telemetry is labeled unavailable.
 Version 1 snapshots and older Server responses remain readable without
 reconstructed reasons or fabricated zero spending. QA-066 owns acceptance.
+
+## Preauthorized Room development
+
+[ADR-0060](../adr/0060-preauthorize-local-work-policies.md) adds an explicit Room
+entry for owner-preauthorized development. Current offers supply path-free
+readiness and exact source/profile limits. A closed initiation command creates
+the existing root Task, approved single-node plan and governed child Task through
+Central authority. It does not interpret ordinary chat as permission to write.
+
+Unconfirmed initiation intent, including its title, goal and criteria, is kept
+in member/Room-scoped session storage with the operation ID for exact replay;
+credentials and repository bytes are not stored there. Corrupt pending data
+blocks fresh submission. The history opens the root Task's canonical evidence
+surface. Candidate receipts, verification, bounded PNG reports, visual review,
+Result adoption and integration remain distinct. See the real connected
+[QA-089 acceptance](../acceptance/qa-089-standing-work-product-loop.md).

@@ -11,6 +11,7 @@ import {
 } from "../../api-client.js";
 import type { Locale } from "../../i18n.js";
 import type { Member } from "../../models.js";
+import { VerificationLogPreview } from "./VerificationLogPreview.js";
 import {
   clearPendingEvidenceCommand,
   type EvidenceCommandKind,
@@ -318,6 +319,7 @@ export function ExecutionEvidencePanel({
           const remoteKey = commandKey(selected.planId, node.nodeKey, "remote_adoption");
           const integrationKey = commandKey(selected.planId, node.nodeKey, "integration_approval");
           const source = node.remote?.source ?? node.stages.at(-1)?.source ?? null;
+          const localCandidate = node.verifications.find((verification) => verification.kind === "local_verification")?.receipt;
           const candidate = node.remote?.commitObservation.commit ??
             node.integration.commandTemplate?.candidateCommit ??
             node.integration.approval?.candidateCommit ??
@@ -340,7 +342,11 @@ export function ExecutionEvidencePanel({
             <div className="work-evidence-grid">
               <section>
                 <h6>{t("候选来源", "Candidate source", locale)}</h6>
-                {!source ? <p>{t("尚无保留来源", "No retained source", locale)}</p> : <dl>
+                {!source ? localCandidate?.candidateCommit ? <>
+                  <p>{t("候选已生成，任务结果尚待确认。", "Candidate captured; Task result confirmation is still outstanding.", locale)}</p>
+                  <dl><div><dt>Commit</dt><dd>{localCandidate.candidateCommit}</dd></div>
+                    <div><dt>Tree</dt><dd>{localCandidate.candidateTree}</dd></div></dl>
+                </> : <p>{t("尚无保留来源", "No retained source", locale)}</p> : <dl>
                   <div><dt>{t("种类", "Kind", locale)}</dt><dd>{display(source.kind)}</dd></div>
                   <div><dt>Source</dt><dd>{source.sourceEvidenceId}</dd></div>
                   <div><dt>Digest</dt><dd>{short(source.sourceDigest)}</dd></div>
@@ -361,11 +367,16 @@ export function ExecutionEvidencePanel({
                       ? receipt.verificationId : receipt.observationId;
                     return <li key={`${verification.kind}:${id}`}>
                       <strong>{verification.kind === "remote_ci"
-                        ? receipt.checkKey : receipt.profileId}</strong>
+                        ? receipt.checkKey : (receipt.profile?.profileId ?? receipt.profileId)}</strong>
                       <span>{outcome(receipt.outcome, locale)} · {short(
                         verification.kind === "remote_ci"
                           ? receipt.receiptDigest : verification.receiptDigest
                       )}</span>
+                      {verification.kind === "local_verification" && verification.receipt.logArtifact && node.taskId && <VerificationLogPreview
+                        key={`${verification.receipt.logArtifact.artifactId}:${token}`}
+                        taskId={node.taskId} artifactId={verification.receipt.logArtifact.artifactId}
+                        revision={verification.receipt.logArtifact.artifactRevision} digest={verification.receipt.logArtifact.contentDigest}
+                        token={token} locale={locale} />}
                     </li>;
                   })}
                 </ul>}

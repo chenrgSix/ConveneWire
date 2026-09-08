@@ -1,4 +1,5 @@
 import type { Locale } from "../../i18n.js";
+import { BrowserVerificationView } from "./BrowserVerificationView.js";
 import type {
   ArtifactPreview,
   TaskArtifact
@@ -100,6 +101,7 @@ export function ArtifactPreviewPanel({
           className="artifact-preview"
           role="region"
         >
+          {preview.browser && <BrowserVerificationView browser={preview.browser} locale={locale} />}
           <header>
             <div>
               <strong>{preview.title}</strong>
@@ -110,7 +112,7 @@ export function ArtifactPreviewPanel({
             </button>
           </header>
           <p className="artifact-preview-warning">
-            {locale === "zh-CN"
+            {preview.browser ? (locale === "zh-CN" ? "SHA-256 已验证；报告和截图属于验证证据，尚未进行视觉复核。" : "SHA-256 is verified; the report and screenshot are evidence, with visual review still outstanding.") : locale === "zh-CN"
               ? "SHA-256 已验证，但内容语义未受信任；以下内容仅以纯文本显示。"
               : "SHA-256 is verified, but the meaning is untrusted; content is shown as plain text only."}
           </p>

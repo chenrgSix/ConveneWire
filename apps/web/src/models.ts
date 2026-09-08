@@ -350,6 +350,11 @@ export interface TaskArtifactPage {
 }
 
 export interface ArtifactPreview {
+  browser?: {
+    startup: string; pageLoad: string; cleanup: string; reason: string; visualReview: "not_performed";
+    steps: Array<{action: string; selector: string; state: string}>;
+    screenshot: {state: string; dataUrl: string | null};
+  };
   artifactId: string;
   artifactRevision: number;
   taskId: string;

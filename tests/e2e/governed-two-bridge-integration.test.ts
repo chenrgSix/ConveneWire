@@ -3078,3 +3078,176 @@ test("parallel Bridges retain one CAS winner, one conflict, and exact fan-in", {
     ]);
   }
 });
+
+test("standing policy completes two unattended development Tasks with physical candidate receipts", {
+  timeout: 240_000,
+  skip: process.platform !== "darwin" || Boolean(packagedImage) ? "local macOS source acceptance" : false
+}, async (t) => {
+  const resources = await createTestResources(t, "convene-wire-qa089-e2e-");
+  const directory = resources.directory;
+  const source = path.join(directory, "source");
+  const databasePath = path.join(directory, "central-data", "central.sqlite");
+  const configPath = path.join(directory, "bridge.json");
+  const binary = path.join(directory, "convenewire-bridge");
+  const browserExecutable = process.env.CONVENE_WIRE_BROWSER_EXECUTABLE;
+  const evidenceDirectory = process.env.CONVENE_WIRE_WORK_EVIDENCE_DIR;
+  const history: ProcessHandle[] = [];
+  let stage = "create source";
+  try {
+    await prepareCentralData(databasePath);
+    await mkdir(path.join(source, "src"), {recursive: true});
+    await writeFile(path.join(source, "src/dependency.ts"), "export const state = 'old';\n");
+    await execFileAsync("git", ["init", "--initial-branch=main", source]);
+    await git(source, ["config", "user.name", "ConveneWire QA"]);
+    await git(source, ["config", "user.email", "qa@example.invalid"]);
+    await git(source, ["add", "--all"]); await git(source, ["commit", "-m", "base"]);
+    const baseCommit = await git(source, ["rev-parse", "HEAD"]);
+    const codex = await createCodexFixture(directory, path.join(directory, "unused-plan.json"));
+    // The deterministic Runtime writes a real candidate page; it never calls a model.
+    const helper = await readFile(codex.helper, "utf8");
+    const page = `<!doctype html><meta charset="utf-8"><title>候选页面</title><style>body{font:20px sans-serif;padding:48px;background:#f7f7ef}input,button{font:inherit;padding:12px;margin:8px}</style><h1>自动交付候选</h1><input id="goal"><button id="save" onclick="document.querySelector('#result').textContent=document.querySelector('#goal').value">保存</button><p id="result">等待输入</p>`;
+    await writeFile(codex.helper, helper.replace("reply = 'physical build completed';",
+      `await writeFile(path.join(cwd, 'src/index.html'), ${JSON.stringify(page)}); reply = 'physical build completed';`));
+    await execFileAsync(process.execPath, ["--check", codex.helper]);
+    const verifier = await createVerifier(directory);
+    await prepareBridge(binary);
+    const port = await reservePort(); const serverUrl = `http://127.0.0.1:${port}`;
+    const serverToken = `qa089-${randomUUID()}-${randomUUID()}`;
+    const central = startProcess(resources, process.execPath, ["--import", "tsx", "apps/server/src/server.ts"], {
+      cwd: repositoryRoot, env: {...centralEnvironment(port, databasePath, serverToken), CONVENE_WIRE_WEB_ROOT: path.join(repositoryRoot, "apps/web/dist")},
+      stdio: ["ignore", "pipe", "pipe"]
+    }); history.push(central);
+    await waitFor(async () => (await fetch(`${serverUrl}/api/health/ready`)).ok ? true : undefined);
+    const bootstrap = await requestJSON<any>(serverUrl, "POST", "/api/bootstrap", {displayName: "QA-089 Owner"});
+    const token = bootstrap.session.token;
+    const team = await requestJSON<any>(serverUrl, "POST", "/api/teams", {name: "无人值守开发验收"}, token);
+    const teamId = team.team.teamId, memberId = team.owner.memberId;
+    const room = await requestJSON<any>(serverUrl, "POST", `/api/teams/${teamId}/rooms`, {name: "日常开发"}, token);
+    const roomId = room.roomId;
+    await writeJSON(configPath, {schemaVersion:5, serverUrl, serverToken, deviceName:"QA-089 Device", dataDir:path.join(directory,"bridge-data"), agents:[{
+      name:"自动开发 Agent",role:"Developer",adapter:"codex",runtimeKind:"codex",presetVersion:5,
+      command:[codex.executable,codex.helper,"fixture-role=build",`fixture-source=${source}`,"app-server","--listen","stdio://"],
+      workspace:source,workspaceAlias:"候选项目",sandbox:"workspace-write",codexSessionConflictPolicy:"preserve_and_retry",envAllowlist:[]
+    }]});
+    const invite = await requestJSON<any>(serverUrl,"POST",`/api/teams/${teamId}/bridge-invites`,{deviceName:"QA-089 Device"},token);
+    await bridgeCommand(binary,configPath,"build",["pair","--code",invite.code]);
+    stage = "publish and register owner resources";
+    const initial = startBridge(resources,binary,configPath,"build"); history.push(initial);
+    const agent = await waitForAgent(serverUrl,token,teamId,"自动开发 Agent"); await initial.stop();
+    await requestJSON(serverUrl,"PUT",`/api/rooms/${roomId}/participants`,{memberIds:[memberId],agentIds:[agent.agentId]},token);
+    const binding = JSON.parse(await bridgeCommand(binary,configPath,"build",["repository","bind","--binding-id","repobind_qa0890001","--repository-id","repo_qa0890001","--alias","前端日常开发","--workspace",source,"--allowed-root",source,"--confirm"]));
+    const runtime = JSON.parse(await bridgeCommand(binary,configPath,"build",["repository","profile","register","--profile-id","profile_qa089runtime01","--agent-id",agent.agentId,"--permission-profile",permissionProfile,"--confirm"]));
+    const profiles:any[]=[];
+    const specs:any[]=[{profileId:"profile_qa089test0001",revision:1,command:[process.execPath,verifier],environmentNames:[],timeoutMilliseconds:10000,outputLimitBytes:16384}];
+    if (browserExecutable) specs.push({profileId:"profile_qa089browser01",revision:1,command:[browserExecutable],environmentNames:[],timeoutMilliseconds:20000,outputLimitBytes:1048576,
+      browser:{version:1,documentRoot:"src",startPath:"/",width:900,height:700,screenshot:true,steps:[{action:"fill",selector:"#goal",value:"已完成候选验证"},{action:"click",selector:"#save"},{action:"text",selector:"#result",value:"已完成候选验证"}]}});
+    for (const spec of specs) {
+      const file=path.join(directory,`${spec.profileId}.json`); await writeJSON(file,spec);
+      const profile=JSON.parse(await bridgeCommand(binary,configPath,"build",["repository","verifier","register","--file",file,"--confirm"]));
+      profiles.push({profileId:profile.profileId,revision:profile.revision,digest:profile.digest});
+    }
+    const startConsole = async () => {
+      const process = startProcess(resources,binary,["console","--config",configPath,"--listen","127.0.0.1:0","--no-open"],{stdio:["ignore","pipe","pipe"]}); history.push(process);
+      const url=await waitFor(async () => /Bridge Console: (http:\/\/127\.0\.0\.1:\d+\/\?token=[^\s]+)/u.exec(process.stdout)?.[1]);
+      return {process,url,origin:new URL(url).origin,token:new URL(url).searchParams.get("token")!};
+    };
+    let local = await startConsole();
+    const {ownedHeadlessBrowser}=await import("../../scripts/qa/owned-headless-browser.mjs");
+    const browser=browserExecutable ? await ownedHeadlessBrowser(resources,browserExecutable) : null;
+    if (evidenceDirectory) await mkdir(evidenceDirectory,{recursive:true});
+    const capture=async (name:string) => {if(browser&&evidenceDirectory) await browser.screenshot(path.join(evidenceDirectory,name));};
+    stage = "one standing owner confirmation";
+    const policySpec={policyId:"workpolicy_qa0890001",alias:"前端日常开发",bindingId:binding.bindingId,bindingRevision:binding.revision,sourceFingerprint:binding.sourceFingerprint,
+      repositoryId:binding.repositoryId,sourceRef:"refs/heads/main",agentId:agent.agentId,roomIds:[roomId],initiatorMemberIds:[memberId],operations:["prepare","capture","verify"],
+      runtimeProfile:{profileId:runtime.spec.profileId,revision:runtime.spec.revision,digest:runtime.digest},verificationProfiles:profiles,
+      scopePolicy:{access:"isolated_write",allowedPaths:["src"],forbiddenPaths:[],requirePreventivePathEnforcement:false},maxTaskDurationSeconds:300,maxRunAttempts:2,maxConcurrency:1,expiresAt:new Date(Date.now()+86400000).toISOString()};
+    if(browser) {
+      await browser.navigate(local.url);
+      await browser.until("document.querySelector('[data-page-target=governed]') !== null");
+      await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.until("document.querySelector('[name=runtimeProfileId]').options.length > 0");
+      await browser.evaluate(`(() => {const f=document.querySelector('#work-policy-form'); const values=${JSON.stringify({alias:policySpec.alias,roomIdsManual:roomId,initiatorMemberIds:memberId,allowedPaths:"src",minutes:"5",attempts:"2"})}; for(const [key,value] of Object.entries(values)){const e=f.elements.namedItem(key);e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}));} for(const o of f.elements.verifierIds.options)o.selected=true;f.elements.confirmed.checked=true;})()`);
+      await capture("local-policy-ready.png");
+      await browser.evaluate("document.querySelector('#work-policy-form').requestSubmit()");
+      await browser.until("document.querySelector('[data-policy-status]').textContent.includes('策略已保存')");
+      await browser.evaluate("document.querySelector('#governed-inventory').scrollIntoView()"); await capture("local-policy-saved.png");
+    } else await requestJSON(local.origin,"POST","/api/work-policies",{spec:policySpec,confirm:true},local.token);
+    const option=await waitFor(async () => (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-options`,undefined,token)).options.find((v:any)=>v.state==="available"));
+    const operations:any[]=[];
+    if(browser) {
+      await browser.send("Page.addScriptToEvaluateOnNewDocument",{source:`if(location.origin===${JSON.stringify(serverUrl)}){localStorage.setItem('agent-room.local-user',${JSON.stringify(JSON.stringify(bootstrap.user))});localStorage.setItem('agent-room.theme','light');}`});
+    }
+    for(let index=1;index<=2;index++) {
+      stage = `unattended Task ${index}`;
+      const command={operationId:`op_qa089task000${index}`,agentId:agent.agentId,policyId:option.policy.policyId,policyDigest:option.policy.digest,baseCommit,
+        title:`日常开发 ${index}`,goal:`交付第 ${index} 个隔离候选页面`,criteria:["输入与按钮断言通过并保留候选提交"]};
+      let work:any;
+      if(browser) {
+        await browser.navigate(`${serverUrl}/?team=${teamId}&room=${roomId}&view=room`);
+        await browser.until("document.querySelector('.development-entry') !== null");
+        await browser.evaluate("document.querySelector('.development-entry').click()");
+        await browser.until("document.querySelector('.development-policy') !== null");
+        await browser.evaluate(`(() => {const f=document.querySelector('.development-form');const fields=[...f.querySelectorAll('input,textarea')];const values=${JSON.stringify([command.title,command.goal,command.criteria.join("\n")])};fields.forEach((e,i)=>{Object.getOwnPropertyDescriptor(e.tagName==='INPUT'?HTMLInputElement.prototype:HTMLTextAreaElement.prototype,'value').set.call(e,values[i]);e.dispatchEvent(new Event('input',{bubbles:true}));});})()`);
+        if(index===1) {await capture("room-development-ready.png");await browser.viewport(900,900);await capture("room-development-compact.png");await browser.viewport(1440,1000);}
+        await browser.evaluate("document.querySelector('.development-form').requestSubmit()");
+        work=await waitFor(async () => (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-tasks`,undefined,token)).items.find((v:any)=>v.title===command.title));
+        command.operationId=work.operationId;
+      } else work=await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/development-tasks`,command,token);
+      const run=await waitFor(async()=> (await requestJSON<RunView[]>(serverUrl,"GET",`/api/rooms/${roomId}/runs`,undefined,token)).find(v=>v.taskId===work.taskId&&["completed","failed","canceled","expired","outcome_unknown"].includes(v.state)),60000);
+      assert.equal(run.state,"completed");
+      const evidence=await requestJSON<any>(serverUrl,"GET",`/api/tasks/${work.rootTaskId}/execution-evidence?limit=50`,undefined,token);
+      const node=evidence.plans.find((p:any)=>p.planId===work.planId).nodes[0];
+      assert.equal(node.verifications.length,profiles.length);
+      for(const item of node.verifications) assert.equal(item.receipt.outcome,"passed");
+      const artifacts=await requestJSON<any>(serverUrl,"GET",`/api/tasks/${work.taskId}/artifacts`,undefined,token);
+      assert.ok(artifacts.artifacts.some((v:any)=>v.type==="patch"));
+      assert.ok(artifacts.artifacts.some((v:any)=>v.type==="commit"));
+      if(browser) {
+        const verification=node.verifications.find((v:any)=>v.receipt.profile.profileId==="profile_qa089browser01");
+        const preview=await requestJSON<any>(serverUrl,"GET",`/api/tasks/${work.taskId}/artifacts/${verification.receipt.logArtifact.artifactId}/preview`,undefined,token);
+        assert.equal(preview.browser.startup,"passed");assert.equal(preview.browser.screenshot.state,"captured");assert.equal(preview.browser.visualReview,"not_performed");
+        if(evidenceDirectory) await writeFile(path.join(evidenceDirectory,`candidate-${index}.png`),Buffer.from(preview.browser.screenshot.dataUrl.split(",")[1],"base64"));
+        if(index===1) {
+          await browser.until("document.querySelector('.development-history button') !== null");
+          await browser.evaluate("document.querySelector('.development-history button').click()");
+          await browser.until(`new URL(location.href).searchParams.get('workTask') === ${JSON.stringify(work.rootTaskId)} && new URL(location.href).searchParams.get('room') === ${JSON.stringify(roomId)}`);
+          await browser.until("[...document.querySelectorAll('[role=tab]')].some(e=>e.textContent==='证据')");
+          await browser.evaluate("[...document.querySelectorAll('[role=tab]')].find(e=>e.textContent==='证据').click()");
+          await browser.until("[...document.querySelectorAll('button')].some(e=>e.textContent==='查看验证报告')");
+          await browser.evaluate("[...document.querySelectorAll('button')].filter(e=>e.textContent==='查看验证报告').forEach(e=>e.click())");
+          await browser.until("document.querySelector('.browser-verification img') !== null");
+          await browser.evaluate("document.querySelector('.browser-verification').scrollIntoView()");
+          assert.ok(await browser.evaluate("document.querySelector('.browser-verification img').getBoundingClientRect().right <= document.documentElement.clientWidth"), "report image overflowed the viewport");
+          await capture("room-browser-evidence.png");
+        }
+      }
+      const replay=await requestJSON<any>(serverUrl,"POST",`/api/rooms/${roomId}/development-tasks`,command,token); assert.equal(replay.taskId,work.taskId);
+      operations.push({taskId:work.taskId,runId:run.runId,state:run.state,verifications:node.verifications.map((v:any)=>({profileId:v.receipt.profile.profileId,outcome:v.receipt.outcome}))});
+      // A full Bridge owner-process restart preserves policy and history before Task 2.
+      if(index===1) {await local.process.stop();local=await startConsole();await waitFor(async()=> (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-options`,undefined,token)).options.some((v:any)=>v.state==="available")?true:undefined);}
+    }
+    stage="revoke parent and verify no new Task";
+    const inventory=await requestJSON<any>(local.origin,"GET","/api/governed-owner-state",undefined,local.token);
+    const policy=inventory.workPolicies[0];
+    if(browser) {
+      await browser.navigate(local.url);await browser.until("document.querySelector('[data-page-target=governed]') !== null");
+      await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.until("document.querySelector('#governed-inventory').innerText.includes('工作策略')");
+      await browser.evaluate("[...document.querySelectorAll('#governed-inventory button')].at(-1).click()");
+      await browser.until("[...document.querySelectorAll('button')].some(e=>e.textContent==='确认停止并撤销')");
+      await browser.evaluate("[...document.querySelectorAll('button')].find(e=>e.textContent==='确认停止并撤销').click()");
+      await browser.until("document.querySelector('#governed-inventory').innerText.includes('关联任务授权已失效')");
+      await browser.evaluate("document.querySelector('#governed-inventory').scrollIntoView()");await capture("local-policy-revoked.png");
+      await browser.close();
+    } else await requestJSON(local.origin,"POST",`/api/work-policies/${policy.spec.policyId}/revoke`,{expectedRevision:1,expectedDigest:policy.digest,confirm:true},local.token);
+    await waitFor(async()=> (await requestJSON<any>(serverUrl,"GET",`/api/rooms/${roomId}/development-options`,undefined,token)).options.every((v:any)=>v.state==="unavailable")?true:undefined);
+    const counts=databaseRead(databasePath,db=>({runs:(db.prepare("SELECT count(*) n FROM runs").get() as any).n,grants:(db.prepare("SELECT count(*) n FROM development_work_authorizations").get() as any).n,checkpoints:(db.prepare("SELECT count(*) n FROM repository_checkpoints").get() as any).n}));
+    assert.deepEqual(counts,{runs:2,grants:2,checkpoints:2});
+    assert.equal(await git(source,["rev-parse","HEAD"]),baseCommit);assert.equal(await git(source,["status","--porcelain"]),"");
+    const summary={version:1,kind:"physical_fixture_no_model",operations,counts,sourceUnchanged:true,parentRevoked:true,browserVerified:Boolean(browser)};
+    if(evidenceDirectory) await writeJSON(path.join(evidenceDirectory,"two-task-summary.json"),summary);
+    t.diagnostic(JSON.stringify(summary));
+  } catch(error) {
+    throw new Error(`QA-089 stage: ${stage}; cause: ${String(error)}; ${history.map(p=>p.stderr.slice(-3000)).join("\n")}`,{cause:error});
+  }
+});

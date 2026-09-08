@@ -36,7 +36,7 @@ Validation:
   repository/profiles, saved one policy through the real form, then completed two
   Room-initiated Tasks with a full Bridge restart between them. Inline parent
   revocation updated both derived grants and removed Room readiness. The final
-  fixture passed in 34.13 seconds; no model was called.
+  fixture passed in 34.97 seconds; no model was called.
 - Real form submission exposed a millisecond versus canonical nanosecond timestamp
   mismatch. Owner input is now normalized before immutable persistence; equivalent
   timestamps replay the same policy digest. Repository/Console race regressions
