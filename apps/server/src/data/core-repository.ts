@@ -91,6 +91,8 @@ export interface AgentRecord {
   integrationMode: "managed" | "manual" | "fake" | "hosted";
   capabilities: AgentCapabilities;
   runtimePolicy: AgentRuntimePolicy | null;
+  configuredModel?: string | null;
+  modelReportedAt?: string | null;
   runtimeScopeId?: string | null;
   workspaceRef?: string | null;
   workspaceGeneration?: string | null;

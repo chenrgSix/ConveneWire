@@ -329,6 +329,7 @@ const canonicalPropertyTrees = {
               "filesystemAccess": {}
             }
           },
+          "configuredModel": {},
           "runtimeScopeId": {},
           "workspaceRef": {},
           "workspaceAlias": {},

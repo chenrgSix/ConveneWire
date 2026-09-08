@@ -335,6 +335,14 @@ export class HostedAgentRepository {
     return row && mapProfile(row);
   }
 
+  public getModelConfiguration(agentId: string): { configuredModel: string; modelReportedAt: string } | undefined {
+    // Public Team display metadata must never resolve or decrypt a credential.
+    return this.database.prepare(`
+      SELECT model AS configuredModel, created_at AS modelReportedAt
+      FROM hosted_runtime_profiles WHERE agent_id = ? AND superseded_at IS NULL
+    `).get(agentId) as { configuredModel: string; modelReportedAt: string } | undefined;
+  }
+
   public resolveExecutionProfile(agentId: string): HostedExecutionProfile {
     this.requireCredentialAuthority();
     const row = this.database.prepare(`

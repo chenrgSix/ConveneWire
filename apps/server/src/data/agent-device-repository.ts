@@ -21,6 +21,8 @@ interface AgentRow {
   integration_mode: AgentRecord["integrationMode"];
   capabilities_json: string;
   runtime_policy_json: string | null;
+  configured_model: string | null;
+  model_reported_at: string | null;
   runtime_scope_id: string | null;
   workspace_ref: string | null;
   workspace_generation: string | null;
@@ -97,17 +99,19 @@ export class AgentDeviceRepository {
       this.database.prepare(`
         INSERT INTO agents (
           agent_id, team_id, owner_member_id, device_id, name, role,
-          integration_mode, capabilities_json, runtime_policy_json,
+          integration_mode, capabilities_json, runtime_policy_json, configured_model, model_reported_at,
           runtime_scope_id, workspace_ref, workspace_generation, workspace_alias, enabled,
           presence, created_at, updated_at
         ) VALUES (
           @agentId, @teamId, @ownerMemberId, @deviceId, @name, @role,
-          @integrationMode, @capabilitiesJson, @runtimePolicyJson,
+          @integrationMode, @capabilitiesJson, @runtimePolicyJson, @configuredModel, @modelReportedAt,
           @runtimeScopeId, @workspaceRef, @workspaceGeneration, @workspaceAlias, @enabled,
           @presence, @createdAt, @updatedAt
         )
       `).run({
         ...agent,
+        configuredModel: agent.configuredModel ?? null,
+        modelReportedAt: agent.modelReportedAt ?? null,
         runtimeScopeId: agent.runtimeScopeId ?? null,
         workspaceRef: agent.workspaceRef ?? null,
         workspaceGeneration: agent.workspaceGeneration ?? null,
@@ -159,6 +163,7 @@ export class AgentDeviceRepository {
       UPDATE agents
       SET name = @name, role = @role, capabilities_json = @capabilitiesJson,
           runtime_policy_json = @runtimePolicyJson,
+          configured_model = @configuredModel, model_reported_at = @modelReportedAt,
           runtime_scope_id = @runtimeScopeId, workspace_ref = @workspaceRef,
           workspace_generation = @workspaceGeneration, workspace_alias = @workspaceAlias,
           enabled = @enabled,
@@ -166,6 +171,8 @@ export class AgentDeviceRepository {
       WHERE agent_id = @agentId
     `).run({
       ...agent,
+      configuredModel: agent.configuredModel ?? null,
+      modelReportedAt: agent.modelReportedAt ?? null,
       runtimeScopeId: agent.runtimeScopeId ?? null,
       workspaceRef: agent.workspaceRef ?? null,
       workspaceGeneration: agent.workspaceGeneration ?? null,
@@ -454,6 +461,8 @@ export class AgentDeviceRepository {
       deviceId: row.device_id,
       name: row.name,
       role: row.role,
+      configuredModel: row.configured_model,
+      modelReportedAt: row.model_reported_at,
       integrationMode: row.integration_mode,
       capabilities: JSON.parse(row.capabilities_json) as AgentCapabilities,
       runtimePolicy: row.runtime_policy_json

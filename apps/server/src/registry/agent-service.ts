@@ -293,6 +293,7 @@ export class AgentService {
       role: string;
       capabilities: AgentCapabilities;
       runtimePolicy?: AgentRuntimePolicy;
+      configuredModel?: string;
       runtimeScopeId?: string;
       workspaceRef?: string;
       workspaceGeneration?: string;
@@ -303,6 +304,11 @@ export class AgentService {
     if (!/^agent_[A-Za-z0-9_-]{8,128}$/u.test(input.agentId)) {
       throw new Error("Bridge Agent ID is invalid");
     }
+    if (input.configuredModel !== undefined && (
+      typeof input.configuredModel !== "string" ||
+      !/^[A-Za-z0-9][A-Za-z0-9._/-]{0,119}$/u.test(input.configuredModel) ||
+      /^sk[-_]/u.test(input.configuredModel)
+    )) throw new Error("Bridge configured model is invalid");
     if (!input.capabilities.supportsStart) {
       throw new Error("Managed Bridge Agent must support start");
     }
@@ -382,6 +388,8 @@ export class AgentService {
       integrationMode: "managed",
       capabilities: input.capabilities,
       runtimePolicy: input.runtimePolicy ?? null,
+      configuredModel: input.configuredModel ?? null,
+      modelReportedAt: input.configuredModel ? input.now : null,
       runtimeScopeId: input.runtimeScopeId ?? existing?.runtimeScopeId ?? null,
       workspaceRef: input.workspaceRef ?? existing?.workspaceRef ?? null,
       workspaceGeneration: input.workspaceGeneration ??

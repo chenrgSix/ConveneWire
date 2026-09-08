@@ -721,6 +721,21 @@ broad fallbacks intact while making selection and real task outcomes visible.
 | QA-080 | DONE | Repair authority-session discovery compatibility and failure convergence | QA-079 | [Repair and retained checks](acceptance/qa-080-authority-session-recovery.md): maintained QA adapter permits bounded native resource/template discovery without granting raw reads; actual CLI loopback and SQLite prove safe source use, no-Result denial/missing-output/timeout/cancel/process paths, content-free failed/canceled terminal intents, six scope-substitution denials, existing-terminal preservation and killed-after-commit replay without extra model calls; 17 new checks plus 15 historical checks pass, eight implementation pins and thirteen case receipts retained, both QA-079 audits and frozen inputs unchanged, 419 Markdown lint/links/diff pass and temporary roots removed; zero external model calls, no production Bridge integration or physical multi-owner/device acceptance |
 | QA-081 | DONE | Screen independent owner observations and withheld Operations delivery | QA-079, QA-080 | [Frozen plan and results](acceptance/qa-081-independent-owner-observations.md): 296 inputs committed before eight GPT-5.5/low sessions, no retry; raw-only owners independently produce 32/32 correct observations before hidden verification; normal final passes 14/14, revoked final preserves all 9 authorized facts and operational unknowns with 13 pass plus 1 ordered-plan wording dispute, so no revoked full-pass claim; 11 source returns, 0 read/runtime failures, actual typed Result storage and pre-send revoke denial, immutable first grades; seven QA-081 checks plus 32 historical/runtime checks, docs/links/diff verified, temporary roots removed; consumed, trusted QA host only, no authenticated independent-owner/in-flight-revocation/Single superiority claim |
 
+## Room usability follow-up
+
+Owner-requested local checkpoint on 2026-09-08 preserves WEB-074/075/076
+without declaring their unfinished acceptance complete. Full workspace build,
+115 contract checks plus generated-code/TypeScript/Go validation, 17 focused
+Web checks, Bridge config/connection tests and 453-document lint pass. The
+model-display follow-up still needs its dedicated cross-language/privacy
+regressions and physical browser acceptance remains unverified.
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| WEB-076 | IN_PROGRESS | Show configured Agent models in participant and mention selection | REG-006, CON-017, WEB-066 | ADR-0059 freezes safe model-name publication and display; pending Bridge/Server/Web/contract validation. Local checkpoint retained; dedicated regressions and browser acceptance remain |
+| WEB-074 | IN_PROGRESS | Distinguish and find Room participants before saving | WEB-025, ROOM-008, WEB-066 | Implementation and 11 focused Web checks, including real Server/App owner opt-out persistence, Web build, docs lint and whitespace checks pass; same-name suffix collisions, search/roster filters, selection counts, offline and disabled states covered. Local checkpoint retained; browser review unavailable after connector timeout and isolated native launch abort |
+| WEB-075 | IN_PROGRESS | Compact composer draft hints and send with Enter | WEB-041, WEB-058 | Implementation, 45 focused Web checks and Web build pass: actual App/Server Enter send, native newline event handling, IME/legacy-229, Mention selection, held keys, disabled Send, inline hint/button removal and independent draft recovery. Test teardown awaits React cleanup. Local checkpoint retained; browser review unavailable as recorded for WEB-074 |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

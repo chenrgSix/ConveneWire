@@ -45,6 +45,8 @@ export interface Agent {
   enabled?: boolean;
   name: string;
   role: string;
+  configuredModel?: string | null;
+  modelReportedAt?: string | null;
   integrationMode: "managed" | "manual" | "fake" | "hosted";
   presence: string;
   capabilities?: {

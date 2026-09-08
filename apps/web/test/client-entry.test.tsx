@@ -163,10 +163,11 @@ test("inviting an Agent selects its real owner by default while explicit Agent-o
   const { within } = await import("@testing-library/react");
   f.fireEvent.click(within(screen.getByRole("region", { name: "房间成员" })).getByRole("button", { name: "房间设置" }));
   await screen.findByRole("dialog", { name: "房间设置" });
-  const human = screen.getByRole("checkbox", { name: /Actual client owner/u }) as HTMLInputElement;
+  const human = screen.getByRole("checkbox", { name: /^Actual client owner/u }) as HTMLInputElement;
   const agent = screen.getByRole("checkbox", { name: /Client Builder/u }) as HTMLInputElement;
   assert.equal(human.checked, false); assert.equal(agent.checked, false);
   f.fireEvent.click(agent); assert.equal(human.checked, true);
+  assert.ok(screen.getByText("已同时选择所属成员「Actual client owner」，可在成员列表单独取消。"));
   f.fireEvent.click(agent); assert.equal(human.checked, true);
   f.fireEvent.click(agent); f.fireEvent.click(human);
   assert.equal(agent.checked, true); assert.equal(human.checked, false);

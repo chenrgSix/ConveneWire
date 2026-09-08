@@ -1,4 +1,5 @@
 import React, { type FormEvent, useEffect, useState } from "react";
+import { AgentModelLabel } from "./AgentModelLabel.js";
 
 import { BridgeConnectionPanel } from "../bridge/BridgeConnectionPanel.js";
 import { PanelDialog } from "../navigation/PanelDialog.js";
@@ -181,7 +182,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
   const selectedAgent = agents.find((agent) => agent.agentId === selectedId);
   const visible = agents.filter((agent) => {
     const term = search.trim().toLocaleLowerCase();
-    return (!term || `${agent.name} ${agent.role}`.toLocaleLowerCase().includes(term)) &&
+    return (!term || `${agent.name} ${agent.role} ${agent.configuredModel ?? ""}`.toLocaleLowerCase().includes(term)) &&
       (kind === "all" || agent.integrationMode === kind) &&
       (status === "all" || (status === "disabled" ? agent.enabled === false :
         agent.enabled !== false && (status === "ready" ? agent.presence === "ready" : agent.presence !== "ready")));
@@ -205,7 +206,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
         <button className="primary-action" onClick={() => selectSetup("choose")} type="button">{zh ? "新增智能体" : "Add an Agent"}</button>
       </div>
       <div className="inventory-toolbar">
-        <input aria-label={zh ? "搜索智能体" : "Search Agents"} placeholder={zh ? "搜索名称或角色" : "Search name or role"} type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <input aria-label={zh ? "搜索智能体" : "Search Agents"} placeholder={zh ? "搜索名称、角色或模型" : "Search name, role or model"} type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
         <select aria-label={zh ? "智能体状态" : "Agent status"} value={status} onChange={(event) => setStatus(event.target.value)}>
           <option value="all">{zh ? "全部状态" : "All states"}</option><option value="ready">{zh ? "就绪" : "Ready"}</option><option value="other">{zh ? "未就绪" : "Not ready"}</option><option value="disabled">{zh ? "已停用" : "Disabled"}</option>
         </select>
@@ -221,7 +222,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
       </div> : <div className="agent-inventory">
         {visible.map((agent) => <article className={`agent-inventory-row ${agent.enabled === false ? "disabled" : ""}`} key={agent.agentId}>
           <span className="agent-avatar" aria-hidden="true">{agent.name.slice(0, 1).toUpperCase()}</span>
-          <div className="agent-inventory-name"><h3>{agent.name}</h3><p>{roleLabel(agent.role, locale)}</p></div>
+          <div className="agent-inventory-name"><h3>{agent.name}</h3><p>{roleLabel(agent.role, locale)}</p><AgentModelLabel agent={agent} locale={locale} /></div>
           <span className={`integration-badge ${agent.integrationMode}`}>{integrationLabel(agent.integrationMode, locale)}</span>
           <span className={`status-badge ${agent.enabled === false ? "offline" : agent.presence}`}><span className={`presence-dot ${agent.enabled === false ? "offline" : agent.presence}`} />
             {agent.enabled === false ? (zh ? "已停用" : "Disabled") : presenceLabel(agent.presence, locale)}
@@ -236,6 +237,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
             presentation={{ kind: "profile", agentId: selectedAgent.agentId }} />
         ) : <div className="agent-detail">
           <p>{roleLabel(selectedAgent.role, locale)} · {integrationLabel(selectedAgent.integrationMode, locale)}</p>
+          <AgentModelLabel agent={selectedAgent} locale={locale} showUpdatedAt />
           <p>{presenceHelp(selectedAgent, locale)}</p>
           {selectedAgent.integrationMode !== "hosted" && <AgentPolicySummary locale={locale} policy={selectedAgent.runtimePolicy} />}
           {selectedAgent.integrationMode === "managed" && <>

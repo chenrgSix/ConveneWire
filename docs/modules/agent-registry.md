@@ -100,6 +100,14 @@ leaving a stale policy label. Unknown policy fields and values are rejected;
 local paths, commands, environment variables, tools, Provider data, accounts,
 and credentials never enter this projection.
 
+[ADR-0059](../adr/0059-show-agent-configured-models.md) adds the sole model
+identifier `configuredModel` to safe publication metadata. Migration 0089 stores
+that optional value and `modelReportedAt` separately from Presence; older or
+unreported republications clear both. Authorized Team lists also project the
+current Hosted profile model and its creation timestamp without credential
+resolution. This display information neither proves a Run's model nor changes
+model selection, routing or authority (`WEB-076`).
+
 An Owner may disable or re-enable an Agent through
 `PATCH /api/agents/:agentId`. Disablement is fenced while that Agent has active
 Run or Discussion work, preserves Room assignment and history, and remains

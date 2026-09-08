@@ -23,6 +23,7 @@ export type HostedAgentAvailability = "ready" | "degraded";
 
 export interface HostedAgentPresenceSource {
   getAvailability(agentId: string): HostedAgentAvailability | undefined;
+  getModelConfiguration?(agentId: string): { configuredModel: string; modelReportedAt: string } | undefined;
 }
 
 const unavailableHostedAgents: HostedAgentPresenceSource = {
@@ -217,7 +218,10 @@ export class PresenceService {
       if (presence !== agent.presence) {
         this.repository.updateAgentPresence(agent.agentId, presence, now);
       }
-      return { ...agent, presence, updatedAt: now };
+      const model = agent.integrationMode === "hosted"
+        ? this.hostedAgents.getModelConfiguration?.(agent.agentId)
+        : undefined;
+      return { ...agent, ...(model ?? {}), presence, updatedAt: now };
     });
   }
 }

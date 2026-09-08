@@ -403,6 +403,7 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 				OwnerMemberID:       c.Credential.OwnerMemberID,
 				Role:                configured.Role,
 				RuntimePolicy:       &runtimePolicy,
+				ConfiguredModel:     configured.ConfiguredModel(),
 				RuntimeScopeID:      &runtimeScopeID,
 				WorkspaceAlias:      &workspaceAlias,
 				WorkspaceRef:        &workspaceSnapshot.WorkspaceRef,

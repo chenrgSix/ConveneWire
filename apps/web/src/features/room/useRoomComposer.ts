@@ -223,7 +223,8 @@ export function useRoomComposer(input: RoomComposerInput) {
     return roomAgents.filter((agent) =>
       !mentionAgentIds.includes(agent.agentId) && (
         agent.name.toLocaleLowerCase(locale).includes(query) ||
-        agentRoleLabel(agent).toLocaleLowerCase(locale).includes(query)
+        agentRoleLabel(agent).toLocaleLowerCase(locale).includes(query) ||
+        (agent.configuredModel ?? "").toLocaleLowerCase(locale).includes(query)
       )
     ).slice(0, 8);
   }, [agentRoleLabel, locale, mentionAgentIds, mentionSearch, roomAgents]);
@@ -590,24 +591,35 @@ export function useRoomComposer(input: RoomComposerInput) {
   }
 
   function handleKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
-    if (!mentionSearch) return;
-    if (event.key === "Escape") {
+    // IME confirmation (including WebKit's legacy 229 event) must never select
+    // a Mention or submit the draft. Shift+Enter keeps native newline behavior.
+    if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+    if (event.key === "Enter" && (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey)) return;
+    if (mentionSearch && event.key === "Escape") {
       event.preventDefault();
       setMentionSearch(null);
       return;
     }
-    if (mentionOptions.length === 0) return;
-    if (event.key === "ArrowDown") {
+    if (mentionSearch && mentionOptions.length > 0 && event.key === "ArrowDown") {
       event.preventDefault();
       setMentionOptionIndex((current) => (current + 1) % mentionOptions.length);
-    } else if (event.key === "ArrowUp") {
+    } else if (mentionSearch && mentionOptions.length > 0 && event.key === "ArrowUp") {
       event.preventDefault();
       setMentionOptionIndex((current) =>
         (current - 1 + mentionOptions.length) % mentionOptions.length
       );
     } else if (event.key === "Enter") {
       event.preventDefault();
-      selectMention(mentionOptions[mentionOptionIndex] ?? mentionOptions[0]!);
+      if (event.repeat) return;
+      if (mentionSearch && mentionOptions.length > 0) {
+        selectMention(mentionOptions[mentionOptionIndex] ?? mentionOptions[0]!);
+        return;
+      }
+      // Use the same enabled submit button and native validation as a click,
+      // including the App's completed/canceled Task and pending-send guards.
+      const form = event.currentTarget.form;
+      const submitter = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (submitter && !submitter.disabled) form?.requestSubmit(submitter);
     }
   }
 

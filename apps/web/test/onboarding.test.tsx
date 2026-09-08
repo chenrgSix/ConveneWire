@@ -937,7 +937,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     fireEvent.click(within(currentParticipants).getByRole("button", { name: "房间设置" }));
     let participantDialog = await screen.findByRole("dialog", { name: "房间设置" });
     const ownerCheckbox = within(participantDialog).getByRole("checkbox", {
-      name: /Local Owner/u
+      name: /^Local Owner/u
     }) as HTMLInputElement;
     assert.equal(ownerCheckbox.checked, true);
     assert.equal(ownerCheckbox.disabled, true);

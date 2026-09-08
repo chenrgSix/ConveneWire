@@ -1,6 +1,7 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 
-import { roleLabel } from "../agent/AgentWorkspace.js";
+import { integrationLabel, presenceHelp, presenceLabel, roleLabel } from "../agent/AgentWorkspace.js";
+import { AgentModelLabel, agentModelLabel } from "../agent/AgentModelLabel.js";
 import { type Locale, type TranslationKey, translate } from "../../i18n.js";
 import type {
   Agent,
@@ -12,12 +13,15 @@ import type {
 interface RoomSettingsDialogProps {
   agents: Agent[];
   busy: boolean;
+  currentMemberId: string | null;
   locale: Locale;
   members: Member[];
   participantAgentIds: string[];
   participantMemberIds: string[];
   policy: RoomCollaborationPolicy;
   room: Room;
+  joinedAgentIds: string[];
+  joinedMemberIds: string[];
   onClose: () => void;
   onPolicyChange: (policy: RoomCollaborationPolicy) => void;
   onSubmit: (event: FormEvent) => void | Promise<void>;
@@ -28,6 +32,9 @@ interface RoomSettingsDialogProps {
 export function RoomSettingsDialog({
   agents,
   busy,
+  currentMemberId,
+  joinedAgentIds,
+  joinedMemberIds,
   locale,
   members,
   onClose,
@@ -41,6 +48,39 @@ export function RoomSettingsDialog({
   room
 }: RoomSettingsDialogProps) {
   const t = (key: TranslationKey) => translate(locale, key);
+  const zh = locale === "zh-CN";
+  const [search, setSearch] = useState("");
+  const [joinedOnly, setJoinedOnly] = useState(false);
+  const [selectionNotice, setSelectionNotice] = useState("");
+  const normalize = (value: string) => value.normalize("NFKC").trim().toLocaleLowerCase(locale);
+  const query = normalize(search);
+  const matches = (...values: string[]) => values.some((value) => normalize(value).includes(query));
+  const memberById = new Map(members.map((member) => [member.memberId, member]));
+  const identities = [
+    ...members.map((member) => ({ id: member.memberId, name: member.displayName })),
+    ...agents.map((agent) => ({ id: agent.agentId, name: agent.name }))
+  ];
+  const duplicateId = (id: string, name: string) => {
+    const others = identities.filter((item) => item.id !== id && normalize(item.name) === normalize(name));
+    if (others.length === 0) return "";
+    let length = 6;
+    while (length < id.length && others.some((item) => item.id.endsWith(id.slice(-length)))) length += 1;
+    return `#${id.slice(-length)}`;
+  };
+  const ownerLabel = (agent: Agent) => {
+    const owner = memberById.get(agent.ownerMemberId ?? "");
+    return owner
+      ? [owner.displayName, duplicateId(owner.memberId, owner.displayName)].filter(Boolean).join(" ")
+      : (zh ? "所属成员未知" : "Unknown owner");
+  };
+  const visibleMembers = members.filter((member) =>
+    (!joinedOnly || joinedMemberIds.includes(member.memberId)) &&
+    matches(member.displayName, member.memberId, member.role === "owner" ? t("teamOwner") : t("teamMember"))
+  );
+  const visibleAgents = agents.filter((agent) =>
+    (!joinedOnly || joinedAgentIds.includes(agent.agentId)) &&
+    matches(agent.name, agent.agentId, agent.role, roleLabel(agent.role, locale), ownerLabel(agent), integrationLabel(agent.integrationMode, locale), agent.configuredModel ?? "")
+  );
   return (
     <div className="modal-backdrop" onMouseDown={(event) => {
       if (event.currentTarget === event.target) onClose();
@@ -106,28 +146,81 @@ export function RoomSettingsDialog({
               </select>
             </label>
           </fieldset>
+          <div className="participant-search">
+            <input
+              aria-label={zh ? "搜索成员、角色、所属成员或模型" : "Search name, role, owner or model"}
+              onChange={(event) => setSearch(event.target.value)}
+              onKeyDown={(event) => { if (event.key === "Enter") event.preventDefault(); }}
+              placeholder={zh ? "搜索名称、角色、所属成员、模型或编号" : "Search name, role, owner, model or ID"}
+              type="search"
+              value={search}
+            />
+            <label><input checked={joinedOnly} onChange={(event) => setJoinedOnly(event.target.checked)} type="checkbox" />{zh ? "仅看已加入" : "Already in Room only"}</label>
+          </div>
+          <p className="participant-selection-summary" role="status">{zh
+            ? `已选 ${participantMemberIds.length} 位成员 · ${participantAgentIds.length} 个 Agent · 保存后生效`
+            : `${participantMemberIds.length} members · ${participantAgentIds.length} Agents selected · applied on save`}</p>
+          {selectionNotice && <p className="participant-selection-notice" role="status">{selectionNotice}</p>}
           <fieldset className="participant-editor-group">
             <legend>{t("teamMembers")}</legend>
             <div className="participant-editor-list">
-              {members.map((member) => (
-                <label key={member.memberId}>
-                  <input checked={participantMemberIds.includes(member.memberId)} disabled={member.role === "owner"} onChange={() => onToggleMember(member.memberId)} type="checkbox" />
-                  <span><strong>{member.displayName}</strong><small>{member.role === "owner" ? t("teamOwner") : t("teamMember")}</small></span>
+              {visibleMembers.map((member) => (
+                <label className="participant-choice" key={member.memberId}>
+                  <input checked={participantMemberIds.includes(member.memberId)} disabled={busy || member.role === "owner"} onChange={() => { setSelectionNotice(""); onToggleMember(member.memberId); }} type="checkbox" />
+                  <span aria-hidden="true" className="participant-avatar human">{Array.from(member.displayName)[0]?.toUpperCase()}</span>
+                  <span className="participant-choice-copy">
+                    <span className="participant-choice-heading"><strong title={member.displayName}>{member.displayName}</strong>
+                      {member.memberId === currentMemberId && <small className="participant-badge">{zh ? "我" : "You"}</small>}
+                      {duplicateId(member.memberId, member.displayName) && <small title={member.memberId}>{duplicateId(member.memberId, member.displayName)}</small>}
+                      {joinedMemberIds.includes(member.memberId) && <small className="participant-badge">{zh ? "已加入房间" : "In Room"}</small>}
+                    </span>
+                    <small>{member.role === "owner" ? t("teamOwner") : t("teamMember")} · {zh ? "名下 Agent" : "Agents owned"}：{agents.filter((agent) => agent.ownerMemberId === member.memberId).length}</small>
+                    {member.role === "owner" && <small>{zh ? "团队所有者必须保留在房间内" : "Team owners must remain in the Room"}</small>}
+                  </span>
                 </label>
               ))}
             </div>
+            {visibleMembers.length === 0 && <p>{zh ? "没有符合条件的成员" : "No matching members"}</p>}
           </fieldset>
           <fieldset className="participant-editor-group">
             <legend>{t("teamAgents")} · {locale === "zh-CN" ? "单独启用" : "Per-Agent access"}</legend>
             <p>{locale === "zh-CN" ? "添加 Agent 时默认同时勾选它的主人。只邀请 Agent 时，可在上方取消该成员；移除 Agent 不会自动移除成员。" : "Adding an Agent also selects its owner by default. Deselect that person above for Agent-only access. Removing an Agent does not remove its owner."}</p>
             <div className="participant-editor-list">
-              {agents.map((agent) => (
-                <label key={agent.agentId}>
-                  <input aria-label={`${agent.name} · ${roleLabel(agent.role, locale)}`} checked={participantAgentIds.includes(agent.agentId)} disabled={agent.enabled === false} onChange={() => onToggleAgent(agent.agentId)} type="checkbox" />
-                  <span><strong>{agent.name}</strong><small>{roleLabel(agent.role, locale)} · {members.find((member) => member.memberId === agent.ownerMemberId)?.displayName ?? ""}</small></span>
+              {visibleAgents.map((agent) => (
+                <label className="participant-choice" key={agent.agentId}>
+                  <input
+                    aria-label={`${agent.name} · ${roleLabel(agent.role, locale)} · ${ownerLabel(agent)} ${duplicateId(agent.agentId, agent.name)} · ${agentModelLabel(agent, locale)}`.trim()}
+                    aria-describedby={`participant-agent-${agent.agentId}`}
+                    checked={participantAgentIds.includes(agent.agentId)}
+                    disabled={busy || (agent.enabled === false && !participantAgentIds.includes(agent.agentId))}
+                    onChange={() => {
+                      const owner = memberById.get(agent.ownerMemberId ?? "");
+                      const selectsOwner = !participantAgentIds.includes(agent.agentId) && owner && !participantMemberIds.includes(owner.memberId);
+                      setSelectionNotice(selectsOwner
+                        ? (zh ? `已同时选择所属成员「${ownerLabel(agent)}」，可在成员列表单独取消。` : `Also selected owner “${ownerLabel(agent)}”; you can deselect that member separately.`)
+                        : "");
+                      onToggleAgent(agent.agentId);
+                    }}
+                    type="checkbox"
+                  />
+                  <span aria-hidden="true" className="participant-avatar agent">AI</span>
+                  <span className="participant-choice-copy">
+                    <span className="participant-choice-heading"><strong title={agent.name}>{agent.name}</strong>
+                      {duplicateId(agent.agentId, agent.name) && <small title={agent.agentId}>{duplicateId(agent.agentId, agent.name)}</small>}
+                      <small className="participant-badge" title={presenceHelp(agent, locale)}>{agent.enabled === false ? (zh ? "已停用" : "Disabled") : presenceLabel(agent.presence, locale)}</small>
+                      {joinedAgentIds.includes(agent.agentId) && <small className="participant-badge">{zh ? "已加入房间" : "In Room"}</small>}
+                    </span>
+                    <small>{roleLabel(agent.role, locale)}</small>
+                    <AgentModelLabel agent={agent} locale={locale} />
+                    <small>{zh ? "所属" : "Owner"}：{ownerLabel(agent)} · {integrationLabel(agent.integrationMode, locale)}</small>
+                    <small id={`participant-agent-${agent.agentId}`}>{agent.enabled === false
+                      ? (zh ? "已停用，不能新增；已选项可取消" : "Disabled; cannot be added, but can be deselected")
+                      : agent.presence === "offline" ? (zh ? "当前离线，仍可加入房间" : "Offline; can still join the Room") : presenceHelp(agent, locale)}</small>
+                  </span>
                 </label>
               ))}
             </div>
+            {visibleAgents.length === 0 && <p>{zh ? "没有符合条件的 Agent" : "No matching Agents"}</p>}
           </fieldset>
           <div className="modal-actions">
             <button className="secondary-action" onClick={onClose} type="button">{t("cancel")}</button>

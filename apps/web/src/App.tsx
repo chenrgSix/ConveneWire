@@ -43,6 +43,7 @@ import { DiscussionComposerPolicy } from "./features/room/DiscussionComposerPoli
 import { useDiscussionController } from "./features/discussion/useDiscussionController.js";
 import { RoomTimeline } from "./features/room/RoomTimeline.js";
 import { RoomSettingsDialog } from "./features/room/RoomSettingsDialog.js";
+import { AgentModelLabel } from "./features/agent/AgentModelLabel.js";
 import { useRoomComposer } from "./features/room/useRoomComposer.js";
 import { clearComposerUserState } from "./features/room/composer-storage.js";
 import { useWorkspaceNavigation } from "./features/navigation/useWorkspaceNavigation.js";
@@ -493,7 +494,6 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     messageContent,
     pendingMessages: pendingRoomMessages,
     persistenceStatus,
-    clearDraft,
     removeMention,
     retainMentionAgentIds,
     selectMention,
@@ -1628,7 +1628,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                   {roomAgents.map((agent) => (
                     <article className="participant-row" key={agent.agentId}>
                       <span className="participant-avatar agent">{agent.name.slice(0, 1).toUpperCase()}</span>
-                      <div><strong>{agent.name}</strong><small>{roleLabel(agent.role, locale)}</small></div>
+                      <div><strong>{agent.name}</strong><small>{roleLabel(agent.role, locale)}</small><AgentModelLabel agent={agent} locale={locale} /></div>
                       <span className={`presence-dot ${agent.presence}`} title={presenceLabel(agent.presence, locale)} />
                     </article>
                   ))}
@@ -2087,7 +2087,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                         type="button"
                       >
                         <span className="participant-avatar agent">{agent.name.slice(0, 1).toUpperCase()}</span>
-                        <span><strong>@{agent.name}</strong><small>{roleLabel(agent.role, locale)}</small></span>
+                        <span><strong>@{agent.name}</strong><small>{roleLabel(agent.role, locale)}</small><AgentModelLabel agent={agent} locale={locale} /></span>
                         <span className={`presence-dot ${agent.presence}`} />
                       </button>
                     ))}
@@ -2149,6 +2149,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                 )}
                 <textarea
                   aria-label={t("message")}
+                  title={locale === "zh-CN" ? "Enter 发送 · Shift+Enter 换行" : "Enter to send · Shift+Enter for a new line"}
                   ref={composerInputRef}
                   onChange={handleMessageChange}
                   onKeyDown={handleMessageKeyDown}
@@ -2173,17 +2174,16 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                     {locale === "zh-CN"
                       ? "仅本浏览器 · 不跨任务沿用；已有草稿独立恢复"
                       : "This browser only · separate per Task; saved drafts restore independently"}
+                    <span role="status">{persistenceStatus.warning || persistenceStatus.state === "saved" ? " · " : ""}{persistenceStatus.warning ?? (persistenceStatus.state === "saved"
+                      ? (locale === "zh-CN" ? "已保存在本标签页 · 24 小时内可恢复 · 不会自动重发" : "Saved in this tab · recoverable for 24 hours · never auto-sent")
+                      : "")}</span>
                   </span>
-                </div>
-                <div className="composer-persistence">
-                  <small role="status">{persistenceStatus.warning ?? (persistenceStatus.state === "saved"
-                    ? (locale === "zh-CN" ? "已保存在本标签页 · 24 小时内可恢复 · 不会自动重发" : "Saved in this tab · recoverable for 24 hours · never auto-sent")
-                    : "")}</small>
-                  {hasMessageText && <button onClick={clearDraft} type="button">{locale === "zh-CN" ? "清除草稿" : "Clear draft"}</button>}
                 </div>
               </div>
               <button
                 className="composer-send"
+                title={locale === "zh-CN" ? "Enter 发送 · Shift+Enter 换行" : "Enter to send · Shift+Enter for a new line"}
+                type="submit"
                 disabled={composerBusy || !hasMessageText || !selectedTask ||
                   selectedTask.state === "completed" ||
                   selectedTask.state === "canceled"}
@@ -2259,6 +2259,9 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         <RoomSettingsDialog
           agents={agents}
           busy={participantBusy}
+          currentMemberId={currentMember?.memberId ?? null}
+          joinedAgentIds={roomParticipants.agentIds}
+          joinedMemberIds={roomParticipants.memberIds}
           locale={locale}
           members={members}
           onClose={() => setParticipantDialogOpen(false)}

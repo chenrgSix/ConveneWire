@@ -346,6 +346,9 @@ export function registerBridgeSocketRoutes({
               agentId: publicationPayload.agentId as string,
               name: publicationPayload.name as string,
               role: publicationPayload.role as string,
+              ...(typeof publicationPayload.configuredModel === "string"
+                ? { configuredModel: publicationPayload.configuredModel }
+                : {}),
               ...(runtimePolicyObject &&
                 isFilesystemAccessPolicy(runtimePolicyObject.filesystemAccess)
                 ? {

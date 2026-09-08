@@ -498,7 +498,11 @@ The versioned `sessionStorage` envelope allows 20 contexts per User, 10 pending
 ordinary messages per context, 20,000 characters per message and 500,000 total
 serialized characters. Entries expire 24 hours after modification; storage
 failure or limits show a not-saved warning without blocking editing or sending.
-Clear Draft removes only the current draft, not its independent failed rows.
+The composer has no Clear Draft button. Its saved/not-saved status follows the
+browser-local Mention preference hint inline and wraps on narrow screens.
+Enter sends through the same enabled submit button as a click; Shift+Enter
+inserts a newline. IME confirmation never submits, and an open Mention menu
+consumes Enter to choose its current candidate before any send (`WEB-075`).
 Closing a tab or switching devices is not a durability guarantee. Malformed
 stored data is discarded; secrets and Discussion commands are never stored.
 Recovered pending messages become failed/uncertain and never auto-send.
@@ -594,6 +598,24 @@ Discussion, `@all`, Agent handoff, and depth policy. Every Team Owner remains
 selected and cannot be removed; non-Owners never receive the control. The
 composer summary exposes the effective mode without turning Discussion into a
 separate Send action.
+
+Room settings shows each Member's identity, current-user marker and owned-Agent
+count, and each Agent's role, owner, integration mode and reported availability.
+Duplicate names include a distinguishing stable-ID suffix; complete names wrap
+and remain available in titles. Search matches names, roles, owners and IDs.
+The joined-only filter reflects the saved roster, while selected counts reflect
+the pending edit. Selecting an Agent immediately explains any automatically
+selected owner, who can be independently deselected unless they are a Team
+Owner. Offline Agents remain selectable; disabled Agents explain why they cannot
+be added and can still be removed if already selected. These are Web presentation
+changes over the existing Room settings API (`WEB-074`).
+
+`WEB-076` adds configured-model labels to Room settings, the Room roster, Agent
+inventory/details and Mention choices, with model-name search. Missing values
+read "Model: not reported"; offline managed values read "Last reported model"
+and expose the independent observation timestamp. Explicit configuration and
+per-Run actual model evidence are distinct; changing configuration does not
+rewrite historical Runs. See [ADR-0059](../adr/0059-show-agent-configured-models.md).
 
 An empty installation presents a three-step Team, Room, and Agent onboarding
 flow in the main workspace. Required fields use native browser validation;

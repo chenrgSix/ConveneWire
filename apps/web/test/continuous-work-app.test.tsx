@@ -17,11 +17,11 @@ async function fixture(t: TestContext) {
   const directory = await mkdtemp(path.join(os.tmpdir(), "convenewire-continuous-work-test-"));
   let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
   let dom: JSDOM | undefined;
-  let cleanup: (() => void) | undefined;
+  let cleanup: (() => Promise<void>) | undefined;
   const originalFetch = globalThis.fetch;
   const descriptors = Object.getOwnPropertyDescriptors(globalThis);
   t.after(async () => {
-    cleanup?.();
+    await cleanup?.();
     globalThis.fetch = originalFetch;
     dom?.window.close();
     for (const key of ["document", "HTMLElement", "localStorage", "sessionStorage", "navigator", "window", "IS_REACT_ACT_ENVIRONMENT"]) {
@@ -92,7 +92,7 @@ async function fixture(t: TestContext) {
     return new Response(response.body, { status: response.statusCode, headers: { "content-type": "application/json" } });
   };
   const testing = await import("@testing-library/react");
-  cleanup = testing.cleanup;
+  cleanup = async () => { await testing.act(async () => testing.cleanup()); };
   const page = testing.within(dom.window.document.body);
   const scopeFor = (taskId: string) => ({ userId: bootstrap.user.userId as string, teamId, roomId, taskId });
   async function openRoomTask(task: TaskProjection) {
@@ -136,10 +136,30 @@ test("Room drafts survive Task switches and a remounted App without sending", as
   f.fireEvent.change(f.page.getByRole("combobox", { name: "Current Task" }), { target: { value: f.secondTask.taskId } });
   await f.waitFor(() => assert.equal(editor.value, "Second Task's unsent draft"));
   assert.equal(f.requests.some(({ method, url }) => method === "POST" && /\/(?:messages|discussions)$/u.test(url)), false);
-  f.fireEvent.click(f.page.getByRole("button", { name: "Clear draft", exact: true }));
+  assert.equal(f.page.queryByRole("button", { name: "Clear draft", exact: true }), null);
+  assert.match(f.page.getByText(/Saved in this tab/u).parentElement?.textContent ?? "",
+    /This browser only · separate per Task; saved drafts restore independently · Saved in this tab/u);
+  f.fireEvent.change(editor, { target: { value: "" } });
   await f.waitFor(() => assert.equal(editor.value, ""));
   assert.equal(loadComposerState(f.scopeFor(f.secondTask.taskId)).state.content, "");
   assert.equal(loadComposerState(f.scopeFor(f.firstTask.taskId)).state.content, "First Task's unsent draft");
+});
+
+test("Enter sends an ordinary Room message through the real App and Server", async (t) => {
+  const f = await fixture(t);
+  f.render(<App />);
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  const editor = await f.openRoomTask(f.firstTask);
+  f.fireEvent.change(editor, { target: { value: "通过回车发送的普通房间消息" } });
+  assert.equal(f.fireEvent.keyDown(editor, { key: "Enter", shiftKey: true }), true);
+  assert.equal(f.fireEvent.keyDown(editor, { key: "Enter", isComposing: true }), true);
+  assert.equal(f.requests.some(({ method, url }) => method === "POST" && url.endsWith("/messages")), false);
+  f.fireEvent.keyDown(editor, { key: "Enter" });
+  await f.waitFor(() => assert.equal(editor.value, ""));
+  await f.page.findByText("通过回车发送的普通房间消息");
+  const writes = f.requests.filter(({ method, url }) => method === "POST" && url.endsWith("/messages"));
+  assert.equal(writes.length, 1);
+  assert.equal(JSON.parse(writes[0]!.body!).content, "通过回车发送的普通房间消息");
 });
 
 test("a management visit preserves the selected Room Task and unsent draft without sending", async (t) => {

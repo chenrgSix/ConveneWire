@@ -810,6 +810,13 @@
         "runtimePolicy": {
           "$ref": "#/$defs/runtimePolicySummary"
         },
+        "configuredModel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "not": { "pattern": "^sk[-_]" }
+        },
         "runtimeScopeId": {
           "$ref": "#/$defs/runtimeScopeId"
         },
