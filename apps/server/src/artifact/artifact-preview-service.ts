@@ -10,12 +10,14 @@ import type {
 import type { ArtifactPublicationRepository } from
   "./artifact-publication-repository.js";
 import type { LocalArtifactBlobStore } from "./local-artifact-blob-store.js";
+import { browserVerificationPreview, type BrowserVerificationPreview } from "./browser-verification-preview.js";
 
 const maximumPreviewCharacters = 200_000;
 const taskIdPattern = /^task_[A-Za-z0-9_-]{8,128}$/u;
 const artifactIdPattern = /^artifact_[A-Za-z0-9_-]{8,128}$/u;
 
 export interface ArtifactPreview {
+  browser?: BrowserVerificationPreview;
   artifactId: string;
   artifactRevision: number;
   taskId: string;
@@ -97,7 +99,9 @@ export class ArtifactPreviewService {
       artifact.contentSizeBytes
     );
     const bounded = boundedUtf8ArtifactPreview(bytes);
+    const browser = artifact.type === "test_result" ? browserVerificationPreview(bytes) : undefined;
     return {
+      ...(browser ? {browser} : {}),
       artifactId: artifact.artifactId,
       artifactRevision: artifact.artifactRevision,
       taskId: artifact.taskId,

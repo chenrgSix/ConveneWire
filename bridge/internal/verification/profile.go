@@ -48,12 +48,13 @@ type Owner struct {
 
 // ProfileSpec is an owner-local command policy. It is never sent to Central.
 type ProfileSpec struct {
-	ProfileID           string   `json:"profileId"`
-	Revision            int64    `json:"revision"`
-	Command             []string `json:"command"`
-	EnvironmentNames    []string `json:"environmentNames"`
-	TimeoutMilliseconds int64    `json:"timeoutMilliseconds"`
-	OutputLimitBytes    int64    `json:"outputLimitBytes"`
+	Browser             *BrowserSpec `json:"browser,omitempty"`
+	ProfileID           string       `json:"profileId"`
+	Revision            int64        `json:"revision"`
+	Command             []string     `json:"command"`
+	EnvironmentNames    []string     `json:"environmentNames"`
+	TimeoutMilliseconds int64        `json:"timeoutMilliseconds"`
+	OutputLimitBytes    int64        `json:"outputLimitBytes"`
 }
 
 type profileRecord struct {
@@ -91,6 +92,7 @@ type Reference struct {
 }
 
 type ResolvedProfile struct {
+	Browser            *BrowserSpec
 	Reference          Reference
 	Executable         string
 	Arguments          []string
@@ -242,6 +244,7 @@ func (s *ProfileStore) Resolve(reference Reference) (ResolvedProfile, error) {
 		return ResolvedProfile{}, ErrProfileChanged
 	}
 	return ResolvedProfile{Reference: reference, Executable: record.Spec.Command[0],
+		Browser:          cloneBrowserSpec(record.Spec.Browser),
 		Arguments:        append([]string{}, record.Spec.Command[1:]...),
 		EnvironmentNames: append([]string{}, record.Spec.EnvironmentNames...),
 		Timeout:          time.Duration(record.Spec.TimeoutMilliseconds) * time.Millisecond,
@@ -344,6 +347,9 @@ func (s *ProfileStore) get(profileID string) (profileRecord, ProfileView, error)
 }
 
 func normalizeSpec(spec ProfileSpec) (ProfileSpec, error) {
+	if spec.Browser != nil && (len(spec.Command) != 1 || !browserExecutableName(spec.Command[0]) || validateBrowserSpec(*spec.Browser) != nil || spec.OutputLimitBytes < 16<<10) {
+		return spec, ErrProfileInvalid
+	}
 	if !profileIDPattern.MatchString(spec.ProfileID) || spec.Revision != 1 || len(spec.Command) == 0 || len(spec.Command) > 32 ||
 		!filepath.IsAbs(spec.Command[0]) || filepath.Clean(spec.Command[0]) != spec.Command[0] ||
 		spec.TimeoutMilliseconds < 100 || spec.TimeoutMilliseconds > int64((30*time.Minute)/time.Millisecond) ||
@@ -356,6 +362,7 @@ func normalizeSpec(spec ProfileSpec) (ProfileSpec, error) {
 		}
 	}
 	result := spec
+	result.Browser = cloneBrowserSpec(spec.Browser)
 	result.Command = append([]string{}, spec.Command...)
 	result.EnvironmentNames = append([]string{}, spec.EnvironmentNames...)
 	slices.Sort(result.EnvironmentNames)

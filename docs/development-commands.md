@@ -295,3 +295,8 @@ from `bridge/`. The adapter builds the native Mac executable, verifies the copie
 Windows digest, and uses existing Node on each host. It installs no global tools,
 changes no OS accounts, and calls no external models. Its application test
 identities do not complete QA-084's independent-human-owner governance evidence.
+
+## Standing-work browser acceptance
+
+- `CONVENE_WIRE_BROWSER_EXECUTABLE=/absolute/tools/chrome-headless-shell node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/verification -run '^TestBrowserPhysicalCandidate$' -count=1 -v` — opt-in disposable static candidate and dedicated browser; no model or installed profile. Native process permissions are required; a sandbox startup error is not page acceptance.
+- The existing `repository verifier register` command accepts the reviewed browser JSON example in [VER-002](acceptance/ver-002-browser-verification.md). Build-dependent or backend-dependent pages are not implicitly prepared by this static verifier.

@@ -144,6 +144,9 @@ func (r Runner) RunInRoot(ctx context.Context, profile ResolvedProfile,
 	if err != nil || currentDigest != profile.ExecutableDigest {
 		return result, ErrProfileChanged
 	}
+	if profile.Browser != nil {
+		return r.runBrowser(ctx, profile, workspace, runRoot)
+	}
 	started := r.now()
 	runContext, cancel := context.WithTimeout(ctx, profile.Timeout)
 	defer cancel()

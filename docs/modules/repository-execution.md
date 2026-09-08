@@ -733,3 +733,15 @@ Verification logs are bounded and sanitized before publication. They contain no
 local workspace path, credential, unrestricted environment or unbounded process
 output. Physical acceptance must inspect retained bytes and the absence of the
 owned process group and temporary root, not merely assert a returned outcome.
+
+### Bounded browser verification
+
+[ADR-0060](../adr/0060-preauthorize-local-work-policies.md) adds an optional
+owner-local browser configuration to immutable verifier profiles. Dedicated
+Headless Shell runs against one static candidate materialization with an owned
+loopback origin/proxy, bounded typed interactions, PNG capture and separate
+startup/page/assertion/cleanup diagnostics. Desktop browsers, arbitrary flags,
+Task-supplied URLs and scripts are not accepted. Separate verifiers do not share
+build output. The exact receipt-bound `test_result` artifact carries the report;
+Central's bounded PNG projection grants no execution or visual-review authority.
+See [VER-002 evidence and setup](../acceptance/ver-002-browser-verification.md).
