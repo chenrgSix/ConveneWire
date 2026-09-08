@@ -396,11 +396,12 @@ type Included struct {
 }
 
 type Permissions struct {
-	FilesystemAccess   FilesystemAccess `json:"filesystemAccess"`
-	Handoff            Handoff          `json:"handoff"`
-	Interrupt          Handoff          `json:"interrupt"`
-	MaxDurationSeconds *int64           `json:"maxDurationSeconds"`
-	NetworkAccess      NetworkAccess    `json:"networkAccess"`
+	DeviceTrustRevision *int64           `json:"deviceTrustRevision,omitempty"`
+	FilesystemAccess    FilesystemAccess `json:"filesystemAccess"`
+	Handoff             Handoff          `json:"handoff"`
+	Interrupt           Handoff          `json:"interrupt"`
+	MaxDurationSeconds  *int64           `json:"maxDurationSeconds"`
+	NetworkAccess       NetworkAccess    `json:"networkAccess"`
 }
 
 type Target struct {
@@ -1002,6 +1003,7 @@ const (
 type FilesystemAccess string
 
 const (
+	FilesystemAccessFullAccess  FilesystemAccess = "full-access"
 	FilesystemAccessLocalPolicy FilesystemAccess = "local-policy"
 	FilesystemAccessNotRecorded FilesystemAccess = "not_recorded"
 	FilesystemAccessReadOnly    FilesystemAccess = "read-only"
@@ -1020,6 +1022,7 @@ type NetworkAccess string
 
 const (
 	Disabled                 NetworkAccess = "disabled"
+	NetworkAccessFullAccess  NetworkAccess = "full-access"
 	NetworkAccessLocalPolicy NetworkAccess = "local-policy"
 	NetworkAccessNotRecorded NetworkAccess = "not_recorded"
 )

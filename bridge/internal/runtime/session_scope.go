@@ -122,23 +122,25 @@ func fingerprintRuntimeConfig(configuration config.AgentConfig) (string, error) 
 	envAllowlist := append([]string(nil), configuration.EnvAllowlist...)
 	sort.Strings(envAllowlist)
 	semantic := struct {
-		Adapter            string   `json:"adapter"`
-		RuntimeKind        string   `json:"runtimeKind"`
-		PresetVersion      int      `json:"presetVersion"`
-		Command            []string `json:"command"`
-		Sandbox            string   `json:"sandbox"`
-		OutputProtocol     string   `json:"outputProtocol"`
-		EnvAllowlist       []string `json:"envAllowlist"`
-		OwnerPrivateOutput bool     `json:"ownerPrivateOutput,omitempty"`
+		TrustedExecutionRevision int64    `json:"trustedExecutionRevision,omitempty"`
+		Adapter                  string   `json:"adapter"`
+		RuntimeKind              string   `json:"runtimeKind"`
+		PresetVersion            int      `json:"presetVersion"`
+		Command                  []string `json:"command"`
+		Sandbox                  string   `json:"sandbox"`
+		OutputProtocol           string   `json:"outputProtocol"`
+		EnvAllowlist             []string `json:"envAllowlist"`
+		OwnerPrivateOutput       bool     `json:"ownerPrivateOutput,omitempty"`
 	}{
-		Adapter:            configuration.Adapter,
-		RuntimeKind:        configuration.RuntimeKind,
-		PresetVersion:      configuration.PresetVersion,
-		Command:            configuration.Command,
-		Sandbox:            configuration.Sandbox,
-		OutputProtocol:     configuration.OutputProtocol,
-		EnvAllowlist:       envAllowlist,
-		OwnerPrivateOutput: configuration.OwnerPrivateOutput,
+		TrustedExecutionRevision: configuration.TrustedExecutionRevision,
+		Adapter:                  configuration.Adapter,
+		RuntimeKind:              configuration.RuntimeKind,
+		PresetVersion:            configuration.PresetVersion,
+		Command:                  configuration.Command,
+		Sandbox:                  configuration.Sandbox,
+		OutputProtocol:           configuration.OutputProtocol,
+		EnvAllowlist:             envAllowlist,
+		OwnerPrivateOutput:       configuration.OwnerPrivateOutput,
 	}
 	encoded, err := json.Marshal(semantic)
 	if err != nil {

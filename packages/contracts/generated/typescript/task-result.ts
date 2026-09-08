@@ -460,18 +460,19 @@ export type ManifestVersion = "1.0";
 export type OmittedCategory = "unrelated_room_history" | "local_paths" | "environment_values" | "provider_credentials" | "provider_session_ids" | "hidden_reasoning" | "tool_payloads" | "other_workspaces";
 
 export interface Permissions {
-  filesystemAccess:   FilesystemAccess;
-  handoff:            Handoff;
-  interrupt:          Handoff;
-  maxDurationSeconds: number | null;
-  networkAccess:      NetworkAccess;
+  deviceTrustRevision?: number;
+  filesystemAccess:     FilesystemAccess;
+  handoff:              Handoff;
+  interrupt:            Handoff;
+  maxDurationSeconds:   number | null;
+  networkAccess:        NetworkAccess;
 }
 
-export type FilesystemAccess = "read-only" | "workspace-write" | "local-policy" | "not_recorded";
+export type FilesystemAccess = "full-access" | "read-only" | "workspace-write" | "local-policy" | "not_recorded";
 
 export type Handoff = "supported" | "unsupported" | "not_recorded";
 
-export type NetworkAccess = "disabled" | "local-policy" | "not_recorded";
+export type NetworkAccess = "full-access" | "disabled" | "local-policy" | "not_recorded";
 
 export interface Target {
   agentId:        string;

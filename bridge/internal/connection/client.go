@@ -99,6 +99,9 @@ type Client struct {
 }
 
 func publishedRuntimePolicy(agent config.AgentConfig) contracts.RuntimePolicy {
+	if agent.TrustedExecutionRevision > 0 && agent.Adapter == "codex" && !agent.OwnerPrivateOutput {
+		return contracts.RuntimePolicy{FilesystemAccess: "local-policy", DeviceTrust: &contracts.RuntimePolicyDeviceTrust{Mode: "full", Revision: agent.TrustedExecutionRevision}}
+	}
 	filesystemAccess := contracts.RuntimePolicyFilesystemAccess("local-policy")
 	if agent.RuntimeKind == "codex" || agent.Adapter == "codex" {
 		filesystemAccess = contracts.RuntimePolicyFilesystemAccess("workspace-write")

@@ -41,8 +41,8 @@ async function setup(t: TestContext, scheduler = 0) {
     socket.send(JSON.stringify({ protocolVersion: "1.0", messageId: "msg_work_server_test01", timestamp: current, type, payload }),
       (error?: Error) => error ? reject(error) : resolve());
   });
-  const publish = async (grants: ExecutionGrantSummary[] = [], offers = [offer], conversationCapability = true) => send("agent.publish", {
-    teamId: f.teamId, agentId: agent.agentId, deviceId: device.deviceId, ownerMemberId: f.ownerMemberId,
+  const publish = async (grants: ExecutionGrantSummary[] = [], offers = [offer], conversationCapability = true, runtimePolicy?: {filesystemAccess: "local-policy" | "workspace-write"; deviceTrust?: {mode: "full"; revision: number}}) => send("agent.publish", {
+    teamId: f.teamId, agentId: agent.agentId, deviceId: device.deviceId, ownerMemberId: f.ownerMemberId, ...(runtimePolicy ? {runtimePolicy} : {}),
     name: agent.name, role: agent.role, runtimeScopeId: "b".repeat(64), workspaceRef: agent.workspaceRef,
     workspaceGeneration: agent.workspaceGeneration, workspaceAlias: "Work repository",
     capabilities: { invocationMode: "managed", ...agent.capabilities, workPolicyOffers: offers, supportsConversationWork: conversationCapability,
@@ -385,4 +385,46 @@ test("an out-of-order proposal after terminal completion cannot create work", as
   await f.send("run.reply",{...c.reply,developmentProposal:{title:"Late write",criteria:["Modify files"]}});
   await new Promise(resolve=>setTimeout(resolve,150));
   assert.equal((f.database.prepare("SELECT count(*) n FROM conversation_development_requests").get() as {n:number}).n,0);
+});
+
+
+test("trusted device consent is visible, frozen and revoked before a queued Run can dispatch", async (t) => {
+  const f = await setup(t, 100);
+  await f.publish([], [], true, {filesystemAccess:"local-policy", deviceTrust:{mode:"full",revision:1}});
+  await waitFor(() => f.core.getAgent(f.agent.agentId)?.runtimePolicy?.deviceTrust?.revision === 1).catch((error) => {throw new Error(`${error}; socket=${f.socket.readyState}; policy=${JSON.stringify(f.core.getAgent(f.agent.agentId)?.runtimePolicy)}`);});
+  const sent = await f.ok("POST", `/api/rooms/${f.roomId}/messages`, {content:"Fix the input directly.",mentionAgentId:f.agent.agentId});
+  const run = sent.runs[0];
+  await waitFor(() => f.received.some((m) => m.type === "run.requested" && m.payload.runId === run.runId));
+  const payload = f.received.find((m) => m.type === "run.requested" && m.payload.runId === run.runId)!.payload;
+  assert.deepEqual(payload.deviceTrust,{mode:"full",revision:1});
+  assert.equal(payload.contextManifest.permissions.deviceTrustRevision,1);
+  assert.equal(payload.contextManifest.permissions.filesystemAccess,"full-access");
+  assert.equal(payload.conversationWork,undefined);
+  assert.equal(f.database.prepare("SELECT count(*) n FROM development_work_authorizations").get()!.n,0);
+  f.socket.terminate(); await f.reconnect(2,false);
+  await waitFor(() => f.database.prepare("SELECT state FROM runs WHERE run_id = ?").get(run.runId)!.state === "failed");
+  assert.equal(f.received.filter((m) => m.type === "run.requested" && m.payload.runId === run.runId).length,1);
+});
+
+test("a governed Run retains scoped authority on a fully trusted device", async (t) => {
+  const f = await setup(t, 100);
+  await f.ok("POST", `/api/rooms/${f.roomId}/development-tasks`, f.input("trustedscoped01"));
+  await waitFor(() => f.received.some((m) => m.type === "work.authorization.requested"));
+  const request = f.received.find((m) => m.type === "work.authorization.requested")!.payload.workAuthorization!;
+  await f.publish([f.grant(request)], [f.offer], true, {filesystemAccess:"local-policy", deviceTrust:{mode:"full", revision:1}});
+  await waitFor(() => f.core.getAgent(f.agent.agentId)?.runtimePolicy?.deviceTrust?.revision === 1);
+  await f.send("work.authorization.receipt", {connectionEpoch:1, workAuthorizationReceipt:f.receipt(request)});
+  await waitFor(() => f.received.some((m) => m.type === "run.requested"));
+  const payload = f.received.find((m) => m.type === "run.requested")!.payload;
+  assert.ok(payload.contextManifest.execution);
+  assert.equal(payload.deviceTrust, undefined);
+  assert.equal(payload.contextManifest.permissions.deviceTrustRevision, undefined);
+  assert.equal(payload.contextManifest.permissions.filesystemAccess, "local-policy");
+  assert.equal(payload.contextManifest.permissions.networkAccess, "not_recorded");
+});
+
+test("a web Agent registration cannot forge device full trust",async(t)=>{
+  const f=await setup(t);
+  const result=await f.request("POST",`/api/teams/${f.teamId}/agents`,{deviceId:f.device.deviceId,name:"Forged",role:"Developer",integrationMode:"managed",capabilities:f.agent.capabilities,runtimePolicy:{filesystemAccess:"local-policy",deviceTrust:{mode:"full",revision:1}}});
+  assert.ok(result.statusCode>=400,result.body);
 });

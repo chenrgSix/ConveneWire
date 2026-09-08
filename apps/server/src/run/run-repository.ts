@@ -71,9 +71,10 @@ export interface RunContextManifest {
     artifactRevision: number;
   };
   permissions: {
-    filesystemAccess: "read-only" | "workspace-write" | "local-policy" |
+    deviceTrustRevision?: number;
+    filesystemAccess: "full-access" | "read-only" | "workspace-write" | "local-policy" |
       "not_recorded";
-    networkAccess: "not_recorded";
+    networkAccess: "not_recorded" | "full-access";
     interrupt: "supported" | "unsupported" | "not_recorded";
     handoff: "supported" | "unsupported" | "not_recorded";
     maxDurationSeconds: number;
@@ -1666,7 +1667,7 @@ export class RunRepository {
     runId: string,
     execution?: GovernedExecutionManifest
   ): void {
-    const manifest = this.buildContextManifest(runId);
+    const manifest = this.buildContextManifest(runId, execution === undefined);
     if (execution) {
       // Governed execution is currently a Codex-only authority path. The
       // Bridge registration mode remains "managed", so the frozen delivery
@@ -1684,7 +1685,7 @@ export class RunRepository {
     }
   }
 
-  private buildContextManifest(runId: string): RunContextManifest {
+  private buildContextManifest(runId: string, allowDeviceTrust: boolean): RunContextManifest {
     const run = this.getRun(runId);
     const fence = this.getContextFence(runId);
     if (!run || !fence) {
@@ -1735,7 +1736,8 @@ export class RunRepository {
     };
     const runtimePolicy = agent.runtime_policy_json
       ? JSON.parse(agent.runtime_policy_json) as {
-          filesystemAccess?: "read-only" | "workspace-write" | "local-policy";
+          filesystemAccess?: "read-only" | "workspace-write" | "local-policy" | "full-access";
+          deviceTrust?: {mode: "full"; revision: number};
         }
       : undefined;
     const parentRunIds = [...new Set([
@@ -1771,8 +1773,9 @@ export class RunRepository {
         artifactRevision: fence.taskArtifactRevision
       },
       permissions: {
-        filesystemAccess: runtimePolicy?.filesystemAccess ?? "not_recorded",
-        networkAccess: "not_recorded",
+        filesystemAccess: allowDeviceTrust && runtimePolicy?.deviceTrust ? "full-access" : runtimePolicy?.filesystemAccess ?? "not_recorded",
+        networkAccess: allowDeviceTrust && runtimePolicy?.deviceTrust ? "full-access" : "not_recorded",
+        ...(allowDeviceTrust && runtimePolicy?.deviceTrust ? {deviceTrustRevision: runtimePolicy.deviceTrust.revision} : {}),
         interrupt: typeof capabilities.supportsInterrupt === "boolean"
           ? capabilities.supportsInterrupt ? "supported" : "unsupported"
           : "not_recorded",

@@ -17,6 +17,7 @@ export interface BridgeSocket {
 }
 
 interface Connection {
+  deviceTrustAgents: Map<string, number>;
   deviceId: string;
   epoch: number;
   governedExecutionAgents: Map<string, GovernedExecutionCapability>;
@@ -61,6 +62,7 @@ export class BridgeConnectionRegistry {
       governedExecutionAgents: new Map(),
       privateOutputAgents: new Set(),
       workPolicyAgents: new Map(),
+      deviceTrustAgents: new Map(),
       socket
     });
     return true;
@@ -77,7 +79,9 @@ export class BridgeConnectionRegistry {
     if (!connection) {
       return false;
     }
-    const envelope = message as { type?: string; payload?: { targetAgentId?: string; ownerPrivateOutput?: boolean } };
+    const envelope = message as { type?: string; payload?: { targetAgentId?: string; ownerPrivateOutput?: boolean; deviceTrust?: {mode: string; revision: number} } };
+    if (envelope?.type === "run.requested" && envelope.payload?.deviceTrust &&
+      (envelope.payload.deviceTrust.mode !== "full" || connection.deviceTrustAgents.get(envelope.payload.targetAgentId ?? "") !== envelope.payload.deviceTrust.revision)) return false;
     if (envelope?.type === "run.requested" && envelope.payload?.ownerPrivateOutput === true &&
       !connection.privateOutputAgents.has(envelope.payload.targetAgentId ?? "")) return false;
     if (hasGovernedExecution(message)) {
@@ -93,6 +97,15 @@ export class BridgeConnectionRegistry {
       }
     }
     connection.socket.send(JSON.stringify(message));
+    return true;
+  }
+
+  public recordDeviceTrust(deviceId: string, epoch: number, agentId: string, revision?: number): boolean {
+    const connection = this.connections.get(deviceId);
+    if (!connection || connection.epoch !== epoch) return false;
+    if (revision === undefined) connection.deviceTrustAgents.delete(agentId);
+    else if (Number.isSafeInteger(revision) && revision > 0) connection.deviceTrustAgents.set(agentId, revision);
+    else return false;
     return true;
   }
 

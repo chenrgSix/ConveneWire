@@ -81,6 +81,7 @@ func RunObservedWithProvisioning(
 	observer operations.Observer,
 	handleProvision connection.ProvisionHandler,
 ) error {
+	loaded = loaded.WithDeviceExecutionTrust(credential.ServerURL, credential.DeviceID, credential.OwnerMemberID)
 	ownedContext, releaseOwner, err := ownership.AcquireContext(ctx, loaded.DataDir)
 	if err != nil {
 		return err

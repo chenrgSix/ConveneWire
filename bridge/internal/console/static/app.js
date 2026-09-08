@@ -610,6 +610,10 @@ function closeConnectionModal() {
 }
 
 function render(state) {
+  const trust = state.deviceExecutionTrust ?? {mode: "restricted", revision: 0, editable: false};
+  document.getElementById("device-trust-state").textContent = `${trust.mode === "full" ? "已完全信任" : "未开启完全信任"} · ${trust.central ?? "尚未连接中心"} · 授权版本 ${trust.revision}`;
+  document.getElementById("device-trust-toggle").textContent = trust.mode === "full" ? "关闭完全信任" : "开启完全信任";
+  document.getElementById("device-trust-toggle").disabled = !trust.editable;
   currentState = state;
   clientEntryController.render(state);
   const waiting = Boolean(state.enrollment?.active);
@@ -1330,3 +1334,22 @@ applyCodexSessionConflictPolicy(
 syncTrustFields();
 void refresh();
 setInterval(refresh, 1000);
+
+document.getElementById("device-trust-toggle").addEventListener("click", async () => {
+  const consent = document.getElementById("device-trust-confirm");
+  const result = document.getElementById("device-trust-result");
+  if (!consent.checked) { result.textContent = "请先确认当前中心与设备权限范围。"; return; }
+  const trust = currentState?.deviceExecutionTrust;
+  if (!trust?.editable) return;
+  const toggle = document.getElementById("device-trust-toggle");
+  toggle.disabled = true;
+  try {
+    const state = await request("/api/device-execution-trust", {method: "POST", body: JSON.stringify({
+      mode: trust.mode === "full" ? "restricted" : "full", expectedRevision: trust.revision, confirm: true
+    })});
+    consent.checked = false;
+    render(state);
+    result.textContent = state.bridgeRunning ? "设备设置已保存，正在向中心同步。" : "设备设置已保存；连接中心后会同步。";
+  } catch (error) { result.textContent = String(error.message || error); }
+  finally { await refresh(); }
+});

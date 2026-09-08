@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "physical_fixture_no_model",
+  "operations": [
+    {
+      "taskId": "task_44KSUobeAY1IovS5kGs2UA",
+      "runId": "run_h_vp6l1xmf3tTFTLW9ZrOQ",
+      "state": "completed",
+      "verifications": [
+        {
+          "profileId": "profile_qa089test0001",
+          "outcome": "passed"
+        },
+        {
+          "profileId": "profile_qa089browser01",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "taskId": "task_70icsjr7MIcuV-Fa4cUDxw",
+      "runId": "run_f2kal_U02PyEBeovnGPUPA",
+      "state": "completed",
+      "verifications": [
+        {
+          "profileId": "profile_qa089test0001",
+          "outcome": "passed"
+        },
+        {
+          "profileId": "profile_qa089browser01",
+          "outcome": "passed"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "runs": 5,
+    "grants": 2,
+    "checkpoints": 2
+  },
+  "sourceUnchanged": true,
+  "parentRevoked": true,
+  "browserVerified": true
+}

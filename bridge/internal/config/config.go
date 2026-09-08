@@ -16,6 +16,7 @@ import (
 )
 
 type Config struct {
+	DeviceExecutionTrust    *DeviceExecutionTrust   `json:"deviceExecutionTrust,omitempty"`
 	SchemaVersion           int                     `json:"schemaVersion"`
 	ServerURL               string                  `json:"serverUrl"`
 	ServerToken             string                  `json:"serverToken,omitempty"`
@@ -68,6 +69,8 @@ func (c Config) ResolvedAgentProvisioningMode() AgentProvisioningMode {
 }
 
 type AgentConfig struct {
+	// Derived only from the paired device's local consent; never accepted from Agent JSON.
+	TrustedExecutionRevision   int64                      `json:"-"`
 	Name                       string                     `json:"name"`
 	Role                       string                     `json:"role"`
 	Adapter                    string                     `json:"adapter"`
@@ -449,6 +452,9 @@ func EnsureAvailable(path string) (string, error) {
 }
 
 func (c Config) Validate() error {
+	if err := c.DeviceExecutionTrust.Validate(); err != nil {
+		return err
+	}
 	if c.SchemaVersion != 0 && c.SchemaVersion != CurrentSchemaVersion {
 		return fmt.Errorf("schemaVersion must be %d", CurrentSchemaVersion)
 	}

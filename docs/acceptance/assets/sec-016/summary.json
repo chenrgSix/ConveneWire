@@ -1,0 +1,14 @@
+{
+  "kind": "trusted_device_fixture_no_model",
+  "counts": {
+    "runs": 1,
+    "authorizations": 0
+  },
+  "fullTrustRevision": 1,
+  "revokedRevision": 2,
+  "directGitCommit": true,
+  "policyRegistrationRequired": false,
+  "browserUI": true,
+  "baseCommit": "03030c9f551d0726e1cfef362155e2bcad96d414",
+  "finalCommit": "e034918be5f604bdeec2471a43b96629677cfef3"
+}

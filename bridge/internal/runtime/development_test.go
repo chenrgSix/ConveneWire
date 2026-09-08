@@ -13,18 +13,24 @@ import (
 )
 
 func TestConversationAdapterUsesReadOnlyAndSeparatesAnswerFromDevelopment(t *testing.T) {
-	for _, mode := range []string{"read", "develop"} {
+	for _, mode := range []string{"read", "develop", "trusted"} {
 		t.Run(mode, func(t *testing.T) {
 			t.Setenv("CONVENEWIRE_CONVERSATION_FIXTURE", mode)
 			adapter := CodexAdapter{Config: config.AgentConfig{Workspace: t.TempDir(), Sandbox: "workspace-write",
 				Command:      []string{os.Args[0], "-test.run=TestConversationHelperProcess", "--", "app-server"},
 				EnvAllowlist: []string{"CONVENEWIRE_CONVERSATION_FIXTURE"}}}
 			enabled := true
+			var trust *contracts.PayloadDeviceTrust
+			if mode == "trusted" {
+				enabled = false
+				adapter.Config.TrustedExecutionRevision = 3
+				trust = &contracts.PayloadDeviceTrust{Mode: "full", Revision: 3}
+			}
 			var proposal *contracts.DevelopmentProposal
 			var terminal Event
 			reply := ""
 			err := adapter.Execute(context.Background(), Request{Run: contracts.RunRequestedPayload{
-				RunID: "run_conversation01", Instruction: "the original user request", ConversationWork: &enabled,
+				RunID: "run_conversation01", Instruction: "the original user request", ConversationWork: &enabled, DeviceTrust: trust,
 			}}, func(_ context.Context, event Event) error {
 				if event.Reply != "" {
 					reply = event.Reply
@@ -93,13 +99,21 @@ func TestConversationHelperProcess(t *testing.T) {
 		case "initialize":
 			_ = encoder.Encode(map[string]any{"id": request.ID, "result": map[string]any{"userAgent": "fixture"}})
 		case "thread/start":
-			if request.Params["sandbox"] != "read-only" || request.Params["approvalPolicy"] != "never" {
+			sandbox := "read-only"
+			if mode == "trusted" {
+				sandbox = "danger-full-access"
+			}
+			if request.Params["sandbox"] != sandbox || request.Params["approvalPolicy"] != "never" {
 				os.Exit(3)
 			}
 			_ = encoder.Encode(map[string]any{"id": request.ID, "result": map[string]any{"thread": map[string]any{"id": "conversation-thread"}}})
 		case "turn/start":
 			input, _ := json.Marshal(request.Params["input"])
-			if !strings.Contains(string(input), "read-only conversation stage") || !strings.Contains(string(input), "the original user request") {
+			expected := "read-only conversation stage"
+			if mode == "trusted" {
+				expected = "device owner explicitly enabled full local execution"
+			}
+			if !strings.Contains(strings.ToLower(string(input)), expected) || !strings.Contains(string(input), "the original user request") {
 				os.Exit(4)
 			}
 			reply := "Read-only analysis is complete."
@@ -112,4 +126,15 @@ func TestConversationHelperProcess(t *testing.T) {
 		}
 	}
 	os.Exit(0)
+}
+
+func TestDeviceTrustStaleAndForgedPinsFailBeforeProcessLaunch(t *testing.T) {
+	for _, revision := range []int64{0, 2, 4} {
+		var terminal Event
+		a := CodexAdapter{Config: config.AgentConfig{TrustedExecutionRevision: 3, Command: []string{"missing-codex", "app-server"}}}
+		err := a.Execute(context.Background(), Request{Run: contracts.RunRequestedPayload{DeviceTrust: &contracts.PayloadDeviceTrust{Mode: "full", Revision: revision}}}, func(_ context.Context, e Event) error { terminal = e; return nil })
+		if err != nil || terminal.Error == nil || terminal.Error.Code != "DEVICE_TRUST_CHANGED" {
+			t.Fatalf("wrong admission: %v %#v", err, terminal)
+		}
+	}
 }

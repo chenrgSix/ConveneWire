@@ -3,7 +3,13 @@
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and
-ordinary task authority remain mandatory. SEC-016 tracks implementation.
+ordinary task authority remain mandatory.
+
+The paired local Console exposes full trust before collapsed scope policies.
+Consent is default-off, exact-pairing-bound and revisioned. Switching it drains
+the Bridge before persistence/reconnect; stale or conflicting Run pins fail
+before Codex process startup. Only managed non-private Codex Agents receive the
+local in-memory capability. See [SEC-016 evidence](../acceptance/sec-016-device-execution-trust.md).
 
 [ADR-0061](../adr/0061-continue-development-from-conversation.md) adds ordinary
 conversation continuation for managed Codex Agents. A capability-bound initial

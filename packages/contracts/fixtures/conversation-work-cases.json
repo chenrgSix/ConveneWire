@@ -145,6 +145,142 @@
           }
         }
       }
+    },
+    {
+      "name": "trusted device delivery",
+      "valid": true,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "deviceTrust": {
+            "mode": "full",
+            "revision": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "stale shape revision",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "deviceTrust": {
+            "mode": "full",
+            "revision": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "fractional trust",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "deviceTrust": {
+            "mode": "full",
+            "revision": 1.5
+          }
+        }
+      }
+    },
+    {
+      "name": "invented trust command",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "deviceTrust": {
+            "mode": "full",
+            "revision": 3,
+            "command": "git push"
+          }
+        }
+      }
+    },
+    {
+      "name": "unknown trust mode",
+      "valid": false,
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_conversation01",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_conversation01",
+          "traceId": "trace_conversation01",
+          "roomId": "room_conversation01",
+          "triggerMessageId": "msg_conversation_source01",
+          "requesterMemberId": "member_conversation01",
+          "targetAgentId": "agent_conversation01",
+          "deliveryAttemptId": "delivery_conversation01",
+          "idempotencyKey": "idem_conversation01",
+          "instruction": "Review this request",
+          "contextMessages": [],
+          "deadline": "2026-09-09T00:10:00Z",
+          "deviceTrust": {
+            "mode": "automatic",
+            "revision": 3
+          }
+        }
+      }
     }
   ]
 }

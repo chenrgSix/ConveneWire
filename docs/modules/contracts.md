@@ -3,7 +3,15 @@
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and
-ordinary task authority remain mandatory. SEC-016 tracks implementation.
+ordinary task authority remain mandatory.
+
+Authenticated `agent.publish.runtimePolicy.deviceTrust` contains only full mode
+and its positive integer revision; the existing `filesystemAccess: local-policy`
+summary remains storage-compatible. Ordinary Run manifests record full filesystem
+and network permissions plus `deviceTrustRevision`; delivery mirrors the exact
+pin as optional `run.requested.deviceTrust`. Omission remains legacy-compatible.
+Governed/private execution cannot inherit this pin. See
+[SEC-016 evidence](../acceptance/sec-016-device-execution-trust.md).
 
 `RUN-019`, under [ADR-0061](../adr/0061-continue-development-from-conversation.md),
 adds optional managed `supportsConversationWork`, frozen `run.requested`

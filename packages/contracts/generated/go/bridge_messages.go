@@ -534,7 +534,13 @@ type StickyVerificationProfile struct {
 }
 
 type RuntimePolicy struct {
+	DeviceTrust      *RuntimePolicyDeviceTrust     `json:"deviceTrust,omitempty"`
 	FilesystemAccess RuntimePolicyFilesystemAccess `json:"filesystemAccess"`
+}
+
+type RuntimePolicyDeviceTrust struct {
+	Mode     DeviceTrustMode `json:"mode"`
+	Revision int64           `json:"revision"`
 }
 
 // Fields shared by versioned cross-process messages.
@@ -623,6 +629,7 @@ type RunRequestedPayload struct {
 	// most nanosecond precision.
 	Deadline                       time.Time                            `json:"deadline"`
 	DeliveryAttemptID              string                               `json:"deliveryAttemptId"`
+	DeviceTrust                    *PayloadDeviceTrust                  `json:"deviceTrust,omitempty"`
 	DiscussionSupplementalEvidence *DiscussionSupplementalEvidenceClass `json:"discussionSupplementalEvidence,omitempty"`
 	IdempotencyKey                 string                               `json:"idempotencyKey"`
 	Instruction                    string                               `json:"instruction"`
@@ -811,11 +818,11 @@ type Workspace struct {
 	ExpiresAt string `json:"expiresAt"`
 	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
 	// most nanosecond precision.
-	IssuedAt            string `json:"issuedAt"`
-	LeaseID             string `json:"leaseId"`
-	Mode                Mode   `json:"mode"`
-	WorkspaceGeneration string `json:"workspaceGeneration"`
-	WorkspaceRef        string `json:"workspaceRef"`
+	IssuedAt            string        `json:"issuedAt"`
+	LeaseID             string        `json:"leaseId"`
+	Mode                WorkspaceMode `json:"mode"`
+	WorkspaceGeneration string        `json:"workspaceGeneration"`
+	WorkspaceRef        string        `json:"workspaceRef"`
 }
 
 type Included struct {
@@ -829,11 +836,12 @@ type Included struct {
 }
 
 type Permissions struct {
-	FilesystemAccess   PermissionsFilesystemAccess `json:"filesystemAccess"`
-	Handoff            Handoff                     `json:"handoff"`
-	Interrupt          Handoff                     `json:"interrupt"`
-	MaxDurationSeconds *int64                      `json:"maxDurationSeconds"`
-	NetworkAccess      NetworkAccess               `json:"networkAccess"`
+	DeviceTrustRevision *int64                      `json:"deviceTrustRevision,omitempty"`
+	FilesystemAccess    PermissionsFilesystemAccess `json:"filesystemAccess"`
+	Handoff             Handoff                     `json:"handoff"`
+	Interrupt           Handoff                     `json:"interrupt"`
+	MaxDurationSeconds  *int64                      `json:"maxDurationSeconds"`
+	NetworkAccess       NetworkAccess               `json:"networkAccess"`
 }
 
 type Target struct {
@@ -963,6 +971,11 @@ type TaskMemoryClass struct {
 	SourceCursor     int64           `json:"sourceCursor"`
 	SourceMessageIDS []string        `json:"sourceMessageIds"`
 	Summary          string          `json:"summary"`
+}
+
+type PayloadDeviceTrust struct {
+	Mode     DeviceTrustMode `json:"mode"`
+	Revision int64           `json:"revision"`
 }
 
 type DiscussionSupplementalEvidenceClass struct {
@@ -1377,6 +1390,12 @@ const (
 	Managed              InvocationMode = "managed"
 )
 
+type DeviceTrustMode string
+
+const (
+	Full DeviceTrustMode = "full"
+)
+
 type RuntimePolicyFilesystemAccess string
 
 const (
@@ -1454,10 +1473,10 @@ const (
 	VerifiedOutput   Gate = "verified_output"
 )
 
-type Mode string
+type WorkspaceMode string
 
 const (
-	IsolatedWorktree Mode = "isolated_worktree"
+	IsolatedWorktree WorkspaceMode = "isolated_worktree"
 )
 
 type ManifestVersion string
@@ -1482,6 +1501,7 @@ const (
 type PermissionsFilesystemAccess string
 
 const (
+	FilesystemAccessFullAccess  PermissionsFilesystemAccess = "full-access"
 	FilesystemAccessNotRecorded PermissionsFilesystemAccess = "not_recorded"
 	FluffyLocalPolicy           PermissionsFilesystemAccess = "local-policy"
 	FluffyReadOnly              PermissionsFilesystemAccess = "read-only"
@@ -1500,6 +1520,7 @@ type NetworkAccess string
 
 const (
 	Disabled                 NetworkAccess = "disabled"
+	NetworkAccessFullAccess  NetworkAccess = "full-access"
 	NetworkAccessLocalPolicy NetworkAccess = "local-policy"
 	NetworkAccessNotRecorded NetworkAccess = "not_recorded"
 )

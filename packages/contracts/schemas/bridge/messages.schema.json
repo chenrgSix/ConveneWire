@@ -655,6 +655,7 @@
         }
       }
     },
+    "deviceExecutionTrust": {"type":"object","additionalProperties":false,"required":["mode","revision"],"properties":{"mode":{"const":"full"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991}}},
     "runtimePolicySummary": {
       "type": "object",
       "additionalProperties": false,
@@ -662,6 +663,7 @@
         "filesystemAccess"
       ],
       "properties": {
+        "deviceTrust": {"$ref":"#/$defs/deviceExecutionTrust"},
         "filesystemAccess": {
           "enum": [
             "read-only",
@@ -1911,6 +1913,7 @@
         "deadline"
       ],
       "properties": {
+        "deviceTrust": {"$ref":"#/$defs/deviceExecutionTrust"},
         "conversationWork": {"type": "boolean", "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."},
         "ownerPrivateOutput": {"type": "boolean", "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."},
         "runId": {

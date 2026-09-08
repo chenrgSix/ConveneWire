@@ -2493,6 +2493,24 @@
                       "filesystemAccess"
                     ],
                     "properties": {
+                      "deviceTrust": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mode",
+                          "revision"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "const": "full"
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          }
+                        }
+                      },
                       "filesystemAccess": {
                         "enum": [
                           "read-only",
@@ -2774,6 +2792,24 @@
                   "deadline"
                 ],
                 "properties": {
+                  "deviceTrust": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mode",
+                      "revision"
+                    ],
+                    "properties": {
+                      "mode": {
+                        "const": "full"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
                   "conversationWork": {
                     "type": "boolean",
                     "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."
@@ -4920,8 +4956,14 @@
                           "maxDurationSeconds"
                         ],
                         "properties": {
+                          "deviceTrustRevision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
                           "filesystemAccess": {
                             "enum": [
+                              "full-access",
                               "read-only",
                               "workspace-write",
                               "local-policy",
@@ -4930,6 +4972,7 @@
                           },
                           "networkAccess": {
                             "enum": [
+                              "full-access",
                               "disabled",
                               "local-policy",
                               "not_recorded"
@@ -7245,6 +7288,24 @@
         }
       }
     },
+    "deviceExecutionTrust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "revision"
+      ],
+      "properties": {
+        "mode": {
+          "const": "full"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
     "runtimePolicySummary": {
       "type": "object",
       "additionalProperties": false,
@@ -7252,6 +7313,24 @@
         "filesystemAccess"
       ],
       "properties": {
+        "deviceTrust": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "revision"
+          ],
+          "properties": {
+            "mode": {
+              "const": "full"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
         "filesystemAccess": {
           "enum": [
             "read-only",
@@ -9111,6 +9190,24 @@
             "filesystemAccess"
           ],
           "properties": {
+            "deviceTrust": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "revision"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "full"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
             "filesystemAccess": {
               "enum": [
                 "read-only",
@@ -12410,6 +12507,24 @@
         "deadline"
       ],
       "properties": {
+        "deviceTrust": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "revision"
+          ],
+          "properties": {
+            "mode": {
+              "const": "full"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
         "conversationWork": {
           "type": "boolean",
           "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."
@@ -14556,8 +14671,14 @@
                 "maxDurationSeconds"
               ],
               "properties": {
+                "deviceTrustRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
                 "filesystemAccess": {
                   "enum": [
+                    "full-access",
                     "read-only",
                     "workspace-write",
                     "local-policy",
@@ -14566,6 +14687,7 @@
                 },
                 "networkAccess": {
                   "enum": [
+                    "full-access",
                     "disabled",
                     "local-policy",
                     "not_recorded"

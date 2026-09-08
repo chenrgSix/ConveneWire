@@ -135,6 +135,7 @@ type ConnectionView struct {
 }
 
 type State struct {
+	DeviceExecutionTrust    DeviceTrustView             `json:"deviceExecutionTrust"`
 	ClientAccessAvailable   bool                        `json:"clientAccessAvailable"`
 	ShareReasoningSummaries bool                        `json:"shareReasoningSummaries"`
 	ReasoningEditable       bool                        `json:"reasoningConsentEditable"`
@@ -406,6 +407,7 @@ func (s *Service) State() State {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	snapshot := cloneState(s.state)
+	snapshot.DeviceExecutionTrust = s.deviceTrustViewLocked()
 	if s.configuration != nil && s.credential != nil && s.joinCancel == nil {
 		_, accessError := pairing.LoadClientAccess(s.configuration.DataDir, *s.credential)
 		snapshot.ClientAccessAvailable = accessError == nil
@@ -468,6 +470,7 @@ func (s *Service) Handler() http.Handler {
 	mux.HandleFunc("GET /api/governed-owner-state", s.authorize(s.getGovernedOwnerState))
 	mux.HandleFunc("POST /api/governed-task-grants/{grantId}/revoke", s.authorize(s.revokeGovernedTaskGrant))
 	mux.HandleFunc("POST /api/work-policies", s.authorize(s.createWorkPolicy))
+	mux.HandleFunc("POST /api/device-execution-trust", s.authorize(s.updateDeviceExecutionTrust))
 	mux.HandleFunc("POST /api/work-policies/{policyId}/revoke", s.authorize(s.revokeWorkPolicy))
 	mux.HandleFunc("POST /api/reasoning-consent/prepare", s.authorize(s.prepareReasoningConsent))
 	mux.HandleFunc("PUT /api/login-startup", s.authorize(s.updateLoginStartup))
@@ -1329,6 +1332,9 @@ func (s *Service) updateAgent(response http.ResponseWriter, request *http.Reques
 }
 
 func (s *Service) requireConfigurationMutationLocked() error {
+	if s.governedMutation {
+		return fmt.Errorf("Wait for the current local authority change")
+	}
 	if s.closed {
 		return fmt.Errorf("Bridge service is closed")
 	}
@@ -1579,6 +1585,7 @@ func (s *Service) updateConfig(response http.ResponseWriter, request *http.Reque
 		configuration.ServerToken = s.configuration.ServerToken
 	}
 	configuration.AgentProvisioning = s.configuration.AgentProvisioning
+	configuration.DeviceExecutionTrust = s.configuration.DeviceExecutionTrust
 	configuration.ShareReasoningSummaries = reasoningConsentForUpdate(
 		*s.configuration, configuration.ServerURL, input.ShareReasoningSummaries,
 	)

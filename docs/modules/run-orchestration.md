@@ -3,7 +3,14 @@
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and
-ordinary task authority remain mandatory. SEC-016 tracks implementation.
+ordinary task authority remain mandatory.
+
+Ordinary Runs on a fully trusted device freeze its current consent revision and
+execute directly through the existing conversation. They skip the read-only
+proposal/work-policy negotiation path. Reconnect requires fresh authenticated
+publication; revoked queued pins fail before dispatch. Existing Room authority,
+Run budget and cancellation still apply. Governed Runs keep scoped manifests.
+See [SEC-016 evidence](../acceptance/sec-016-device-execution-trust.md).
 
 [ADR-0061](../adr/0061-continue-development-from-conversation.md) binds a capable
 Codex Agent's read-only development proposal to the exact original human Run.

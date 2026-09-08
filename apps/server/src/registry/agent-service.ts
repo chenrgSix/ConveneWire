@@ -59,6 +59,7 @@ function normalizedWorkspaceAlias(value: string | undefined): string | null {
 }
 
 function validateCapabilities(input: PublishAgentInput): void {
+  if (input.runtimePolicy?.deviceTrust !== undefined) throw new Error("Device execution trust is published only by its Bridge");
   if (input.capabilities.ownerPrivateOutput !== undefined) throw new Error("Private output mode is published only by its Bridge");
   if (input.capabilities.governedExecution !== undefined) {
     assertExecutionCommand(
@@ -332,6 +333,11 @@ export class AgentService {
       )
     ) {
       throw new Error("Bridge Runtime policy summary is invalid");
+    }
+    const deviceTrust = input.runtimePolicy?.deviceTrust;
+    if (deviceTrust && (input.runtimePolicy?.filesystemAccess !== "local-policy" || deviceTrust.mode !== "full" || !Number.isSafeInteger(deviceTrust.revision) || deviceTrust.revision < 1 ||
+        Object.keys(deviceTrust).some((key) => !["mode", "revision"].includes(key)) || input.capabilities.ownerPrivateOutput)) {
+      throw new Error("Bridge device execution trust is invalid");
     }
     if (
       input.runtimeScopeId !== undefined &&

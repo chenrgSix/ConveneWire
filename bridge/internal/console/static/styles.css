@@ -606,6 +606,13 @@ button:disabled { cursor: not-allowed; opacity: .42; }
 .work-policy-form .wide { grid-column: 1 / -1; }
 .work-policy-form .work-policy-consent { display: flex; align-items: flex-start; gap: 9px; }
 .work-policy-consent input { width: auto; margin-top: 3px; }
+#device-execution-trust { display: grid; gap: 14px; }
+#device-execution-trust h3, #device-execution-trust p { margin: 0; }
+#device-execution-trust p, #device-execution-trust label { font-size: 13px; line-height: 1.6; }
+#device-execution-trust .checkbox-label { display: flex; align-items: flex-start; gap: 9px; color: var(--text); }
+#device-execution-trust input { width: auto; flex: 0 0 auto; margin-top: 4px; }
+#device-trust-toggle { justify-self: start; }
+#device-trust-state { color: var(--muted); }
 .work-policy-form select[multiple] { min-height: 88px; }
 @media (max-width: 700px) { .work-policy-form { grid-template-columns: 1fr; } }
 

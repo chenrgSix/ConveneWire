@@ -109,7 +109,7 @@ func TestRuntimePromptProjectsGovernedScopeWithoutGrantingAcceptanceAuthority(t 
 					NodeKey: "Build", DispatchGeneration: 3},
 				Repository: contracts.Repository{RepositoryID: "repo_runtime0001",
 					BaseCommit: strings.Repeat("a", 40)},
-				Workspace: contracts.Workspace{Mode: contracts.Mode("isolated_worktree")},
+				Workspace: contracts.Workspace{Mode: contracts.WorkspaceMode("isolated_worktree")},
 				ScopePolicy: contracts.ExecutionScopePolicy{Access: contracts.Access("isolated_write"),
 					AllowedPaths: []string{"src", "tests"}, ForbiddenPaths: []string{"secrets"}},
 				Outputs: []contracts.ExecutionOutput{{SlotKey: "patch", Kind: contracts.Kind("patch"), Required: true}},

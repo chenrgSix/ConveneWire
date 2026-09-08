@@ -317,7 +317,7 @@ export function registerBridgeSocketRoutes({
             : undefined;
           const validRuntimePolicy = runtimePolicy === undefined || (
             runtimePolicyObject !== undefined &&
-            Object.keys(runtimePolicyObject).length === 1 &&
+            Object.keys(runtimePolicyObject).every((key) => ["filesystemAccess", "deviceTrust"].includes(key)) &&
             isFilesystemAccessPolicy(runtimePolicyObject.filesystemAccess)
           );
           if (
@@ -357,7 +357,8 @@ export function registerBridgeSocketRoutes({
                 isFilesystemAccessPolicy(runtimePolicyObject.filesystemAccess)
                 ? {
                     runtimePolicy: {
-                      filesystemAccess: runtimePolicyObject.filesystemAccess
+                      filesystemAccess: runtimePolicyObject.filesystemAccess,
+                      ...(runtimePolicyObject.deviceTrust ? {deviceTrust: runtimePolicyObject.deviceTrust as NonNullable<AgentRuntimePolicy["deviceTrust"]>} : {})
                     }
                   }
                 : {}),
@@ -398,7 +399,8 @@ export function registerBridgeSocketRoutes({
               now: clock()
             })
           );
-          if (!bridgeConnections.recordPrivateOutputAgent(devicePrincipal.deviceId, registeredEpoch,
+          if (!bridgeConnections.recordDeviceTrust(devicePrincipal.deviceId, registeredEpoch, publicationPayload.agentId as string,
+            (runtimePolicyObject?.deviceTrust as AgentRuntimePolicy["deviceTrust"])?.revision) || !bridgeConnections.recordPrivateOutputAgent(devicePrincipal.deviceId, registeredEpoch,
             publicationPayload.agentId as string, capabilities.ownerPrivateOutput === true) || !bridgeConnections.recordGovernedAgentCapability(
             devicePrincipal.deviceId,
             registeredEpoch,

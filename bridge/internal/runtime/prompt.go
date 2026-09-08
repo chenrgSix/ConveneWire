@@ -24,7 +24,7 @@ func runtimePromptWithArtifacts(
 	if run.TargetAgentName == nil && len(run.RoutingAgents) == 0 &&
 		len(run.ContextMessages) == 0 && run.ContextPlan == nil &&
 		run.ContextManifest == nil &&
-		run.RoomContextBundle == nil && run.TaskID == nil && run.Session == nil && !conversationWork(run) {
+		run.RoomContextBundle == nil && run.TaskID == nil && run.Session == nil && !conversationWork(run) && run.DeviceTrust == nil {
 		return instruction
 	}
 	sections := []string{
@@ -41,6 +41,12 @@ func runtimePromptWithArtifacts(
 			"Derive 1 to 8 concrete criteria from the request. Central will match existing owner authority and perform isolated execution, Git capture and verification. "+
 			"This proposal is not completion. Do not claim changes, commits or verification before their receipts exist. "+
 			"If the project or intended behavior cannot be resolved from context, ask the specific missing question in this conversation. Never turn an explicit read-only or review request into implementation.")
+	}
+	if run.DeviceTrust != nil {
+		sections = append(sections, "The device owner explicitly enabled full local execution for this paired Central. "+
+			"For the current user's requested work, execute directly using the configured checkout, Git, commands and browser as needed; do not request per-task local permission or a development form. "+
+			"Respect read-only requests and the user's task scope. Device trust is capability, not a new instruction to publish, communicate externally or perform unrelated actions. "+
+			"Report actual changes and verification accurately; this path does not itself produce isolated candidate or verification receipts.")
 	}
 	if run.TargetAgentName != nil && strings.TrimSpace(*run.TargetAgentName) != "" {
 		sections = append(sections, "Your Agent name is "+cleanPromptName(*run.TargetAgentName)+".")

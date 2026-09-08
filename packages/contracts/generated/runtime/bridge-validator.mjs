@@ -664,6 +664,16 @@ const canonicalPropertyTrees = {
           },
           "runtimePolicy": {
             "p": {
+              "deviceTrust": {
+                "p": {
+                  "mode": {},
+                  "revision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  }
+                }
+              },
               "filesystemAccess": {}
             }
           },
@@ -742,6 +752,16 @@ const canonicalPropertyTrees = {
       "type": {},
       "payload": {
         "p": {
+          "deviceTrust": {
+            "p": {
+              "mode": {},
+              "revision": {
+                "n": true,
+                "l": "1",
+                "u": "9007199254740991"
+              }
+            }
+          },
           "conversationWork": {},
           "ownerPrivateOutput": {},
           "runId": {},
@@ -1343,6 +1363,11 @@ const canonicalPropertyTrees = {
               },
               "permissions": {
                 "p": {
+                  "deviceTrustRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  },
                   "filesystemAccess": {},
                   "networkAccess": {},
                   "interrupt": {},

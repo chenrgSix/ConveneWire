@@ -32,6 +32,7 @@ export interface DiscussionSupplementalEvidenceOffer {
 }
 
 export interface DeliveryPayload {
+  deviceTrust?: { mode: "full"; revision: number };
   conversationWork?: boolean;
   ownerPrivateOutput?: boolean;
   runId: string;
@@ -178,6 +179,15 @@ export class DeliveryService {
     const delivery = this.ensure(runId);
     if (!delivery || delivery.state === "accepted") {
       return delivery;
+    }
+    const trust = delivery.payload.deviceTrust;
+    const currentPolicy = run && this.core.getAgent(run.targetAgentId)?.runtimePolicy;
+    if (trust && (currentPolicy?.deviceTrust?.mode !== "full" || currentPolicy.deviceTrust?.revision !== trust.revision)) {
+      if (run?.state === "queued") this.runs.applyEvent(runId, {
+        type: "status", sequence: run.lastSequence + 1, status: "failed",
+        error: {code: "DEVICE_TRUST_CHANGED", message: "The device owner changed execution trust. Continue from the current conversation.", retryable: false}
+      }, this.clock());
+      return undefined;
     }
     const sent = this.connections.send(delivery.deviceId, {
       protocolVersion: "1.0",
@@ -471,7 +481,10 @@ export class DeliveryService {
     const discussionSupplementalEvidence =
       this.discussionSupplementalEvidenceOffer(run.runId, agent);
     const payload: DeliveryPayload = {
+      ...(contextManifest.permissions.deviceTrustRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
+        ? {deviceTrust: {mode: "full" as const, revision: contextManifest.permissions.deviceTrustRevision}} : {}),
       ...(agent.capabilities.supportsConversationWork === true &&
+        !contextManifest.permissions.deviceTrustRevision &&
         agent.capabilities.ownerPrivateOutput !== true && !contextManifest.execution &&
         !run.parentRunId && trigger.senderType === "member" &&
         trigger.senderId === run.requesterMemberId && trigger.mentions.length === 1 &&

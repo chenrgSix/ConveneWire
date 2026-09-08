@@ -657,8 +657,16 @@ export interface StickyVerificationProfile {
 }
 
 export interface RuntimePolicy {
+  deviceTrust?:     RuntimePolicyDeviceTrust;
   filesystemAccess: RuntimePolicyFilesystemAccess;
 }
+
+export interface RuntimePolicyDeviceTrust {
+  mode:     DeviceTrustMode;
+  revision: number;
+}
+
+export type DeviceTrustMode = "full";
 
 export type RuntimePolicyFilesystemAccess = "read-only" | "workspace-write" | "local-policy";
 
@@ -791,6 +799,7 @@ export interface RunRequestedPayload {
    */
   deadline:                        string;
   deliveryAttemptId:               string;
+  deviceTrust?:                    PayloadDeviceTrust;
   discussionSupplementalEvidence?: DiscussionSupplementalEvidence;
   idempotencyKey:                  string;
   instruction:                     string;
@@ -1004,12 +1013,12 @@ export interface Workspace {
    */
   issuedAt:            string;
   leaseId:             string;
-  mode:                Mode;
+  mode:                WorkspaceMode;
   workspaceGeneration: string;
   workspaceRef:        string;
 }
 
-export type Mode = "isolated_worktree";
+export type WorkspaceMode = "isolated_worktree";
 
 export interface Included {
   artifactIds:         string[];
@@ -1026,18 +1035,19 @@ export type ManifestVersion = "1.0";
 export type OmittedCategory = "unrelated_room_history" | "local_paths" | "environment_values" | "provider_credentials" | "provider_session_ids" | "hidden_reasoning" | "tool_payloads" | "other_workspaces";
 
 export interface Permissions {
-  filesystemAccess:   PermissionsFilesystemAccess;
-  handoff:            Handoff;
-  interrupt:          Handoff;
-  maxDurationSeconds: number | null;
-  networkAccess:      NetworkAccess;
+  deviceTrustRevision?: number;
+  filesystemAccess:     PermissionsFilesystemAccess;
+  handoff:              Handoff;
+  interrupt:            Handoff;
+  maxDurationSeconds:   number | null;
+  networkAccess:        NetworkAccess;
 }
 
-export type PermissionsFilesystemAccess = "read-only" | "workspace-write" | "local-policy" | "not_recorded";
+export type PermissionsFilesystemAccess = "full-access" | "read-only" | "workspace-write" | "local-policy" | "not_recorded";
 
 export type Handoff = "supported" | "unsupported" | "not_recorded";
 
-export type NetworkAccess = "disabled" | "local-policy" | "not_recorded";
+export type NetworkAccess = "full-access" | "disabled" | "local-policy" | "not_recorded";
 
 export interface Target {
   agentId:        string;
@@ -1193,6 +1203,11 @@ export interface TaskMemoryClass {
   sourceCursor:     number;
   sourceMessageIds: string[];
   summary:          string;
+}
+
+export interface PayloadDeviceTrust {
+  mode:     DeviceTrustMode;
+  revision: number;
 }
 
 export interface DiscussionSupplementalEvidence {

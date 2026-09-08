@@ -3175,6 +3175,7 @@ test("conversation completes two unattended development Tasks with physical cand
       await browser.navigate(local.url);
       await browser.until("document.querySelector('[data-page-target=governed]') !== null");
       await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.evaluate("document.querySelector('#work-policy-advanced').open = true");
       await browser.until("document.querySelector('[name=runtimeProfileId]').options.length > 0");
       await browser.evaluate(`(() => {const f=document.querySelector('#work-policy-form'); const values=${JSON.stringify({alias:policySpec.alias,roomIdsManual:roomId,initiatorMemberIds:memberId,allowedPaths:"src",minutes:"5",attempts:"2"})}; for(const [key,value] of Object.entries(values)){const e=f.elements.namedItem(key);e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}));} for(const o of f.elements.verifierIds.options)o.selected=true;f.elements.confirmed.checked=true;})()`);
       await capture("local-policy-ready.png");
@@ -3249,6 +3250,7 @@ test("conversation completes two unattended development Tasks with physical cand
     if(browser) {
       await browser.navigate(local.url);await browser.until("document.querySelector('[data-page-target=governed]') !== null");
       await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.evaluate("document.querySelector('#work-policy-advanced').open = true");
       await browser.until("document.querySelector('#governed-inventory').innerText.includes('工作策略')");
       await browser.evaluate("[...document.querySelectorAll('#governed-inventory button')].at(-1).click()");
       await browser.until("[...document.querySelectorAll('button')].some(e=>e.textContent==='确认停止并撤销')");
@@ -3267,4 +3269,123 @@ test("conversation completes two unattended development Tasks with physical cand
   } catch(error) {
     throw new Error(`QA-089 stage: ${stage}; cause: ${String(error)}; ${history.map(p=>p.stderr.slice(-3000)).join("\n")}`,{cause:error});
   }
+});
+
+test("trusted device executes ordinary conversation without work policy registration and revokes after restart", {
+  timeout: 240_000, skip: process.platform !== "darwin" || Boolean(packagedImage)
+}, async (t) => {
+  const resources = await createTestResources(t, "convene-wire-sec016-");
+  const directory = resources.directory;
+  const source = path.join(directory, "source");
+  const binary = path.join(directory, "convenewire-bridge");
+  const configPath = path.join(directory, "bridge.json");
+  const databasePath = path.join(directory, "central-data", "central.sqlite");
+  const browserExecutable = process.env.CONVENE_WIRE_BROWSER_EXECUTABLE;
+  const evidenceDirectory = process.env.CONVENE_WIRE_WORK_EVIDENCE_DIR;
+  const history: ProcessHandle[] = [];
+  let stage = "prepare";
+  try {
+    await prepareCentralData(databasePath); await mkdir(source);
+    await writeFile(path.join(source, "answer.txt"), "original\n");
+    await execFileAsync("git", ["init", "--initial-branch=main", source]);
+    await git(source, ["config", "user.name", "ConveneWire Test"]);
+    await git(source, ["config", "user.email", "test@example.invalid"]);
+    await git(source, ["add", "answer.txt"]); await git(source, ["commit", "-m", "base"]);
+    const baseCommit = await git(source, ["rev-parse", "HEAD"]);
+    const codex = await createCodexFixture(directory, path.join(directory, "unused.json"));
+    const original = await readFile(codex.helper, "utf8");
+    await writeFile(codex.helper, original
+      .replace("import path", "import {execFileSync} from 'node:child_process';\nimport path")
+      .replace("const send =", "let sandbox = '';\nconst send =")
+      .replace("const threadId = request.params?.threadId", "sandbox = request.params?.sandbox; const threadId = request.params?.threadId")
+      .replace("if (sourceRoot && path.resolve(cwd) === path.resolve(sourceRoot)) {", `if (instruction.includes('device owner explicitly enabled full local execution')) {
+        if (sandbox !== 'danger-full-access') process.exit(61);
+        await writeFile(path.join(cwd,'answer.txt'),'trusted implementation complete\\n');
+        execFileSync('git',['add','answer.txt'],{cwd});execFileSync('git',['commit','-m','implement requested change'],{cwd});
+        reply='已完成修改并创建本地提交。';
+      } else if (sourceRoot && path.resolve(cwd) === path.resolve(sourceRoot)) {`));
+    await prepareBridge(binary);
+    const port = await reservePort(), serverUrl = `http://127.0.0.1:${port}`;
+    const serverToken = `sec016-${randomUUID()}-${randomUUID()}`;
+    const central = startProcess(resources, process.execPath, ["--import", "tsx", "apps/server/src/server.ts"], {
+      cwd: repositoryRoot, env: {...centralEnvironment(port,databasePath,serverToken),CONVENE_WIRE_WEB_ROOT:path.join(repositoryRoot,"apps/web/dist")},stdio:["ignore","pipe","pipe"]
+    }); history.push(central);
+    await waitFor(async () => (await fetch(`${serverUrl}/api/health/ready`)).ok ? true : undefined);
+    const bootstrap=await requestJSON<any>(serverUrl,"POST","/api/bootstrap",{displayName:"Device trust test owner"});
+    const token=bootstrap.session.token;
+    const team=await requestJSON<any>(serverUrl,"POST","/api/teams",{name:"设备信任验收"},token);
+    const teamId=team.team.teamId;
+    const room=await requestJSON<any>(serverUrl,"POST",`/api/teams/${teamId}/rooms`,{name:"直接开发"},token);
+    await writeJSON(configPath,{schemaVersion:5,serverUrl,serverToken,deviceName:"Trust fixture",dataDir:path.join(directory,"bridge-data"),agents:[{
+      name:"本机开发",role:"Developer",adapter:"codex",runtimeKind:"codex",presetVersion:5,command:[codex.executable,codex.helper,"fixture-role=build",`fixture-source=${source}`,"app-server","--listen","stdio://"],workspace:source,sandbox:"workspace-write",envAllowlist:["PATH"]
+    }]});
+    const invite=await requestJSON<any>(serverUrl,"POST",`/api/teams/${teamId}/bridge-invites`,{deviceName:"Trust fixture"},token);
+    await bridgeCommand(binary,configPath,"build",["pair","--code",invite.code]);
+    const startConsole=async()=>{
+      const process=startProcess(resources,binary,["console","--config",configPath,"--listen","127.0.0.1:0","--no-open"],{stdio:["ignore","pipe","pipe"]});history.push(process);
+      const url=await waitFor(async()=>/Bridge Console: (http:\/\/127\.0\.0\.1:\d+\/\?token=[^\s]+)/u.exec(process.stdout)?.[1]);
+      return {process,url,origin:new URL(url).origin,token:new URL(url).searchParams.get("token")!};
+    };
+    let local=await startConsole();
+    const agent=await waitForAgent(serverUrl,token,teamId,"本机开发");
+    await requestJSON(serverUrl,"PUT",`/api/rooms/${room.roomId}/participants`,{memberIds:[team.owner.memberId],agentIds:[agent.agentId]},token);
+    const policy=async()=>(await requestJSON<any[]>(serverUrl,"GET",`/api/teams/${teamId}/agents`,undefined,token)).find((a:any)=>a.agentId===agent.agentId)?.runtimePolicy;
+    assert.equal((await policy())?.deviceTrust,undefined);
+    const {ownedHeadlessBrowser}=await import("../../scripts/qa/owned-headless-browser.mjs");
+    const browser=browserExecutable?await ownedHeadlessBrowser(resources,browserExecutable):null;
+    if(evidenceDirectory)await mkdir(evidenceDirectory,{recursive:true});
+    const capture=async(name:string)=>{if(browser&&evidenceDirectory)await browser.screenshot(path.join(evidenceDirectory,name));};
+    stage="local trust consent";
+    if(browser){
+      await browser.navigate(local.url);await browser.until("document.querySelector('[data-page-target=governed]') !== null");
+      await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.until("document.querySelector('#device-trust-toggle').disabled === false");
+      await capture("device-trust-before.png");
+      await browser.evaluate("document.querySelector('#device-trust-confirm').checked=true;document.querySelector('#device-trust-toggle').click()");
+      await browser.until("document.querySelector('#device-trust-state').textContent.includes('已完全信任')");
+      await capture("device-trust-enabled.png");
+    }else await requestJSON(local.origin,"POST","/api/device-execution-trust",{mode:"full",expectedRevision:0,confirm:true},local.token);
+    await waitFor(async()=>(await policy())?.deviceTrust?.revision===1?true:undefined);
+    stage="direct conversation execution";
+    if(browser){
+      await browser.send("Page.addScriptToEvaluateOnNewDocument",{source:`if(location.origin===${JSON.stringify(serverUrl)}){localStorage.setItem('agent-room.local-user',${JSON.stringify(JSON.stringify(bootstrap.user))});localStorage.setItem('agent-room.theme','light');}`});
+      await browser.navigate(`${serverUrl}/?team=${teamId}&room=${room.roomId}&view=room`);
+      await browser.until("document.querySelector('.composer textarea') !== null");
+      await browser.evaluate("(()=>{const e=document.querySelector('.composer textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(e,'@本机开发 实现修改并提交');e.dispatchEvent(new Event('input',{bubbles:true}));})()");
+      await browser.until("document.querySelector('.composer-send:not(:disabled)') !== null");
+      await browser.evaluate("document.querySelector('.composer').requestSubmit()");
+    }else await requestJSON(serverUrl,"POST",`/api/rooms/${room.roomId}/messages`,{content:"实现修改并提交",mentionAgentId:agent.agentId},token);
+    const run=await waitFor(async()=>(await requestJSON<RunView[]>(serverUrl,"GET",`/api/rooms/${room.roomId}/runs`,undefined,token)).find((r)=>["completed","failed"].includes(r.state)),60000);
+    assert.equal(run.state,"completed");
+    const finalCommit=await git(source,["rev-parse","HEAD"]);assert.notEqual(finalCommit,baseCommit);
+    assert.equal(await readFile(path.join(source,"answer.txt"),"utf8"),"trusted implementation complete\n");
+    assert.equal(await git(source,["status","--porcelain"]),"");
+    const db=new Database(databasePath,{readonly:true});
+    const counts={runs:(db.prepare("SELECT count(*) n FROM runs").get() as any).n,authorizations:(db.prepare("SELECT count(*) n FROM development_work_authorizations").get() as any).n};
+    const delivery=JSON.parse((db.prepare("SELECT payload_json FROM run_deliveries WHERE run_id = ?").get(run.runId) as any).payload_json);db.close();
+    assert.deepEqual(counts,{runs:1,authorizations:0});assert.deepEqual(delivery.deviceTrust,{mode:"full",revision:1});assert.equal(delivery.conversationWork,undefined);
+    if(browser){
+      await browser.until("document.body.textContent.includes('已完成修改并创建本地提交')");await capture("trusted-conversation-complete.png");
+      await browser.navigate(`${serverUrl}/?team=${teamId}&view=agents`);
+      await browser.until("document.querySelector('button[aria-label=\"查看 本机开发\"]') !== null");
+      await browser.evaluate("document.querySelector('button[aria-label=\"查看 本机开发\"]').click()");
+      await browser.until("document.querySelector('.agent-policy-summary')?.textContent.includes('完全信任') === true");
+      await capture("central-device-trust.png");
+    }
+    stage="restart and revoke";
+    await local.process.stop();local=await startConsole();
+    await waitFor(async()=>(await policy())?.deviceTrust?.revision===1?true:undefined);
+    if(browser){
+      await browser.navigate(local.url);await browser.until("document.querySelector('[data-page-target=governed]') !== null");
+      await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
+      await browser.until("document.querySelector('#device-trust-toggle').textContent === '关闭完全信任'");
+      await browser.evaluate("document.querySelector('#device-trust-confirm').checked=true;document.querySelector('#device-trust-toggle').click()");
+      await browser.until("document.querySelector('#device-trust-state').textContent.includes('未开启完全信任')");await capture("device-trust-revoked.png");
+    }else await requestJSON(local.origin,"POST","/api/device-execution-trust",{mode:"restricted",expectedRevision:1,confirm:true},local.token);
+    await waitFor(async()=>(await policy())?.deviceTrust===undefined?true:undefined);
+    const summary={kind:"trusted_device_fixture_no_model",counts,fullTrustRevision:1,revokedRevision:2,directGitCommit:true,policyRegistrationRequired:false,browserUI:Boolean(browser),baseCommit,finalCommit};
+    if(evidenceDirectory)await writeFile(path.join(evidenceDirectory,"summary.json"),JSON.stringify(summary,null,2)+"\n");
+    t.diagnostic(JSON.stringify(summary));
+  }catch(error){throw new Error(`SEC-016 stage ${stage}: ${String(error)}\n${history.map(p=>p.stderr).join("\n")}`,{cause:error});}
+  finally{await Promise.allSettled(history.map(p=>p.stop()));}
 });

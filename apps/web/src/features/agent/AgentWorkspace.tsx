@@ -67,6 +67,7 @@ export function filesystemAccessLabel(
   policy: Agent["runtimePolicy"],
   locale: Locale
 ): string {
+  if (policy?.deviceTrust?.mode === "full") return locale === "zh-CN" ? "完全信任设备" : "Trusted device";
   if (locale === "en") {
     if (policy?.filesystemAccess === "read-only") return "Read only";
     if (policy?.filesystemAccess === "workspace-write") return "Workspace write";
@@ -83,6 +84,9 @@ function filesystemAccessHelp(
   policy: Agent["runtimePolicy"],
   locale: Locale
 ): string {
+  if (policy?.deviceTrust?.mode === "full") return locale === "zh-CN"
+    ? "设备主人允许当前中心直接调度本机文件、Git、命令和浏览器操作；可在客户端撤销。"
+    : "The device owner allows local files, Git, commands and browsers through this Central. Revoke in the client.";
   if (locale === "en") {
     if (policy?.filesystemAccess === "read-only") {
       return "This managed Runtime cannot write to its Workspace.";
@@ -116,6 +120,8 @@ export function AgentPolicySummary({
 }) {
   return (
     <dl className="agent-policy-summary">
+      {policy?.deviceTrust && <div><dt>{locale === "zh-CN" ? "本机授权" : "Device consent"}</dt>
+        <dd>{locale === "zh-CN" ? `完全信任 · 版本 ${policy.deviceTrust.revision} · 客户端可撤销` : `Full trust · revision ${policy.deviceTrust.revision} · revoke in client`}</dd></div>}
       <div>
         <dt>{locale === "zh-CN" ? "文件访问" : "File access"}</dt>
         <dd>

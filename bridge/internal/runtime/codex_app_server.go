@@ -24,6 +24,13 @@ var (
 )
 
 func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emit EmitFunc) error {
+	trusted := request.Run.DeviceTrust
+	if trusted != nil && (trusted.Mode != "full" || trusted.Revision < 1 ||
+		trusted.Revision != c.Config.TrustedExecutionRevision || conversationWork(request.Run) ||
+		c.Config.OwnerPrivateOutput || request.Run.OwnerPrivateOutput != nil && *request.Run.OwnerPrivateOutput ||
+		request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
+		return emitCodexFailure(ctx, emit, "DEVICE_TRUST_CHANGED", "The delivered device trust no longer matches local owner consent.")
+	}
 	if conversationWork(request.Run) && (request.Run.OwnerPrivateOutput != nil && *request.Run.OwnerPrivateOutput ||
 		request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
 		return emitCodexFailure(ctx, emit, "CONVERSATION_WORK_INVALID", "Conversation and execution authority cannot be combined.")
@@ -137,6 +144,9 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 	}
 
 	parserConfig := c.Config
+	if trusted != nil {
+		parserConfig.Sandbox = "danger-full-access"
+	}
 	if conversationWork(request.Run) {
 		parserConfig.Sandbox = "read-only"
 	}

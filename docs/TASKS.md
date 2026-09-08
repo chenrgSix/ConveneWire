@@ -767,7 +767,7 @@ or a registration receipt alone.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| SEC-016 | IN_PROGRESS | Configure owner device full trust and mirror authority to Central | RUN-019, WEB-078 | ADR-0062; pending local consent, revision/pairing fence, Central delivery/display and deterministic execution evidence |
+| SEC-016 | IN_PROGRESS | Configure owner device full trust and mirror authority to Central | RUN-019, WEB-078 | [Device trust evidence](acceptance/sec-016-device-execution-trust.md): local consent and revocation, exact pairing/revision, frozen Central delivery/display, 65 Server regressions and both physical browser/process scenarios passed; local preview update pending |
 
 ## Deferred Beyond MVP
 

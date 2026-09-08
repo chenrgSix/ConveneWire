@@ -3,7 +3,13 @@
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and
-ordinary task authority remain mandatory. SEC-016 tracks implementation.
+ordinary task authority remain mandatory.
+
+Agent details display the device's mirrored full-trust status, revision and
+client revocation location. Central does not provide a control to enable owner
+consent remotely. Ordinary Room conversation remains the single request entry;
+local full trust is the primary owner choice and range policies are collapsed.
+See [SEC-016 evidence](../acceptance/sec-016-device-execution-trust.md).
 
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) extends Work with
 plan proposal/edit/approval, dependencies and input pins, verification,
