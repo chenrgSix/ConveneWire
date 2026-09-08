@@ -41,6 +41,7 @@ import {
 import { DiscussionStatus } from "./features/discussion/DiscussionStatus.js";
 import { DiscussionComposerPolicy } from "./features/room/DiscussionComposerPolicy.js";
 import { useDiscussionController } from "./features/discussion/useDiscussionController.js";
+import { useComposerHeight } from "./features/room/useComposerHeight.js";
 import { RoomTimeline } from "./features/room/RoomTimeline.js";
 import { RoomSettingsDialog } from "./features/room/RoomSettingsDialog.js";
 import { AgentModelLabel } from "./features/agent/AgentModelLabel.js";
@@ -129,6 +130,14 @@ export function App() {
 }
 
 function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntrySession | null }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem("agent-room.sidebar-collapsed") === "true"; }
+    catch { return false; }
+  });
+  const toggleSidebar = () => setSidebarCollapsed((current) => {
+    try { localStorage.setItem("agent-room.sidebar-collapsed", String(!current)); } catch { /* The current view still works without persistence. */ }
+    return !current;
+  });
   const isCurrentSession = captureWebSessionScope();
   const [theme, setTheme] = useState<Theme>(() =>
     localStorage.getItem(themeKey) === "light" ? "light" : "dark"
@@ -1562,6 +1571,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     navigate({ view: "members", taskId: undefined, workTaskId: undefined, tab: undefined, runId: undefined });
   }
 
+  useComposerHeight(composerInputRef, messageContent, [authState, activeView, selectedRoomId, selectedTaskId].join(":"));
+
   if (authState !== "authenticated") {
     return (
       <AccessGate
@@ -1582,8 +1593,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
   }
 
   return (
-    <div className={`app-shell product-shell ${managing ? "management-area" : "collaboration-area"}`}>
-      <WorkspaceSidebar attentionItem={attention.item} attentionFailed={attention.failed} attentionLoading={attention.loading}
+    <div className={`app-shell product-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${managing ? "management-area" : "collaboration-area"}`}>
+      <WorkspaceSidebar collapsed={sidebarCollapsed} attentionItem={attention.item} attentionFailed={attention.failed} attentionLoading={attention.loading}
         onRetryAttention={() => void attention.refresh()}
         onOpenAttention={(item) => {
           const target = workActionTarget(item);
@@ -1643,6 +1654,12 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
       <main className="workspace">
         <header className="workspace-header">
           <div className="workspace-heading">
+            <button className="sidebar-toggle" type="button" aria-controls="workspace-navigation" aria-expanded={!sidebarCollapsed}
+              aria-label={sidebarCollapsed ? (locale === "zh-CN" ? "展开侧栏" : "Expand sidebar") : (locale === "zh-CN" ? "收起侧栏" : "Collapse sidebar")}
+              title={sidebarCollapsed ? (locale === "zh-CN" ? "展开侧栏" : "Expand sidebar") : (locale === "zh-CN" ? "收起侧栏" : "Collapse sidebar")}
+              onClick={toggleSidebar}>
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /></svg>
+            </button>
             <div className="workspace-heading-copy">
               <p className="eyebrow">
                 {managing ? (locale === "zh-CN" ? "管理" : "MANAGEMENT") : (locale === "zh-CN" ? "协作" : "COLLABORATION")}
@@ -2038,33 +2055,15 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
               }))}
             />
             <form className="composer" onSubmit={(event) => void submitComposer(event)}>
+              <TaskSelector
+                locale={locale}
+                onCreate={() => setTaskDialogOpen(true)}
+                onSelect={(taskId) => navigate({ taskId: taskId ?? undefined })}
+                selectedTask={selectedTask}
+                selectedTaskId={selectedTaskId}
+                tasks={tasks}
+              />
               <div className="composer-input">
-                <TaskSelector
-                  locale={locale}
-                  onCreate={() => setTaskDialogOpen(true)}
-                  onSelect={(taskId) => navigate({ taskId: taskId ?? undefined })}
-                  selectedTask={selectedTask}
-                  selectedTaskId={selectedTaskId}
-                  tasks={tasks}
-                />
-                <div className="room-policy-summary" aria-label={locale === "zh-CN" ? "当前房间协作策略" : "Current Room collaboration policy"}>
-                  <span className={`policy-mode ${selectedRoomPolicy.allowDiscussion ? "discussion" : "single"}`}>
-                    {selectedRoomPolicy.allowDiscussion
-                      ? (locale === "zh-CN" ? "讨论模式" : "Discussion mode")
-                      : (locale === "zh-CN" ? "单次并行回复" : "One-shot replies")}
-                  </span>
-                  <span>{selectedRoomPolicy.allowAll ? "@all" : (locale === "zh-CN" ? "禁用 @all" : "@all off")}</span>
-                  <span>{selectedRoomPolicy.allowAgentMentions
-                    ? (locale === "zh-CN"
-                        ? `Agent 接力 ${selectedRoomPolicy.maxAgentMentionDepth} 层`
-                        : `${selectedRoomPolicy.maxAgentMentionDepth}-level Agent handoff`)
-                    : (locale === "zh-CN" ? "Agent 接力关闭" : "Agent handoff off")}</span>
-                  {currentMember?.role === "owner" && (
-                    <button onClick={openParticipantDialog} type="button">
-                      {locale === "zh-CN" ? "房间设置" : "Room settings"}
-                    </button>
-                  )}
-                </div>
                 {mentionSearch && (
                   <div className="mention-suggestions" aria-label={t("mentionAgent")} role="listbox">
                     <div className="mention-suggestions-heading">{t("mentionHint")}</div>
@@ -2155,31 +2154,12 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                   onChange={handleMessageChange}
                   onKeyDown={handleMessageKeyDown}
                   placeholder={locale === "zh-CN"
-                    ? `发送消息到 #${selectedRoom.name}；支持 @Agent完整名称${selectedRoomPolicy.allowAll ? " 和 @all" : ""}`
-                    : `Message #${selectedRoom.name}; use an exact @Agent name${selectedRoomPolicy.allowAll ? " or @all" : ""}`}
+                    ? "发送消息，@ 选择智能体"
+                    : "Message, @ to choose an Agent"}
                   required
-                  rows={2}
+                  rows={1}
                   value={messageContent}
                 />
-                <div className="composer-preferences">
-                  <label className="composer-retain-mentions">
-                    <input
-                      checked={keepMentions}
-                      onChange={(event) => changeKeepMentions(event.target.checked)}
-                      role="switch"
-                      type="checkbox"
-                    />
-                    <span>{locale === "zh-CN" ? "保留上次 @" : "Keep last @ mentions"}</span>
-                  </label>
-                  <span className="composer-preference-hint">
-                    {locale === "zh-CN"
-                      ? "仅本浏览器 · 不跨任务沿用；已有草稿独立恢复"
-                      : "This browser only · separate per Task; saved drafts restore independently"}
-                    <span role="status">{persistenceStatus.warning || persistenceStatus.state === "saved" ? " · " : ""}{persistenceStatus.warning ?? (persistenceStatus.state === "saved"
-                      ? (locale === "zh-CN" ? "已保存在本标签页 · 24 小时内可恢复 · 不会自动重发" : "Saved in this tab · recoverable for 24 hours · never auto-sent")
-                      : "")}</span>
-                  </span>
-                </div>
               </div>
               <button
                 className="composer-send"
@@ -2191,6 +2171,19 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
               >
                 {composerBusy ? t("sending") : t("send")}
               </button>
+              <div className="composer-preferences">
+                <label className="composer-retain-mentions" title={locale === "zh-CN"
+                  ? "仅本浏览器 · 不跨任务沿用；已有草稿独立恢复"
+                  : "This browser only · separate per Task; saved drafts restore independently"}>
+                  <input checked={keepMentions} onChange={(event) => changeKeepMentions(event.target.checked)} role="switch" type="checkbox" />
+                  <span>{locale === "zh-CN" ? "保留上次 @" : "Keep last @ mentions"}</span>
+                </label>
+                <span className="composer-preference-hint" role="status" title={locale === "zh-CN"
+                  ? "草稿保存在本标签页，24 小时内可恢复，不会自动重发"
+                  : "Drafts are saved in this tab for 24 hours and never auto-sent"}>
+                  {persistenceStatus.warning ?? (persistenceStatus.state === "saved" ? (locale === "zh-CN" ? "草稿已保存" : "Saved in this tab") : "")}
+                </span>
+              </div>
             </form>
           </div>
         )}

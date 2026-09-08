@@ -1,5 +1,12 @@
 # Web UI
 
+The Room composer uses one compact Task row, a content-sized input and concise
+draft feedback. Room policy switches remain in Room settings; selected recipients
+and routing blockers stay visible when relevant. The workspace sidebar can be
+collapsed from the header, with a browser-local preference. Agent replies offer
+exact Markdown copy on hover or keyboard focus; touch devices expose the action
+without hover. See [WEB-079 evidence](../acceptance/web-079-compact-conversation.md).
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

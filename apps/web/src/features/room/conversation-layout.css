@@ -1,0 +1,48 @@
+.product-shell.sidebar-collapsed { grid-template-columns: minmax(0, 1fr); }
+.product-sidebar[hidden] { display: none; }
+.workspace-header .sidebar-toggle {
+  display: grid; place-items: center; flex: none; width: 34px; height: 34px;
+  padding: 6px; border: 0; border-radius: 8px; background: transparent;
+  color: var(--cw-text-secondary); cursor: pointer;
+}
+.workspace-header .sidebar-toggle:hover { background: var(--cw-surface-hover); }
+
+:root[data-theme] .room-dock {
+  gap: 8px; padding: 8px max(20px, calc((100% - 1080px) / 2)) 12px;
+  background: var(--cw-canvas); border-top: 0; box-shadow: none; backdrop-filter: none;
+}
+:root[data-theme] .composer {
+  gap: 5px 10px; padding: 10px 12px 8px; border-radius: 16px;
+  background: var(--cw-surface-raised); box-shadow: 0 2px 12px rgb(0 0 0 / 4%); backdrop-filter: none;
+}
+:root[data-theme] .composer:focus-within { border-color: var(--cw-accent-border); }
+.composer > .task-context { grid-column: 1 / -1; }
+.composer .task-context label { flex: 1; }
+.composer .task-context select { max-width: min(360px, 100%); }
+.composer .task-context > button { margin-left: auto; }
+.composer .composer-input { grid-column: 1; align-self: end; }
+:root[data-theme] .composer textarea {
+  display: block; min-height: 42px; height: 42px; max-height: 160px; padding: 9px 2px;
+  background: transparent; border: 0; border-radius: 0; font-size: 14px; line-height: 24px;
+}
+.composer .composer-send { grid-column: 2; min-width: 54px; min-height: 36px; padding: 8px 12px; margin-bottom: 3px; border-radius: 10px; }
+.composer > .composer-preferences { grid-column: 1 / -1; min-height: 18px; padding: 0 2px; gap: 6px 12px; }
+.composer .composer-preference-hint { font-size: 11px; }
+
+.message-actions { display: flex; align-items: center; gap: 7px; min-height: 28px; margin-top: 8px; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
+.agent-message:hover .message-actions, .agent-message:focus-within .message-actions,
+.message-actions[data-copy-status="copied"], .message-actions[data-copy-status="failed"] { opacity: 1; pointer-events: auto; }
+.message-actions .message-copy { display: grid; place-items: center; width: 28px; height: 28px; padding: 5px; border: 0; border-radius: 6px; background: transparent; color: var(--cw-text-secondary); cursor: pointer; }
+.message-actions .message-copy:hover { background: var(--cw-surface-hover); color: var(--cw-text); }
+.message-actions > [role="status"] { font-size: 11px; color: var(--cw-text-secondary); }
+@media (hover: none) { .message-actions { opacity: 1; pointer-events: auto; } }
+@media (max-width: 760px) {
+  :root[data-theme] .room-dock { padding: 6px 10px 10px; }
+  :root[data-theme] .composer { padding: 8px 10px 6px; gap: 4px 6px; }
+  .composer .task-context label > span, .composer .task-context > .task-state { display: none; }
+  .composer .task-context select { width: 100%; max-width: none; font-size: 11px; }
+  :root[data-theme] .composer textarea { font-size: 16px; }
+  .composer .composer-send { min-width: 44px; padding-inline: 8px; }
+  .composer .composer-preferences { gap: 4px 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .message-actions { transition: none; } }

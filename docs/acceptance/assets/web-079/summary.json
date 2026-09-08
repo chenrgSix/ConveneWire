@@ -1,0 +1,59 @@
+{
+  "kind": "in_app_browser_disposable_fixture_no_model",
+  "layouts": [
+    {
+      "name": "tablet-expanded",
+      "dock": 136,
+      "height": 720,
+      "input": 42,
+      "overflow": false,
+      "sidebarHidden": false,
+      "width": 900
+    },
+    {
+      "name": "mobile-expanded",
+      "dock": 134,
+      "height": 844,
+      "input": 42,
+      "overflow": false,
+      "sidebarHidden": false,
+      "width": 390
+    },
+    {
+      "name": "mobile-collapsed",
+      "dock": 134,
+      "height": 844,
+      "input": 42,
+      "overflow": false,
+      "sidebarHidden": true,
+      "width": 390
+    },
+    {
+      "name": "desktop-hidden",
+      "dock": 136,
+      "height": 720,
+      "input": 42,
+      "overflow": false,
+      "sidebarHidden": true,
+      "width": 1280
+    },
+    {
+      "name": "desktop-hidden",
+      "dock": 136,
+      "height": 720,
+      "input": 42,
+      "overflow": false,
+      "sidebarHidden": true,
+      "width": 1280
+    }
+  ],
+  "copy": {
+    "exactReplyMatched": true,
+    "hoverOpacity": 1,
+    "idleOpacity": 0,
+    "keyboardEnterPassed": true
+  },
+  "sidebarReloadPreserved": true,
+  "multilineHeight": 160,
+  "remountedDraftHeight": 160
+}

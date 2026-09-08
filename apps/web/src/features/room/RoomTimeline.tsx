@@ -22,6 +22,7 @@ import type {
   RunOutputProjection
 } from "../../room-sync.js";
 import type { RunDiagnostic } from "../../run-diagnostics.js";
+import { MessageCopyButton } from "./MessageCopyButton.js";
 
 interface RoomTimelineProps {
   agentsById: Map<string, Agent>;
@@ -168,6 +169,7 @@ export function RoomTimeline({
                   projection={runActivities[sourceRun.runId]}
                 />
               )}
+              {message.senderType === "agent" && message.content.trim() && <MessageCopyButton content={message.content} locale={locale} />}
               {(message.mentions.length > 0 || messageRuns.length > 0) && (
                 <div className={`message-routing ${messageRuns.length > 0 ? "with-runs" : "mentions-only"}`}>
                   {messageRuns.length === 0 && message.mentions.map((mention) => (

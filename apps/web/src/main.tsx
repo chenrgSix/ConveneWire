@@ -6,6 +6,7 @@ import "./styles.css";
 import "./features/auth/owner-recovery.css";
 import "./features/navigation/product-shell.css";
 import "./visual-system.css";
+import "./features/room/conversation-layout.css";
 
 const root = document.getElementById("root");
 if (!root) {

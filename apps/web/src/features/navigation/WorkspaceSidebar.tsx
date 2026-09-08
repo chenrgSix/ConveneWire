@@ -5,6 +5,7 @@ import type { Room, Team, WorkspaceView } from "../../models.js";
 import { isManagementView } from "./workspace-navigation.js";
 
 interface Props {
+  collapsed?: boolean;
   attentionItem?: WorkbenchItem | null;
   attentionFailed?: boolean;
   attentionLoading?: boolean;
@@ -37,7 +38,7 @@ export function WorkspaceSidebar(props: Props) {
     ["security", zh ? "账户与安全" : "Account & security", "⚙"]
   ] as const;
   return (
-    <aside className="product-sidebar" aria-label={zh ? "工作区导航" : "Workspace navigation"}>
+    <aside id="workspace-navigation" className="product-sidebar" hidden={props.collapsed} aria-label={zh ? "工作区导航" : "Workspace navigation"}>
       <div className="product-brand"><span className="brand-mark" aria-hidden="true">CW</span><strong>ConveneWire</strong></div>
       <div className="product-team-picker">
         <select aria-label={zh ? "选择团队" : "Select Team"} value={teamId ?? ""} onChange={(event) => props.onTeam(event.target.value)}>

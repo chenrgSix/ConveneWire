@@ -972,9 +972,9 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
       },
       expectedRevision: 1
     });
-    screen.getByText("单次并行回复");
-    screen.getByText("禁用 @all");
-    screen.getByText("Agent 接力关闭");
+    assert.equal(screen.queryByLabelText("当前房间协作策略"), null);
+    assert.equal(screen.queryByText("单次并行回复"), null);
+    assert.equal(screen.queryByText("Agent 接力关闭"), null);
 
     const discussionRequestsBeforeOneShot = requests.filter((candidate) =>
       candidate.path === `/api/rooms/${room.roomId}/discussions` &&

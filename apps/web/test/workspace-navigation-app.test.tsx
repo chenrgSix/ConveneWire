@@ -195,6 +195,25 @@ test("App resolves a legacy workTask-only link through the authorized Task", asy
   f.assertNoCommands();
 });
 
+test("collapsing navigation persists locally and preserves the selected Task and navigation controls", async (t) => {
+  const f = await fixture(t);
+  f.setUrl(f.navigation({ workTaskId: f.secondTask.taskId, tab: "results" }));
+  const view = f.render(<App />);
+  await f.expectTab(f.secondTask, "Results");
+  const before = f.dom.window.location.href;
+  f.fireEvent.click(f.page.getByRole("button", { name: "Collapse sidebar" }));
+  assert.equal(f.page.getByRole("button", { name: "Expand sidebar" }).getAttribute("aria-expanded"), "false");
+  assert.equal(f.page.queryByRole("complementary", { name: "Workspace navigation" }), null);
+  assert.equal(f.dom.window.location.href, before);
+  view.unmount();
+  f.render(<App />);
+  await f.expectTab(f.secondTask, "Results");
+  f.fireEvent.click(f.page.getByRole("button", { name: "Expand sidebar" }));
+  assert.ok(f.page.getByRole("complementary", { name: "Workspace navigation" }));
+  assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, f.targetRoom.roomId);
+  f.assertNoCommands();
+});
+
 test("browser back and forward restore Task, tab, scope, lifecycle filter and search in App", async (t) => {
   const f = await fixture(t);
   f.setUrl(f.navigation());

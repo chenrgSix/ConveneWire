@@ -137,8 +137,8 @@ test("Room drafts survive Task switches and a remounted App without sending", as
   await f.waitFor(() => assert.equal(editor.value, "Second Task's unsent draft"));
   assert.equal(f.requests.some(({ method, url }) => method === "POST" && /\/(?:messages|discussions)$/u.test(url)), false);
   assert.equal(f.page.queryByRole("button", { name: "Clear draft", exact: true }), null);
-  assert.match(f.page.getByText(/Saved in this tab/u).parentElement?.textContent ?? "",
-    /This browser only · separate per Task; saved drafts restore independently · Saved in this tab/u);
+  assert.match(f.page.getByRole("switch", { name: "Keep last @ mentions" }).closest("label")?.title ?? "", /separate per Task/u);
+  assert.match(f.page.getByText(/Saved in this tab/u).title, /24 hours and never auto-sent/u);
   f.fireEvent.change(editor, { target: { value: "" } });
   await f.waitFor(() => assert.equal(editor.value, ""));
   assert.equal(loadComposerState(f.scopeFor(f.secondTask.taskId)).state.content, "");

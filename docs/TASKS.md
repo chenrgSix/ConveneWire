@@ -769,6 +769,12 @@ or a registration receipt alone.
 | --- | --- | --- | --- | --- |
 | SEC-016 | DONE | Configure owner device full trust and mirror authority to Central | RUN-019, WEB-078 | [Device trust evidence](acceptance/sec-016-device-execution-trust.md): local consent and revocation, exact pairing/revision, frozen Central delivery/display, 65 Server regressions and both physical browser/process scenarios passed; da7349f local client and Central installed, original identity/config preserved, three Agents ready and doctor passed; actual owner trust remains off |
 
+## Compact conversation workspace
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| WEB-079 | IN_PROGRESS | Compact Room composer, collapse navigation and copy Agent replies on hover | WEB-078, WEB-041, WEB-058 | [Conversation evidence](acceptance/web-079-compact-conversation.md): full Web coverage with repaired onboarding assertion, 26 final focused cases/build, real browser clipboard and 1280/900/390 px layout checks passed; local Web update pending |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |
