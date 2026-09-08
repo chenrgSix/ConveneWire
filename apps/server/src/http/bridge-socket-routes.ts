@@ -20,6 +20,7 @@ type BridgeRejectionCategory =
   | "agent_publication_rejected"
   | "agent_status_rejected"
   | "agent_provision_result_rejected"
+  | "work_authorization_rejected"
   | "invalid_trace_id"
   | "run_acceptance_rejected"
   | "run_status_rejected"
@@ -38,6 +39,7 @@ const bridgeLogMessageTypes = new Set([
   "agent.publish",
   "agent.status",
   "agent.provision.result",
+  "work.authorization.receipt",
   "run.accepted",
   "run.status",
   "run.activity",
@@ -102,6 +104,7 @@ export function registerBridgeSocketRoutes({
   cancellations,
   clock,
   delivery,
+  developmentWork,
   discussionRepository,
   discussionSupplementalEvidence,
   pauseDiscussionForInput,
@@ -261,6 +264,7 @@ export function registerBridgeSocketRoutes({
             now: clock()
           });
           cancellations.resendForDevice(devicePrincipal.deviceId);
+          developmentWork.resendForDevice(devicePrincipal.deviceId, clock());
           delivery.dispatchQueuedForDevice(devicePrincipal.deviceId);
           teamChanges.notify(devicePrincipal.teamId);
           return;
@@ -399,12 +403,20 @@ export function registerBridgeSocketRoutes({
             registeredEpoch,
             publicationPayload.agentId as string,
             governedExecution
-          )) {
+          ) || !bridgeConnections.recordWorkPolicyOffers(devicePrincipal.deviceId, registeredEpoch,
+            publicationPayload.agentId as string, capabilities.workPolicyOffers)) {
             socket.close(4_009, "Stale Bridge connection epoch");
             return;
           }
           cancellations.resendForDevice(devicePrincipal.deviceId);
+          developmentWork.resendForDevice(devicePrincipal.deviceId, clock());
           delivery.dispatchQueuedForDevice(devicePrincipal.deviceId);
+          teamChanges.notify(devicePrincipal.teamId);
+          return;
+        }
+        if (message.type === "work.authorization.receipt" && registeredEpoch !== undefined) {
+          if (message.payload.connectionEpoch !== registeredEpoch) { rejectMessage("work_authorization_rejected"); return; }
+          developmentWork.receive(devicePrincipal, registeredEpoch, message.payload.workAuthorizationReceipt, clock());
           teamChanges.notify(devicePrincipal.teamId);
           return;
         }

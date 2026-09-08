@@ -46,6 +46,14 @@ expires or is revoked. Existing repository registration, physical Runtime
 probes, Central task/plan authority and per-operation checks remain required.
 Policy registration alone cannot advertise successful execution or delivery.
 
+The explicit Room development API selects one currently published policy offer,
+freezes a single-node plan and ready child Task, and durably negotiates an exact
+grant over the paired Bridge connection. Current-epoch grant publication and a
+matching authorization receipt are both required before governed scheduling.
+Retries preserve the original immutable request; canceled or expired negotiations
+cannot regain authority through late receipts. This entry does not turn ordinary
+Room conversation or model text into local policy administration.
+
 An owner explicitly registers a local Git repository, safe display alias,
 runtime profile, verification profiles and integration target allowlist. The
 binding has an opaque binding ID, authorized logical repository ID and local

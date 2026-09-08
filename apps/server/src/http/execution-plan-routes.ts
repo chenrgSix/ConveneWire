@@ -6,7 +6,7 @@ import { bearerToken, noStore } from "./http-helpers.js";
 import type { ServerRouteContext } from "./route-context.js";
 
 export function registerExecutionPlanRoutes({
-  app, auth, clock, executionPlans, executionPlanSupersessions,
+  app, auth, clock, executionPlans, executionPlanSupersessions, developmentWork,
   executionEvidence, executionInputs, isolatedWorkspaces,
   executionNodeControls, executionSchedulerControls, repositoryCaptures, repositoryIntegrations,
   repositoryVerifications, dispatchRun, principal
@@ -32,6 +32,12 @@ export function registerExecutionPlanRoutes({
     }
     return Number(value);
   };
+  app.get<{ Params: { roomId: string } }>("/api/rooms/:roomId/development-options", options,
+    async (request) => execute(() => ({ options: developmentWork.options(principal(request), request.params.roomId, clock()) })));
+  app.get<{ Params: { roomId: string } }>("/api/rooms/:roomId/development-tasks", options,
+    async (request) => execute(() => ({ items: developmentWork.list(principal(request), request.params.roomId, clock()) })));
+  app.post<{ Params: { roomId: string } }>("/api/rooms/:roomId/development-tasks", options,
+    async (request) => execute(() => developmentWork.create(principal(request), request.params.roomId, request.body, clock())));
   app.post("/api/bridge/repository-captures", options, async (request) => execute(() =>
     repositoryCaptures.begin(auth.authenticateDevice(bearerToken(request), clock()), request.body, clock())));
   app.post("/api/bridge/repository-checkpoints", options, async (request) => execute(() =>

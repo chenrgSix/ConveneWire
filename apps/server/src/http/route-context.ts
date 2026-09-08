@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { ExecutionPlanService } from "../execution/execution-plan-service.js";
+import type { DevelopmentWorkService } from "../execution/development-work-service.js";
 import type { ExecutionPlanSupersessionService } from
   "../execution/execution-plan-supersession-service.js";
 import type { ExecutionInputService } from "../execution/execution-input-service.js";
@@ -108,6 +109,7 @@ export interface ServerRouteContext {
   clock: () => string;
   core: CoreRepository;
   delivery: DeliveryService;
+  developmentWork: DevelopmentWorkService;
   deviceRevocation: DeviceRevocationService;
   devicePairingSessions: DevicePairingSessionService;
   clientAccess: ClientAccessService;

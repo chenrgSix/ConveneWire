@@ -6,7 +6,9 @@ import {
 import type {
   GovernedExecutionCapability,
   GovernedExecutionCapabilityReadyGrant,
-  GovernedExecutionManifest
+  GovernedExecutionManifest,
+  WorkAuthorization,
+  WorkPolicyOffer
 } from "@convene-wire/contracts/execution-plan";
 
 export interface BridgeSocket {
@@ -19,6 +21,7 @@ interface Connection {
   epoch: number;
   governedExecutionAgents: Map<string, GovernedExecutionCapability>;
   privateOutputAgents: Set<string>;
+  workPolicyAgents: Map<string, WorkPolicyOffer[]>;
   supportsAgentProvisioning: boolean;
   governedExecution?: GovernedExecutionCapability;
   socket: BridgeSocket;
@@ -57,6 +60,7 @@ export class BridgeConnectionRegistry {
       } : {}),
       governedExecutionAgents: new Map(),
       privateOutputAgents: new Set(),
+      workPolicyAgents: new Map(),
       socket
     });
     return true;
@@ -94,6 +98,40 @@ export class BridgeConnectionRegistry {
 
   public activeEpoch(deviceId: string): number | undefined {
     return this.connections.get(deviceId)?.epoch;
+  }
+
+  public recordWorkPolicyOffers(deviceId: string, epoch: number, agentId: string, value: unknown): boolean {
+    const connection = this.connections.get(deviceId);
+    if (!connection || connection.epoch !== epoch) return false;
+    if (value === undefined) { connection.workPolicyAgents.delete(agentId); return true; }
+    if (!Array.isArray(value) || value.length > 64 ||
+      connection.privateOutputAgents.has(agentId) || !this.supportsGovernedExecution(deviceId)) return false;
+    const seen = new Set<string>();
+    for (const offer of value) {
+      assertExecutionCommand("workPolicyOffer", offer);
+      if (offer.spec.agentId !== agentId || seen.has(offer.spec.policyId)) return false;
+      seen.add(offer.spec.policyId);
+    }
+    connection.workPolicyAgents.set(agentId, structuredClone(value) as WorkPolicyOffer[]);
+    return true;
+  }
+
+  public workPolicyOffers(deviceId: string, agentId: string): WorkPolicyOffer[] {
+    return structuredClone(this.connections.get(deviceId)?.workPolicyAgents.get(agentId) ?? []);
+  }
+
+  public requestWorkAuthorization(request: WorkAuthorization): boolean {
+    assertExecutionCommand("workAuthorization", request);
+    const connection = this.connections.get(request.deviceId);
+    if (!connection || !this.workPolicyOffers(request.deviceId, request.spec.agentId).some((offer) =>
+      offer.spec.policyId === request.parent.policyId && offer.digest === request.parent.policyDigest)) return false;
+    connection.socket.send(JSON.stringify({
+      protocolVersion: "1.0", type: "work.authorization.requested",
+      messageId: `msg_${executionOperationDigest({ authorization: request.parent.authorizationId, epoch: connection.epoch })}`,
+      timestamp: this.now().toISOString(),
+      payload: { connectionEpoch: connection.epoch, workAuthorization: request }
+    }));
+    return true;
   }
 
   public recordPrivateOutputAgent(deviceId: string, epoch: number, agentId: string, enabled: boolean): boolean {

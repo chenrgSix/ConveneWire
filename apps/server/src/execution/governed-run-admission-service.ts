@@ -153,6 +153,9 @@ implements GovernedMessageAdmissionPort {
     now: string,
     ignoreExistingAttempt: boolean
   ): ExecutionReadiness {
+    if (!this.developmentAuthorized(identity.planId, identity.planRevision)) {
+      return { ready: false, blocker: "EXECUTION_GRANT_UNAVAILABLE" };
+    }
     const plan = this.plans.get(identity.planId);
     const approval = plan && this.approvals.get(
       identity.planId,
@@ -420,6 +423,9 @@ implements GovernedMessageAdmissionPort {
     retry?: GovernedNodeRetryAdmissionInput,
     schedulerAuthority?: ScheduledAdmissionAuthority
   ): GovernedMessageAdmissionResult {
+    if (!this.developmentAuthorized(governance.plan_id, governance.revision)) {
+      return fail("EXECUTION_GRANT_UNAVAILABLE");
+    }
     const { member, message, now, task } = input;
     const existing = this.runs.findByTrigger(message.messageId);
     if (existing.length > 0) return { created: false, runs: existing };
@@ -867,5 +873,11 @@ implements GovernedMessageAdmissionPort {
       return fail("EXECUTION_DISPATCH_GENERATION_EXHAUSTED");
     }
     return row.generation;
+  }
+
+  private developmentAuthorized(planId: string, revision: number): boolean {
+    const row = this.database.prepare("SELECT state, plan_revision FROM development_work_authorizations WHERE plan_id = ?")
+      .get(planId) as { state: string; plan_revision: number } | undefined;
+    return !row || (row.state === "authorized" && row.plan_revision === revision);
   }
 }

@@ -34,10 +34,32 @@ Verification:
   the second publication. Epoch, Device and unoffered-policy rejection occur
   before the authorization callback.
 
+## Central admission and recovery
+
+Authenticated Room members explicitly initiate development using one current
+matching device offer. Central freezes the goal, criteria, authenticated human,
+source commit, finite budget and one-node plan, compiles a ready child Task and
+durably records its exact negotiation. Reusing an operation with changed intent
+fails; reconnect and restart replay the original request. The scheduler and all
+governed admission paths require a matching successful receipt even if a grant
+publication arrives first. Receipts must match the current Device connection and
+published grant inventory. Expired or canceled requests cannot be resurrected.
+
+Verification:
+
+- Server TypeScript build passed.
+- Eight new disposable Server/WebSocket tests passed: two distinct Tasks,
+  publication-before-receipt scheduling gate, command/source/initiator rejection,
+  expiry, cancellation, restart replay, stale epoch, changed request digest and
+  unpublished grant rejection. No model was invoked.
+- Existing execution-plan approval and Bridge WebSocket suites passed 55 tests.
+- Governed admission and migration regression run passed 47 existing tests;
+  the remaining stale migration-version fixture was corrected and its focused rerun passed.
+  The eight new tests were rerun separately after fixing fixture startup readiness.
+
 ## Remaining evidence
 
-Authenticated Central Task/plan creation, receipt-gated scheduling, Room UI,
-local policy setup/revocation UI and browser verification are still pending.
+Room UI, local policy setup/revocation UI and browser verification are pending.
 The Bridge fixtures do not establish the complete unattended product flow,
 live Runtime execution, installed-client migration, CI or physical-platform
 acceptance.

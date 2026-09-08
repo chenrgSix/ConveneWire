@@ -100,6 +100,7 @@ import { ExecutionPlanSupersessionService } from
   "./execution/execution-plan-supersession-service.js";
 import { ExecutionSourceRepository } from "./execution/execution-source-repository.js";
 import { ExecutionPlanService } from "./execution/execution-plan-service.js";
+import { DevelopmentWorkService } from "./execution/development-work-service.js";
 import { ExecutionPlanDraftWriter } from
   "./execution/execution-plan-draft-writer.js";
 import { ExecutionNodeControlService } from
@@ -550,6 +551,8 @@ export async function createServerApp(
   const bridgeConnections = new BridgeConnectionRegistry(
     () => new Date(clock())
   );
+  const developmentWork = new DevelopmentWorkService(database, transactions, auth, core, tasks,
+    taskRepository, executionPlans, executionPlanRepository, messages, bridgeConnections, notifyExecutionChanged);
   const executionEvidenceAdoptions =
     new ExecutionEvidenceAdoptionRepository(database);
   const executionPlanSupersessions = new ExecutionPlanSupersessionService(
@@ -893,6 +896,7 @@ export async function createServerApp(
     if (executionSweepInFlight) return;
     executionSweepInFlight = true;
     try {
+      developmentWork.sweep(clock());
       for (const run of executionScheduler.sweep()) await dispatchRun(run);
     } finally {
       executionSweepInFlight = false;
@@ -1211,6 +1215,7 @@ export async function createServerApp(
     clock,
     core,
     delivery,
+    developmentWork,
     deviceRevocation,
     devicePairingSessions,
     clientAccess,
