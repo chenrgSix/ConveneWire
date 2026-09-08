@@ -17,6 +17,7 @@ import { agentPresentation, connectionPresentation } from "./bridge-presentation
 import { reasoningConsentView } from "./reasoning-consent-view.mjs";
 import { initializeWorkspacePickers } from "./workspace-picker.mjs";
 import { governedOwnerPresentation } from "./governed-owner-view.mjs";
+import { createWorkPolicyForm } from "./work-policy-form.mjs";
 
 const elements = Object.fromEntries([
   "open-client-team", "load-client-rooms", "open-client-room", "client-room", "client-entry-status", "client-entry-help",
@@ -187,6 +188,7 @@ function governedIdentityRow(primary, secondary, status, action) {
 }
 
 function renderGovernedState(state) {
+  workPolicyForm.render(state);
   const presentation = governedOwnerPresentation(state);
   elements["governed-state-summary"].textContent = presentation.summary;
   elements["governed-inventory"].replaceChildren(...presentation.groups.map((group) =>
@@ -219,18 +221,24 @@ async function refreshGovernedState() {
 }
 
 async function revokeGovernedGrant(row, button) {
-  const confirmed = window.confirm(`撤销 ${row.primary}？当前 Bridge 和受控 Runtime 会先安全停止。`);
-  if (!confirmed) return;
+  if (button.dataset.confirming !== "true") {
+    button.dataset.confirming = "true";
+    button.textContent = "确认停止并撤销";
+    elements["governed-action-result"].textContent = `撤销 ${row.primary} 将先停止当前执行，并使这份授权失效。再次确认后执行；刷新可取消。`;
+    return;
+  }
   button.disabled = true;
   elements["governed-action-result"].textContent = "正在停止当前执行并撤销授权…";
   try {
-    await request(row.revocation.path, {
+    const receipt = await request(row.revocation.path, {
       method: "POST",
       body: JSON.stringify(row.revocation.body)
     });
     await refresh();
     await refreshGovernedState();
-    elements["governed-action-result"].textContent = "授权已不可逆撤销；原有 Git 数据未删除。";
+    elements["governed-action-result"].textContent = receipt.reconnectRequired
+      ? "授权已撤销。连接恢复失败，请在概览中重新启动 Bridge。"
+      : "授权已撤销。";
   } catch (error) {
     button.disabled = false;
     elements["governed-action-result"].textContent = "撤销失败，未假定授权状态。";
@@ -265,6 +273,8 @@ async function request(path, options = {}) {
 }
 
 const clientEntryController = createClientEntryController({elements, request});
+const workPolicyForm = createWorkPolicyForm({form: document.getElementById("work-policy-form"), request,
+  agents: () => currentState?.agents ?? [], refreshed: async () => { await refresh(); await refreshGovernedState(); }});
 
 function showError(error) {
   const message = error ? String(error.message || error) : "";

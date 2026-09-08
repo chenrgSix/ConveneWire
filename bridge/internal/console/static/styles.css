@@ -600,3 +600,11 @@ button:disabled { cursor: not-allowed; opacity: .42; }
   .guide-terms, .guide-code-list p { grid-template-columns: 1fr; }
   .session-guide-dialog > .modal-actions { bottom: -17px; margin: 18px -17px -17px; padding: 12px 17px 17px; }
 }
+
+.work-policy-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.work-policy-form label { display: grid; gap: 6px; font-size: 13px; }
+.work-policy-form .wide { grid-column: 1 / -1; }
+.work-policy-form .work-policy-consent { display: flex; align-items: flex-start; gap: 9px; }
+.work-policy-consent input { width: auto; margin-top: 3px; }
+.work-policy-form select[multiple] { min-height: 88px; }
+@media (max-width: 700px) { .work-policy-form { grid-template-columns: 1fr; } }

@@ -34,6 +34,7 @@ import (
 	"convenewire.dev/bridge/internal/ownership"
 	"convenewire.dev/bridge/internal/pairing"
 	"convenewire.dev/bridge/internal/provisioning"
+	"convenewire.dev/bridge/internal/repository"
 	"convenewire.dev/bridge/internal/updatecheck"
 	contracts "convenewire.dev/contracts/generated/go"
 )
@@ -169,6 +170,8 @@ type State struct {
 }
 
 type Dependencies struct {
+	CreateWorkPolicy          func(context.Context, config.Config, pairing.Credential, WorkPolicyInput, time.Time) (repository.WorkPolicyView, error)
+	RevokeWorkPolicy          func(context.Context, config.Config, pairing.Credential, string, GovernedGrantRevocationInput, time.Time) (repository.WorkPolicyView, error)
 	OpenClientEntry           func(string, string, string) error
 	DiscoverRuntime           func(string) RuntimeDiscovery
 	Enroll                    func(context.Context, config.Config, func(enrollment.Challenge)) (pairing.Credential, error)
@@ -265,6 +268,12 @@ func New(options Options, dependencies Dependencies) (*Service, error) {
 	}
 	if dependencies.InspectGovernedOwnerState == nil {
 		dependencies.InspectGovernedOwnerState = inspectGovernedOwnerState
+	}
+	if dependencies.CreateWorkPolicy == nil {
+		dependencies.CreateWorkPolicy = createWorkPolicy
+	}
+	if dependencies.RevokeWorkPolicy == nil {
+		dependencies.RevokeWorkPolicy = revokeWorkPolicy
 	}
 	if dependencies.RevokeGovernedTaskGrant == nil {
 		dependencies.RevokeGovernedTaskGrant = revokeGovernedTaskGrant
@@ -458,6 +467,8 @@ func (s *Service) Handler() http.Handler {
 	mux.HandleFunc("POST /api/bridge/stop", s.authorize(s.stopBridge))
 	mux.HandleFunc("GET /api/governed-owner-state", s.authorize(s.getGovernedOwnerState))
 	mux.HandleFunc("POST /api/governed-task-grants/{grantId}/revoke", s.authorize(s.revokeGovernedTaskGrant))
+	mux.HandleFunc("POST /api/work-policies", s.authorize(s.createWorkPolicy))
+	mux.HandleFunc("POST /api/work-policies/{policyId}/revoke", s.authorize(s.revokeWorkPolicy))
 	mux.HandleFunc("POST /api/reasoning-consent/prepare", s.authorize(s.prepareReasoningConsent))
 	mux.HandleFunc("PUT /api/login-startup", s.authorize(s.updateLoginStartup))
 	mux.HandleFunc("POST /api/diagnostics/export", s.authorize(s.exportDiagnostics))

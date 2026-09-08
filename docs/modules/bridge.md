@@ -2,7 +2,11 @@
 
 [ADR-0060](../adr/0060-preauthorize-local-work-policies.md) defines the
 owner-configured standing work policy: a paired device derives exact Task
-grants automatically within a preauthorized scope. Local setup and revocation
+grants automatically within a preauthorized scope. The local Console form selects
+registered resources and the owner's Rooms, pins initiators, paths and budgets,
+and persists an immutable policy. Create/revoke drain active execution before
+changing authority; a failed reconnect does not erase the mutation receipt.
+Local setup and revocation
 remain owner operations; Room initiators receive only path-free readiness,
 blockers and authenticated execution receipts. Existing non-interactive Codex
 approval remains in force. Delivery status is tracked by BRG-077/078 and their

@@ -123,13 +123,36 @@
 
           <section class="app-page hidden" data-page-panel="governed" id="governed-page">
             <div class="page-heading">
-              <div><p class="eyebrow">Owner 本机授权</p><h2 tabindex="-1">受控软件开发</h2><p>这里只显示无路径的授权与证明身份；Central 不能读取本机命令、环境或工作区路径。</p></div>
+              <div><p class="eyebrow">本机工作权限</p><h2 tabindex="-1">受控软件开发</h2><p>配置一次后，允许的成员可从 Room 发起开发，无需守在客户端逐项确认。</p></div>
               <button class="secondary" id="refresh-governed-state" type="button">刷新状态</button>
             </div>
             <section class="settings-card">
+              <h3>新增工作策略</h3>
+              <p>任务在隔离工作区执行，保留验证结果、补丁和候选提交。每个 Agent 同时执行一个开发任务。</p>
+              <form id="work-policy-form" class="work-policy-form">
+                <label>策略名称<input name="alias" required maxlength="80" placeholder="例如：前端日常开发"></label>
+                <label>已登记的仓库<select name="bindingId" required></select></label>
+                <label>Agent<select name="agentId" required></select></label>
+                <label>已验证的执行环境<select name="runtimeProfileId" required></select></label>
+                <label>来源分支<input name="sourceRef" required value="refs/heads/main" pattern="refs/heads/.+"></label>
+                <label>验证方式<select name="verifierIds" multiple size="3" required></select></label>
+                <label>允许的 Room<select name="roomIds" multiple size="3" required></select></label>
+                <div><button type="button" class="secondary" data-load-rooms>读取我的 Room</button><p data-room-status class="tool-result"></p></div>
+                <label class="wide">允许的发起人 ID<textarea name="initiatorMemberIds" required rows="2" placeholder="读取 Room 后填入当前成员；其他成员每行一个 ID"></textarea></label>
+                <label>允许交付的目录<textarea name="allowedPaths" required rows="2">.</textarea></label>
+                <label>禁止交付的目录<textarea name="forbiddenPaths" rows="2" placeholder="每行一个仓库相对目录"></textarea></label>
+                <label>每任务最长分钟数<input name="minutes" type="number" min="1" max="1440" value="30" required></label>
+                <label>每任务最多执行次数<input name="attempts" type="number" min="1" max="100" value="3" required></label>
+                <label>策略有效至<input name="expiresAt" type="datetime-local" required></label>
+                <p class="wide">目录约束在收集交付物时校验；执行环境可写隔离工作区。范围内的任务可使用已配置的模型。候选提交的集成、推送和部署需各自授权。</p>
+                <label class="wide work-policy-consent"><input name="confirmed" type="checkbox" required>我授权以上范围内的任务自动执行。保存和撤销策略时，客户端会先停止当前执行并重新连接。</label>
+                <div class="wide"><button class="primary" type="submit">保存工作策略</button><p data-policy-status class="tool-result" role="status"></p></div>
+              </form>
+            </section>
+            <section class="settings-card">
               <div class="setting-heading"><div><h3>本机授权链</h3><p id="governed-state-summary">尚未读取。</p></div></div>
               <div class="governed-inventory" id="governed-inventory"></div>
-              <p class="runtime-policy">创建 repository binding、Runtime/verification profile、Task grant 与 cleanup grant 仍使用本机 Bridge 命令。撤销运行授权会先停止并等待当前 Bridge 与受控进程退出，写入不可逆 tombstone，再按原状态重新连接；它不会删除 Git 数据。</p>
+              <p class="runtime-policy">首次使用需在本机登记仓库、执行环境和验证方式；此处只选择已登记的资源。已撤销的策略不可恢复，修改范围需撤销旧策略后重新创建。</p>
               <p class="tool-result" id="governed-action-result" role="status"></p>
             </section>
           </section>

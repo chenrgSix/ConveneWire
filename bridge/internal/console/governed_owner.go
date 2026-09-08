@@ -37,6 +37,7 @@ type GovernedGrantView struct {
 }
 
 type GovernedOwnerState struct {
+	WorkPolicies         []repository.WorkPolicyView    `json:"workPolicies"`
 	Bindings             []repository.BindingView       `json:"bindings"`
 	Grants               []GovernedGrantView            `json:"grants"`
 	RuntimeProfiles      []admission.RuntimeProfileView `json:"runtimeProfiles"`
@@ -47,7 +48,8 @@ type GovernedOwnerState struct {
 func inspectGovernedOwnerState(ctx context.Context, cfg config.Config,
 	credential pairing.Credential) (GovernedOwnerState, error) {
 	state := GovernedOwnerState{
-		Bindings: []repository.BindingView{}, Grants: []GovernedGrantView{},
+		WorkPolicies: []repository.WorkPolicyView{},
+		Bindings:     []repository.BindingView{}, Grants: []GovernedGrantView{},
 		RuntimeProfiles:      []admission.RuntimeProfileView{},
 		VerificationProfiles: []verification.ProfileView{},
 		CleanupGrants:        []repository.CleanupGrantView{},
@@ -74,6 +76,9 @@ func inspectGovernedOwnerState(ctx context.Context, cfg config.Config,
 		return state, err
 	}
 	if state.CleanupGrants, err = stores.bindings.ListCleanupGrants(); err != nil {
+		return state, err
+	}
+	if state.WorkPolicies, err = stores.bindings.ListWorkPolicies(); err != nil {
 		return state, err
 	}
 	return state, nil
@@ -105,6 +110,11 @@ type governedOwnerStores struct {
 
 func openGovernedOwnerStores(ctx context.Context, cfg config.Config,
 	credential pairing.Credential) (*governedOwnerStores, error) {
+	return openGovernedOwnerStoresWithGit(ctx, cfg, credential, "")
+}
+
+func openGovernedOwnerStoresWithGit(ctx context.Context, cfg config.Config,
+	credential pairing.Credential, git string) (*governedOwnerStores, error) {
 	if ctx == nil || strings.TrimSpace(credential.Token) == "" || credential.ServerURL != cfg.ServerURL {
 		return nil, repository.ErrInvalid
 	}
@@ -112,7 +122,7 @@ func openGovernedOwnerStores(ctx context.Context, cfg config.Config,
 		DeviceID: credential.DeviceID, OwnerMemberID: credential.OwnerMemberID}
 	stores := &governedOwnerStores{}
 	var err error
-	stores.bindings, err = repository.OpenBindingStore(ctx, cfg.DataDir, owner, "", repository.Limits{})
+	stores.bindings, err = repository.OpenBindingStore(ctx, cfg.DataDir, owner, git, repository.Limits{})
 	if err != nil {
 		return nil, err
 	}
@@ -162,6 +172,16 @@ func governedGrantView(view repository.TaskGrantView) GovernedGrantView {
 
 func cloneGovernedOwnerState(state GovernedOwnerState) GovernedOwnerState {
 	cloned := state
+	cloned.WorkPolicies = slices.Clone(state.WorkPolicies)
+	for index := range cloned.WorkPolicies {
+		spec := &cloned.WorkPolicies[index].Spec
+		spec.RoomIDs = slices.Clone(spec.RoomIDs)
+		spec.InitiatorMemberIDs = slices.Clone(spec.InitiatorMemberIDs)
+		spec.Operations = slices.Clone(spec.Operations)
+		spec.VerificationProfiles = slices.Clone(spec.VerificationProfiles)
+		spec.ScopePolicy.AllowedPaths = slices.Clone(spec.ScopePolicy.AllowedPaths)
+		spec.ScopePolicy.ForbiddenPaths = slices.Clone(spec.ScopePolicy.ForbiddenPaths)
+	}
 	cloned.Bindings = slices.Clone(state.Bindings)
 	cloned.Grants = slices.Clone(state.Grants)
 	for index := range cloned.Grants {
