@@ -748,8 +748,8 @@ or a registration receipt alone.
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
 | GOV-043 | DONE | Freeze standing device work-policy authority and product acceptance | GOV-027, BRG-071 | Owner-approved ADR-0060 and owning module boundaries specify parent-policy validity, exact derived grants, unattended execution and explicit delivery evidence |
-| BRG-077 | IN_PROGRESS | Persist standing work policies and derive revocable exact Task grants | GOV-043, REPO-001 | Pending physical repository, scope, initiator, expiry, replay and parent-revocation regression evidence |
-| CON-026 | TODO | Define bounded work-policy offers and exact authorization negotiation | BRG-077, CON-021 | Pending generated TypeScript/Go contracts, compatibility and negative interoperability tests |
+| BRG-077 | DONE | Persist standing work policies and derive revocable exact Task grants | GOV-043, REPO-001 | [Local policy evidence](acceptance/brg-077-standing-work-policies.md): physical repositories, two Tasks, restart, concurrent replay, scope/initiator/expiry and parent-revocation regressions; repository race and focused final race/vet pass |
+| CON-026 | IN_PROGRESS | Define bounded work-policy offers and exact authorization negotiation | BRG-077, CON-021 | Pending generated TypeScript/Go contracts, compatibility and negative interoperability tests |
 | EXEC-012 | TODO | Admit Room development Tasks through standing policy negotiation | CON-026, RUN-018 | Pending two distinct Tasks through authenticated Central/Bridge, exact single-node admission, cancellation and recovery |
 | BRG-078 | TODO | Configure and revoke work policies in the local client | BRG-077, CON-026 | Pending owner-authenticated UI, actual available resources, expiry/revocation behavior and browser evidence |
 | VER-002 | TODO | Run bounded browser verification and retain distinct diagnostics | GOV-043, VER-001 | Pending isolated browser startup/page/assertion/screenshot results and crash/timeout/cleanup evidence |

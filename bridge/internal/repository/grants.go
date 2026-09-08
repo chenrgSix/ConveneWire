@@ -57,10 +57,11 @@ type TaskGrantSpec struct {
 }
 
 type taskGrantRecord struct {
-	Version  int           `json:"version"`
-	Owner    BindingOwner  `json:"owner"`
-	Spec     TaskGrantSpec `json:"spec"`
-	IssuedAt string        `json:"issuedAt"`
+	Version    int              `json:"version"`
+	Owner      BindingOwner     `json:"owner"`
+	Spec       TaskGrantSpec    `json:"spec"`
+	IssuedAt   string           `json:"issuedAt"`
+	WorkPolicy *WorkGrantParent `json:"workPolicy,omitempty"`
 }
 
 type taskGrantRevocation struct {
@@ -74,8 +75,9 @@ type taskGrantRevocation struct {
 // revocation revision. Summary.Grant.Digest always identifies the immutable
 // issuance record; a revoked summary is never valid execution authority.
 type TaskGrantView struct {
-	Spec    TaskGrantSpec                   `json:"spec"`
-	Summary execution.ExecutionGrantSummary `json:"summary"`
+	Spec       TaskGrantSpec                   `json:"spec"`
+	Summary    execution.ExecutionGrantSummary `json:"summary"`
+	WorkPolicy *WorkGrantParent                `json:"workPolicy,omitempty"`
 }
 
 // DecodeTaskGrantSpec rejects duplicate/case-folded/unknown fields, omitted
@@ -108,6 +110,10 @@ func DecodeTaskGrantSpec(raw []byte) (TaskGrantSpec, error) {
 func (s *BindingStore) IssueTaskGrant(ctx context.Context, spec TaskGrantSpec, now time.Time) (TaskGrantView, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	return s.issueTaskGrantLocked(ctx, spec, nil, now)
+}
+
+func (s *BindingStore) issueTaskGrantLocked(ctx context.Context, spec TaskGrantSpec, parent *WorkGrantParent, now time.Time) (TaskGrantView, error) {
 	if err := s.check(); err != nil {
 		return TaskGrantView{}, err
 	}
@@ -126,12 +132,13 @@ func (s *BindingStore) IssueTaskGrant(ctx context.Context, spec TaskGrantSpec, n
 		if view.Summary.RevokedAt != nil {
 			return TaskGrantView{}, ErrGrantRevoked
 		}
-		if !reflect.DeepEqual(previous.Spec, normalized) {
+		if !reflect.DeepEqual(previous.Spec, normalized) || !reflect.DeepEqual(previous.WorkPolicy, parent) {
 			return TaskGrantView{}, ErrConflict
 		}
 	}
 	expires, _ := time.Parse(time.RFC3339Nano, normalized.ExpiresAt)
-	if !now.Before(expires) || (previous.IssuedAt != "" && bindingTime(now) < previous.IssuedAt) {
+	previousIssued, _ := time.Parse(time.RFC3339Nano, previous.IssuedAt)
+	if !now.Before(expires) || (previous.IssuedAt != "" && now.Before(previousIssued)) {
 		return TaskGrantView{}, ErrGrantExpired
 	}
 	if err := s.checkGrantBinding(ctx, normalized); err != nil {
@@ -147,7 +154,7 @@ func (s *BindingStore) IssueTaskGrant(ctx context.Context, spec TaskGrantSpec, n
 	if len(views) >= 256 {
 		return TaskGrantView{}, ErrLimit
 	}
-	record := taskGrantRecord{Version: 1, Owner: s.owner, Spec: normalized, IssuedAt: bindingTime(now)}
+	record := taskGrantRecord{Version: 1, Owner: s.owner, Spec: normalized, IssuedAt: bindingTime(now), WorkPolicy: parent}
 	raw, _ := json.Marshal(record)
 	if err := s.check(); err != nil {
 		return TaskGrantView{}, err
@@ -189,7 +196,8 @@ func (s *BindingStore) RevokeTaskGrant(id string, expectedRevision int64, expect
 	if view.Summary.RevokedAt != nil {
 		return view, durablefs.SyncParent(s.grantPath(id, true))
 	}
-	if now.IsZero() || !validBindingTime(bindingTime(now)) || bindingTime(now) < record.IssuedAt {
+	issued, _ := time.Parse(time.RFC3339Nano, record.IssuedAt)
+	if now.IsZero() || !validBindingTime(bindingTime(now)) || now.Before(issued) {
 		return TaskGrantView{}, ErrInvalid
 	}
 	receipt := taskGrantRevocation{GrantID: id, Digest: expectedDigest, Revision: 2, RevokedAt: bindingTime(now)}
@@ -436,15 +444,35 @@ func (s *BindingStore) getTaskGrant(id string) (taskGrantRecord, TaskGrantView, 
 	}
 	var revoked taskGrantRevocation
 	if err := readBindingJSON(s.grantPath(id, true), &revoked); err == nil {
+		revokedTime, _ := time.Parse(time.RFC3339Nano, revoked.RevokedAt)
 		if revoked.GrantID != id || revoked.Revision != 2 || revoked.Digest != summary.Grant.Digest ||
-			!validBindingTime(revoked.RevokedAt) || revoked.RevokedAt < record.IssuedAt {
+			!validBindingTime(revoked.RevokedAt) || revokedTime.Before(issued) {
 			return record, TaskGrantView{}, ErrChanged
 		}
 		summary.Grant.Revision, summary.RevokedAt = 2, &revoked.RevokedAt
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return record, TaskGrantView{}, err
 	}
-	return record, TaskGrantView{Spec: record.Spec, Summary: summary}, nil
+	if record.WorkPolicy != nil {
+		policy, parentView, err := s.getWorkPolicy(record.WorkPolicy.PolicyID)
+		parentIssued, _ := time.Parse(time.RFC3339Nano, policy.IssuedAt)
+		if err != nil || parentView.Digest != record.WorkPolicy.PolicyDigest || record.WorkPolicy.Revision != 1 ||
+			!workGrantWithinPolicy(record.Spec, *record.WorkPolicy, policy.Spec, issued) ||
+			issued.Before(parentIssued) || WorkTaskGrantID(*record.WorkPolicy) != id {
+			return record, TaskGrantView{}, ErrChanged
+		}
+		if parentView.RevokedAt != nil {
+			parentRevoked, _ := time.Parse(time.RFC3339Nano, *parentView.RevokedAt)
+			ownRevoked := time.Time{}
+			if summary.RevokedAt != nil {
+				ownRevoked, _ = time.Parse(time.RFC3339Nano, *summary.RevokedAt)
+			}
+			if summary.RevokedAt == nil || parentRevoked.Before(ownRevoked) {
+				summary.Grant.Revision, summary.RevokedAt = 2, parentView.RevokedAt
+			}
+		}
+	}
+	return record, TaskGrantView{Spec: record.Spec, Summary: summary, WorkPolicy: record.WorkPolicy}, nil
 }
 
 func (s *BindingStore) listTaskGrants() ([]TaskGrantView, error) {

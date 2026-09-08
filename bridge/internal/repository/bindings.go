@@ -85,6 +85,7 @@ type BindingStore struct {
 	root             string
 	grantRoot        string
 	cleanupGrantRoot string
+	workPolicyRoot   string
 	pins             map[string]string
 	git              gitRunner
 	release          func() error
@@ -116,8 +117,9 @@ func OpenBindingStore(ctx context.Context, dataDir string, owner BindingOwner, e
 	store.root = filepath.Join(root, "repository-bindings", digest(string(ownerJSON)))
 	store.grantRoot = filepath.Join(root, "repository-grants", digest(string(ownerJSON)))
 	store.cleanupGrantRoot = filepath.Join(root, "repository-cleanup-grants", digest(string(ownerJSON)))
+	store.workPolicyRoot = filepath.Join(root, "repository-work-policies", digest(string(ownerJSON)))
 	for _, dir := range []string{root, filepath.Dir(store.root), store.root, filepath.Dir(store.grantRoot), store.grantRoot,
-		filepath.Dir(store.cleanupGrantRoot), store.cleanupGrantRoot} {
+		filepath.Dir(store.cleanupGrantRoot), store.cleanupGrantRoot, filepath.Dir(store.workPolicyRoot), store.workPolicyRoot} {
 		if dir != root {
 			if err := os.Mkdir(dir, 0o700); err != nil && !errors.Is(err, os.ErrExist) {
 				_ = release()
