@@ -312,6 +312,17 @@ function preserveExecutionAuthorityCompatibility(source, language) {
   return compatible;
 }
 
+// Additional receipt reasons must not rename the existing provisioning API.
+function preserveBridgeReasonCompatibility(source) {
+  if (/\bPayloadReason\b/u.test(source)) {
+    return source.replace(/\bPayloadReason\b/gu, "Reason");
+  }
+  if (!/\bReason\b/u.test(source)) {
+    throw new Error("Generated provisioning reason type is missing");
+  }
+  return source;
+}
+
 function preserveTypeScriptWireStrings(value) {
   if (Array.isArray(value)) {
     return value.map(preserveTypeScriptWireStrings);
@@ -329,12 +340,13 @@ function preserveTypeScriptWireStrings(value) {
 
 // Execution digests and grant identity bind the exact UTC string, including
 // fractional precision. Keep legacy Bridge timestamps unchanged outside the
-// execution manifest and governed execution capability subtrees.
+// execution manifest, capability and standing policy offer subtrees.
 function preserveGoExecutionWireStrings(value) {
   if (Array.isArray(value)) return value.map(preserveGoExecutionWireStrings);
   if (value === null || typeof value !== "object") return value;
   return Object.fromEntries(Object.entries(value).map(([key, child]) => [key,
-    key === "execution" || key === "governedExecution"
+    ["execution", "governedExecution", "workPolicyOffers", "workAuthorization",
+      "workAuthorizationReceipt"].includes(key)
       ? preserveTypeScriptWireStrings(child)
       : preserveGoExecutionWireStrings(child)
   ]));
@@ -513,6 +525,11 @@ function renderExecutionValidators(schemas) {
     runtimeAuthorityView: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/runtimeAuthorityView`,
     repositoryBinding: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/bindingSummary`,
     executionGrant: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/grantSummary`,
+    workPolicySpec: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/workPolicySpec`,
+    workPolicyOffer: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/workPolicyOffer`,
+    workGrantParent: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/workGrantParent`,
+    workAuthorization: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/workAuthorization`,
+    workAuthorizationReceipt: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/workAuthorizationReceipt`,
     repositoryOperation: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/operationRequest`,
     repositoryReceipt: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/operationReceipt`,
     executionCheckpoint: `${EXECUTION_RUNTIME_SCHEMA_ID}#/$defs/checkpoint`,
@@ -1566,6 +1583,11 @@ export async function generateContractTypes(packageRoot) {
     ["RuntimeAuthorityView", "runtimeAuthorityView"],
     ["RepositoryBindingSummary", "bindingSummary"],
     ["ExecutionGrantSummary", "grantSummary"],
+    ["WorkPolicySpec", "workPolicySpec"],
+    ["WorkPolicyOffer", "workPolicyOffer"],
+    ["WorkGrantParent", "workGrantParent"],
+    ["WorkAuthorization", "workAuthorization"],
+    ["WorkAuthorizationReceipt", "workAuthorizationReceipt"],
     ["RepositoryOperationRequest", "operationRequest"],
     ["RepositoryOperationReceipt", "operationReceipt"],
     ["RepositoryCheckpoint", "checkpoint"],
@@ -1713,12 +1735,12 @@ export async function generateContractTypes(packageRoot) {
     .join("\n");
   const typescript =
     "// Code generated from JSON Schema; DO NOT EDIT.\n\n" +
-    formatTypeScript(renderedTypeScript).trimEnd() +
+    formatTypeScript(preserveBridgeReasonCompatibility(renderedTypeScript)).trimEnd() +
     `\n\nexport type BridgeMessage =\n${union};\n`;
   const go = formatGo(
     "// Code generated from JSON Schema; DO NOT EDIT.\n\n" +
       preserveGoSourceAuthorityOptionality(
-        preserveGoOpenErrorDetails(renderedGo), 1
+        preserveGoOpenErrorDetails(preserveBridgeReasonCompatibility(renderedGo)), 1
       )
   );
   const pairingTypescript =
@@ -1764,6 +1786,8 @@ export async function generateContractTypes(packageRoot) {
           executionManifest: "manifest", executionInputBinding: "inputBinding", executionCapability: "capability",
           runtimeAuthorityRequest: "runtimeAuthorityRequest", runtimeAuthorityView: "runtimeAuthorityView",
           repositoryBinding: "bindingSummary", executionGrant: "grantSummary", repositoryOperation: "operationRequest",
+          workPolicySpec: "workPolicySpec", workPolicyOffer: "workPolicyOffer", workGrantParent: "workGrantParent",
+          workAuthorization: "workAuthorization", workAuthorizationReceipt: "workAuthorizationReceipt",
           repositoryReceipt: "operationReceipt", executionCheckpoint: "checkpoint", verificationReceipt: "verificationReceipt"
         }).map(([kind, definition]) => [kind, removeNestedSchemaIdentities(
           dereference(executionRuntimeSchema.$defs[definition], executionRuntimeSchema, schemas), false)])),

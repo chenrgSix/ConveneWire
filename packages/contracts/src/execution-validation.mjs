@@ -88,6 +88,14 @@ export function executionOperationDigest(value) {
   return createHash("sha256").update(canonicalExecutionJSON(value)).digest("hex");
 }
 
+export function workTaskGrantId(parent) {
+  assertExecutionCommand("workGrantParent", parent);
+  const { authorizationId, policyId, policyDigest, initiatorMemberId } = parent;
+  return `grant_work_${executionOperationDigest({
+    authorizationId, policyId, policyDigest, initiatorMemberId
+  })}`;
+}
+
 const evidenceProofKinds = {
   accepted_result: new Set(["result_review"]),
   verified_output: new Set([
@@ -477,6 +485,10 @@ export function assertExecutionCommand(kind, value) {
   const validator = Object.hasOwn(validators, kind) ? validators[kind] : undefined;
   requireCondition(typeof validator === "function" && validator(value),
     "PLAN_SCHEMA_INVALID");
+  if (kind === "workAuthorization") {
+    requireCondition(value.spec.grantId === workTaskGrantId(value.parent),
+      "WORK_GRANT_ID_MISMATCH");
+  }
   if (kind === "sourceEvidence") assertSourceEvidenceSemantics(value);
   if (kind === "executionInputBinding") {
     assertExecutionInputBindingSemantics(value);

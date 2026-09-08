@@ -1890,20 +1890,20 @@
         },
         "expectedGeneration": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "deadline": "2026-08-31T10:20:00Z",
-      "action": {
-        "kind": "verify",
-        "verify": {
-          "candidateCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-          "candidateTree": "cccccccccccccccccccccccccccccccccccccccc",
-          "inputDigest": "1c55e96beb67748c744ef58fa00b584149115d6e5a7274dcf9405499a3f1ac25",
-          "profile": {
-            "profileId": "profile_00000002",
-            "revision": 1,
-            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-          },
-          "command": "arbitrary"
+        "action": {
+          "kind": "verify",
+          "verify": {
+            "candidateCommit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "candidateTree": "cccccccccccccccccccccccccccccccccccccccc",
+            "inputDigest": "1c55e96beb67748c744ef58fa00b584149115d6e5a7274dcf9405499a3f1ac25",
+            "profile": {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            },
+            "command": "arbitrary"
+          }
         }
-      }
       },
       "valid": false
     },
@@ -2306,6 +2306,582 @@
             "capture",
             "verify"
           ]
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "work policy: valid optional Bridge publication",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8",
+        "timestamp": "2026-08-22T10:00:02Z",
+        "type": "agent.publish",
+        "payload": {
+          "teamId": "team_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "ownerMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "name": "Bob",
+          "role": "Backend",
+          "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspaceAlias": "Payments API",
+          "workspaceRef": "workspace_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "workspaceGeneration": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "runtimePolicy": {
+            "filesystemAccess": "workspace-write"
+          },
+          "capabilities": {
+            "invocationMode": "managed",
+            "supportsStart": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsInterrupt": true,
+            "supportsHandoff": true,
+            "supportsWorkspaceLeases": true,
+            "supportsArtifactPublication": true,
+            "supportsArtifactMaterialization": true,
+            "workPolicyOffers": [
+              {
+                "version": 1,
+                "spec": {
+                  "policyId": "workpolicy_development01",
+                  "alias": "日常开发",
+                  "bindingId": "repobind_00000001",
+                  "bindingRevision": 1,
+                  "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                  "repositoryId": "repo_00000001",
+                  "sourceRef": "refs/heads/main",
+                  "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "roomIds": [
+                    "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+                  ],
+                  "initiatorMemberIds": [
+                    "member_development01"
+                  ],
+                  "operations": [
+                    "capture",
+                    "prepare",
+                    "verify"
+                  ],
+                  "runtimeProfile": {
+                    "profileId": "profile_runtime01",
+                    "revision": 1,
+                    "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                  },
+                  "verificationProfiles": [
+                    {
+                      "profileId": "profile_00000002",
+                      "revision": 1,
+                      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                    }
+                  ],
+                  "scopePolicy": {
+                    "access": "isolated_write",
+                    "allowedPaths": [
+                      "src",
+                      "tests"
+                    ],
+                    "forbiddenPaths": [
+                      "secrets"
+                    ],
+                    "requirePreventivePathEnforcement": false
+                  },
+                  "maxTaskDurationSeconds": 3600,
+                  "maxRunAttempts": 3,
+                  "maxConcurrency": 1,
+                  "expiresAt": "2026-09-09T00:00:00Z"
+                },
+                "revision": 1,
+                "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "issuedAt": "2026-09-08T00:00:00Z",
+                "observedAt": "2026-09-08T00:00:00.000000123Z",
+                "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "work policy: publication rejects shell injection",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8",
+        "timestamp": "2026-08-22T10:00:02Z",
+        "type": "agent.publish",
+        "payload": {
+          "teamId": "team_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "ownerMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "name": "Bob",
+          "role": "Backend",
+          "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspaceAlias": "Payments API",
+          "workspaceRef": "workspace_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "workspaceGeneration": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "runtimePolicy": {
+            "filesystemAccess": "workspace-write"
+          },
+          "capabilities": {
+            "invocationMode": "managed",
+            "supportsStart": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsInterrupt": true,
+            "supportsHandoff": true,
+            "supportsWorkspaceLeases": true,
+            "supportsArtifactPublication": true,
+            "supportsArtifactMaterialization": true,
+            "workPolicyOffers": [
+              {
+                "version": 1,
+                "spec": {
+                  "policyId": "workpolicy_development01",
+                  "alias": "日常开发",
+                  "bindingId": "repobind_00000001",
+                  "bindingRevision": 1,
+                  "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                  "repositoryId": "repo_00000001",
+                  "sourceRef": "refs/heads/main",
+                  "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "roomIds": [
+                    "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+                  ],
+                  "initiatorMemberIds": [
+                    "member_development01"
+                  ],
+                  "operations": [
+                    "capture",
+                    "prepare",
+                    "verify"
+                  ],
+                  "runtimeProfile": {
+                    "profileId": "profile_runtime01",
+                    "revision": 1,
+                    "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                  },
+                  "verificationProfiles": [
+                    {
+                      "profileId": "profile_00000002",
+                      "revision": 1,
+                      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                    }
+                  ],
+                  "scopePolicy": {
+                    "access": "isolated_write",
+                    "allowedPaths": [
+                      "src",
+                      "tests"
+                    ],
+                    "forbiddenPaths": [
+                      "secrets"
+                    ],
+                    "requirePreventivePathEnforcement": false
+                  },
+                  "maxTaskDurationSeconds": 3600,
+                  "maxRunAttempts": 3,
+                  "maxConcurrency": 1,
+                  "expiresAt": "2026-09-09T00:00:00Z",
+                  "command": "arbitrary"
+                },
+                "revision": 1,
+                "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "issuedAt": "2026-09-08T00:00:00Z",
+                "observedAt": "2026-09-08T00:00:00.000000123Z",
+                "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "work policy: manual Agent cannot advertise policies",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8",
+        "timestamp": "2026-08-22T10:00:02Z",
+        "type": "agent.publish",
+        "payload": {
+          "teamId": "team_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "ownerMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "name": "Bob",
+          "role": "Backend",
+          "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspaceAlias": "Payments API",
+          "workspaceRef": "workspace_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "workspaceGeneration": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "runtimePolicy": {
+            "filesystemAccess": "workspace-write"
+          },
+          "capabilities": {
+            "invocationMode": "manual",
+            "supportsStart": false,
+            "supportsResume": false,
+            "supportsStreaming": true,
+            "supportsInterrupt": false,
+            "supportsHandoff": true,
+            "supportsWorkspaceLeases": true,
+            "supportsArtifactPublication": true,
+            "supportsArtifactMaterialization": true,
+            "workPolicyOffers": [
+              {
+                "version": 1,
+                "spec": {
+                  "policyId": "workpolicy_development01",
+                  "alias": "日常开发",
+                  "bindingId": "repobind_00000001",
+                  "bindingRevision": 1,
+                  "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                  "repositoryId": "repo_00000001",
+                  "sourceRef": "refs/heads/main",
+                  "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "roomIds": [
+                    "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+                  ],
+                  "initiatorMemberIds": [
+                    "member_development01"
+                  ],
+                  "operations": [
+                    "capture",
+                    "prepare",
+                    "verify"
+                  ],
+                  "runtimeProfile": {
+                    "profileId": "profile_runtime01",
+                    "revision": 1,
+                    "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                  },
+                  "verificationProfiles": [
+                    {
+                      "profileId": "profile_00000002",
+                      "revision": 1,
+                      "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                    }
+                  ],
+                  "scopePolicy": {
+                    "access": "isolated_write",
+                    "allowedPaths": [
+                      "src",
+                      "tests"
+                    ],
+                    "forbiddenPaths": [
+                      "secrets"
+                    ],
+                    "requirePreventivePathEnforcement": false
+                  },
+                  "maxTaskDurationSeconds": 3600,
+                  "maxRunAttempts": 3,
+                  "maxConcurrency": 1,
+                  "expiresAt": "2026-09-09T00:00:00Z"
+                },
+                "revision": 1,
+                "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                "issuedAt": "2026-09-08T00:00:00Z",
+                "observedAt": "2026-09-08T00:00:00.000000123Z",
+                "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "work policy: valid requested wire negotiation",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_work_authorization01",
+        "timestamp": "2026-09-08T00:00:00Z",
+        "type": "work.authorization.requested",
+        "payload": {
+          "connectionEpoch": 1,
+          "workAuthorization": {
+            "version": 1,
+            "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "parent": {
+              "authorizationId": "op_work_first0001",
+              "policyId": "workpolicy_development01",
+              "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+              "revision": 1,
+              "initiatorMemberId": "member_development01",
+              "maxRunAttempts": 2,
+              "maxConcurrency": 1
+            },
+            "spec": {
+              "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+              "bindingId": "repobind_00000001",
+              "bindingRevision": 1,
+              "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "repositoryId": "repo_00000001",
+              "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "planId": "plan_runtime0001",
+              "planRevision": 1,
+              "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "nodeKey": "Build",
+              "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "definitionRevision": 1,
+              "criteriaRevision": 1,
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "expiresAt": "2026-09-08T01:00:00Z",
+              "operations": [
+                "capture",
+                "prepare",
+                "verify"
+              ],
+              "runtimeProfile": {
+                "profileId": "profile_runtime01",
+                "revision": 1,
+                "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "verificationProfiles": [
+                {
+                  "profileId": "profile_00000002",
+                  "revision": 1,
+                  "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                }
+              ],
+              "scopePolicy": {
+                "access": "isolated_write",
+                "allowedPaths": [
+                  "src",
+                  "tests"
+                ],
+                "forbiddenPaths": [
+                  "secrets"
+                ],
+                "requirePreventivePathEnforcement": false
+              },
+              "integrationTargets": []
+            },
+            "requestedAt": "2026-09-08T00:00:00Z",
+            "deadline": "2026-09-08T00:01:00Z"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "work policy: requested rejects command",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_work_authorization01",
+        "timestamp": "2026-09-08T00:00:00Z",
+        "type": "work.authorization.requested",
+        "payload": {
+          "connectionEpoch": 1,
+          "workAuthorization": {
+            "version": 1,
+            "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "parent": {
+              "authorizationId": "op_work_first0001",
+              "policyId": "workpolicy_development01",
+              "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+              "revision": 1,
+              "initiatorMemberId": "member_development01",
+              "maxRunAttempts": 2,
+              "maxConcurrency": 1
+            },
+            "spec": {
+              "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+              "bindingId": "repobind_00000001",
+              "bindingRevision": 1,
+              "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "repositoryId": "repo_00000001",
+              "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "planId": "plan_runtime0001",
+              "planRevision": 1,
+              "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "nodeKey": "Build",
+              "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "definitionRevision": 1,
+              "criteriaRevision": 1,
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "expiresAt": "2026-09-08T01:00:00Z",
+              "operations": [
+                "capture",
+                "prepare",
+                "verify"
+              ],
+              "runtimeProfile": {
+                "profileId": "profile_runtime01",
+                "revision": 1,
+                "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "verificationProfiles": [
+                {
+                  "profileId": "profile_00000002",
+                  "revision": 1,
+                  "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                }
+              ],
+              "scopePolicy": {
+                "access": "isolated_write",
+                "allowedPaths": [
+                  "src",
+                  "tests"
+                ],
+                "forbiddenPaths": [
+                  "secrets"
+                ],
+                "requirePreventivePathEnforcement": false
+              },
+              "integrationTargets": []
+            },
+            "requestedAt": "2026-09-08T00:00:00Z",
+            "deadline": "2026-09-08T00:01:00Z",
+            "command": "arbitrary"
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "work policy: valid receipt wire negotiation",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_work_authorization01",
+        "timestamp": "2026-09-08T00:00:00Z",
+        "type": "work.authorization.receipt",
+        "payload": {
+          "connectionEpoch": 1,
+          "workAuthorizationReceipt": {
+            "version": 1,
+            "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "authorizationId": "op_work_first0001",
+            "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+            "status": "authorized",
+            "grant": {
+              "grant": {
+                "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+                "revision": 1,
+                "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "expiresAt": "2026-09-08T01:00:00Z"
+              },
+              "repositoryId": "repo_00000001",
+              "bindingId": "repobind_00000001",
+              "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "planId": "plan_runtime0001",
+              "nodeKey": "Build",
+              "operations": [
+                "prepare",
+                "capture",
+                "verify"
+              ],
+              "runtimeProfile": {
+                "profileId": "profile_runtime01",
+                "revision": 1,
+                "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "verificationProfiles": [
+                {
+                  "profileId": "profile_00000002",
+                  "revision": 1,
+                  "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                }
+              ],
+              "scopePolicy": {
+                "access": "isolated_write",
+                "allowedPaths": [
+                  "src",
+                  "tests"
+                ],
+                "forbiddenPaths": [
+                  "secrets"
+                ],
+                "requirePreventivePathEnforcement": false
+              },
+              "integrationTargets": [],
+              "issuedAt": "2026-09-08T00:00:00Z",
+              "revokedAt": null
+            },
+            "reason": "authorized",
+            "observedAt": "2026-09-08T00:00:00Z"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "work policy: receipt rejects command",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_work_authorization01",
+        "timestamp": "2026-09-08T00:00:00Z",
+        "type": "work.authorization.receipt",
+        "payload": {
+          "connectionEpoch": 1,
+          "workAuthorizationReceipt": {
+            "version": 1,
+            "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "authorizationId": "op_work_first0001",
+            "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+            "status": "authorized",
+            "grant": {
+              "grant": {
+                "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+                "revision": 1,
+                "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "expiresAt": "2026-09-08T01:00:00Z"
+              },
+              "repositoryId": "repo_00000001",
+              "bindingId": "repobind_00000001",
+              "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "planId": "plan_runtime0001",
+              "nodeKey": "Build",
+              "operations": [
+                "prepare",
+                "capture",
+                "verify"
+              ],
+              "runtimeProfile": {
+                "profileId": "profile_runtime01",
+                "revision": 1,
+                "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "verificationProfiles": [
+                {
+                  "profileId": "profile_00000002",
+                  "revision": 1,
+                  "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+                }
+              ],
+              "scopePolicy": {
+                "access": "isolated_write",
+                "allowedPaths": [
+                  "src",
+                  "tests"
+                ],
+                "forbiddenPaths": [
+                  "secrets"
+                ],
+                "requirePreventivePathEnforcement": false
+              },
+              "integrationTargets": [],
+              "issuedAt": "2026-09-08T00:00:00Z",
+              "revokedAt": null
+            },
+            "reason": "authorized",
+            "observedAt": "2026-09-08T00:00:00Z",
+            "command": "arbitrary"
+          }
         }
       },
       "valid": false

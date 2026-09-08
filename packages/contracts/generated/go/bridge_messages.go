@@ -5,6 +5,180 @@ package contracts
 import "time"
 
 // Fields shared by versioned cross-process messages.
+type WorkAuthorizationRequestedMessage struct {
+	MessageID string                            `json:"messageId"`
+	Payload   WorkAuthorizationRequestedPayload `json:"payload"`
+	// Major and minor protocol version negotiated by peers.
+	ProtocolVersion string `json:"protocolVersion"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Timestamp time.Time                             `json:"timestamp"`
+	Type      WorkAuthorizationRequestedMessageType `json:"type"`
+}
+
+type WorkAuthorizationRequestedPayload struct {
+	ConnectionEpoch   int64             `json:"connectionEpoch"`
+	WorkAuthorization WorkAuthorization `json:"workAuthorization"`
+}
+
+type WorkAuthorization struct {
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Deadline string `json:"deadline"`
+	DeviceID string `json:"deviceId"`
+	Parent   Parent `json:"parent"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RequestedAt string                `json:"requestedAt"`
+	Spec        WorkAuthorizationSpec `json:"spec"`
+	Version     int64                 `json:"version"`
+}
+
+type Parent struct {
+	AuthorizationID   string `json:"authorizationId"`
+	InitiatorMemberID string `json:"initiatorMemberId"`
+	MaxConcurrency    int64  `json:"maxConcurrency"`
+	MaxRunAttempts    int64  `json:"maxRunAttempts"`
+	PolicyDigest      string `json:"policyDigest"`
+	PolicyID          string `json:"policyId"`
+	Revision          int64  `json:"revision"`
+}
+
+type WorkAuthorizationSpec struct {
+	AgentID            string `json:"agentId"`
+	BaseCommit         string `json:"baseCommit"`
+	BindingID          string `json:"bindingId"`
+	BindingRevision    int64  `json:"bindingRevision"`
+	CriteriaRevision   int64  `json:"criteriaRevision"`
+	DefinitionRevision int64  `json:"definitionRevision"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt            string                      `json:"expiresAt"`
+	GrantID              string                      `json:"grantId"`
+	IntegrationTargets   []SpecIntegrationTarget     `json:"integrationTargets"`
+	NodeKey              string                      `json:"nodeKey"`
+	Operations           []Operation                 `json:"operations"`
+	PlanDigest           string                      `json:"planDigest"`
+	PlanID               string                      `json:"planId"`
+	PlanRevision         int64                       `json:"planRevision"`
+	RepositoryID         string                      `json:"repositoryId"`
+	RoomID               string                      `json:"roomId"`
+	RuntimeProfile       PurpleRuntimeProfile        `json:"runtimeProfile"`
+	ScopePolicy          PurpleScopePolicy           `json:"scopePolicy"`
+	SourceFingerprint    string                      `json:"sourceFingerprint"`
+	TaskID               string                      `json:"taskId"`
+	VerificationProfiles []PurpleVerificationProfile `json:"verificationProfiles"`
+}
+
+type SpecIntegrationTarget struct {
+	ExpectedCommit string `json:"expectedCommit"`
+	RepositoryID   string `json:"repositoryId"`
+	TargetRef      string `json:"targetRef"`
+}
+
+type PurpleRuntimeProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type PurpleScopePolicy struct {
+	Access                           Access   `json:"access"`
+	AllowedPaths                     []string `json:"allowedPaths"`
+	ForbiddenPaths                   []string `json:"forbiddenPaths"`
+	RequirePreventivePathEnforcement bool     `json:"requirePreventivePathEnforcement"`
+}
+
+type PurpleVerificationProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+// Fields shared by versioned cross-process messages.
+type WorkAuthorizationReceiptMessage struct {
+	MessageID string                          `json:"messageId"`
+	Payload   WorkAuthorizationReceiptPayload `json:"payload"`
+	// Major and minor protocol version negotiated by peers.
+	ProtocolVersion string `json:"protocolVersion"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Timestamp time.Time                           `json:"timestamp"`
+	Type      WorkAuthorizationReceiptMessageType `json:"type"`
+}
+
+type WorkAuthorizationReceiptPayload struct {
+	ConnectionEpoch          int64                         `json:"connectionEpoch"`
+	WorkAuthorizationReceipt WorkAuthorizationReceiptClass `json:"workAuthorizationReceipt"`
+}
+
+type WorkAuthorizationReceiptClass struct {
+	AuthorizationID string                         `json:"authorizationId"`
+	DeviceID        string                         `json:"deviceId"`
+	Grant           *WorkAuthorizationReceiptGrant `json:"grant"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ObservedAt    string                         `json:"observedAt"`
+	Reason        WorkAuthorizationReceiptReason `json:"reason"`
+	RequestDigest string                         `json:"requestDigest"`
+	Status        WorkAuthorizationReceiptStatus `json:"status"`
+	Version       int64                          `json:"version"`
+}
+
+type WorkAuthorizationReceiptGrant struct {
+	AgentID            string                   `json:"agentId"`
+	BindingID          string                   `json:"bindingId"`
+	DeviceID           string                   `json:"deviceId"`
+	Grant              GrantGrant               `json:"grant"`
+	IntegrationTargets []GrantIntegrationTarget `json:"integrationTargets"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	IssuedAt             string                     `json:"issuedAt"`
+	NodeKey              string                     `json:"nodeKey"`
+	Operations           []Operation                `json:"operations"`
+	PlanID               string                     `json:"planId"`
+	RepositoryID         string                     `json:"repositoryId"`
+	RevokedAt            *string                    `json:"revokedAt"`
+	RuntimeProfile       GrantRuntimeProfile        `json:"runtimeProfile"`
+	ScopePolicy          GrantScopePolicy           `json:"scopePolicy"`
+	VerificationProfiles []GrantVerificationProfile `json:"verificationProfiles"`
+}
+
+type GrantGrant struct {
+	Digest string `json:"digest"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt string `json:"expiresAt"`
+	GrantID   string `json:"grantId"`
+	Revision  int64  `json:"revision"`
+}
+
+type GrantIntegrationTarget struct {
+	ExpectedCommit string `json:"expectedCommit"`
+	RepositoryID   string `json:"repositoryId"`
+	TargetRef      string `json:"targetRef"`
+}
+
+type GrantRuntimeProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type GrantScopePolicy struct {
+	Access                           Access   `json:"access"`
+	AllowedPaths                     []string `json:"allowedPaths"`
+	ForbiddenPaths                   []string `json:"forbiddenPaths"`
+	RequirePreventivePathEnforcement bool     `json:"requirePreventivePathEnforcement"`
+}
+
+type GrantVerificationProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+// Fields shared by versioned cross-process messages.
 type RunActivityMessage struct {
 	MessageID string             `json:"messageId"`
 	Payload   RunActivityPayload `json:"payload"`
@@ -128,9 +302,9 @@ type PurpleReadyGrant struct {
 	PlanID               string                      `json:"planId"`
 	RepositoryID         string                      `json:"repositoryId"`
 	RevokedAt            *string                     `json:"revokedAt"`
-	RuntimeProfile       PurpleRuntimeProfile        `json:"runtimeProfile"`
-	ScopePolicy          PurpleScopePolicy           `json:"scopePolicy"`
-	VerificationProfiles []PurpleVerificationProfile `json:"verificationProfiles"`
+	RuntimeProfile       FluffyRuntimeProfile        `json:"runtimeProfile"`
+	ScopePolicy          FluffyScopePolicy           `json:"scopePolicy"`
+	VerificationProfiles []FluffyVerificationProfile `json:"verificationProfiles"`
 }
 
 type PurpleGrant struct {
@@ -148,20 +322,20 @@ type PurpleIntegrationTarget struct {
 	TargetRef      string `json:"targetRef"`
 }
 
-type PurpleRuntimeProfile struct {
+type FluffyRuntimeProfile struct {
 	Digest    string `json:"digest"`
 	ProfileID string `json:"profileId"`
 	Revision  int64  `json:"revision"`
 }
 
-type PurpleScopePolicy struct {
+type FluffyScopePolicy struct {
 	Access                           Access   `json:"access"`
 	AllowedPaths                     []string `json:"allowedPaths"`
 	ForbiddenPaths                   []string `json:"forbiddenPaths"`
 	RequirePreventivePathEnforcement bool     `json:"requirePreventivePathEnforcement"`
 }
 
-type PurpleVerificationProfile struct {
+type FluffyVerificationProfile struct {
 	Digest    string `json:"digest"`
 	ProfileID string `json:"profileId"`
 	Revision  int64  `json:"revision"`
@@ -232,6 +406,9 @@ type Capabilities struct {
 	SupportsStart                          bool  `json:"supportsStart"`
 	SupportsStreaming                      bool  `json:"supportsStreaming"`
 	SupportsWorkspaceLeases                *bool `json:"supportsWorkspaceLeases,omitempty"`
+	// Owner-local standing policy offers. Omission means unsupported. An offer is not an exact
+	// Task grant or Runtime admission.
+	WorkPolicyOffers []WorkPolicyOffer `json:"workPolicyOffers,omitempty"`
 }
 
 type CapabilitiesGovernedExecution struct {
@@ -252,15 +429,15 @@ type FluffyReadyGrant struct {
 	IntegrationTargets []FluffyIntegrationTarget `json:"integrationTargets"`
 	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
 	// most nanosecond precision.
-	IssuedAt             string                      `json:"issuedAt"`
-	NodeKey              string                      `json:"nodeKey"`
-	Operations           []Operation                 `json:"operations"`
-	PlanID               string                      `json:"planId"`
-	RepositoryID         string                      `json:"repositoryId"`
-	RevokedAt            *string                     `json:"revokedAt"`
-	RuntimeProfile       FluffyRuntimeProfile        `json:"runtimeProfile"`
-	ScopePolicy          FluffyScopePolicy           `json:"scopePolicy"`
-	VerificationProfiles []FluffyVerificationProfile `json:"verificationProfiles"`
+	IssuedAt             string                         `json:"issuedAt"`
+	NodeKey              string                         `json:"nodeKey"`
+	Operations           []Operation                    `json:"operations"`
+	PlanID               string                         `json:"planId"`
+	RepositoryID         string                         `json:"repositoryId"`
+	RevokedAt            *string                        `json:"revokedAt"`
+	RuntimeProfile       TentacledRuntimeProfile        `json:"runtimeProfile"`
+	ScopePolicy          TentacledScopePolicy           `json:"scopePolicy"`
+	VerificationProfiles []TentacledVerificationProfile `json:"verificationProfiles"`
 }
 
 type FluffyGrant struct {
@@ -278,20 +455,76 @@ type FluffyIntegrationTarget struct {
 	TargetRef      string `json:"targetRef"`
 }
 
-type FluffyRuntimeProfile struct {
+type TentacledRuntimeProfile struct {
 	Digest    string `json:"digest"`
 	ProfileID string `json:"profileId"`
 	Revision  int64  `json:"revision"`
 }
 
-type FluffyScopePolicy struct {
+type TentacledScopePolicy struct {
 	Access                           Access   `json:"access"`
 	AllowedPaths                     []string `json:"allowedPaths"`
 	ForbiddenPaths                   []string `json:"forbiddenPaths"`
 	RequirePreventivePathEnforcement bool     `json:"requirePreventivePathEnforcement"`
 }
 
-type FluffyVerificationProfile struct {
+type TentacledVerificationProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type WorkPolicyOffer struct {
+	BaseCommit string `json:"baseCommit"`
+	Digest     string `json:"digest"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	IssuedAt string `json:"issuedAt"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ObservedAt string              `json:"observedAt"`
+	Revision   int64               `json:"revision"`
+	Spec       WorkPolicyOfferSpec `json:"spec"`
+	Version    int64               `json:"version"`
+}
+
+type WorkPolicyOfferSpec struct {
+	AgentID         string `json:"agentId"`
+	Alias           string `json:"alias"`
+	BindingID       string `json:"bindingId"`
+	BindingRevision int64  `json:"bindingRevision"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt              string                      `json:"expiresAt"`
+	InitiatorMemberIDS     []string                    `json:"initiatorMemberIds"`
+	MaxConcurrency         int64                       `json:"maxConcurrency"`
+	MaxRunAttempts         int64                       `json:"maxRunAttempts"`
+	MaxTaskDurationSeconds int64                       `json:"maxTaskDurationSeconds"`
+	Operations             []Operation                 `json:"operations"`
+	PolicyID               string                      `json:"policyId"`
+	RepositoryID           string                      `json:"repositoryId"`
+	RoomIDS                []string                    `json:"roomIds"`
+	RuntimeProfile         StickyRuntimeProfile        `json:"runtimeProfile"`
+	ScopePolicy            StickyScopePolicy           `json:"scopePolicy"`
+	SourceFingerprint      string                      `json:"sourceFingerprint"`
+	SourceRef              string                      `json:"sourceRef"`
+	VerificationProfiles   []StickyVerificationProfile `json:"verificationProfiles"`
+}
+
+type StickyRuntimeProfile struct {
+	Digest    string `json:"digest"`
+	ProfileID string `json:"profileId"`
+	Revision  int64  `json:"revision"`
+}
+
+type StickyScopePolicy struct {
+	Access                           Access   `json:"access"`
+	AllowedPaths                     []string `json:"allowedPaths"`
+	ForbiddenPaths                   []string `json:"forbiddenPaths"`
+	RequirePreventivePathEnforcement bool     `json:"requirePreventivePathEnforcement"`
+}
+
+type StickyVerificationProfile struct {
 	Digest    string `json:"digest"`
 	ProfileID string `json:"profileId"`
 	Revision  int64  `json:"revision"`
@@ -1038,24 +1271,6 @@ type Device struct {
 	TeamID        string `json:"teamId"`
 }
 
-type RunActivityMessageType string
-
-const (
-	RunActivity RunActivityMessageType = "run.activity"
-)
-
-type DiscussionSupplementalEvidenceMessageType string
-
-const (
-	DiscussionSupplementalEvidence DiscussionSupplementalEvidenceMessageType = "discussion.supplemental_evidence"
-)
-
-type RunOutputDeltaMessageType string
-
-const (
-	RunOutputDelta RunOutputDeltaMessageType = "run.output_delta"
-)
-
 type Operation string
 
 const (
@@ -1072,6 +1287,57 @@ type Access string
 const (
 	IsolatedWrite Access = "isolated_write"
 	ReadOnly      Access = "read_only"
+)
+
+type WorkAuthorizationRequestedMessageType string
+
+const (
+	WorkAuthorizationRequested WorkAuthorizationRequestedMessageType = "work.authorization.requested"
+)
+
+type WorkAuthorizationReceiptReason string
+
+const (
+	AmbiguousPolicy    WorkAuthorizationReceiptReason = "ambiguous_policy"
+	Conflict           WorkAuthorizationReceiptReason = "conflict"
+	Expired            WorkAuthorizationReceiptReason = "expired"
+	OutsidePolicy      WorkAuthorizationReceiptReason = "outside_policy"
+	ProfileUnavailable WorkAuthorizationReceiptReason = "profile_unavailable"
+	ReasonAuthorized   WorkAuthorizationReceiptReason = "authorized"
+	Revoked            WorkAuthorizationReceiptReason = "revoked"
+	SourceChanged      WorkAuthorizationReceiptReason = "source_changed"
+	Unavailable        WorkAuthorizationReceiptReason = "unavailable"
+)
+
+type WorkAuthorizationReceiptStatus string
+
+const (
+	Denied           WorkAuthorizationReceiptStatus = "denied"
+	StatusAuthorized WorkAuthorizationReceiptStatus = "authorized"
+)
+
+type WorkAuthorizationReceiptMessageType string
+
+const (
+	WorkAuthorizationReceipt WorkAuthorizationReceiptMessageType = "work.authorization.receipt"
+)
+
+type RunActivityMessageType string
+
+const (
+	RunActivity RunActivityMessageType = "run.activity"
+)
+
+type DiscussionSupplementalEvidenceMessageType string
+
+const (
+	DiscussionSupplementalEvidence DiscussionSupplementalEvidenceMessageType = "discussion.supplemental_evidence"
+)
+
+type RunOutputDeltaMessageType string
+
+const (
+	RunOutputDelta RunOutputDeltaMessageType = "run.output_delta"
 )
 
 type WorkspaceBoundary string

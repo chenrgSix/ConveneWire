@@ -3,6 +3,216 @@
 /**
  * Fields shared by versioned cross-process messages.
  */
+export interface WorkAuthorizationRequestedMessage {
+  messageId: string;
+  payload:   WorkAuthorizationRequestedPayload;
+  /**
+   * Major and minor protocol version negotiated by peers.
+   */
+  protocolVersion: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  timestamp: string;
+  type:      WorkAuthorizationRequestedMessageType;
+}
+
+export interface WorkAuthorizationRequestedPayload {
+  connectionEpoch:   number;
+  workAuthorization: WorkAuthorization;
+}
+
+export interface WorkAuthorization {
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline: string;
+  deviceId: string;
+  parent:   Parent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  requestedAt: string;
+  spec:        WorkAuthorizationSpec;
+  version:     number;
+}
+
+export interface Parent {
+  authorizationId:   string;
+  initiatorMemberId: string;
+  maxConcurrency:    number;
+  maxRunAttempts:    number;
+  policyDigest:      string;
+  policyId:          string;
+  revision:          number;
+}
+
+export interface WorkAuthorizationSpec {
+  agentId:            string;
+  baseCommit:         string;
+  bindingId:          string;
+  bindingRevision:    number;
+  criteriaRevision:   number;
+  definitionRevision: number;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:            string;
+  grantId:              string;
+  integrationTargets:   SpecIntegrationTarget[];
+  nodeKey:              string;
+  operations:           [Operation, Operation, ...Operation[]];
+  planDigest:           string;
+  planId:               string;
+  planRevision:         number;
+  repositoryId:         string;
+  roomId:               string;
+  runtimeProfile:       PurpleRuntimeProfile;
+  scopePolicy:          PurpleScopePolicy;
+  sourceFingerprint:    string;
+  taskId:               string;
+  verificationProfiles: PurpleVerificationProfile[];
+}
+
+export interface SpecIntegrationTarget {
+  expectedCommit: string;
+  repositoryId:   string;
+  targetRef:      string;
+}
+
+export type Operation = "prepare" | "capture" | "verify" | "integrate" | "publish" | "observe";
+
+export interface PurpleRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface PurpleScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export type Access = "read_only" | "isolated_write";
+
+export interface PurpleVerificationProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export type WorkAuthorizationRequestedMessageType = "work.authorization.requested";
+
+/**
+ * Fields shared by versioned cross-process messages.
+ */
+export interface WorkAuthorizationReceiptMessage {
+  messageId: string;
+  payload:   WorkAuthorizationReceiptPayload;
+  /**
+   * Major and minor protocol version negotiated by peers.
+   */
+  protocolVersion: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  timestamp: string;
+  type:      WorkAuthorizationReceiptMessageType;
+}
+
+export interface WorkAuthorizationReceiptPayload {
+  connectionEpoch:          number;
+  workAuthorizationReceipt: WorkAuthorizationReceipt;
+}
+
+export interface WorkAuthorizationReceipt {
+  authorizationId: string;
+  deviceId:        string;
+  grant:           WorkAuthorizationReceiptGrant | null;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  observedAt:    string;
+  reason:        WorkAuthorizationReceiptReason;
+  requestDigest: string;
+  status:        WorkAuthorizationReceiptStatus;
+  version:       number;
+}
+
+export interface WorkAuthorizationReceiptGrant {
+  agentId:            string;
+  bindingId:          string;
+  deviceId:           string;
+  grant:              GrantGrant;
+  integrationTargets: GrantIntegrationTarget[];
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  issuedAt:             string;
+  nodeKey:              string;
+  operations:           [Operation, ...Operation[]];
+  planId:               string;
+  repositoryId:         string;
+  revokedAt:            null | string;
+  runtimeProfile:       GrantRuntimeProfile;
+  scopePolicy:          GrantScopePolicy;
+  verificationProfiles: GrantVerificationProfile[];
+}
+
+export interface GrantGrant {
+  digest: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt: string;
+  grantId:   string;
+  revision:  number;
+}
+
+export interface GrantIntegrationTarget {
+  expectedCommit: string;
+  repositoryId:   string;
+  targetRef:      string;
+}
+
+export interface GrantRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface GrantScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface GrantVerificationProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export type WorkAuthorizationReceiptReason = "authorized" | "outside_policy" | "ambiguous_policy" | "expired" | "revoked" | "source_changed" | "profile_unavailable" | "conflict" | "unavailable";
+
+export type WorkAuthorizationReceiptStatus = "authorized" | "denied";
+
+export type WorkAuthorizationReceiptMessageType = "work.authorization.receipt";
+
+/**
+ * Fields shared by versioned cross-process messages.
+ */
 export interface RunActivityMessage {
   messageId: string;
   payload:   RunActivityPayload;
@@ -152,8 +362,6 @@ export interface PayloadGovernedExecution {
   workspaceBoundary: WorkspaceBoundary;
 }
 
-export type Operation = "prepare" | "capture" | "verify" | "integrate" | "publish" | "observe";
-
 export interface PurpleReadyGrant {
   agentId:            string;
   bindingId:          string;
@@ -170,9 +378,9 @@ export interface PurpleReadyGrant {
   planId:               string;
   repositoryId:         string;
   revokedAt:            null | string;
-  runtimeProfile:       PurpleRuntimeProfile;
-  scopePolicy:          PurpleScopePolicy;
-  verificationProfiles: PurpleVerificationProfile[];
+  runtimeProfile:       FluffyRuntimeProfile;
+  scopePolicy:          FluffyScopePolicy;
+  verificationProfiles: FluffyVerificationProfile[];
 }
 
 export interface PurpleGrant {
@@ -192,22 +400,20 @@ export interface PurpleIntegrationTarget {
   targetRef:      string;
 }
 
-export interface PurpleRuntimeProfile {
+export interface FluffyRuntimeProfile {
   digest:    string;
   profileId: string;
   revision:  number;
 }
 
-export interface PurpleScopePolicy {
+export interface FluffyScopePolicy {
   access:                           Access;
   allowedPaths:                     string[];
   forbiddenPaths:                   string[];
   requirePreventivePathEnforcement: boolean;
 }
 
-export type Access = "read_only" | "isolated_write";
-
-export interface PurpleVerificationProfile {
+export interface FluffyVerificationProfile {
   digest:    string;
   profileId: string;
   revision:  number;
@@ -304,6 +510,11 @@ export interface Capabilities {
   supportsStart:                           boolean;
   supportsStreaming:                       boolean;
   supportsWorkspaceLeases?:                boolean;
+  /**
+   * Owner-local standing policy offers. Omission means unsupported. An offer is not an exact
+   * Task grant or Runtime admission.
+   */
+  workPolicyOffers?: WorkPolicyOffer[];
   [property: string]: unknown;
 }
 
@@ -335,9 +546,9 @@ export interface FluffyReadyGrant {
   planId:               string;
   repositoryId:         string;
   revokedAt:            null | string;
-  runtimeProfile:       FluffyRuntimeProfile;
-  scopePolicy:          FluffyScopePolicy;
-  verificationProfiles: FluffyVerificationProfile[];
+  runtimeProfile:       TentacledRuntimeProfile;
+  scopePolicy:          TentacledScopePolicy;
+  verificationProfiles: TentacledVerificationProfile[];
 }
 
 export interface FluffyGrant {
@@ -357,26 +568,88 @@ export interface FluffyIntegrationTarget {
   targetRef:      string;
 }
 
-export interface FluffyRuntimeProfile {
+export interface TentacledRuntimeProfile {
   digest:    string;
   profileId: string;
   revision:  number;
 }
 
-export interface FluffyScopePolicy {
+export interface TentacledScopePolicy {
   access:                           Access;
   allowedPaths:                     string[];
   forbiddenPaths:                   string[];
   requirePreventivePathEnforcement: boolean;
 }
 
-export interface FluffyVerificationProfile {
+export interface TentacledVerificationProfile {
   digest:    string;
   profileId: string;
   revision:  number;
 }
 
 export type InvocationMode = "managed" | "manual";
+
+export interface WorkPolicyOffer {
+  baseCommit: string;
+  digest:     string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  issuedAt: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  observedAt: string;
+  revision:   number;
+  spec:       WorkPolicyOfferSpec;
+  version:    number;
+}
+
+export interface WorkPolicyOfferSpec {
+  agentId:         string;
+  alias:           string;
+  bindingId:       string;
+  bindingRevision: number;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:              string;
+  initiatorMemberIds:     [string, ...string[]];
+  maxConcurrency:         number;
+  maxRunAttempts:         number;
+  maxTaskDurationSeconds: number;
+  operations:             [Operation, Operation, ...Operation[]];
+  policyId:               string;
+  repositoryId:           string;
+  roomIds:                [string, ...string[]];
+  runtimeProfile:         StickyRuntimeProfile;
+  scopePolicy:            StickyScopePolicy;
+  sourceFingerprint:      string;
+  sourceRef:              string;
+  verificationProfiles:   StickyVerificationProfile[];
+}
+
+export interface StickyRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface StickyScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface StickyVerificationProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
 
 export interface RuntimePolicy {
   filesystemAccess: RuntimePolicyFilesystemAccess;
@@ -1331,6 +1604,8 @@ export interface Device {
 export type BridgeJoinPairedStatus = "paired";
 
 export type BridgeMessage =
+  | WorkAuthorizationRequestedMessage
+  | WorkAuthorizationReceiptMessage
   | RunActivityMessage
   | DiscussionSupplementalEvidenceMessage
   | RunOutputDeltaMessage

@@ -9,6 +9,32 @@ Old Bridge compatibility never allows silent downgrade of governed coding.
 [ADR-0039](../adr/0039-keep-repositories-client-owned.md) classifies retained
 Remote Provider contracts as Optional Extension wire, not Core conformance.
 
+`CON-026`, under [ADR-0060](../adr/0060-preauthorize-local-work-policies.md), adds
+closed standing work policy, offer, exact authorization and receipt definitions
+to the existing execution-runtime schema. Optional `workPolicyOffers` in managed
+Agent capabilities exposes repository-relative scope and fingerprint pins; it
+contains no local absolute path, executable, environment or credential. An
+offer is not a grant or proof that a Runtime can start. Manual Agents cannot
+advertise it. Old Agents omit it and remain ineligible for this flow.
+
+`work.authorization.requested` and `work.authorization.receipt` are negotiated
+Bridge messages, each bound to the current connection epoch and an exact Device.
+Central sends requests only after observing that Agent's current offers. The
+request pins the authenticated human initiator, immutable policy, Task/plan
+revisions, source, scope, profiles and finite limits. The receipt binds its
+canonical request digest and either an exact grant summary or a bounded denial
+reason. Neither message can create or expand the local parent policy.
+
+The authorization operation, policy identity/digest and initiator determine
+`grant_work_<sha256>` before plan compilation. The plan then references that
+grant; immutable issuance and request-digest comparison reject changed content
+under the same identity. TypeScript and Go share positive/negative fixtures,
+exact identity hashes and typed wire round trips, including fractional UTC
+precision. Current-epoch checks, authenticated Task ownership, policy/profile
+resolution, temporal admission, revocation and cancellation are service gates;
+passing the schema establishes none of those facts. A reply alone does not
+replace current governed capability publication or Runtime start admission.
+
 `CON-025`, under
 [ADR-0046](../adr/0046-connect-criteria-contributions-and-verification.md), adds
 the closed `resultAcceptanceEvidence` response to the existing work schema.

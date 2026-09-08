@@ -5,6 +5,540 @@
   "description": "Closed structural contracts. A valid object is not a grant, input authority or verified observation. All actors, fingerprints, expiry, scope and current operation ownership require domain admission.",
   "$ref": "#/$defs/manifest",
   "$defs": {
+    "workPolicyId": {
+      "type": "string",
+      "pattern": "^workpolicy_[A-Za-z0-9_-]{8,128}$"
+    },
+    "workPolicySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "alias",
+        "bindingId",
+        "bindingRevision",
+        "sourceFingerprint",
+        "repositoryId",
+        "sourceRef",
+        "agentId",
+        "roomIds",
+        "initiatorMemberIds",
+        "operations",
+        "runtimeProfile",
+        "verificationProfiles",
+        "scopePolicy",
+        "maxTaskDurationSeconds",
+        "maxRunAttempts",
+        "maxConcurrency",
+        "expiresAt"
+      ],
+      "properties": {
+        "policyId": {
+          "$ref": "#/$defs/workPolicyId"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[^\\x00-\\x1f\\x7f]+$"
+        },
+        "bindingId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/bindingId"
+        },
+        "bindingRevision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "sourceFingerprint": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "repositoryId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/repositoryId"
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 255,
+          "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "agentId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/agentId"
+        },
+        "roomIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/roomId"
+          }
+        },
+        "initiatorMemberIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/memberId"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/operationKind"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "prepare"
+              }
+            },
+            {
+              "contains": {
+                "const": "capture"
+              }
+            },
+            {
+              "not": {
+                "contains": {
+                  "enum": [
+                    "integrate",
+                    "publish",
+                    "observe"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "runtimeProfile": {
+          "$ref": "#/$defs/profilePin"
+        },
+        "verificationProfiles": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/profilePin"
+          }
+        },
+        "scopePolicy": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/scopePolicy"
+        },
+        "maxTaskDurationSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "maxRunAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "expiresAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "scopePolicy": {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "const": "read_only"
+                  }
+                },
+                "required": [
+                  "access"
+                ]
+              }
+            },
+            "required": [
+              "scopePolicy"
+            ]
+          }
+        }
+      ]
+    },
+    "workGrantParent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorizationId",
+        "policyId",
+        "policyDigest",
+        "revision",
+        "initiatorMemberId",
+        "maxRunAttempts",
+        "maxConcurrency"
+      ],
+      "properties": {
+        "authorizationId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/operationId"
+        },
+        "policyId": {
+          "$ref": "#/$defs/workPolicyId"
+        },
+        "policyDigest": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "revision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "initiatorMemberId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/memberId"
+        },
+        "maxRunAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      }
+    },
+    "workTaskGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "bindingId",
+        "bindingRevision",
+        "sourceFingerprint",
+        "repositoryId",
+        "baseCommit",
+        "planId",
+        "planRevision",
+        "planDigest",
+        "nodeKey",
+        "roomId",
+        "taskId",
+        "definitionRevision",
+        "criteriaRevision",
+        "agentId",
+        "expiresAt",
+        "operations",
+        "runtimeProfile",
+        "verificationProfiles",
+        "scopePolicy",
+        "integrationTargets"
+      ],
+      "properties": {
+        "grantId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/grantId"
+        },
+        "bindingId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/bindingId"
+        },
+        "bindingRevision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "sourceFingerprint": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "repositoryId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/repositoryId"
+        },
+        "baseCommit": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/gitObjectId"
+        },
+        "planId": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/planId"
+        },
+        "planRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/revision"
+        },
+        "planDigest": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "nodeKey": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/stableKey"
+        },
+        "roomId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/roomId"
+        },
+        "taskId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/taskId"
+        },
+        "definitionRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/revision"
+        },
+        "criteriaRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/revision"
+        },
+        "agentId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/agentId"
+        },
+        "expiresAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/operationKind"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "prepare"
+              }
+            },
+            {
+              "contains": {
+                "const": "capture"
+              }
+            },
+            {
+              "not": {
+                "contains": {
+                  "enum": [
+                    "integrate",
+                    "publish",
+                    "observe"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "runtimeProfile": {
+          "$ref": "#/$defs/profilePin"
+        },
+        "verificationProfiles": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/profilePin"
+          }
+        },
+        "scopePolicy": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/scopePolicy"
+        },
+        "integrationTargets": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/integrationTarget"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "scopePolicy": {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "const": "read_only"
+                  }
+                },
+                "required": [
+                  "access"
+                ]
+              }
+            },
+            "required": [
+              "scopePolicy"
+            ]
+          }
+        }
+      ]
+    },
+    "workPolicyOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "spec",
+        "revision",
+        "digest",
+        "issuedAt",
+        "observedAt",
+        "baseCommit"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "spec": {
+          "$ref": "#/$defs/workPolicySpec"
+        },
+        "revision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "digest": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "issuedAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "observedAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "baseCommit": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/gitObjectId"
+        }
+      }
+    },
+    "workAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "deviceId",
+        "parent",
+        "spec",
+        "requestedAt",
+        "deadline"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "deviceId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/deviceId"
+        },
+        "parent": {
+          "$ref": "#/$defs/workGrantParent"
+        },
+        "spec": {
+          "$ref": "#/$defs/workTaskGrant"
+        },
+        "requestedAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "deadline": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        }
+      }
+    },
+    "workAuthorizationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "deviceId",
+        "authorizationId",
+        "requestDigest",
+        "status",
+        "grant",
+        "reason",
+        "observedAt"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "deviceId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/deviceId"
+        },
+        "authorizationId": {
+          "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/operationId"
+        },
+        "requestDigest": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-plan.schema.json#/$defs/digest"
+        },
+        "status": {
+          "enum": [
+            "authorized",
+            "denied"
+          ]
+        },
+        "grant": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/grantSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "enum": [
+            "authorized",
+            "outside_policy",
+            "ambiguous_policy",
+            "expired",
+            "revoked",
+            "source_changed",
+            "profile_unavailable",
+            "conflict",
+            "unavailable"
+          ]
+        },
+        "observedAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "authorized"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "grant": {
+                "$ref": "#/$defs/grantSummary"
+              },
+              "reason": {
+                "const": "authorized"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "grant": {
+                "type": "null"
+              },
+              "reason": {
+                "not": {
+                  "const": "authorized"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "version": {
       "type": "integer",
       "const": 1,

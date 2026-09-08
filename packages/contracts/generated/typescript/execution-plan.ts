@@ -4174,6 +4174,278 @@ export interface ExecutionGrantSummaryVerificationProfile {
   revision:  number;
 }
 
+export interface WorkPolicySpec {
+  agentId:         string;
+  alias:           string;
+  bindingId:       string;
+  bindingRevision: number;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:              string;
+  initiatorMemberIds:     [string, ...string[]];
+  maxConcurrency:         number;
+  maxRunAttempts:         number;
+  maxTaskDurationSeconds: number;
+  operations:             [KindElement, KindElement, ...KindElement[]];
+  policyId:               string;
+  repositoryId:           string;
+  roomIds:                [string, ...string[]];
+  runtimeProfile:         WorkPolicySpecRuntimeProfile;
+  scopePolicy:            WorkPolicySpecScopePolicy;
+  sourceFingerprint:      string;
+  sourceRef:              string;
+  verificationProfiles:   WorkPolicySpecVerificationProfile[];
+}
+
+export interface WorkPolicySpecRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface WorkPolicySpecScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface WorkPolicySpecVerificationProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface WorkPolicyOffer {
+  baseCommit: string;
+  digest:     string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  issuedAt: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  observedAt: string;
+  revision:   number;
+  spec:       WorkPolicyOfferSpec;
+  version:    number;
+}
+
+export interface WorkPolicyOfferSpec {
+  agentId:         string;
+  alias:           string;
+  bindingId:       string;
+  bindingRevision: number;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:              string;
+  initiatorMemberIds:     [string, ...string[]];
+  maxConcurrency:         number;
+  maxRunAttempts:         number;
+  maxTaskDurationSeconds: number;
+  operations:             [KindElement, KindElement, ...KindElement[]];
+  policyId:               string;
+  repositoryId:           string;
+  roomIds:                [string, ...string[]];
+  runtimeProfile:         TentacledRuntimeProfile;
+  scopePolicy:            TentacledScopePolicy;
+  sourceFingerprint:      string;
+  sourceRef:              string;
+  verificationProfiles:   VerificationProfile6[];
+}
+
+export interface TentacledRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface TentacledScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface VerificationProfile6 {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface WorkGrantParent {
+  authorizationId:   string;
+  initiatorMemberId: string;
+  maxConcurrency:    number;
+  maxRunAttempts:    number;
+  policyDigest:      string;
+  policyId:          string;
+  revision:          number;
+}
+
+export interface WorkAuthorization {
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline: string;
+  deviceId: string;
+  parent:   Parent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  requestedAt: string;
+  spec:        WorkAuthorizationSpec;
+  version:     number;
+}
+
+export interface Parent {
+  authorizationId:   string;
+  initiatorMemberId: string;
+  maxConcurrency:    number;
+  maxRunAttempts:    number;
+  policyDigest:      string;
+  policyId:          string;
+  revision:          number;
+}
+
+export interface WorkAuthorizationSpec {
+  agentId:            string;
+  baseCommit:         string;
+  bindingId:          string;
+  bindingRevision:    number;
+  criteriaRevision:   number;
+  definitionRevision: number;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:            string;
+  grantId:              string;
+  integrationTargets:   SpecIntegrationTarget[];
+  nodeKey:              string;
+  operations:           [KindElement, KindElement, ...KindElement[]];
+  planDigest:           string;
+  planId:               string;
+  planRevision:         number;
+  repositoryId:         string;
+  roomId:               string;
+  runtimeProfile:       StickyRuntimeProfile;
+  scopePolicy:          StickyScopePolicy;
+  sourceFingerprint:    string;
+  taskId:               string;
+  verificationProfiles: VerificationProfile7[];
+}
+
+export interface SpecIntegrationTarget {
+  expectedCommit: string;
+  repositoryId:   string;
+  targetRef:      string;
+}
+
+export interface StickyRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface StickyScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface VerificationProfile7 {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface WorkAuthorizationReceipt {
+  authorizationId: string;
+  deviceId:        string;
+  grant:           WorkAuthorizationReceiptGrant | null;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  observedAt:    string;
+  reason:        Reason;
+  requestDigest: string;
+  status:        Status;
+  version:       number;
+}
+
+export interface WorkAuthorizationReceiptGrant {
+  agentId:            string;
+  bindingId:          string;
+  deviceId:           string;
+  grant:              GrantGrant;
+  integrationTargets: GrantIntegrationTarget[];
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  issuedAt:             string;
+  nodeKey:              string;
+  operations:           [KindElement, ...KindElement[]];
+  planId:               string;
+  repositoryId:         string;
+  revokedAt:            null | string;
+  runtimeProfile:       GrantRuntimeProfile;
+  scopePolicy:          GrantScopePolicy;
+  verificationProfiles: GrantVerificationProfile[];
+}
+
+export interface GrantGrant {
+  digest: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt: string;
+  grantId:   string;
+  revision:  number;
+}
+
+export interface GrantIntegrationTarget {
+  expectedCommit: string;
+  repositoryId:   string;
+  targetRef:      string;
+}
+
+export interface GrantRuntimeProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export interface GrantScopePolicy {
+  access:                           Access;
+  allowedPaths:                     string[];
+  forbiddenPaths:                   string[];
+  requirePreventivePathEnforcement: boolean;
+}
+
+export interface GrantVerificationProfile {
+  digest:    string;
+  profileId: string;
+  revision:  number;
+}
+
+export type Reason = "authorized" | "outside_policy" | "ambiguous_policy" | "expired" | "revoked" | "source_changed" | "profile_unavailable" | "conflict" | "unavailable";
+
+export type Status = "authorized" | "denied";
+
 export interface RepositoryOperationRequest {
   action:    ActionClass;
   bindingId: string;
@@ -4840,7 +5112,7 @@ export interface EvidenceReuseContractNode {
   repository:           Repository4;
   required:             boolean;
   scope:                Scope4;
-  verificationProfiles: VerificationProfile6[];
+  verificationProfiles: VerificationProfile8[];
 }
 
 export interface Budget20 {
@@ -4877,7 +5149,7 @@ export interface Scope4 {
   requirePreventivePathEnforcement: boolean;
 }
 
-export interface VerificationProfile6 {
+export interface VerificationProfile8 {
   digest:    string;
   profileId: string;
   required:  boolean;

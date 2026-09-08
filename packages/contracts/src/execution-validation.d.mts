@@ -10,6 +10,7 @@ export class ExecutionContractError extends Error {
 
 export function canonicalExecutionJSON(value: unknown): string;
 export function executionOperationDigest(value: unknown): string;
+export function workTaskGrantId(parent: unknown): string;
 export function sourceEvidenceDigest(value: unknown): string;
 export function evidenceProofSetDigest(proofs: unknown): string;
 export function evidenceAdoptionOperationDigest(value: unknown): string;
@@ -43,6 +44,8 @@ export function assertExecutionCommand(
     "executionManifest" | "executionInputBinding" | "executionCapability" |
     "runtimeAuthorityRequest" | "runtimeAuthorityView" |
     "repositoryBinding" | "executionGrant" | "repositoryOperation" |
+    "workPolicySpec" | "workPolicyOffer" | "workGrantParent" |
+    "workAuthorization" | "workAuthorizationReceipt" |
     "repositoryReceipt" | "executionCheckpoint" | "verificationReceipt" |
     "sourceEvidence" | "gateProofRef" | "evidenceAdoption" |
     "evidenceReuseContract" | "remoteProviderBinding" |

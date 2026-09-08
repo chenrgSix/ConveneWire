@@ -3186,6 +3186,1585 @@
         }
       }
     },
+    "workPolicySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "alias",
+        "bindingId",
+        "bindingRevision",
+        "sourceFingerprint",
+        "repositoryId",
+        "sourceRef",
+        "agentId",
+        "roomIds",
+        "initiatorMemberIds",
+        "operations",
+        "runtimeProfile",
+        "verificationProfiles",
+        "scopePolicy",
+        "maxTaskDurationSeconds",
+        "maxRunAttempts",
+        "maxConcurrency",
+        "expiresAt"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "pattern": "^workpolicy_[A-Za-z0-9_-]{8,128}$"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[^\\x00-\\x1f\\x7f]+$"
+        },
+        "bindingId": {
+          "type": "string",
+          "pattern": "^repobind_[A-Za-z0-9_-]{8,128}$"
+        },
+        "bindingRevision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "repositoryId": {
+          "type": "string",
+          "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 255,
+          "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+          }
+        },
+        "initiatorMemberIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "prepare",
+              "capture",
+              "verify",
+              "integrate",
+              "publish",
+              "observe"
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "prepare"
+              }
+            },
+            {
+              "contains": {
+                "const": "capture"
+              }
+            },
+            {
+              "not": {
+                "contains": {
+                  "enum": [
+                    "integrate",
+                    "publish",
+                    "observe"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "runtimeProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileId",
+            "revision",
+            "digest"
+          ],
+          "properties": {
+            "profileId": {
+              "type": "string",
+              "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "verificationProfiles": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "profileId",
+              "revision",
+              "digest"
+            ],
+            "properties": {
+              "profileId": {
+                "type": "string",
+                "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "scopePolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "access",
+            "allowedPaths",
+            "forbiddenPaths",
+            "requirePreventivePathEnforcement"
+          ],
+          "properties": {
+            "access": {
+              "enum": [
+                "read_only",
+                "isolated_write"
+              ]
+            },
+            "allowedPaths": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 64,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+              }
+            },
+            "forbiddenPaths": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 64,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+              }
+            },
+            "requirePreventivePathEnforcement": {
+              "type": "boolean"
+            }
+          }
+        },
+        "maxTaskDurationSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "maxRunAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "expiresAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        }
+      },
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "scopePolicy": {
+                "type": "object",
+                "properties": {
+                  "access": {
+                    "const": "read_only"
+                  }
+                },
+                "required": [
+                  "access"
+                ]
+              }
+            },
+            "required": [
+              "scopePolicy"
+            ]
+          }
+        }
+      ]
+    },
+    "workPolicyOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "spec",
+        "revision",
+        "digest",
+        "issuedAt",
+        "observedAt",
+        "baseCommit"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId",
+            "alias",
+            "bindingId",
+            "bindingRevision",
+            "sourceFingerprint",
+            "repositoryId",
+            "sourceRef",
+            "agentId",
+            "roomIds",
+            "initiatorMemberIds",
+            "operations",
+            "runtimeProfile",
+            "verificationProfiles",
+            "scopePolicy",
+            "maxTaskDurationSeconds",
+            "maxRunAttempts",
+            "maxConcurrency",
+            "expiresAt"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "pattern": "^workpolicy_[A-Za-z0-9_-]{8,128}$"
+            },
+            "alias": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[^\\x00-\\x1f\\x7f]+$"
+            },
+            "bindingId": {
+              "type": "string",
+              "pattern": "^repobind_[A-Za-z0-9_-]{8,128}$"
+            },
+            "bindingRevision": {
+              "const": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            },
+            "sourceFingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "repositoryId": {
+              "type": "string",
+              "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+            },
+            "sourceRef": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 255,
+              "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+            },
+            "agentId": {
+              "type": "string",
+              "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "initiatorMemberIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "operations": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "prepare",
+                  "capture",
+                  "verify",
+                  "integrate",
+                  "publish",
+                  "observe"
+                ]
+              },
+              "allOf": [
+                {
+                  "contains": {
+                    "const": "prepare"
+                  }
+                },
+                {
+                  "contains": {
+                    "const": "capture"
+                  }
+                },
+                {
+                  "not": {
+                    "contains": {
+                      "enum": [
+                        "integrate",
+                        "publish",
+                        "observe"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "runtimeProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "profileId",
+                "revision",
+                "digest"
+              ],
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "verificationProfiles": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "profileId",
+                  "revision",
+                  "digest"
+                ],
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              }
+            },
+            "scopePolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "access",
+                "allowedPaths",
+                "forbiddenPaths",
+                "requirePreventivePathEnforcement"
+              ],
+              "properties": {
+                "access": {
+                  "enum": [
+                    "read_only",
+                    "isolated_write"
+                  ]
+                },
+                "allowedPaths": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 64,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                  }
+                },
+                "forbiddenPaths": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 64,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                  }
+                },
+                "requirePreventivePathEnforcement": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "maxTaskDurationSeconds": {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 86400
+            },
+            "maxRunAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "maxConcurrency": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16
+            },
+            "expiresAt": {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            }
+          },
+          "allOf": [
+            {
+              "not": {
+                "properties": {
+                  "scopePolicy": {
+                    "type": "object",
+                    "properties": {
+                      "access": {
+                        "const": "read_only"
+                      }
+                    },
+                    "required": [
+                      "access"
+                    ]
+                  }
+                },
+                "required": [
+                  "scopePolicy"
+                ]
+              }
+            }
+          ]
+        },
+        "revision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "issuedAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "observedAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "baseCommit": {
+          "type": "string",
+          "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+        }
+      }
+    },
+    "workGrantParent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorizationId",
+        "policyId",
+        "policyDigest",
+        "revision",
+        "initiatorMemberId",
+        "maxRunAttempts",
+        "maxConcurrency"
+      ],
+      "properties": {
+        "authorizationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "policyId": {
+          "type": "string",
+          "pattern": "^workpolicy_[A-Za-z0-9_-]{8,128}$"
+        },
+        "policyDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "const": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "initiatorMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "maxRunAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      }
+    },
+    "workAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "deviceId",
+        "parent",
+        "spec",
+        "requestedAt",
+        "deadline"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "parent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorizationId",
+            "policyId",
+            "policyDigest",
+            "revision",
+            "initiatorMemberId",
+            "maxRunAttempts",
+            "maxConcurrency"
+          ],
+          "properties": {
+            "authorizationId": {
+              "type": "string",
+              "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+            },
+            "policyId": {
+              "type": "string",
+              "pattern": "^workpolicy_[A-Za-z0-9_-]{8,128}$"
+            },
+            "policyDigest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "const": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            },
+            "initiatorMemberId": {
+              "type": "string",
+              "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+            },
+            "maxRunAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "maxConcurrency": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16
+            }
+          }
+        },
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "grantId",
+            "bindingId",
+            "bindingRevision",
+            "sourceFingerprint",
+            "repositoryId",
+            "baseCommit",
+            "planId",
+            "planRevision",
+            "planDigest",
+            "nodeKey",
+            "roomId",
+            "taskId",
+            "definitionRevision",
+            "criteriaRevision",
+            "agentId",
+            "expiresAt",
+            "operations",
+            "runtimeProfile",
+            "verificationProfiles",
+            "scopePolicy",
+            "integrationTargets"
+          ],
+          "properties": {
+            "grantId": {
+              "type": "string",
+              "pattern": "^grant_[A-Za-z0-9_-]{8,128}$"
+            },
+            "bindingId": {
+              "type": "string",
+              "pattern": "^repobind_[A-Za-z0-9_-]{8,128}$"
+            },
+            "bindingRevision": {
+              "const": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1
+            },
+            "sourceFingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "repositoryId": {
+              "type": "string",
+              "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+            },
+            "baseCommit": {
+              "type": "string",
+              "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+            },
+            "planId": {
+              "type": "string",
+              "pattern": "^plan_[A-Za-z0-9_-]{8,128}$"
+            },
+            "planRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "planDigest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "nodeKey": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "roomId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            },
+            "taskId": {
+              "type": "string",
+              "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+            },
+            "definitionRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "criteriaRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "agentId": {
+              "type": "string",
+              "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+            },
+            "expiresAt": {
+              "title": "ConveneWire UTC Timestamp",
+              "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+            },
+            "operations": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "prepare",
+                  "capture",
+                  "verify",
+                  "integrate",
+                  "publish",
+                  "observe"
+                ]
+              },
+              "allOf": [
+                {
+                  "contains": {
+                    "const": "prepare"
+                  }
+                },
+                {
+                  "contains": {
+                    "const": "capture"
+                  }
+                },
+                {
+                  "not": {
+                    "contains": {
+                      "enum": [
+                        "integrate",
+                        "publish",
+                        "observe"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "runtimeProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "profileId",
+                "revision",
+                "digest"
+              ],
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "verificationProfiles": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "profileId",
+                  "revision",
+                  "digest"
+                ],
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              }
+            },
+            "scopePolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "access",
+                "allowedPaths",
+                "forbiddenPaths",
+                "requirePreventivePathEnforcement"
+              ],
+              "properties": {
+                "access": {
+                  "enum": [
+                    "read_only",
+                    "isolated_write"
+                  ]
+                },
+                "allowedPaths": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 64,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                  }
+                },
+                "forbiddenPaths": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 64,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                  }
+                },
+                "requirePreventivePathEnforcement": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "integrationTargets": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "repositoryId",
+                  "targetRef",
+                  "expectedCommit"
+                ],
+                "properties": {
+                  "repositoryId": {
+                    "type": "string",
+                    "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "targetRef": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 255,
+                    "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+                  },
+                  "expectedCommit": {
+                    "type": "string",
+                    "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+                  }
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "not": {
+                "properties": {
+                  "scopePolicy": {
+                    "type": "object",
+                    "properties": {
+                      "access": {
+                        "const": "read_only"
+                      }
+                    },
+                    "required": [
+                      "access"
+                    ]
+                  }
+                },
+                "required": [
+                  "scopePolicy"
+                ]
+              }
+            }
+          ]
+        },
+        "requestedAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "deadline": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        }
+      }
+    },
+    "workAuthorizationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "deviceId",
+        "authorizationId",
+        "requestDigest",
+        "status",
+        "grant",
+        "reason",
+        "observedAt"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "authorizationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "requestDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "authorized",
+            "denied"
+          ]
+        },
+        "grant": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "grant",
+                "repositoryId",
+                "bindingId",
+                "deviceId",
+                "agentId",
+                "planId",
+                "nodeKey",
+                "operations",
+                "runtimeProfile",
+                "verificationProfiles",
+                "scopePolicy",
+                "integrationTargets",
+                "issuedAt",
+                "revokedAt"
+              ],
+              "properties": {
+                "grant": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "grantId",
+                    "revision",
+                    "digest",
+                    "expiresAt"
+                  ],
+                  "properties": {
+                    "grantId": {
+                      "type": "string",
+                      "pattern": "^grant_[A-Za-z0-9_-]{8,128}$"
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "expiresAt": {
+                      "title": "ConveneWire UTC Timestamp",
+                      "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                    }
+                  }
+                },
+                "repositoryId": {
+                  "type": "string",
+                  "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+                },
+                "bindingId": {
+                  "type": "string",
+                  "pattern": "^repobind_[A-Za-z0-9_-]{8,128}$"
+                },
+                "deviceId": {
+                  "type": "string",
+                  "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+                },
+                "agentId": {
+                  "type": "string",
+                  "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                },
+                "planId": {
+                  "type": "string",
+                  "pattern": "^plan_[A-Za-z0-9_-]{8,128}$"
+                },
+                "nodeKey": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                },
+                "operations": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 6,
+                  "items": {
+                    "enum": [
+                      "prepare",
+                      "capture",
+                      "verify",
+                      "integrate",
+                      "publish",
+                      "observe"
+                    ]
+                  },
+                  "uniqueItems": true
+                },
+                "runtimeProfile": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "profileId",
+                    "revision",
+                    "digest"
+                  ],
+                  "properties": {
+                    "profileId": {
+                      "type": "string",
+                      "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  }
+                },
+                "verificationProfiles": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 16,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "profileId",
+                      "revision",
+                      "digest"
+                    ],
+                    "properties": {
+                      "profileId": {
+                        "type": "string",
+                        "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "digest": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      }
+                    }
+                  }
+                },
+                "scopePolicy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "access",
+                    "allowedPaths",
+                    "forbiddenPaths",
+                    "requirePreventivePathEnforcement"
+                  ],
+                  "properties": {
+                    "access": {
+                      "enum": [
+                        "read_only",
+                        "isolated_write"
+                      ]
+                    },
+                    "allowedPaths": {
+                      "type": "array",
+                      "minItems": 0,
+                      "maxItems": 64,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512,
+                        "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                      }
+                    },
+                    "forbiddenPaths": {
+                      "type": "array",
+                      "minItems": 0,
+                      "maxItems": 64,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512,
+                        "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                      }
+                    },
+                    "requirePreventivePathEnforcement": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "integrationTargets": {
+                  "type": "array",
+                  "minItems": 0,
+                  "maxItems": 16,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "repositoryId",
+                      "targetRef",
+                      "expectedCommit"
+                    ],
+                    "properties": {
+                      "repositoryId": {
+                        "type": "string",
+                        "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "targetRef": {
+                        "type": "string",
+                        "minLength": 12,
+                        "maxLength": 255,
+                        "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+                      },
+                      "expectedCommit": {
+                        "type": "string",
+                        "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+                      }
+                    }
+                  }
+                },
+                "issuedAt": {
+                  "title": "ConveneWire UTC Timestamp",
+                  "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                },
+                "revokedAt": {
+                  "oneOf": [
+                    {
+                      "title": "ConveneWire UTC Timestamp",
+                      "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "enum": [
+            "authorized",
+            "outside_policy",
+            "ambiguous_policy",
+            "expired",
+            "revoked",
+            "source_changed",
+            "profile_unavailable",
+            "conflict",
+            "unavailable"
+          ]
+        },
+        "observedAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "authorized"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "grant": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "grant",
+                  "repositoryId",
+                  "bindingId",
+                  "deviceId",
+                  "agentId",
+                  "planId",
+                  "nodeKey",
+                  "operations",
+                  "runtimeProfile",
+                  "verificationProfiles",
+                  "scopePolicy",
+                  "integrationTargets",
+                  "issuedAt",
+                  "revokedAt"
+                ],
+                "properties": {
+                  "grant": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "grantId",
+                      "revision",
+                      "digest",
+                      "expiresAt"
+                    ],
+                    "properties": {
+                      "grantId": {
+                        "type": "string",
+                        "pattern": "^grant_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "digest": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "expiresAt": {
+                        "title": "ConveneWire UTC Timestamp",
+                        "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                      }
+                    }
+                  },
+                  "repositoryId": {
+                    "type": "string",
+                    "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "bindingId": {
+                    "type": "string",
+                    "pattern": "^repobind_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "agentId": {
+                    "type": "string",
+                    "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "planId": {
+                    "type": "string",
+                    "pattern": "^plan_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "nodeKey": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "operations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 6,
+                    "items": {
+                      "enum": [
+                        "prepare",
+                        "capture",
+                        "verify",
+                        "integrate",
+                        "publish",
+                        "observe"
+                      ]
+                    },
+                    "uniqueItems": true
+                  },
+                  "runtimeProfile": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "profileId",
+                      "revision",
+                      "digest"
+                    ],
+                    "properties": {
+                      "profileId": {
+                        "type": "string",
+                        "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "digest": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "verificationProfiles": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 16,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "profileId",
+                        "revision",
+                        "digest"
+                      ],
+                      "properties": {
+                        "profileId": {
+                          "type": "string",
+                          "pattern": "^profile_[A-Za-z0-9_-]{8,128}$"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "digest": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      }
+                    }
+                  },
+                  "scopePolicy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "access",
+                      "allowedPaths",
+                      "forbiddenPaths",
+                      "requirePreventivePathEnforcement"
+                    ],
+                    "properties": {
+                      "access": {
+                        "enum": [
+                          "read_only",
+                          "isolated_write"
+                        ]
+                      },
+                      "allowedPaths": {
+                        "type": "array",
+                        "minItems": 0,
+                        "maxItems": 64,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512,
+                          "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                        }
+                      },
+                      "forbiddenPaths": {
+                        "type": "array",
+                        "minItems": 0,
+                        "maxItems": 64,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 512,
+                          "pattern": "^[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+(/[^/\\\\\\x00-\\x1f\\x7f:*?\"<>|]+)*$"
+                        }
+                      },
+                      "requirePreventivePathEnforcement": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "integrationTargets": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 16,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "repositoryId",
+                        "targetRef",
+                        "expectedCommit"
+                      ],
+                      "properties": {
+                        "repositoryId": {
+                          "type": "string",
+                          "pattern": "^repo_[A-Za-z0-9_-]{8,128}$"
+                        },
+                        "targetRef": {
+                          "type": "string",
+                          "minLength": 12,
+                          "maxLength": 255,
+                          "pattern": "^refs/heads/[A-Za-z0-9][A-Za-z0-9._/-]*$"
+                        },
+                        "expectedCommit": {
+                          "type": "string",
+                          "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+                        }
+                      }
+                    }
+                  },
+                  "issuedAt": {
+                    "title": "ConveneWire UTC Timestamp",
+                    "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                  },
+                  "revokedAt": {
+                    "oneOf": [
+                      {
+                        "title": "ConveneWire UTC Timestamp",
+                        "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "reason": {
+                "const": "authorized"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "grant": {
+                "type": "null"
+              },
+              "reason": {
+                "not": {
+                  "const": "authorized"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "repositoryReceipt": {
       "type": "object",
       "additionalProperties": false,

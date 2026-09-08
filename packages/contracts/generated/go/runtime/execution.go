@@ -40,6 +40,7 @@ func compileExecutionSchemas() map[string]*jsonschema.Schema {
 	result := map[string]*jsonschema.Schema{}
 	for _, kind := range []string{"executionManifest", "executionInputBinding", "executionCapability", "repositoryBinding",
 		"runtimeAuthorityRequest", "runtimeAuthorityView", "executionGrant", "repositoryOperation", "repositoryReceipt",
+		"workPolicySpec", "workPolicyOffer", "workGrantParent", "workAuthorization", "workAuthorizationReceipt",
 		"executionCheckpoint", "verificationReceipt", "sourceEvidence", "gateProofRef", "evidenceAdoption",
 		"schedulerControl", "schedulerModeCommand", "schedulerModeReceipt",
 		"schedulerManualDispatchCommand", "schedulerAdvanceCommand", "schedulerDispatchReceipt",
@@ -99,6 +100,12 @@ func validateEvidenceSemantics(kind string, value any) bool {
 			kind != "providerInputAttestation" && kind != "remoteInputAttestation"
 	}
 	switch kind {
+	case "workAuthorization":
+		parent, ok := record["parent"].(map[string]any)
+		spec, specOK := record["spec"].(map[string]any)
+		if !ok || !specOK || executionString(spec, "grantId") != workTaskGrantIDValue(parent) {
+			return false
+		}
 	case "sourceEvidence":
 		pins, ok := record["artifactPins"].([]any)
 		if !ok || !strictlyOrderedArtifactPins(pins) {
@@ -219,6 +226,28 @@ func validateEvidenceSemantics(kind string, value any) bool {
 		return validateRemoteInputAttestation(record, true)
 	}
 	return true
+}
+
+// WorkTaskGrantID fixes an operation identity before compilation, whose plan
+// digest includes that grant ID. Full request equality remains an issuance gate.
+func WorkTaskGrantID(source []byte) (string, error) {
+	normalized, err := ValidateAndNormalizeExecutionCommand("workGrantParent", source)
+	if err != nil {
+		return "", err
+	}
+	value, err := executionJSONValue(normalized)
+	if err != nil {
+		return "", err
+	}
+	return workTaskGrantIDValue(value.(map[string]any)), nil
+}
+
+func workTaskGrantIDValue(parent map[string]any) string {
+	identity := map[string]any{}
+	for _, key := range []string{"authorizationId", "policyId", "policyDigest", "initiatorMemberId"} {
+		identity[key] = parent[key]
+	}
+	return "grant_work_" + executionValueDigest(identity)
 }
 
 func validateRemoteInputAttestation(record map[string]any, retained bool) bool {

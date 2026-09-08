@@ -1,0 +1,1325 @@
+{
+  "fixtureVersion": "0.1.0",
+  "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+  "cases": [
+    {
+      "name": "local standing policy",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": true
+    },
+    {
+      "name": "path-free policy offer",
+      "kind": "workPolicyOffer",
+      "instance": {
+        "version": 1,
+        "spec": {
+          "policyId": "workpolicy_development01",
+          "alias": "日常开发",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "sourceRef": "refs/heads/main",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "roomIds": [
+            "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+          ],
+          "initiatorMemberIds": [
+            "member_development01"
+          ],
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "maxTaskDurationSeconds": 3600,
+          "maxRunAttempts": 3,
+          "maxConcurrency": 1,
+          "expiresAt": "2026-09-09T00:00:00Z"
+        },
+        "revision": 1,
+        "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "issuedAt": "2026-09-08T00:00:00Z",
+        "observedAt": "2026-09-08T00:00:00Z",
+        "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "valid": true
+    },
+    {
+      "name": "authorization identity",
+      "kind": "workGrantParent",
+      "instance": {
+        "authorizationId": "op_work_first0001",
+        "policyId": "workpolicy_development01",
+        "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "revision": 1,
+        "initiatorMemberId": "member_development01",
+        "maxRunAttempts": 2,
+        "maxConcurrency": 1
+      },
+      "valid": true
+    },
+    {
+      "name": "exact task authorization",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 1,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z"
+      },
+      "valid": true
+    },
+    {
+      "name": "authorized receipt",
+      "kind": "workAuthorizationReceipt",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "authorizationId": "op_work_first0001",
+        "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+        "status": "authorized",
+        "grant": {
+          "grant": {
+            "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+            "revision": 1,
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "expiresAt": "2026-09-08T01:00:00Z"
+          },
+          "repositoryId": "repo_00000001",
+          "bindingId": "repobind_00000001",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "planId": "plan_runtime0001",
+          "nodeKey": "Build",
+          "operations": [
+            "prepare",
+            "capture",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": [],
+          "issuedAt": "2026-09-08T00:00:00Z",
+          "revokedAt": null
+        },
+        "reason": "authorized",
+        "observedAt": "2026-09-08T00:00:00Z"
+      },
+      "valid": true
+    },
+    {
+      "name": "denied receipt",
+      "kind": "workAuthorizationReceipt",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "authorizationId": "op_work_first0001",
+        "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+        "status": "denied",
+        "grant": null,
+        "reason": "revoked",
+        "observedAt": "2026-09-08T00:00:00Z"
+      },
+      "valid": true
+    },
+    {
+      "name": "unknown shell",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z",
+        "command": "git push"
+      },
+      "valid": false
+    },
+    {
+      "name": "absolute scope",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "/private/repo"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "integration",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify",
+          "integrate"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "missing capture",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "duplicate actor",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01",
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "empty actor",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "unbounded expiry",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": null
+      },
+      "valid": false
+    },
+    {
+      "name": "oversized attempts",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 101,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "oversized concurrency",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 17,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "missing binding pin",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "repositoryId": "repo_00000001",
+        "sourceRef": "refs/heads/main",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "arbitrary source",
+      "kind": "workPolicySpec",
+      "instance": {
+        "policyId": "workpolicy_development01",
+        "alias": "日常开发",
+        "bindingId": "repobind_00000001",
+        "bindingRevision": 1,
+        "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repositoryId": "repo_00000001",
+        "sourceRef": "HEAD~1",
+        "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "roomIds": [
+          "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+        ],
+        "initiatorMemberIds": [
+          "member_development01"
+        ],
+        "operations": [
+          "capture",
+          "prepare",
+          "verify"
+        ],
+        "runtimeProfile": {
+          "profileId": "profile_runtime01",
+          "revision": 1,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "verificationProfiles": [
+          {
+            "profileId": "profile_00000002",
+            "revision": 1,
+            "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "scopePolicy": {
+          "access": "isolated_write",
+          "allowedPaths": [
+            "src",
+            "tests"
+          ],
+          "forbiddenPaths": [
+            "secrets"
+          ],
+          "requirePreventivePathEnforcement": false
+        },
+        "maxTaskDurationSeconds": 3600,
+        "maxRunAttempts": 3,
+        "maxConcurrency": 1,
+        "expiresAt": "2026-09-09T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "forged grant identity",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 1,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_arbitrary001",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "owner override",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 1,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z",
+        "ownerMemberId": "member_arbitrary01"
+      },
+      "valid": false
+    },
+    {
+      "name": "wider parent revision",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 2,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "task omitted",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 1,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "authorization integration",
+      "kind": "workAuthorization",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "parent": {
+          "authorizationId": "op_work_first0001",
+          "policyId": "workpolicy_development01",
+          "policyDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "revision": 1,
+          "initiatorMemberId": "member_development01",
+          "maxRunAttempts": 2,
+          "maxConcurrency": 1
+        },
+        "spec": {
+          "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+          "bindingId": "repobind_00000001",
+          "bindingRevision": 1,
+          "sourceFingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "repositoryId": "repo_00000001",
+          "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "planId": "plan_runtime0001",
+          "planRevision": 1,
+          "planDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "nodeKey": "Build",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "expiresAt": "2026-09-08T01:00:00Z",
+          "operations": [
+            "capture",
+            "prepare",
+            "verify",
+            "integrate"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": []
+        },
+        "requestedAt": "2026-09-08T00:00:00Z",
+        "deadline": "2026-09-08T00:01:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "empty authorized receipt",
+      "kind": "workAuthorizationReceipt",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "authorizationId": "op_work_first0001",
+        "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+        "status": "authorized",
+        "grant": null,
+        "reason": "authorized",
+        "observedAt": "2026-09-08T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "denied receipt with grant",
+      "kind": "workAuthorizationReceipt",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "authorizationId": "op_work_first0001",
+        "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+        "status": "denied",
+        "grant": {
+          "grant": {
+            "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+            "revision": 1,
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "expiresAt": "2026-09-08T01:00:00Z"
+          },
+          "repositoryId": "repo_00000001",
+          "bindingId": "repobind_00000001",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "planId": "plan_runtime0001",
+          "nodeKey": "Build",
+          "operations": [
+            "prepare",
+            "capture",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": [],
+          "issuedAt": "2026-09-08T00:00:00Z",
+          "revokedAt": null
+        },
+        "reason": "revoked",
+        "observedAt": "2026-09-08T00:00:00Z"
+      },
+      "valid": false
+    },
+    {
+      "name": "wrong success reason",
+      "kind": "workAuthorizationReceipt",
+      "instance": {
+        "version": 1,
+        "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+        "authorizationId": "op_work_first0001",
+        "requestDigest": "c2bc647a810ca7cf376845c24f5689e1e710050a5b1d33c3daacc44f8d70af34",
+        "status": "authorized",
+        "grant": {
+          "grant": {
+            "grantId": "grant_work_6310ae745e275ede54bae1fcae81895d5b9d7af543e27eae9ebc9f340d53c12f",
+            "revision": 1,
+            "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "expiresAt": "2026-09-08T01:00:00Z"
+          },
+          "repositoryId": "repo_00000001",
+          "bindingId": "repobind_00000001",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "planId": "plan_runtime0001",
+          "nodeKey": "Build",
+          "operations": [
+            "prepare",
+            "capture",
+            "verify"
+          ],
+          "runtimeProfile": {
+            "profileId": "profile_runtime01",
+            "revision": 1,
+            "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "verificationProfiles": [
+            {
+              "profileId": "profile_00000002",
+              "revision": 1,
+              "digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            }
+          ],
+          "scopePolicy": {
+            "access": "isolated_write",
+            "allowedPaths": [
+              "src",
+              "tests"
+            ],
+            "forbiddenPaths": [
+              "secrets"
+            ],
+            "requirePreventivePathEnforcement": false
+          },
+          "integrationTargets": [],
+          "issuedAt": "2026-09-08T00:00:00Z",
+          "revokedAt": null
+        },
+        "reason": "revoked",
+        "observedAt": "2026-09-08T00:00:00Z"
+      },
+      "valid": false
+    }
+  ]
+}

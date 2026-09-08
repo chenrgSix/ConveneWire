@@ -18,6 +18,8 @@
             "agent.status",
             "agent.provision.requested",
             "agent.provision.result",
+            "work.authorization.requested",
+            "work.authorization.receipt",
             "run.requested",
             "run.accepted",
             "run.status",
@@ -31,6 +33,44 @@
         }
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "work.authorization.requested"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/workAuthorizationRequestedPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "work.authorization.receipt"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/workAuthorizationReceiptPayload"
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {
@@ -320,6 +360,38 @@
     }
   ],
   "$defs": {
+    "workAuthorizationRequestedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionEpoch",
+        "workAuthorization"
+      ],
+      "properties": {
+        "connectionEpoch": {
+          "$ref": "#/$defs/connectionEpoch"
+        },
+        "workAuthorization": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workAuthorization"
+        }
+      }
+    },
+    "workAuthorizationReceiptPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionEpoch",
+        "workAuthorizationReceipt"
+      ],
+      "properties": {
+        "connectionEpoch": {
+          "$ref": "#/$defs/connectionEpoch"
+        },
+        "workAuthorizationReceipt": {
+          "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workAuthorizationReceipt"
+        }
+      }
+    },
     "artifactMaterializationError": {
       "title": "Artifact Materialization Error",
       "description": "Non-retryable negative acknowledgement when pinned Artifact content cannot be verified before Runtime admission.",
@@ -611,6 +683,7 @@
         "supportsHandoff"
       ],
       "properties": {
+        "workPolicyOffers": {"type":"array","minItems":0,"maxItems":64,"items":{"$ref":"https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workPolicyOffer"},"description":"Owner-local standing policy offers. Omission means unsupported. An offer is not an exact Task grant or Runtime admission."},
         "ownerPrivateOutput": {"type": "boolean", "description": "Explicit owner-private output mode. The Bridge retains candidate text locally and emits only content-free status; disclosure requires a separate exact-content owner grant."},
         "governedExecution": {
           "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/capability"
@@ -666,7 +739,7 @@
             ]
           },
           "then": {
-            "not": { "properties": { "governedExecution": {} }, "required": ["governedExecution"] },
+            "not": { "anyOf": [{ "properties": {"governedExecution": {}}, "required": ["governedExecution"] }, { "properties": {"workPolicyOffers": {}}, "required": ["workPolicyOffers"] }] },
             "properties": {
               "supportsStart": {
                 "const": false

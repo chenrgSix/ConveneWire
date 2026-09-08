@@ -3,6 +3,246 @@
 import validate from "./bridge-validator.cjs";
 
 const canonicalPropertyTrees = {
+  "work.authorization.requested": {
+    "p": {
+      "protocolVersion": {},
+      "messageId": {},
+      "timestamp": {},
+      "type": {},
+      "payload": {
+        "p": {
+          "connectionEpoch": {
+            "n": true,
+            "l": "1",
+            "u": "9007199254740991"
+          },
+          "workAuthorization": {
+            "p": {
+              "version": {
+                "n": true,
+                "l": "1",
+                "u": "1"
+              },
+              "deviceId": {},
+              "parent": {
+                "p": {
+                  "authorizationId": {},
+                  "policyId": {},
+                  "policyDigest": {},
+                  "revision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "1"
+                  },
+                  "initiatorMemberId": {},
+                  "maxRunAttempts": {
+                    "n": true,
+                    "l": "1",
+                    "u": "100"
+                  },
+                  "maxConcurrency": {
+                    "n": true,
+                    "l": "1",
+                    "u": "16"
+                  }
+                }
+              },
+              "spec": {
+                "p": {
+                  "grantId": {},
+                  "bindingId": {},
+                  "bindingRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "1"
+                  },
+                  "sourceFingerprint": {},
+                  "repositoryId": {},
+                  "baseCommit": {},
+                  "planId": {},
+                  "planRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  },
+                  "planDigest": {},
+                  "nodeKey": {},
+                  "roomId": {},
+                  "taskId": {},
+                  "definitionRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  },
+                  "criteriaRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  },
+                  "agentId": {},
+                  "expiresAt": {},
+                  "operations": {
+                    "i": {}
+                  },
+                  "runtimeProfile": {
+                    "p": {
+                      "profileId": {},
+                      "revision": {
+                        "n": true,
+                        "l": "1",
+                        "u": "9007199254740991"
+                      },
+                      "digest": {}
+                    }
+                  },
+                  "verificationProfiles": {
+                    "i": {
+                      "p": {
+                        "profileId": {},
+                        "revision": {
+                          "n": true,
+                          "l": "1",
+                          "u": "9007199254740991"
+                        },
+                        "digest": {}
+                      }
+                    }
+                  },
+                  "scopePolicy": {
+                    "p": {
+                      "access": {},
+                      "allowedPaths": {
+                        "i": {}
+                      },
+                      "forbiddenPaths": {
+                        "i": {}
+                      },
+                      "requirePreventivePathEnforcement": {}
+                    }
+                  },
+                  "integrationTargets": {
+                    "i": {
+                      "p": {
+                        "repositoryId": {},
+                        "targetRef": {},
+                        "expectedCommit": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "requestedAt": {},
+              "deadline": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "work.authorization.receipt": {
+    "p": {
+      "protocolVersion": {},
+      "messageId": {},
+      "timestamp": {},
+      "type": {},
+      "payload": {
+        "p": {
+          "connectionEpoch": {
+            "n": true,
+            "l": "1",
+            "u": "9007199254740991"
+          },
+          "workAuthorizationReceipt": {
+            "p": {
+              "version": {
+                "n": true,
+                "l": "1",
+                "u": "1"
+              },
+              "deviceId": {},
+              "authorizationId": {},
+              "requestDigest": {},
+              "status": {},
+              "grant": {
+                "p": {
+                  "grant": {
+                    "p": {
+                      "grantId": {},
+                      "revision": {
+                        "n": true,
+                        "l": "1",
+                        "u": "9007199254740991"
+                      },
+                      "digest": {},
+                      "expiresAt": {}
+                    }
+                  },
+                  "repositoryId": {},
+                  "bindingId": {},
+                  "deviceId": {},
+                  "agentId": {},
+                  "planId": {},
+                  "nodeKey": {},
+                  "operations": {
+                    "i": {}
+                  },
+                  "runtimeProfile": {
+                    "p": {
+                      "profileId": {},
+                      "revision": {
+                        "n": true,
+                        "l": "1",
+                        "u": "9007199254740991"
+                      },
+                      "digest": {}
+                    }
+                  },
+                  "verificationProfiles": {
+                    "i": {
+                      "p": {
+                        "profileId": {},
+                        "revision": {
+                          "n": true,
+                          "l": "1",
+                          "u": "9007199254740991"
+                        },
+                        "digest": {}
+                      }
+                    }
+                  },
+                  "scopePolicy": {
+                    "p": {
+                      "access": {},
+                      "allowedPaths": {
+                        "i": {}
+                      },
+                      "forbiddenPaths": {
+                        "i": {}
+                      },
+                      "requirePreventivePathEnforcement": {}
+                    }
+                  },
+                  "integrationTargets": {
+                    "i": {
+                      "p": {
+                        "repositoryId": {},
+                        "targetRef": {},
+                        "expectedCommit": {}
+                      }
+                    }
+                  },
+                  "issuedAt": {},
+                  "revokedAt": {}
+                }
+              },
+              "reason": {},
+              "observedAt": {}
+            }
+          }
+        }
+      }
+    }
+  },
   "run.activity": {
     "p": {
       "protocolVersion": {},
@@ -222,6 +462,103 @@ const canonicalPropertyTrees = {
           "role": {},
           "capabilities": {
             "p": {
+              "workPolicyOffers": {
+                "i": {
+                  "p": {
+                    "version": {
+                      "n": true,
+                      "l": "1",
+                      "u": "1"
+                    },
+                    "spec": {
+                      "p": {
+                        "policyId": {},
+                        "alias": {},
+                        "bindingId": {},
+                        "bindingRevision": {
+                          "n": true,
+                          "l": "1",
+                          "u": "1"
+                        },
+                        "sourceFingerprint": {},
+                        "repositoryId": {},
+                        "sourceRef": {},
+                        "agentId": {},
+                        "roomIds": {
+                          "i": {}
+                        },
+                        "initiatorMemberIds": {
+                          "i": {}
+                        },
+                        "operations": {
+                          "i": {}
+                        },
+                        "runtimeProfile": {
+                          "p": {
+                            "profileId": {},
+                            "revision": {
+                              "n": true,
+                              "l": "1",
+                              "u": "9007199254740991"
+                            },
+                            "digest": {}
+                          }
+                        },
+                        "verificationProfiles": {
+                          "i": {
+                            "p": {
+                              "profileId": {},
+                              "revision": {
+                                "n": true,
+                                "l": "1",
+                                "u": "9007199254740991"
+                              },
+                              "digest": {}
+                            }
+                          }
+                        },
+                        "scopePolicy": {
+                          "p": {
+                            "access": {},
+                            "allowedPaths": {
+                              "i": {}
+                            },
+                            "forbiddenPaths": {
+                              "i": {}
+                            },
+                            "requirePreventivePathEnforcement": {}
+                          }
+                        },
+                        "maxTaskDurationSeconds": {
+                          "n": true,
+                          "l": "60",
+                          "u": "86400"
+                        },
+                        "maxRunAttempts": {
+                          "n": true,
+                          "l": "1",
+                          "u": "100"
+                        },
+                        "maxConcurrency": {
+                          "n": true,
+                          "l": "1",
+                          "u": "16"
+                        },
+                        "expiresAt": {}
+                      }
+                    },
+                    "revision": {
+                      "n": true,
+                      "l": "1",
+                      "u": "1"
+                    },
+                    "digest": {},
+                    "issuedAt": {},
+                    "observedAt": {},
+                    "baseCommit": {}
+                  }
+                }
+              },
               "ownerPrivateOutput": {},
               "governedExecution": {
                 "p": {
