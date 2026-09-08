@@ -875,11 +875,14 @@ reconstructed reasons or fabricated zero spending. QA-066 owns acceptance.
 
 ## Preauthorized Room development
 
-[ADR-0060](../adr/0060-preauthorize-local-work-policies.md) adds an explicit Room
-entry for owner-preauthorized development. Current offers supply path-free
+[ADR-0061](../adr/0061-continue-development-from-conversation.md) makes the normal
+Room composer the primary entry. The Agent derives development intent and
+acceptance criteria from conversation; humans do not repeat their request in a
+separate form. Blockers and delivery return to the source conversation.
+Reading and discussion do not create development plans. Current offers supply path-free
 readiness and exact source/profile limits. A closed initiation command creates
 the existing root Task, approved single-node plan and governed child Task through
-Central authority. It does not interpret ordinary chat as permission to write.
+Central authority. A model proposal cannot expand the standing owner policy.
 
 Unconfirmed initiation intent, including its title, goal and criteria, is kept
 in member/Room-scoped session storage with the operation ID for exact replay;
@@ -887,4 +890,6 @@ credentials and repository bytes are not stored there. Corrupt pending data
 blocks fresh submission. The history opens the root Task's canonical evidence
 surface. Candidate receipts, verification, bounded PNG reports, visual review,
 Result adoption and integration remain distinct. See the real connected
-[QA-089 acceptance](../acceptance/qa-089-standing-work-product-loop.md).
+[QA-089 acceptance](../acceptance/qa-089-standing-work-product-loop.md) records
+the earlier explicit-form flow; conversational acceptance belongs to RUN-019
+and WEB-078 in the task register.

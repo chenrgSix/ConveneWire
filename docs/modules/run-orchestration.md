@@ -1,5 +1,12 @@
 # Run Orchestration Module
 
+[ADR-0061](../adr/0061-continue-development-from-conversation.md) binds a capable
+Codex Agent's read-only development proposal to the exact original human Run.
+Central retains one immutable proposal, waits for successful completion and
+reserves the source Task budget before creating a policy-governed continuation.
+Missing authority is reported in the source conversation. Reading, Discussion,
+handoff and private-output Runs cannot implicitly create development plans.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds governed
 execution manifests and a common admission port. Plan dispatch still creates
 one ordinary Run and uses the existing Delivery/inbox, retry and ambiguity

@@ -4,6 +4,10 @@
 - Date: 2026-09-08
 - Owner: Bridge, Execution, Repository, Verification and Web
 
+The separate initiation flow below is amended by
+[ADR-0061](0061-continue-development-from-conversation.md): ordinary conversation
+is the primary entry; the legacy explicit initiation API remains compatible.
+
 ## Context
 
 Ordinary Room Codex Runs can edit a workspace while `.git` remains read-only.

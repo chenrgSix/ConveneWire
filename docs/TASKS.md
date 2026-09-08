@@ -756,6 +756,13 @@ or a registration receipt alone.
 | WEB-077 | DONE | Expose development readiness and separate delivery evidence in Room | EXEC-012, BRG-078, VER-002 | [Product evidence](acceptance/qa-089-standing-work-product-loop.md): production Web initiation, exact request recovery, actionable readiness, root delivery link and receipt-bound PNG reports; focused tests and 1440/900 px visual acceptance pass |
 | QA-089 | DONE | Accept unattended everyday development under standing work policies | WEB-077 | [Physical fixture](acceptance/qa-089-standing-work-product-loop.md): one owner policy, two Room UI Tasks, actual Central/Bridge/Git/browser, four passing verifier receipts, owner-process restart and parent revocation; authority negatives and scoped checks pass. Deterministic Runtime, no live model or installed-client migration |
 
+## Conversation development correction
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| RUN-019 | IN_PROGRESS | Continue authorized development from ordinary Agent conversation | EXEC-012, CON-026, WEB-077 | ADR-0061; pending contract, read-only intent, durable continuation, source context/budget and authority regression evidence |
+| WEB-078 | IN_PROGRESS | Remove the separate development form and retain conversation delivery | RUN-019 | Pending production composer, no-form, inline blocker/delivery and installed preview verification |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |
