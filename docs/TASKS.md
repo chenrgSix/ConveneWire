@@ -736,6 +736,26 @@ regressions and physical browser acceptance remains unverified.
 | WEB-074 | IN_PROGRESS | Distinguish and find Room participants before saving | WEB-025, ROOM-008, WEB-066 | Implementation and 11 focused Web checks, including real Server/App owner opt-out persistence, Web build, docs lint and whitespace checks pass; same-name suffix collisions, search/roster filters, selection counts, offline and disabled states covered. Local checkpoint retained; browser review unavailable after connector timeout and isolated native launch abort |
 | WEB-075 | IN_PROGRESS | Compact composer draft hints and send with Enter | WEB-041, WEB-058 | Implementation, 45 focused Web checks and Web build pass: actual App/Server Enter send, native newline event handling, IME/legacy-229, Mention selection, held keys, disabled Send, inline hint/button removal and independent draft recovery. Test teardown awaits React cleanup. Local checkpoint retained; browser review unavailable as recorded for WEB-074 |
 
+## Preauthorized everyday development
+
+The owner approved [ADR-0060](adr/0060-preauthorize-local-work-policies.md):
+configure device work permissions once, then execute matching development
+Tasks from Room without an attended client. Existing local changes were
+checkpointed in `240a472`. Final completion requires the actual connected
+product flow and separate Git, test and browser evidence, not a policy library
+or a registration receipt alone.
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| GOV-043 | DONE | Freeze standing device work-policy authority and product acceptance | GOV-027, BRG-071 | Owner-approved ADR-0060 and owning module boundaries specify parent-policy validity, exact derived grants, unattended execution and explicit delivery evidence |
+| BRG-077 | IN_PROGRESS | Persist standing work policies and derive revocable exact Task grants | GOV-043, REPO-001 | Pending physical repository, scope, initiator, expiry, replay and parent-revocation regression evidence |
+| CON-026 | TODO | Define bounded work-policy offers and exact authorization negotiation | BRG-077, CON-021 | Pending generated TypeScript/Go contracts, compatibility and negative interoperability tests |
+| EXEC-012 | TODO | Admit Room development Tasks through standing policy negotiation | CON-026, RUN-018 | Pending two distinct Tasks through authenticated Central/Bridge, exact single-node admission, cancellation and recovery |
+| BRG-078 | TODO | Configure and revoke work policies in the local client | BRG-077, CON-026 | Pending owner-authenticated UI, actual available resources, expiry/revocation behavior and browser evidence |
+| VER-002 | TODO | Run bounded browser verification and retain distinct diagnostics | GOV-043, VER-001 | Pending isolated browser startup/page/assertion/screenshot results and crash/timeout/cleanup evidence |
+| WEB-077 | TODO | Expose development readiness and separate delivery evidence in Room | EXEC-012, BRG-078, VER-002 | Pending actual Room initiation, actionable capability blockers, candidate commits, tests and visual-review state |
+| QA-089 | TODO | Accept unattended everyday development under standing work policies | WEB-077 | Pending two-Task product loop, revoke/expiry/replay/restart negatives, physical Git/browser evidence and scoped verification gates |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

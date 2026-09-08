@@ -37,6 +37,15 @@ execution and cannot be widened into Central repository authority.
 
 ## Local Repository Binding
 
+[ADR-0060](../adr/0060-preauthorize-local-work-policies.md) adds owner-local
+standing work policies for unattended development. A policy may derive exact
+Task consent only within its immutable repository, Room, human initiator,
+Agent, source-ref, profile, path, operation and validity bounds. Derived grants
+retain their parent policy pins and cease to authorize work when that parent
+expires or is revoked. Existing repository registration, physical Runtime
+probes, Central task/plan authority and per-operation checks remain required.
+Policy registration alone cannot advertise successful execution or delivery.
+
 An owner explicitly registers a local Git repository, safe display alias,
 runtime profile, verification profiles and integration target allowlist. The
 binding has an opaque binding ID, authorized logical repository ID and local

@@ -1,5 +1,13 @@
 # Local Bridge
 
+[ADR-0060](../adr/0060-preauthorize-local-work-policies.md) defines the
+owner-configured standing work policy: a paired device derives exact Task
+grants automatically within a preauthorized scope. Local setup and revocation
+remain owner operations; Room initiators receive only path-free readiness,
+blockers and authenticated execution receipts. Existing non-interactive Codex
+approval remains in force. Delivery status is tracked by BRG-077/078 and their
+dependencies in the task register.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) adds explicit
 owner-local repository bindings and Task-scoped grants. Pairing does not opt
 existing Agents into repository execution. Bridge keeps paths, commands,
