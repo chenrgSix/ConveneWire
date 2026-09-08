@@ -73,10 +73,31 @@ The [1440-pixel conversation](assets/run-019/room-conversation-ready.png),
 The separate development entry is absent; the existing composer and mention
 selection remain usable and the report image stays within the viewport.
 
-Installed preview verification remains the final WEB-078 gate. Generated
-screenshots are distinct from human acceptance, and deterministic execution does
-not validate a live model's interpretation or code quality. Mobile widths below
-900 pixels, Windows/Linux, CI and external publication are outside this run.
+## Installed preview
+
+The owner-authorized local installation was updated to
+`v0.5.2-local.5d22eec`, source `5d22eece618cd7745fcfe3c3ff29a854892ea563`.
+Desktop files match the verified build. Central's controller verified the
+release and backup, migrated schema 90 to 91 and passed doctor, original-CA
+HTTPS readiness and WebSocket ingress checks. Business record counts, the
+installation/trust identity and all 30 existing client JSON files are unchanged.
+Three existing Agents reconnected ready; both Codex Agents published the new
+conversation capability. The served JS/CSS no longer contains the separate
+development entry. Existing Pi behavior is unchanged.
+
+The real installation had no owner repository/profile/work-policy resources;
+the update did not create permission or make model calls. Initial owner setup
+is still required there. The physical browser scenario above supplies the
+configured-policy execution evidence. Access to the personal Edge window was
+denied by automatic permission review; installed Web assets were verified through
+the exact local HTTPS origin instead. Native window capture returned
+`cgWindowNotFound`; binary identity, service connection and capability publication
+were verified independently. No native screenshot acceptance is claimed.
+
+Generated screenshots are distinct from human acceptance, and deterministic
+execution does not validate a live model's interpretation or code quality.
+Mobile widths below 900 pixels, Windows/Linux, CI and external publication are
+outside this run.
 
 Reproduce using the
 [standing-work browser command](../development-commands.md#standing-work-browser-acceptance).
