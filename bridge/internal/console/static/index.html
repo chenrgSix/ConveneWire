@@ -136,8 +136,9 @@
                 <label>已验证的执行环境<select name="runtimeProfileId" required></select></label>
                 <label>来源分支<input name="sourceRef" required value="refs/heads/main" pattern="refs/heads/.+"></label>
                 <label>验证方式<select name="verifierIds" multiple size="3" required></select></label>
-                <label>允许的 Room<select name="roomIds" multiple size="3" required></select></label>
+                <label>允许的 Room<select name="roomIds" multiple size="3"></select></label>
                 <div><button type="button" class="secondary" data-load-rooms>读取我的 Room</button><p data-room-status class="tool-result"></p></div>
+                <label class="wide">Room ID（无法读取时填写）<textarea name="roomIdsManual" rows="2" placeholder="可从 Room 地址获取，每行一个 ID"></textarea></label>
                 <label class="wide">允许的发起人 ID<textarea name="initiatorMemberIds" required rows="2" placeholder="读取 Room 后填入当前成员；其他成员每行一个 ID"></textarea></label>
                 <label>允许交付的目录<textarea name="allowedPaths" required rows="2">.</textarea></label>
                 <label>禁止交付的目录<textarea name="forbiddenPaths" rows="2" placeholder="每行一个仓库相对目录"></textarea></label>

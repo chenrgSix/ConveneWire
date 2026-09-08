@@ -7,7 +7,8 @@ Delivery state is recorded only in [TASKS](../TASKS.md).
 The local token-authenticated Console provides an explicit policy form over
 registered repositories, configured Agents, matching Runtime profiles and
 verification profiles. It reads the owner's Room list through the existing
-paired member entry. The owner chooses allowed initiators, output directories,
+paired member entry, or accepts explicitly entered Room IDs for legacy paired
+devices without that entry. The owner chooses allowed initiators, output directories,
 source branch, finite task budgets and expiration. No per-Task local form is
 required after this setup. Registration validates current profiles, source and
 immutable pins; overlapping active Agent/Room/initiator policies are rejected.
@@ -31,10 +32,18 @@ Validation:
   `TestWorkPolicyBrowserFixture`. Room/resource selection, form filling and
   successful save/inventory update were observed. This fixture uses simulated
   resources and no installed policy or Runtime.
-- Browser interaction became unresponsive while exercising a native confirmation.
-  Revocation now uses explicit inline confirmation. Full visual/revocation browser
-  acceptance remains pending in this task and QA-089; no screenshot is presented
-  as completed visual acceptance.
+- The final QA-089 fixture exercised the actual local Console, registered physical
+  repository/profiles, saved one policy through the real form, then completed two
+  Room-initiated Tasks with a full Bridge restart between them. Inline parent
+  revocation updated both derived grants and removed Room readiness. The final
+  fixture passed in 34.13 seconds; no model was called.
+- Real form submission exposed a millisecond versus canonical nanosecond timestamp
+  mismatch. Owner input is now normalized before immutable persistence; equivalent
+  timestamps replay the same policy digest. Repository/Console race regressions
+  and owning vet pass. Form controls and inventory were visually inspected.
+- Screenshots: [policy form](assets/qa-089/local-policy-ready.png),
+  [saved policy](assets/qa-089/local-policy-saved.png),
+  [revoked parent and both grants](assets/qa-089/local-policy-revoked.png).
 
 The installed client, live model and physical Windows/macOS packaging have not
 been changed or accepted by these checks.

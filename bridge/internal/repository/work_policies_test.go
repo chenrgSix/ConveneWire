@@ -312,3 +312,20 @@ func TestWorkPolicyFractionalTimesAndExactSymbolicRefDenial(t *testing.T) {
 		t.Fatal("symbolic branch admitted", err)
 	}
 }
+
+func TestWorkPolicyBrowserTimestampNormalizesBeforeImmutablePersistence(t *testing.T) {
+	_, store, spec, _, _ := workPolicyFixture(t, "sha1")
+	spec.ExpiresAt = bindingNow.Add(24 * time.Hour).Format("2006-01-02T15:04:05.000Z")
+	first, err := store.CreateWorkPolicy(context.Background(), spec, bindingNow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !validBindingTime(first.Spec.ExpiresAt) {
+		t.Fatal("browser timestamp was not normalized")
+	}
+	spec.ExpiresAt = first.Spec.ExpiresAt
+	replay, err := store.CreateWorkPolicy(context.Background(), spec, bindingNow.Add(time.Second))
+	if err != nil || replay.Digest != first.Digest {
+		t.Fatal("equivalent timestamp changed immutable policy", err)
+	}
+}

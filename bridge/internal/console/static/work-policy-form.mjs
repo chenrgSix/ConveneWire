@@ -56,10 +56,11 @@ export function createWorkPolicyForm({form, request, agents, refreshed}) {
     event.preventDefault();
     if (busy || !form.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form));
-    values.roomIds = [...field("roomIds").selectedOptions].map((option) => option.value);
+    values.roomIds = [...new Set([...field("roomIds").selectedOptions].map((option) => option.value).concat(list(field("roomIdsManual").value)))];
     values.verifierIds = [...field("verifierIds").selectedOptions].map((option) => option.value);
     values.confirmed = field("confirmed").checked;
     try {
+      if (!values.roomIds.length) throw new Error("请选择 Room 或填写 Room ID。");
       const spec = workPolicySpec(values, inventory, policyId);
       busy = true;
       form.querySelectorAll("input,select,textarea,button").forEach((control) => { control.disabled = true; });

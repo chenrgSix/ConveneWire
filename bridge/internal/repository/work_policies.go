@@ -121,6 +121,13 @@ func normalizeWorkPolicy(spec WorkPolicySpec) (WorkPolicySpec, error) {
 		return spec, ErrInvalid
 	}
 	spec = cloned
+	// Browser datetime controls emit milliseconds; durable local records use
+	// canonical nanoseconds. Normalize the accepted timestamp before pinning it.
+	expiry, expiryErr := time.Parse(time.RFC3339Nano, spec.ExpiresAt)
+	if expiryErr != nil {
+		return spec, ErrInvalid
+	}
+	spec.ExpiresAt = bindingTime(expiry)
 	if !workPolicyID.MatchString(spec.PolicyID) || !bindingID.MatchString(spec.BindingID) ||
 		spec.BindingRevision != 1 || !sha256ID.MatchString(spec.SourceFingerprint) ||
 		!repositoryID.MatchString(spec.RepositoryID) || !validGrantTarget(spec.SourceRef) ||
