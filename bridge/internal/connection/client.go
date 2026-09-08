@@ -25,8 +25,6 @@ import (
 	"convenewire.dev/bridge/internal/identity"
 	"convenewire.dev/bridge/internal/operations"
 	"convenewire.dev/bridge/internal/pairing"
-	bridgeruntime "convenewire.dev/bridge/internal/runtime"
-	"convenewire.dev/bridge/internal/workspace"
 	contracts "convenewire.dev/contracts/generated/go"
 	execution "convenewire.dev/contracts/generated/go/execution"
 	runtimecontracts "convenewire.dev/contracts/generated/go/runtime"
@@ -60,7 +58,10 @@ type CanceledRunFenceHandler func(
 type PreparedRuns struct {
 	ReplayMessages          []any
 	GovernedExecutionGrants map[string][]execution.ExecutionGrantSummary
+	WorkPolicyOffers        map[string][]execution.WorkPolicyOffer
 }
+
+type WorkAuthorizationHandler func(context.Context, execution.WorkAuthorization) (execution.WorkAuthorizationReceipt, PreparedRuns, error)
 
 type RunPreparationHandler func(context.Context) (PreparedRuns, error)
 
@@ -85,6 +86,7 @@ type Client struct {
 	FenceCanceledRun                  CanceledRunFenceHandler
 	ReplayCanceledRun                 CanceledRunReplayHandler
 	HandleProvision                   ProvisionHandler
+	HandleWorkAuthorization           WorkAuthorizationHandler
 	PrepareRuns                       RunPreparationHandler
 	RecoverRuns                       func(context.Context, func(context.Context, any) error) error
 	Observer                          operations.Observer
@@ -139,6 +141,19 @@ func validatePreparedRuns(agents []config.AgentConfig, prepared PreparedRuns, de
 	configured := make(map[string]bool, len(agents))
 	for _, agent := range agents {
 		configured[agent.Name] = true
+	}
+	for name, offers := range prepared.WorkPolicyOffers {
+		if !configured[name] || len(offers) == 0 || len(offers) > 64 {
+			return errors.New("invalid work policy offer set")
+		}
+		seen := map[string]bool{}
+		for _, offer := range offers {
+			raw, err := json.Marshal(offer)
+			if err != nil || runtimecontracts.ValidateExecutionCommand("workPolicyOffer", raw) != nil || seen[offer.Spec.PolicyID] {
+				return errors.New("invalid work policy offer")
+			}
+			seen[offer.Spec.PolicyID] = true
+		}
 	}
 	for name, grants := range prepared.GovernedExecutionGrants {
 		if len(grants) != 0 && !configured[name] {
@@ -327,7 +342,8 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 			SupportedProtocolVersions: []string{"1.0"},
 		},
 	}
-	if hasGovernedExecutionAgent(c.Config.Agents, preparedRuns.GovernedExecutionGrants) {
+	if hasGovernedExecutionAgent(c.Config.Agents, preparedRuns.GovernedExecutionGrants) ||
+		(c.HandleWorkAuthorization != nil && len(preparedRuns.WorkPolicyOffers) != 0) {
 		capability := governedHelloCapability()
 		hello.Payload.GovernedExecution = &capability
 	}
@@ -338,82 +354,23 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	for _, configured := range c.Config.Agents {
-		agentID := identities[configured.Name]
-		runtimeScopeID, err := bridgeruntime.AgentRuntimeScopeID(configured)
-		if err != nil {
-			return false, fmt.Errorf("resolve Agent Runtime scope: %w", err)
+	publishAgents := func(sendContext context.Context, prepared PreparedRuns) error {
+		if err := validatePreparedRuns(c.Config.Agents, prepared, c.Credential.DeviceID); err != nil {
+			return err
 		}
-		workspaceSnapshot, err := workspace.Inspect(configured.Workspace)
-		if err != nil {
-			return false, fmt.Errorf("resolve Agent Workspace snapshot: %w", err)
-		}
-		capabilities := contracts.Capabilities{
-			InvocationMode:    contracts.Managed,
-			SupportsHandoff:   false,
-			SupportsInterrupt: true,
-			SupportsResume:    c.ResumeAgentNames[configured.Name],
-			SupportsStart:     true,
-			SupportsStreaming: c.StreamingAgentNames[configured.Name],
-		}
-		if grants := preparedRuns.GovernedExecutionGrants[configured.Name]; len(grants) != 0 {
-			if configured.OwnerPrivateOutput {
-				return false, errors.New("private output does not support governed execution")
-			}
-			for _, grant := range grants {
-				if grant.AgentID != agentID {
-					return false, errors.New("Bridge Run preparation returned a governed grant for another Agent")
-				}
-			}
-			capability, err := governedAgentCapability(grants)
+		for _, configured := range c.Config.Agents {
+			publication, err := c.agentPublication(configured, identities[configured.Name], prepared)
 			if err != nil {
-				return false, err
+				return err
 			}
-			capabilities.GovernedExecution = &capability
+			if err := writer.writeJSON(sendContext, publication); err != nil {
+				return err
+			}
 		}
-		supportsRoomContextCoverage :=
-			c.RoomContextCoverageAgentNames[configured.Name]
-		capabilities.SupportsRoomContextCoverage = &supportsRoomContextCoverage
-		supportsWorkspaceLeases := true
-		capabilities.SupportsWorkspaceLeases = &supportsWorkspaceLeases
-		supportsArtifactPublication := !configured.OwnerPrivateOutput
-		capabilities.SupportsArtifactPublication = &supportsArtifactPublication
-		supportsArtifactMaterialization :=
-			c.ArtifactMaterializationAgentNames[configured.Name]
-		capabilities.SupportsArtifactMaterialization = &supportsArtifactMaterialization
-		supportsDiscussionSupplementalEvidence := !configured.OwnerPrivateOutput
-		if configured.OwnerPrivateOutput {
-			privateOutput := true
-			capabilities.OwnerPrivateOutput = &privateOutput
-		}
-		capabilities.SupportsDiscussionSupplementalEvidence =
-			&supportsDiscussionSupplementalEvidence
-		runtimePolicy := publishedRuntimePolicy(configured)
-		workspaceAlias := configured.ResolvedWorkspaceAlias()
-		publication := contracts.AgentPublishMessage{
-			ProtocolVersion: "1.0",
-			MessageID:       newID("msg"),
-			Timestamp:       time.Now().UTC(),
-			Type:            contracts.AgentPublish,
-			Payload: contracts.AgentPublishPayload{
-				AgentID:             agentID,
-				Capabilities:        capabilities,
-				DeviceID:            c.Credential.DeviceID,
-				Name:                configured.Name,
-				OwnerMemberID:       c.Credential.OwnerMemberID,
-				Role:                configured.Role,
-				RuntimePolicy:       &runtimePolicy,
-				ConfiguredModel:     configured.ConfiguredModel(),
-				RuntimeScopeID:      &runtimeScopeID,
-				WorkspaceAlias:      &workspaceAlias,
-				WorkspaceRef:        &workspaceSnapshot.WorkspaceRef,
-				WorkspaceGeneration: &workspaceSnapshot.Generation,
-				TeamID:              c.Credential.TeamID,
-			},
-		}
-		if err := writer.writeJSON(ctx, publication); err != nil {
-			return false, err
-		}
+		return nil
+	}
+	if err := publishAgents(ctx, preparedRuns); err != nil {
+		return false, err
 	}
 	for _, message := range preparedRuns.ReplayMessages {
 		if err := writer.writeJSON(ctx, message); err != nil {
@@ -454,6 +411,30 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 		default:
 		}
 	}
+	// One bounded worker handles consent negotiation independently of the Run
+	// reader, so slow source/profile inspection cannot prevent cancellation.
+	workRequests := make(chan contracts.WorkAuthorizationRequestedMessage, 8)
+	if c.HandleWorkAuthorization != nil {
+		runWorkers.Add(1)
+		go func() {
+			defer runWorkers.Done()
+			for {
+				select {
+				case <-connectionContext.Done():
+					return
+				case message := <-workRequests:
+					workContext, cancel := context.WithTimeout(connectionContext, 30*time.Second)
+					err := c.handleWorkRequest(workContext, message, epoch, preparedRuns, publishAgents,
+						writer.writeJSON)
+					cancel()
+					if err != nil {
+						reportReadError(err)
+						return
+					}
+				}
+			}
+		}()
+	}
 	go func() {
 		defer close(readerDone)
 		for {
@@ -472,6 +453,19 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 				return
 			}
 			switch requested := decoded.(type) {
+			case contracts.WorkAuthorizationRequestedMessage:
+				if c.HandleWorkAuthorization == nil || requested.Payload.ConnectionEpoch != epoch ||
+					requested.Payload.WorkAuthorization.DeviceID != c.Credential.DeviceID {
+					reportReadError(errors.New("work authorization was not negotiated on this connection"))
+					return
+				}
+				select {
+				case workRequests <- requested:
+				default:
+					reportReadError(errors.New("work authorization queue exceeded"))
+					return
+				}
+				continue
 			case contracts.RunRequestedMessage:
 				if c.HandleRun == nil {
 					continue

@@ -29,6 +29,7 @@ const governedPreparationDirectory = "governed-preparation"
 // Opening it starts no Runtime and advertises no capability.
 type GovernedAdmissionResources struct {
 	mu                 sync.Mutex
+	owner              Owner
 	coordinator        *GovernedAdmissionCoordinator
 	capture            *GovernedCaptureCoordinator
 	verification       *GovernedVerificationCoordinator
@@ -75,7 +76,7 @@ func OpenGovernedAdmissionResources(ctx context.Context, cfg config.Config, cred
 		agent.EnvAllowlist = append([]string{}, agent.EnvAllowlist...)
 		clonedAgents[agentID] = agent
 	}
-	resources := &GovernedAdmissionResources{releaseOwner: releaseOwner, agents: clonedAgents}
+	resources := &GovernedAdmissionResources{owner: owner, releaseOwner: releaseOwner, agents: clonedAgents}
 	fail := func(cause error) (*GovernedAdmissionResources, error) {
 		return nil, errors.Join(cause, resources.Close())
 	}

@@ -191,8 +191,42 @@ func RunObservedWithProvisioning(
 			Admission: coordinator, Runner: runner, Executor: executor, AllowsAgent: readiness.allows,
 			IsExplicitCancel: runHandler.IsExplicitCancel}
 	}
+	observeReadiness := func(ctx context.Context) (connection.PreparedRuns, error) {
+		readyGrants, err := governedResources.ReadyAgentGrants(ctx, time.Now().UTC())
+		if err != nil {
+			return connection.PreparedRuns{}, err
+		}
+		readyIDs := make(map[string]bool, len(readyGrants))
+		readyNames := make(map[string][]execution.ExecutionGrantSummary, len(readyGrants))
+		for agentID, grants := range readyGrants {
+			readyIDs[agentID] = true
+			if name := agentNames[agentID]; name != "" {
+				readyNames[name] = append([]execution.ExecutionGrantSummary{}, grants...)
+			}
+		}
+		readiness.replace(readyIDs)
+		offers, err := governedResources.ReadyWorkPolicies(ctx, time.Now().UTC())
+		if err != nil {
+			return connection.PreparedRuns{}, err
+		}
+		readyOffers := make(map[string][]execution.WorkPolicyOffer, len(offers))
+		for agentID, policies := range offers {
+			if name := agentNames[agentID]; name != "" {
+				readyOffers[name] = policies
+			}
+		}
+		return connection.PreparedRuns{GovernedExecutionGrants: readyNames, WorkPolicyOffers: readyOffers}, nil
+	}
 	return (connection.Client{
 		Config: loaded, Credential: credential, BridgeVersion: bridgeVersion, Observer: observer,
+		HandleWorkAuthorization: func(ctx context.Context, request execution.WorkAuthorization) (execution.WorkAuthorizationReceipt, connection.PreparedRuns, error) {
+			receipt, err := governedResources.AuthorizeWork(ctx, request, time.Now().UTC())
+			if err != nil {
+				return receipt, connection.PreparedRuns{}, err
+			}
+			prepared, err := observeReadiness(ctx)
+			return receipt, prepared, err
+		},
 		HandleProvision:  handleProvision,
 		ResumeAgentNames: resumeAgentNames, StreamingAgentNames: streamingAgentNames,
 		RoomContextCoverageAgentNames:     roomContextCoverageAgentNames,
@@ -206,21 +240,12 @@ func RunObservedWithProvisioning(
 			}); err != nil {
 				return connection.PreparedRuns{}, err
 			}
-			readyGrants, err := governedResources.ReadyAgentGrants(ctx, time.Now().UTC())
+			prepared, err := observeReadiness(ctx)
 			if err != nil {
 				return connection.PreparedRuns{}, err
 			}
-			readyIDs := make(map[string]bool, len(readyGrants))
-			readyNames := make(map[string][]execution.ExecutionGrantSummary, len(readyGrants))
-			for agentID, grants := range readyGrants {
-				readyIDs[agentID] = true
-				if name := agentNames[agentID]; name != "" {
-					readyNames[name] = append([]execution.ExecutionGrantSummary{}, grants...)
-				}
-			}
-			readiness.replace(readyIDs)
-			return connection.PreparedRuns{ReplayMessages: messages,
-				GovernedExecutionGrants: readyNames}, nil
+			prepared.ReplayMessages = messages
+			return prepared, nil
 		},
 		ReplayCanceledRun: func(
 			ctx context.Context,

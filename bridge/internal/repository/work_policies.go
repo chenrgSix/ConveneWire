@@ -375,26 +375,15 @@ func workGrantWithinPolicy(spec TaskGrantSpec, parent WorkGrantParent, policy Wo
 
 // WorkTaskGrantID binds the immutable authorization request before plan compilation.
 func WorkTaskGrantID(parent WorkGrantParent) string {
-	if !workAuthorizationID.MatchString(parent.AuthorizationID) || !workPolicyID.MatchString(parent.PolicyID) || !sha256ID.MatchString(parent.PolicyDigest) || !workMemberID.MatchString(parent.InitiatorMemberID) || parent.Revision != 1 {
-		return ""
-	}
-	// Identity precedes plan compilation, whose digest itself contains grantId.
-	// A changed task/plan under this authorization ID conflicts with the existing
-	// immutable issuance instead of creating a second grant.
-	raw, err := json.Marshal(struct {
-		AuthorizationID   string `json:"authorizationId"`
-		PolicyID          string `json:"policyId"`
-		PolicyDigest      string `json:"policyDigest"`
-		InitiatorMemberID string `json:"initiatorMemberId"`
-	}{parent.AuthorizationID, parent.PolicyID, parent.PolicyDigest, parent.InitiatorMemberID})
+	raw, err := json.Marshal(parent)
 	if err != nil {
 		return ""
 	}
-	canonical, err := wire.CanonicalExecutionJSON(raw)
+	id, err := wire.WorkTaskGrantID(raw)
 	if err != nil {
 		return ""
 	}
-	return "grant_work_" + digest(string(canonical))
+	return id
 }
 
 func (s *BindingStore) workPolicySource(ctx context.Context, spec WorkPolicySpec) (string, error) {
