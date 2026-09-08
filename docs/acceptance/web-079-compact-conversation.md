@@ -50,10 +50,18 @@ Screenshots were inspected for spacing, input visibility and navigation access.
 
 ## Installed preview
 
-Local Web preview update is pending. These changes do not require a Bridge
-binary or database schema change. Existing model, trust and pairing settings
-remain outside this presentation change. This run does not claim live model,
-CI or cross-platform native acceptance.
+The authorized local Central/Web preview is installed as `v0.5.4-local.cf067d5`,
+source `cf067d599aa9406d2cca97230f6f079288da9c32`. Release checksum validation,
+verified database backup, controller upgrade and doctor passed. Original-CA
+HTTPS serves the new composer, sidebar toggle and copy assets.
+
+The existing Bridge binary and all 30 client JSON files remain byte-identical.
+The three original Agents reconnected ready. Business counts, installation
+identity, original CA and schema 91 are unchanged. Private recovery records and
+the active release directory are retained under the ignored
+`var/local-upgrades/v0.5.4-local.cf067d5-20260909` directory. Refreshing an existing
+browser tab loads the new assets; personal browser state was not modified.
+This run does not claim live model, CI or cross-platform native acceptance.
 
 Reproduce with the existing [product experience preview](../development-commands.md)
 and the Web test/build commands, using only disposable seeded data.

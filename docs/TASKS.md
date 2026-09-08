@@ -773,7 +773,7 @@ or a registration receipt alone.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| WEB-079 | IN_PROGRESS | Compact Room composer, collapse navigation and copy Agent replies on hover | WEB-078, WEB-041, WEB-058 | [Conversation evidence](acceptance/web-079-compact-conversation.md): full Web coverage with repaired onboarding assertion, 26 final focused cases/build, real browser clipboard and 1280/900/390 px layout checks passed; local Web update pending |
+| WEB-079 | DONE | Compact Room composer, collapse navigation and copy Agent replies on hover | WEB-078, WEB-041, WEB-058 | [Conversation evidence](acceptance/web-079-compact-conversation.md): full Web coverage with repaired onboarding assertion, 26 final focused cases/build, real browser clipboard and 1280/900/390 px layout checks passed; cf067d5 installed locally, original Bridge/config/identity preserved, three Agents ready and doctor passed |
 
 ## Deferred Beyond MVP
 
