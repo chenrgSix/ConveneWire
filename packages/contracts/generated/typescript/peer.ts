@@ -879,3 +879,333 @@ export interface PeerParticipantStateParticipant {
   publicKey: string;
 }
 
+export interface PeerInvitationCreateRequest {
+  expiresAt:           string;
+  membershipExpiresAt: string;
+  operationId:         string;
+  schemaVersion:       number;
+  scope:               PeerInvitationCreateRequestScope;
+}
+
+export interface PeerInvitationCreateRequestScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerInvitationIssued {
+  invitation:    PeerInvitationIssuedInvitation;
+  schemaVersion: number;
+  secret:        string;
+}
+
+export interface PeerInvitationIssuedInvitation {
+  expiresAt:           string;
+  host:                StickyHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               HilariousScope;
+  teamLabel:           string;
+}
+
+export interface StickyHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface HilariousScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerInvitationPreviewRequest {
+  invitationId:  string;
+  nonce:         string;
+  operationId:   string;
+  participant:   PeerInvitationPreviewRequestParticipant;
+  schemaVersion: number;
+  secret:        string;
+}
+
+export interface PeerInvitationPreviewRequestParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerInvitationPreview {
+  invitation:    PeerInvitationPreviewInvitation;
+  proof:         PeerInvitationPreviewProof;
+  schemaVersion: number;
+}
+
+export interface PeerInvitationPreviewInvitation {
+  expiresAt:           string;
+  host:                IndigoHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               AmbitiousScope;
+  teamLabel:           string;
+}
+
+export interface IndigoHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface AmbitiousScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerInvitationPreviewProof {
+  payload:   HilariousPayload;
+  signature: string;
+}
+
+export interface HilariousPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerClaimChallengeRequest {
+  invitationId:  string;
+  operationId:   string;
+  participant:   PeerClaimChallengeRequestParticipant;
+  schemaVersion: number;
+  secret:        string;
+  subjectDigest: string;
+}
+
+export interface PeerClaimChallengeRequestParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerHumanBindingCredential {
+  audience:      PeerHumanBindingCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         PeerHumanBindingCredentialScope;
+  token:         string;
+}
+
+export type PeerHumanBindingCredentialAudience = "peer.human-binding";
+
+export interface PeerHumanBindingCredentialScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerHumanBindingReceipt {
+  host:              PeerHumanBindingReceiptHost;
+  humanCredential:   PeerHumanBindingReceiptHumanCredential;
+  joinReceiptDigest: string;
+  localUserId:       string;
+  participant:       PeerHumanBindingReceiptParticipant;
+  proof:             PeerHumanBindingReceiptProof;
+  schemaVersion:     number;
+}
+
+export interface PeerHumanBindingReceiptHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerHumanBindingReceiptHumanCredential {
+  audience:      PeerHumanBindingCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         CunningScope;
+  token:         string;
+}
+
+export interface CunningScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerHumanBindingReceiptParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerHumanBindingReceiptProof {
+  payload:   AmbitiousPayload;
+  signature: string;
+}
+
+export interface AmbitiousPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerJoined {
+  human:         Human;
+  runtime:       Runtime;
+  schemaVersion: number;
+}
+
+export interface Human {
+  host:              HumanHost;
+  humanCredential:   HumanHumanCredential;
+  joinReceiptDigest: string;
+  localUserId:       string;
+  participant:       HumanParticipant;
+  proof:             HumanProof;
+  schemaVersion:     number;
+}
+
+export interface HumanHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface HumanHumanCredential {
+  audience:      PeerHumanBindingCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         MagentaScope;
+  token:         string;
+}
+
+export interface MagentaScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface HumanParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface HumanProof {
+  payload:   CunningPayload;
+  signature: string;
+}
+
+export interface CunningPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface Runtime {
+  invitation:        RuntimeInvitation;
+  machineCredential: RuntimeMachineCredential;
+  membership:        RuntimeMembership;
+  proof:             RuntimeProof;
+  schemaVersion:     number;
+}
+
+export interface RuntimeInvitation {
+  expiresAt:           string;
+  host:                IndecentHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               FriskyScope;
+  teamLabel:           string;
+}
+
+export interface IndecentHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FriskyScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface RuntimeMachineCredential {
+  audience:      PeerMachineCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  peerId:        string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface RuntimeMembership {
+  createdAt:         string;
+  expiresAt:         string;
+  hostNodeId:        string;
+  localUserId:       string;
+  memberId:          string;
+  membershipId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  schemaVersion:     number;
+  scope:             MischievousScope;
+  state:             PeerMembershipState;
+  userId:            string;
+}
+
+export interface MischievousScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface RuntimeProof {
+  payload:   MagentaPayload;
+  signature: string;
+}
+
+export interface MagentaPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+

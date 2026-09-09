@@ -94,6 +94,18 @@ export class PeerMembershipRepository {
     return row && { invitation: JSON.parse(row.invitation_json), digest: row.invitation_digest, state: row.state };
   }
 
+  public requireInvitationSecret(invitationId: string, secret: string, now: string) {
+    timestamp(now);
+    const row = this.invitationRow(invitationId);
+    if (!row || !timingSafeEqual(Buffer.from(row.secret_hash, "hex"), Buffer.from(peerSecretHash(secret), "hex"))) throw new PeerStoreError("UNAUTHENTICATED");
+    if (row.state === "revoked") throw new PeerStoreError("REVOKED");
+    const invitation = JSON.parse(row.invitation_json) as PeerInvitation;
+    if ((row.state === "open" && invitation.expiresAt <= now) || invitation.membershipExpiresAt <= now) throw new PeerStoreError("EXPIRED");
+    this.assertScope(invitation.scope);
+    if (row.claimed_membership_id) this.requireActiveMembership(row.claimed_membership_id, now);
+    return { invitation, digest: row.invitation_digest, claimOperationId: row.claim_operation_id, claimDigest: row.claim_digest };
+  }
+
   /** Call only after authenticating the fresh proof over peerClaimDigest. */
   public claimVerifiedInvitation(claim: PeerInvitationClaim, machine: PeerCredentialVerifier, now: string): PeerMembership {
     if (!validatePeer("PeerInvitationClaim", claim) || claim.displayName.trim().length < 1 || [...claim.displayName].length > 80) throw new PeerStoreError("INVALID_MESSAGE");
@@ -177,6 +189,7 @@ export class PeerMembershipRepository {
       if (membership.state === "revoked") return;
       this.database.prepare("UPDATE peer_memberships SET state = 'revoked', revision = revision + 1 WHERE membership_id = ?").run(membershipId);
       this.database.prepare("UPDATE peer_credentials SET revoked_at = ? WHERE membership_id = ? AND revoked_at IS NULL").run(now, membershipId);
+      this.database.prepare("UPDATE peer_human_bindings SET revoked_at = ? WHERE membership_id = ? AND revoked_at IS NULL").run(now, membershipId);
       this.database.prepare(`UPDATE rooms SET settings_revision = settings_revision + 1
         WHERE room_id IN (SELECT room_id FROM room_human_participants WHERE member_id = ?)`).run(membership.memberId);
       this.database.prepare("DELETE FROM room_human_participants WHERE member_id = ?").run(membership.memberId);

@@ -313,7 +313,7 @@
         "displayName": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 140
+          "maxLength": 80
         },
         "proof": {
           "$ref": "#/$defs/PeerProof"
@@ -1485,6 +1485,276 @@
             "$ref": "#/$defs/PeerLocalConnection"
           },
           "maxItems": 64
+        }
+      }
+    },
+    "PeerInvitationCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "scope",
+        "expiresAt",
+        "membershipExpiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "membershipExpiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerInvitationIssued": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitation",
+        "secret"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitation": {
+          "$ref": "#/$defs/PeerInvitation"
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      }
+    },
+    "PeerInvitationPreviewRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitationId",
+        "secret",
+        "participant",
+        "operationId",
+        "nonce"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^peerinvite_[A-Za-z0-9_-]{8,128}$"
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      }
+    },
+    "PeerInvitationPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitation",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitation": {
+          "$ref": "#/$defs/PeerInvitation"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerClaimChallengeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitationId",
+        "secret",
+        "participant",
+        "operationId",
+        "subjectDigest"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^peerinvite_[A-Za-z0-9_-]{8,128}$"
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "subjectDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "PeerHumanBindingCredential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "audience",
+        "credentialId",
+        "membershipId",
+        "scope",
+        "token",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "audience": {
+          "type": "string",
+          "const": "peer.human-binding"
+        },
+        "credentialId": {
+          "type": "string",
+          "pattern": "^peeraccess_[A-Za-z0-9_-]{8,128}$"
+        },
+        "membershipId": {
+          "type": "string",
+          "pattern": "^peermember_[A-Za-z0-9_-]{8,128}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerHumanBindingReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "host",
+        "participant",
+        "localUserId",
+        "joinReceiptDigest",
+        "humanCredential",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "host": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "joinReceiptDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "humanCredential": {
+          "$ref": "#/$defs/PeerHumanBindingCredential"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerJoined": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runtime",
+        "human"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "runtime": {
+          "$ref": "#/$defs/PeerJoinReceipt"
+        },
+        "human": {
+          "$ref": "#/$defs/PeerHumanBindingReceipt"
         }
       }
     }

@@ -1,5 +1,41 @@
 # Security and Authorization
 
+## Peer invitation admission
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) is implemented by the
+[Peer admission service](../../apps/server/src/security/peer-admission-service.ts)
+and its independent `/api/peer/invitations` create/preview/challenge/claim routes.
+Owner creation pins the exact Host origin/key, Team/Room ceiling and separate
+invitation and membership deadlines. Migration 0097 retains immutable Owner
+operation receipts; matching retries recover the original approved invitation.
+
+A challenge lasts 30 seconds and binds one Participant key, operation and semantic
+claim digest. Claim verifies every signature field before one transaction consumes
+the challenge/invitation and records the new Host User/Member, machine credential
+and independent human binding. A storage failure rolls all of these back. Fresh
+nonce retries after response loss preserve the original IDs, scope, expiry and
+secrets, including after restart or invitation expiry; revocation and changed
+intent cannot create another member or regain authority. Host origin changes
+require a fresh explicit association.
+
+The Runtime receipt carries only `peer.runtime` authority. A separately signed
+receipt carries `peer.human-binding`, independently derived from the Host private
+key and original intent; only hashes are stored. Neither secret authenticates a
+Web session or legacy Device. The human binding will be kept outside the Runtime
+connector and exchanged for short-lived browser entry by the following increment.
+Node key possession or a machine bearer alone cannot mint human access.
+
+Peer HTTP requests use a closed raw JSON decoder that rejects duplicate keys and
+rounded numeric spellings. Native preview/challenge/claim reject browser Origin,
+cookies, generic authorization headers and insecure forwarded HTTP; all responses
+are uncached. Reachable Local Node HTTPS configuration remains OPS-019.
+
+Verification: 26 focused Server admission, HTTP, authority and migration checks;
+129 Node contract checks including real Go decoding/transcripts, deterministic
+generation, TypeScript types and Go fixtures; Server build and documentation
+checks pass. This is automatic fixture evidence; Participant connector integration
+and independent human browser entry are still pending.
+
 ## Peer human credential ceilings
 
 [ADR-0068](../adr/0068-peer-collaboration-delivery.md) assigns independent Peer
@@ -21,7 +57,7 @@ Captured principals recheck current authority at Room/Team service boundaries.
 The Server's injected clock also drives those checks. Team change waits re-read
 authentication before returning any hints after a wait; revoked Peer membership
 cannot receive the queued result. Invitation proof, separate machine admission
-and human entry issuance remain later SEC-019 increments. Browser-session scope
+and human entry issuance are described in the following increments. Browser-session scope
 does not supply Participant execution or disclosure consent.
 
 The initial increment passes 21 focused authority/Room/migration checks and 18

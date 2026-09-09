@@ -1,4 +1,4 @@
-import { createHash, createPrivateKey, createPublicKey, sign, type KeyObject } from "node:crypto";
+import { createHash, createHmac, createPrivateKey, createPublicKey, sign, type KeyObject } from "node:crypto";
 import type Database from "better-sqlite3";
 import type { AuthorityProof, AuthorityProofPayload } from "@convene-wire/contracts/authority";
 import { authorityProofTranscript, authorityProofLifetimeSeconds } from "@convene-wire/contracts/authority-proof";
@@ -7,13 +7,15 @@ import { Ajv2020 } from "ajv/dist/2020.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
 import type { DevicePrincipal } from "./auth-service.js";
 import { createOpaqueId } from "../domain/identifiers.js";
+import type { PeerProof, PeerProofPayload } from "@convene-wire/contracts/peer";
+import { peerProofTranscript, peerProofLifetimeSeconds } from "@convene-wire/contracts/peer-proof";
 
 const validator = new Ajv2020({ strict: true }).addSchema(schema);
 const validRequest = validator.getSchema(`${schema.$id}#/$defs/AuthorityProofRequest`)!;
 const validPayload = validator.getSchema(`${schema.$id}#/$defs/AuthorityProofPayload`)!;
 interface Identity { node_id: string; seed_hex: string | null; public_key: string | null; kind: "unbound" | "central" | "local" }
 
-/** Device identity observation; this service cannot issue collaboration rights. */
+/** Stable Node signer. Callers must establish the authority represented by a proof. */
 export class AuthorityService {
   public readonly nodeId: string;
   public readonly publicKey: string;
@@ -42,6 +44,21 @@ export class AuthorityService {
   }
 
   public describe() { return { authorityNodeId: this.nodeId, publicKey: this.publicKey, browserOrigin: this.browserOrigin }; }
+
+  public signPeerProof(context: Pick<PeerProofPayload, "purpose" | "audienceNodeId" | "operationId" | "nonce" | "subjectDigest">, now: string): PeerProof {
+    const payload: PeerProofPayload = {
+      schemaVersion: 1, ...context, signerNodeId: this.nodeId, signerPublicKey: this.publicKey,
+      issuedAt: now, expiresAt: new Date(Date.parse(now) + peerProofLifetimeSeconds * 1000).toISOString()
+    };
+    return { payload, signature: sign(null, peerProofTranscript(payload), this.key).toString("base64url") };
+  }
+
+  /** Reproduce a lost response without storing secrets or granting a new credential. */
+  public peerSecret(domain: "invitation" | "runtime" | "human-binding", intentDigest: string): string {
+    if (!/^[a-f0-9]{64}$/u.test(intentDigest)) throw new Error("Invalid Peer intent digest");
+    return createHmac("sha256", this.key.export({ format: "der", type: "pkcs8" }))
+      .update(`convenewire.peer.secret.v1\0${domain}\0${this.nodeId}\0${intentDigest}`).digest("base64url");
+  }
 
   public prove(actor: DevicePrincipal, input: unknown, now: string): AuthorityProof {
     if (!validRequest(input)) throw new Error("Invalid Authority proof request");

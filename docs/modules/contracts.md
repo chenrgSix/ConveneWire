@@ -41,6 +41,14 @@ The added Node-signed fixture is verified by actual Go storage tests. All 129
 Node contract checks, generation/types and Go fixtures pass. Static schema
 imports also pass isolated Node bundling with an empty PATH.
 
+SEC-019 adds closed Owner invitation creation, signed preview, challenge request,
+and separate Runtime/human binding receipts. `PeerJoined` transports both to the
+explicit local join controller; the existing `PeerJoinReceipt` and Participant
+Runtime state do not include the human secret. The Host signs the exact runtime
+receipt digest and separate human binding. Shared positive/negative Go/Node
+fixtures cover every added field. Claim display names follow the Host member
+80-code-point limit. The full 129-test Node/Go contract command passes.
+
 ## Multi-Authority foundation
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's

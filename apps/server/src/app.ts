@@ -1,3 +1,5 @@
+import { PeerAdmissionService } from "./security/peer-admission-service.js";
+import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { AuthorityService } from "./security/authority-service.js";
 import { registerAuthorityRoutes } from "./http/authority-routes.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
@@ -1228,6 +1230,7 @@ export async function createServerApp(
   });
 
   const routeContext: ServerRouteContext = {
+    peerAdmission: new PeerAdmissionService(database, auth, authority),
     authority,
     ...(localNode ? { localNode } : {}),
     app,
@@ -1314,6 +1317,7 @@ export async function createServerApp(
   registerArtifactRoutes(routeContext);
   registerAuthRoutes(routeContext);
   registerAuthorityRoutes(routeContext);
+  registerPeerAdmissionRoutes(routeContext);
   registerLocalNodeRoutes(routeContext);
   registerClientAccessRoutes(routeContext);
 
