@@ -112,11 +112,16 @@ func RunObservedWithProvisioning(
 		}
 		defer native.processes.Close()
 	}
-	if connections != nil {
-		return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections, native)
-	}
 	if native != nil {
-		return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, native.primary, nil, native.processes, loaded.LocalNodeID)
+		return runNativeConnectors(ctx, nativeNodeFromContext(ctx), loaded, identities, observer, func(ctx context.Context) error {
+			if connections != nil {
+				return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections, native)
+			}
+			return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, native.primary, nil, native.processes, loaded.LocalNodeID)
+		})
+	}
+	if connections != nil {
+		return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections, nil)
 	}
 	return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, delivery.NewAgentExecutionGate(), nil, nil, "")
 }

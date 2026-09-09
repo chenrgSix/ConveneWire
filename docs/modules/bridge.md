@@ -86,6 +86,29 @@ execution use the same restricted copy: no Device/Central authority, Codex
 command, Workspace, capabilities or private floor invalidates a reviewed grant.
 Focused native regressions and owning Peer/core race tests and vet pass.
 
+The native core now runs Peer connectors beside its Device connectors. Each
+Peer has independent reconnect, ordered heartbeat and signed Export/Acceptance
+synchronization. HTTP synchronization cannot block heartbeats. Local leave,
+grant/acceptance history changes and socket closure invalidate that Peer's
+approval lifetime; a replacement waits for the previous worker to drain. Current
+Peer storage is reread for local changes, including joins after core startup.
+Configuration replacement drains both connector families, while installation
+identity loss stops both within the core's identity monitor. Local status
+contains classified errors and public connection scope, with no credentials or
+Runtime configuration. Agent presence and execution still require RUN-020's
+separate admission path.
+
+Actual Go/Host TLS coverage uses two independent Hosts, recovers a dropped
+Export-sync response, observes explicit Host Acceptance, and proves that one
+Host's revocation cannot reconnect the other Host or consume its local approval.
+Native tests cover Device setup retry, Peer-storage failure isolation and full
+drain on identity/configuration change. Peer/core/Local Node race tests and vet
+pass, as does the actual bundled native Run/Discussion restart/restore fixture.
+Native Peer requests also check installation identity before sending and after
+receiving HTTP responses, and on Runtime handshake/heartbeat membership checks.
+A TLS regression changes local identity while the Host proof is in flight and
+confirms that no machine WebSocket upgrade can follow the stale proof.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

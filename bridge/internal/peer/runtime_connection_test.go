@@ -2,11 +2,54 @@ package peer
 
 import (
 	"context"
+	"net/http"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	localwire "convenewire.dev/contracts/generated/go/localnode"
 )
+
+type peerRoundTrip func(*http.Request) (*http.Response, error)
+
+func (f peerRoundTrip) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestGoRuntimeIdentityChangeDuringHostProofCannotSendMachineBearer(t *testing.T) {
+	f, client, store, receipt, _ := runtimeTLSParticipant(t)
+	var valid atomic.Bool
+	valid.Store(true)
+	client.beforeOperation = func() error {
+		if !valid.Load() {
+			return ErrProof
+		}
+		return nil
+	}
+	client.http.Transport = peerRoundTrip(func(request *http.Request) (*http.Response, error) {
+		response, err := client.transport.RoundTrip(request)
+		if request.URL.Path == "/api/peer/identity" {
+			valid.Store(false)
+		}
+		return response, err
+	})
+	if _, err := client.ConnectRuntime(context.Background(), store, receipt.Membership.MembershipID); err == nil {
+		t.Fatal("changed native identity reused completed Host proof")
+	}
+	if counts := f.control(t, map[string]any{"action": "stats"}); counts["runtimeUpgrades"] != 0 {
+		t.Fatal("machine bearer escaped after native identity change", counts)
+	}
+	client.http.Transport = client.transport
+	valid.Store(true)
+	connection, err := client.ConnectRuntime(context.Background(), store, receipt.Membership.MembershipID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer connection.Close()
+	valid.Store(false)
+	if err := connection.Heartbeat(context.Background()); err == nil {
+		t.Fatal("heartbeat retained changed native identity")
+	}
+	waitRuntimeClosed(t, connection)
+}
 
 func runtimeTLSParticipant(t *testing.T) (*peerHTTPFixture, *Client, *Store, JoinReceipt, time.Time) {
 	t.Helper()

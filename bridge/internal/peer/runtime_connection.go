@@ -54,6 +54,9 @@ type RuntimeConnection struct {
 }
 
 func (c *Client) runtimeMembership(store *Store, membershipID string) (LocalConnection, error) {
+	if err := c.checkLocal(); err != nil {
+		return LocalConnection{}, err
+	}
 	if store == nil {
 		return LocalConnection{}, ErrStore
 	}

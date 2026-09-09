@@ -30,6 +30,9 @@ type NativeNode struct {
 	store     *peer.Store
 	storeOnce sync.Once
 	storeErr  error
+	peerMu    sync.Mutex
+	peers     *peer.Connectors
+	peerError string
 }
 
 func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNode, error) {

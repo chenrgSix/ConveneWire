@@ -28,6 +28,9 @@ type Client struct {
 	http      *http.Client
 	transport *http.Transport
 	clock     func() time.Time
+	// The native core revalidates its installation before every network action.
+	// Kept local; it is never configurable by the Host or included in a request.
+	beforeOperation func() error
 }
 
 // NewClient uses normal hostname/CA verification (or explicitly supplied private
@@ -49,6 +52,12 @@ func NewClient(origin string, host wire.PeerNodeIdentity, signer *Signer, roots 
 	return &Client{origin: origin, host: host, signer: signer, http: client, transport: transport, clock: time.Now}, nil
 }
 func (c *Client) Close() { c.transport.CloseIdleConnections() }
+func (c *Client) checkLocal() error {
+	if c.beforeOperation != nil {
+		return c.beforeOperation()
+	}
+	return nil
+}
 func (c *Client) identity(ctx context.Context, operationID string) error {
 	nonce, err := NewNonce()
 	if err != nil {
@@ -193,6 +202,9 @@ func (c *Client) post(ctx context.Context, path, requestKind string, value any, 
 	return c.postMachine(ctx, path, requestKind, value, responseKind, result, "")
 }
 func (c *Client) postMachine(ctx context.Context, path, requestKind string, value any, responseKind string, result any, token string) error {
+	if err := c.checkLocal(); err != nil {
+		return err
+	}
 	if !closed(requestKind, value) {
 		return ErrProof
 	}
@@ -218,6 +230,9 @@ func (c *Client) postMachine(ctx context.Context, path, requestKind string, valu
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, wire.MaximumJSONBytes+1))
+	if guardErr := c.checkLocal(); guardErr != nil {
+		return guardErr
+	}
 	if err != nil || len(body) > wire.MaximumJSONBytes {
 		return ErrTransport
 	}
