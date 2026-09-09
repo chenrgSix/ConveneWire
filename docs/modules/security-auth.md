@@ -1,5 +1,12 @@
 # Security and Authorization
 
+ADR-0063 permits exact command/file-change review only after local consent to
+Central approval. A full Web session belonging to the Device owner and current
+Room membership are required; Team administration does not replace ownership.
+The immutable request pins Run, Device, Agent, consent revision and connection
+epoch. Only an unexpired live request can continue its existing process. Details
+stay out of Room messages and logs. Full trust remains a separate local choice.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) preserves separate
 human approval, Agent proposal, local execution, verifier and integration
 authorities. Plan approval pins exact content; grants are local, revocable and

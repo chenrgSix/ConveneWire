@@ -342,6 +342,14 @@ The pinned Codex App Server event subset and lifecycle limits are documented in
 
 ## Dependencies
 
+ADR-0063 adds an explicit local Central approval mode for ordinary Codex Runs.
+It retains the configured sandbox, uses on-request approval and pauses the
+current subprocess while the injected approval port awaits the exact owner's
+decision. Command and file-change requests use a separate owner-only channel;
+they never become assistant text or ordinary activity. Private/governed Runs and
+unsupported interactive methods retain fail-closed behavior. Delivery status is
+SEC-017 in `docs/TASKS.md`.
+
 Contracts and the invocation boundary. Bridge adapters depend on Bridge; the
 Hosted adapter additionally depends on Security for credential resolution and
 Run Orchestration for its durable intent. Adapters never call Team services

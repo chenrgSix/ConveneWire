@@ -769,6 +769,12 @@ or a registration receipt alone.
 | --- | --- | --- | --- | --- |
 | SEC-016 | DONE | Configure owner device full trust and mirror authority to Central | RUN-019, WEB-078 | [Device trust evidence](acceptance/sec-016-device-execution-trust.md): local consent and revocation, exact pairing/revision, frozen Central delivery/display, 65 Server regressions and both physical browser/process scenarios passed; da7349f local client and Central installed, original identity/config preserved, three Agents ready and doctor passed; actual owner trust remains off |
 
+## Interactive Central Runtime approval
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| SEC-017 | IN_PROGRESS | Forward exact Runtime permission requests to the Device owner in Central | SEC-016, WEB-079 | [ADR-0063](adr/0063-forward-runtime-approvals-to-device-owner.md) defines local consent, owner-only review and same-process continuation; pending contracts, authority negatives, cancellation/recovery and physical browser/process evidence |
+
 ## Compact conversation workspace
 
 | ID | State | Task | Depends On | Completion evidence |
