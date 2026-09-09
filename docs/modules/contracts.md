@@ -53,6 +53,18 @@ The schema rejects unknown Device/proxy fields; canonical origin, safe filenames
 filesystem protections and TLS identity are additional loader checks. Disabled
 configuration preserves its origin while opening no listener and reading no key.
 
+BRG-081 adds closed `PeerRuntimeBinding`, challenge/authentication/ready and
+heartbeat envelopes on `peer.v1`. A binding pins both Node keys, Host origin,
+Peer, membership, machine credential, Team/Member, connection and operation.
+Challenge, authentication and ready proofs use purpose `peer.connect` and sign
+`{ phase, binding }` with phase respectively `challenge`, `authenticate` and
+`ready`; the operation and server nonce must also match. Each side verifies the
+other's pinned signer and its own audience. Authentication/ready payloads retain
+the exact binding digest. Heartbeats echo that digest with a strictly increasing
+sequence on this connection. These schemas create no execution or human
+authority; Run admission and current credential/membership checks remain
+mandatory. Shared positive/negative Go/Node fixtures include every new field.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

@@ -369,7 +369,7 @@ export interface PeerControlMessage {
   payload?:                    PeerControlMessagePayload;
   protocolVersion?:            ProtocolVersion;
   timestamp?:                  string;
-  type?:                       Type;
+  type?:                       PeerControlMessageType;
   displayName?:                string;
   grant?:                      PeerControlMessageGrant;
   role?:                       string;
@@ -607,7 +607,7 @@ export interface PeerControlMessagePayload {
   localUserId?:         string;
   operationId?:         string;
   participant?:         PayloadParticipant;
-  proof?:               PayloadProof;
+  proof?:               PurpleProof;
   secret?:              string;
   createdAt?:           string;
   memberId?:            string;
@@ -629,7 +629,7 @@ export interface PeerControlMessagePayload {
   acceptanceRevision?:  number;
   projectionAgentId?:   string;
   role?:                string;
-  binding?:             PayloadBinding;
+  binding?:             PurpleBinding;
   bindingDigest?:       string;
   capabilityId?:        string;
   receiptDigest?:       string;
@@ -637,7 +637,7 @@ export interface PeerControlMessagePayload {
   code?:                Code;
 }
 
-export interface PayloadBinding {
+export interface PurpleBinding {
   acceptanceDigest:   string;
   acceptanceId:       string;
   acceptanceRevision: number;
@@ -688,7 +688,7 @@ export interface PayloadPayload {
   subjectDigest:   string;
 }
 
-export interface PayloadProof {
+export interface PurpleProof {
   payload:   TentacledPayload;
   signature: string;
 }
@@ -758,7 +758,7 @@ export interface StickyPayload {
 
 export type ProtocolVersion = "peer.v1";
 
-export type Type = "peer.challenge" | "peer.proof" | "peer.invitation" | "peer.invitation.claim" | "peer.membership" | "peer.agent.export" | "peer.agent.acceptance" | "peer.agent.projection" | "peer.run.admission" | "peer.run.settlement" | "peer.error";
+export type PeerControlMessageType = "peer.challenge" | "peer.proof" | "peer.invitation" | "peer.invitation.claim" | "peer.membership" | "peer.agent.export" | "peer.agent.acceptance" | "peer.agent.projection" | "peer.run.admission" | "peer.run.settlement" | "peer.error";
 
 export interface PeerJoinReceipt {
   invitation:        PeerJoinReceiptInvitation;
@@ -858,7 +858,7 @@ export interface PeerLocalConnectionAcceptanceSnapshot {
   historyDigest:       string;
   localAgentId:        string;
   peerId:              string;
-  proof:               PurpleProof;
+  proof:               FluffyProof;
   schemaVersion:       number;
 }
 
@@ -922,7 +922,7 @@ export interface CunningCapabilities {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface PurpleProof {
+export interface FluffyProof {
   payload:   IndecentPayload;
   signature: string;
 }
@@ -1037,7 +1037,7 @@ export interface PeerLocalConnectionReceipt {
   invitation:        PurpleInvitation;
   machineCredential: PurpleMachineCredential;
   membership:        PurpleMembership;
-  proof:             FluffyProof;
+  proof:             TentacledProof;
   schemaVersion:     number;
 }
 
@@ -1095,7 +1095,7 @@ export interface StickyScope {
   teamId: string;
 }
 
-export interface FluffyProof {
+export interface TentacledProof {
   payload:   HilariousPayload;
   signature: string;
 }
@@ -1141,7 +1141,7 @@ export interface ConnectionAcceptanceSnapshot {
   historyDigest:       string;
   localAgentId:        string;
   peerId:              string;
-  proof:               TentacledProof;
+  proof:               StickyProof;
   schemaVersion:       number;
 }
 
@@ -1205,7 +1205,7 @@ export interface Capabilities1 {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface TentacledProof {
+export interface StickyProof {
   payload:   AmbitiousPayload;
   signature: string;
 }
@@ -1320,7 +1320,7 @@ export interface ConnectionReceipt {
   invitation:        FluffyInvitation;
   machineCredential: FluffyMachineCredential;
   membership:        FluffyMembership;
-  proof:             StickyProof;
+  proof:             IndigoProof;
   schemaVersion:     number;
 }
 
@@ -1378,7 +1378,7 @@ export interface IndecentScope {
   teamId: string;
 }
 
-export interface StickyProof {
+export interface IndigoProof {
   payload:   CunningPayload;
   signature: string;
 }
@@ -1883,7 +1883,7 @@ export interface PeerLocalHumanBindingReceipt {
   joinReceiptDigest: string;
   localUserId:       string;
   participant:       PurpleParticipant;
-  proof:             IndigoProof;
+  proof:             IndecentProof;
   schemaVersion:     number;
 }
 
@@ -1913,7 +1913,7 @@ export interface PurpleParticipant {
   publicKey: string;
 }
 
-export interface IndigoProof {
+export interface IndecentProof {
   payload:   Payload4;
   signature: string;
 }
@@ -1950,7 +1950,7 @@ export interface BindingReceipt {
   joinReceiptDigest: string;
   localUserId:       string;
   participant:       FluffyParticipant;
-  proof:             IndecentProof;
+  proof:             HilariousProof;
   schemaVersion:     number;
 }
 
@@ -1980,7 +1980,7 @@ export interface FluffyParticipant {
   publicKey: string;
 }
 
-export interface IndecentProof {
+export interface HilariousProof {
   payload:   Payload5;
   signature: string;
 }
@@ -2542,4 +2542,193 @@ export interface PeerIngressConfiguration {
   privateKeyFile:  string;
   schemaVersion:   number;
 }
+
+export interface PeerRuntimeBinding {
+  connectionId:  string;
+  credentialId:  string;
+  host:          PeerRuntimeBindingHost;
+  hostOrigin:    string;
+  memberId:      string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   PeerRuntimeBindingParticipant;
+  peerId:        string;
+  schemaVersion: number;
+  teamId:        string;
+}
+
+export interface PeerRuntimeBindingHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerRuntimeBindingParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerRuntimeChallenge {
+  binding:       PeerRuntimeChallengeBinding;
+  nonce:         string;
+  proof:         PeerRuntimeChallengeProof;
+  schemaVersion: number;
+}
+
+export interface PeerRuntimeChallengeBinding {
+  connectionId:  string;
+  credentialId:  string;
+  host:          MagentaHost;
+  hostOrigin:    string;
+  memberId:      string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   TentacledParticipant;
+  peerId:        string;
+  schemaVersion: number;
+  teamId:        string;
+}
+
+export interface MagentaHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface TentacledParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerRuntimeChallengeProof {
+  payload:   Payload11;
+  signature: string;
+}
+
+export interface Payload11 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRuntimeAuthentication {
+  bindingDigest: string;
+  proof:         PeerRuntimeAuthenticationProof;
+  schemaVersion: number;
+}
+
+export interface PeerRuntimeAuthenticationProof {
+  payload:   Payload12;
+  signature: string;
+}
+
+export interface Payload12 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRuntimeReady {
+  bindingDigest: string;
+  proof:         PeerRuntimeReadyProof;
+  schemaVersion: number;
+}
+
+export interface PeerRuntimeReadyProof {
+  payload:   Payload13;
+  signature: string;
+}
+
+export interface Payload13 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRuntimeHeartbeat {
+  bindingDigest: string;
+  schemaVersion: number;
+  sequence:      number;
+}
+
+export interface PeerRuntimeMessage {
+  messageId:       string;
+  payload:         PeerRuntimeMessagePayload;
+  protocolVersion: ProtocolVersion;
+  timestamp:       string;
+  type:            PeerRuntimeMessageType;
+}
+
+export interface PeerRuntimeMessagePayload {
+  binding?:       FluffyBinding;
+  nonce?:         string;
+  proof?:         AmbitiousProof;
+  schemaVersion?: number;
+  bindingDigest?: string;
+  sequence?:      number;
+  code?:          Code;
+}
+
+export interface FluffyBinding {
+  connectionId:  string;
+  credentialId:  string;
+  host:          FriskyHost;
+  hostOrigin:    string;
+  memberId:      string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   StickyParticipant;
+  peerId:        string;
+  schemaVersion: number;
+  teamId:        string;
+}
+
+export interface FriskyHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface StickyParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface AmbitiousProof {
+  payload:   Payload14;
+  signature: string;
+}
+
+export interface Payload14 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export type PeerRuntimeMessageType = "peer.runtime.challenge" | "peer.runtime.authenticate" | "peer.runtime.ready" | "peer.runtime.heartbeat" | "peer.runtime.acknowledged" | "peer.runtime.error";
 

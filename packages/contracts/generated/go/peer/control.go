@@ -355,7 +355,7 @@ type PeerControlMessage struct {
 	Payload                    *PeerControlMessagePayload            `json:"payload,omitempty"`
 	ProtocolVersion            *ProtocolVersion                      `json:"protocolVersion,omitempty"`
 	Timestamp                  *string                               `json:"timestamp,omitempty"`
-	Type                       *Type                                 `json:"type,omitempty"`
+	Type                       *PeerControlMessageType               `json:"type,omitempty"`
 	DisplayName                *string                               `json:"displayName,omitempty"`
 	Grant                      *PeerControlMessageGrant              `json:"grant,omitempty"`
 	Role                       *string                               `json:"role,omitempty"`
@@ -593,7 +593,7 @@ type PeerControlMessagePayload struct {
 	LocalUserID         *string              `json:"localUserId,omitempty"`
 	OperationID         *string              `json:"operationId,omitempty"`
 	Participant         *PayloadParticipant  `json:"participant,omitempty"`
-	Proof               *PayloadProof        `json:"proof,omitempty"`
+	Proof               *PurpleProof         `json:"proof,omitempty"`
 	Secret              *string              `json:"secret,omitempty"`
 	CreatedAt           *string              `json:"createdAt,omitempty"`
 	MemberID            *string              `json:"memberId,omitempty"`
@@ -615,7 +615,7 @@ type PeerControlMessagePayload struct {
 	AcceptanceRevision  *int64               `json:"acceptanceRevision,omitempty"`
 	ProjectionAgentID   *string              `json:"projectionAgentId,omitempty"`
 	Role                *string              `json:"role,omitempty"`
-	Binding             *PayloadBinding      `json:"binding,omitempty"`
+	Binding             *PurpleBinding       `json:"binding,omitempty"`
 	BindingDigest       *string              `json:"bindingDigest,omitempty"`
 	CapabilityID        *string              `json:"capabilityId,omitempty"`
 	ReceiptDigest       *string              `json:"receiptDigest,omitempty"`
@@ -623,7 +623,7 @@ type PeerControlMessagePayload struct {
 	Code                *Code                `json:"code,omitempty"`
 }
 
-type PayloadBinding struct {
+type PurpleBinding struct {
 	AcceptanceDigest   string `json:"acceptanceDigest"`
 	AcceptanceID       string `json:"acceptanceId"`
 	AcceptanceRevision int64  `json:"acceptanceRevision"`
@@ -674,7 +674,7 @@ type PayloadPayload struct {
 	SubjectDigest   string  `json:"subjectDigest"`
 }
 
-type PayloadProof struct {
+type PurpleProof struct {
 	Payload   TentacledPayload `json:"payload"`
 	Signature string           `json:"signature"`
 }
@@ -838,7 +838,7 @@ type PeerLocalConnectionAcceptanceSnapshot struct {
 	HistoryDigest       string                    `json:"historyDigest"`
 	LocalAgentID        string                    `json:"localAgentId"`
 	PeerID              string                    `json:"peerId"`
-	Proof               PurpleProof               `json:"proof"`
+	Proof               FluffyProof               `json:"proof"`
 	SchemaVersion       int64                     `json:"schemaVersion"`
 }
 
@@ -902,7 +902,7 @@ type CunningCapabilities struct {
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
-type PurpleProof struct {
+type FluffyProof struct {
 	Payload   IndecentPayload `json:"payload"`
 	Signature string          `json:"signature"`
 }
@@ -1017,7 +1017,7 @@ type PeerLocalConnectionReceipt struct {
 	Invitation        PurpleInvitation        `json:"invitation"`
 	MachineCredential PurpleMachineCredential `json:"machineCredential"`
 	Membership        PurpleMembership        `json:"membership"`
-	Proof             FluffyProof             `json:"proof"`
+	Proof             TentacledProof          `json:"proof"`
 	SchemaVersion     int64                   `json:"schemaVersion"`
 }
 
@@ -1075,7 +1075,7 @@ type StickyScope struct {
 	TeamID string  `json:"teamId"`
 }
 
-type FluffyProof struct {
+type TentacledProof struct {
 	Payload   HilariousPayload `json:"payload"`
 	Signature string           `json:"signature"`
 }
@@ -1119,7 +1119,7 @@ type ConnectionAcceptanceSnapshot struct {
 	HistoryDigest       string                    `json:"historyDigest"`
 	LocalAgentID        string                    `json:"localAgentId"`
 	PeerID              string                    `json:"peerId"`
-	Proof               TentacledProof            `json:"proof"`
+	Proof               StickyProof               `json:"proof"`
 	SchemaVersion       int64                     `json:"schemaVersion"`
 }
 
@@ -1183,7 +1183,7 @@ type Capabilities1 struct {
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
-type TentacledProof struct {
+type StickyProof struct {
 	Payload   AmbitiousPayload `json:"payload"`
 	Signature string           `json:"signature"`
 }
@@ -1298,7 +1298,7 @@ type ConnectionReceipt struct {
 	Invitation        FluffyInvitation        `json:"invitation"`
 	MachineCredential FluffyMachineCredential `json:"machineCredential"`
 	Membership        FluffyMembership        `json:"membership"`
-	Proof             StickyProof             `json:"proof"`
+	Proof             IndigoProof             `json:"proof"`
 	SchemaVersion     int64                   `json:"schemaVersion"`
 }
 
@@ -1356,7 +1356,7 @@ type IndecentScope struct {
 	TeamID string  `json:"teamId"`
 }
 
-type StickyProof struct {
+type IndigoProof struct {
 	Payload   CunningPayload `json:"payload"`
 	Signature string         `json:"signature"`
 }
@@ -1859,7 +1859,7 @@ type PeerLocalHumanBindingReceipt struct {
 	JoinReceiptDigest string                `json:"joinReceiptDigest"`
 	LocalUserID       string                `json:"localUserId"`
 	Participant       PurpleParticipant     `json:"participant"`
-	Proof             IndigoProof           `json:"proof"`
+	Proof             IndecentProof         `json:"proof"`
 	SchemaVersion     int64                 `json:"schemaVersion"`
 }
 
@@ -1889,7 +1889,7 @@ type PurpleParticipant struct {
 	PublicKey string `json:"publicKey"`
 }
 
-type IndigoProof struct {
+type IndecentProof struct {
 	Payload   Payload4 `json:"payload"`
 	Signature string   `json:"signature"`
 }
@@ -1926,7 +1926,7 @@ type BindingReceipt struct {
 	JoinReceiptDigest string                `json:"joinReceiptDigest"`
 	LocalUserID       string                `json:"localUserId"`
 	Participant       FluffyParticipant     `json:"participant"`
-	Proof             IndecentProof         `json:"proof"`
+	Proof             HilariousProof        `json:"proof"`
 	SchemaVersion     int64                 `json:"schemaVersion"`
 }
 
@@ -1956,7 +1956,7 @@ type FluffyParticipant struct {
 	PublicKey string `json:"publicKey"`
 }
 
-type IndecentProof struct {
+type HilariousProof struct {
 	Payload   Payload5 `json:"payload"`
 	Signature string   `json:"signature"`
 }
@@ -2519,6 +2519,193 @@ type PeerIngressConfiguration struct {
 	SchemaVersion   float64 `json:"schemaVersion"`
 }
 
+type PeerRuntimeBinding struct {
+	ConnectionID  string                        `json:"connectionId"`
+	CredentialID  string                        `json:"credentialId"`
+	Host          PeerRuntimeBindingHost        `json:"host"`
+	HostOrigin    string                        `json:"hostOrigin"`
+	MemberID      string                        `json:"memberId"`
+	MembershipID  string                        `json:"membershipId"`
+	OperationID   string                        `json:"operationId"`
+	Participant   PeerRuntimeBindingParticipant `json:"participant"`
+	PeerID        string                        `json:"peerId"`
+	SchemaVersion int64                         `json:"schemaVersion"`
+	TeamID        string                        `json:"teamId"`
+}
+
+type PeerRuntimeBindingHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerRuntimeBindingParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerRuntimeChallenge struct {
+	Binding       PeerRuntimeChallengeBinding `json:"binding"`
+	Nonce         string                      `json:"nonce"`
+	Proof         PeerRuntimeChallengeProof   `json:"proof"`
+	SchemaVersion int64                       `json:"schemaVersion"`
+}
+
+type PeerRuntimeChallengeBinding struct {
+	ConnectionID  string               `json:"connectionId"`
+	CredentialID  string               `json:"credentialId"`
+	Host          MagentaHost          `json:"host"`
+	HostOrigin    string               `json:"hostOrigin"`
+	MemberID      string               `json:"memberId"`
+	MembershipID  string               `json:"membershipId"`
+	OperationID   string               `json:"operationId"`
+	Participant   TentacledParticipant `json:"participant"`
+	PeerID        string               `json:"peerId"`
+	SchemaVersion int64                `json:"schemaVersion"`
+	TeamID        string               `json:"teamId"`
+}
+
+type MagentaHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type TentacledParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerRuntimeChallengeProof struct {
+	Payload   Payload11 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload11 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRuntimeAuthentication struct {
+	BindingDigest string                         `json:"bindingDigest"`
+	Proof         PeerRuntimeAuthenticationProof `json:"proof"`
+	SchemaVersion int64                          `json:"schemaVersion"`
+}
+
+type PeerRuntimeAuthenticationProof struct {
+	Payload   Payload12 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload12 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRuntimeReady struct {
+	BindingDigest string                `json:"bindingDigest"`
+	Proof         PeerRuntimeReadyProof `json:"proof"`
+	SchemaVersion int64                 `json:"schemaVersion"`
+}
+
+type PeerRuntimeReadyProof struct {
+	Payload   Payload13 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload13 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRuntimeHeartbeat struct {
+	BindingDigest string `json:"bindingDigest"`
+	SchemaVersion int64  `json:"schemaVersion"`
+	Sequence      int64  `json:"sequence"`
+}
+
+type PeerRuntimeMessage struct {
+	MessageID       string                    `json:"messageId"`
+	Payload         PeerRuntimeMessagePayload `json:"payload"`
+	ProtocolVersion ProtocolVersion           `json:"protocolVersion"`
+	Timestamp       string                    `json:"timestamp"`
+	Type            PeerRuntimeMessageType    `json:"type"`
+}
+
+type PeerRuntimeMessagePayload struct {
+	Binding       *FluffyBinding  `json:"binding,omitempty"`
+	Nonce         *string         `json:"nonce,omitempty"`
+	Proof         *AmbitiousProof `json:"proof,omitempty"`
+	SchemaVersion *int64          `json:"schemaVersion,omitempty"`
+	BindingDigest *string         `json:"bindingDigest,omitempty"`
+	Sequence      *int64          `json:"sequence,omitempty"`
+	Code          *Code           `json:"code,omitempty"`
+}
+
+type FluffyBinding struct {
+	ConnectionID  string            `json:"connectionId"`
+	CredentialID  string            `json:"credentialId"`
+	Host          FriskyHost        `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MemberID      string            `json:"memberId"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   StickyParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+	TeamID        string            `json:"teamId"`
+}
+
+type FriskyHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type StickyParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type AmbitiousProof struct {
+	Payload   Payload14 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload14 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
 type Kind string
 
 const (
@@ -2609,20 +2796,20 @@ const (
 	PeerV1 ProtocolVersion = "peer.v1"
 )
 
-type Type string
+type PeerControlMessageType string
 
 const (
-	PeerAgentAcceptance     Type = "peer.agent.acceptance"
-	PeerAgentExport         Type = "peer.agent.export"
-	PeerAgentProjection     Type = "peer.agent.projection"
-	PeerRunAdmission        Type = "peer.run.admission"
-	PeerRunSettlement       Type = "peer.run.settlement"
-	TypePeerChallenge       Type = "peer.challenge"
-	TypePeerError           Type = "peer.error"
-	TypePeerInvitation      Type = "peer.invitation"
-	TypePeerInvitationClaim Type = "peer.invitation.claim"
-	TypePeerMembership      Type = "peer.membership"
-	TypePeerProof           Type = "peer.proof"
+	PeerAgentAcceptance     PeerControlMessageType = "peer.agent.acceptance"
+	PeerAgentExport         PeerControlMessageType = "peer.agent.export"
+	PeerAgentProjection     PeerControlMessageType = "peer.agent.projection"
+	PeerRunAdmission        PeerControlMessageType = "peer.run.admission"
+	PeerRunSettlement       PeerControlMessageType = "peer.run.settlement"
+	TypePeerChallenge       PeerControlMessageType = "peer.challenge"
+	TypePeerError           PeerControlMessageType = "peer.error"
+	TypePeerInvitation      PeerControlMessageType = "peer.invitation"
+	TypePeerInvitationClaim PeerControlMessageType = "peer.invitation.claim"
+	TypePeerMembership      PeerControlMessageType = "peer.membership"
+	TypePeerProof           PeerControlMessageType = "peer.proof"
 )
 
 type PeerLocalConnectionState string
@@ -2637,4 +2824,15 @@ type PeerHumanBindingCredentialAudience string
 
 const (
 	PeerHumanBinding PeerHumanBindingCredentialAudience = "peer.human-binding"
+)
+
+type PeerRuntimeMessageType string
+
+const (
+	PeerRuntimeAcknowledged  PeerRuntimeMessageType = "peer.runtime.acknowledged"
+	PeerRuntimeAuthenticate  PeerRuntimeMessageType = "peer.runtime.authenticate"
+	PeerRuntimeError         PeerRuntimeMessageType = "peer.runtime.error"
+	TypePeerRuntimeChallenge PeerRuntimeMessageType = "peer.runtime.challenge"
+	TypePeerRuntimeHeartbeat PeerRuntimeMessageType = "peer.runtime.heartbeat"
+	TypePeerRuntimeReady     PeerRuntimeMessageType = "peer.runtime.ready"
 )

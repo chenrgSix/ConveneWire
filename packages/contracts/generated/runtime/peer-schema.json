@@ -2584,6 +2584,375 @@
           "maxLength": 84
         }
       }
+    },
+    "PeerRuntimeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "connectionId",
+        "operationId",
+        "host",
+        "participant",
+        "hostOrigin",
+        "peerId",
+        "membershipId",
+        "credentialId",
+        "teamId",
+        "memberId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "connectionId": {
+          "type": "string",
+          "pattern": "^peerconnection_[A-Za-z0-9_-]{8,128}$"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "host": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "hostOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "membershipId": {
+          "type": "string",
+          "pattern": "^peermember_[A-Za-z0-9_-]{8,128}$"
+        },
+        "credentialId": {
+          "type": "string",
+          "pattern": "^peercredential_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "memberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        }
+      }
+    },
+    "PeerRuntimeChallenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "binding",
+        "nonce",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/PeerRuntimeBinding"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerRuntimeAuthentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "bindingDigest",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "bindingDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerRuntimeReady": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "bindingDigest",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "bindingDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerRuntimeHeartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "bindingDigest",
+        "sequence"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "bindingDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "PeerRuntimeMessage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.challenge"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerRuntimeChallenge"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.authenticate"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerRuntimeAuthentication"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.ready"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerRuntimeReady"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.heartbeat"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerRuntimeHeartbeat"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.acknowledged"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerRuntimeHeartbeat"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.runtime.error"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerError"
+            }
+          }
+        }
+      ]
     }
   }
 }
