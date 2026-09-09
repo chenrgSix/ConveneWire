@@ -102,7 +102,7 @@ func validateState(state State, participant wire.PeerNodeIdentity, localUserID s
 		if err != nil || !ed25519.Verify(key, transcript, signature) {
 			return ErrStore
 		}
-		if validateHistory(connection) != nil || validateLocalExports(connection, operations) != nil {
+		if validateHistory(connection) != nil || validateLocalExports(connection, operations) != nil || validateAcceptanceSnapshots(connection, participant) != nil {
 			return ErrStore
 		}
 	}

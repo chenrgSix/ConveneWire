@@ -9,14 +9,16 @@ import (
 )
 
 type ExportSyncReceipt struct {
-	SchemaVersion int64          `json:"schemaVersion"`
-	PeerID        string         `json:"peerId"`
-	LocalAgentID  string         `json:"localAgentId"`
-	HistoryDigest string         `json:"historyDigest"`
-	ExportID      string         `json:"exportId"`
-	GrantRevision int64          `json:"grantRevision"`
-	GrantDigest   string         `json:"grantDigest"`
-	Proof         wire.PeerProof `json:"proof"`
+	SchemaVersion       int64              `json:"schemaVersion"`
+	PeerID              string             `json:"peerId"`
+	LocalAgentID        string             `json:"localAgentId"`
+	HistoryDigest       string             `json:"historyDigest"`
+	ExportID            string             `json:"exportId"`
+	GrantRevision       int64              `json:"grantRevision"`
+	GrantDigest         string             `json:"grantDigest"`
+	ExportHistoryLength int64              `json:"exportHistoryLength"`
+	AcceptanceHistory   []AcceptanceRecord `json:"acceptanceHistory"`
+	Proof               wire.PeerProof     `json:"proof"`
 }
 
 // History is one complete reviewed local Agent history. Expired/withdrawn heads
@@ -69,7 +71,7 @@ func VerifyExportSyncReceipt(receipt ExportSyncReceipt, offers []AgentOffer, pee
 	host, participant wire.PeerNodeIdentity, operationID, nonce string, now time.Time) error {
 	historyDigest, err := semanticDigest(exportHistoryContent(localAgentID, offers))
 	if err != nil || !closed("PeerAgentSyncReceipt", receipt) || receipt.HistoryDigest != historyDigest ||
-		receipt.PeerID != peerID || receipt.LocalAgentID != localAgentID {
+		receipt.PeerID != peerID || receipt.LocalAgentID != localAgentID || receipt.ExportHistoryLength != int64(len(offers)) {
 		return ErrProof
 	}
 	connection := LocalConnection{}
@@ -82,7 +84,8 @@ func VerifyExportSyncReceipt(receipt ExportSyncReceipt, offers []AgentOffer, pee
 		return ErrProof
 	}
 	subject, err := semanticDigest(map[string]any{"peerId": peerID, "localAgentId": localAgentID, "historyDigest": historyDigest,
-		"exportId": head.ExportID, "grantRevision": head.Revision, "grantDigest": digest})
+		"exportId": head.ExportID, "grantRevision": head.Revision, "grantDigest": digest,
+		"exportHistoryLength": receipt.ExportHistoryLength, "acceptanceHistory": receipt.AcceptanceHistory})
 	if err != nil {
 		return ErrProof
 	}
@@ -141,6 +144,9 @@ func (c *Client) SyncExports(ctx context.Context, exporter *Exporter, membership
 	current, err = exporter.History(membershipID, localAgentID, c.clock())
 	if err != nil || !equalJSON(current, offers) {
 		return ExportSyncReceipt{}, ErrExport
+	}
+	if err = exporter.installAcceptanceSnapshot(membershipID, receipt, c.clock()); err != nil {
+		return ExportSyncReceipt{}, err
 	}
 	return receipt, nil
 }

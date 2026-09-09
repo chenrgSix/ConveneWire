@@ -1482,6 +1482,13 @@
           "items": {
             "$ref": "#/$defs/PeerLocalExport"
           }
+        },
+        "acceptanceSnapshots": {
+          "type": "array",
+          "maxItems": 2048,
+          "items": {
+            "$ref": "#/$defs/PeerAgentSyncReceipt"
+          }
         }
       }
     },
@@ -2454,7 +2461,9 @@
         "exportId",
         "grantRevision",
         "grantDigest",
-        "proof"
+        "proof",
+        "acceptanceHistory",
+        "exportHistoryLength"
       ],
       "properties": {
         "schemaVersion": {
@@ -2490,6 +2499,49 @@
         },
         "proof": {
           "$ref": "#/$defs/PeerProof"
+        },
+        "acceptanceHistory": {
+          "type": "array",
+          "maxItems": 2048,
+          "items": {
+            "$ref": "#/$defs/PeerAgentAcceptanceRecord"
+          }
+        },
+        "exportHistoryLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2048
+        }
+      }
+    },
+    "PeerAgentAcceptanceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "sequence",
+        "acceptance",
+        "projection",
+        "offerDigest"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "acceptance": {
+          "$ref": "#/$defs/RemoteAgentAcceptance"
+        },
+        "projection": {
+          "$ref": "#/$defs/RemoteAgentProjection"
+        },
+        "offerDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     }

@@ -40,6 +40,13 @@ head. Synchronization is atomic and cannot itself create an Acceptance. Both
 languages enforce closed fields and the bounded Peer JSON limit; historical
 expiry does not authorize a new active grant.
 
+The receipt also binds `exportHistoryLength` and the complete ordered
+`PeerAgentAcceptanceRecord` history. Each record carries a sequence scoped to
+one Peer/local Agent, exact acceptance, projection and reviewed offer digest.
+Optional private `acceptanceSnapshots` retain the Host signature across restarts;
+record prefixes are immutable, while a changed snapshot requires a fresh proof.
+Stored evidence never substitutes for a fresh execution-admission proof.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

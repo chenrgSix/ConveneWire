@@ -2,7 +2,8 @@ import { randomBytes } from "node:crypto";
 import type Database from "better-sqlite3";
 import type {
   PeerAgentOffer, PeerAgentOfferRequest, PeerAgentOfferReceipt, PeerAgentAcceptanceRequest,
-  PeerAgentRevokeRequest, PeerAgentAcceptanceReceipt, RemoteAgentAcceptance, PeerAgentSyncRequest, PeerAgentSyncReceipt
+  PeerAgentRevokeRequest, PeerAgentAcceptanceReceipt, RemoteAgentAcceptance, PeerAgentSyncRequest, PeerAgentSyncReceipt,
+  PeerAgentAcceptanceRecord
 } from "@convene-wire/contracts/peer";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { validatePeer } from "@convene-wire/contracts/peer-validation";
@@ -53,14 +54,15 @@ export class PeerAgentService {
     const context = { purpose: "agent.export" as const, audienceNodeId: this.authority.nodeId,
       operationId: input.proof.payload.operationId, nonce: input.proof.payload.nonce, subjectDigest: historyDigest };
     verifyPeerProof(input.proof, { nodeId: principal.participantNodeId, publicKey: principal.participantPublicKey }, context, now);
-    const current = this.database.transaction(() => {
+    const result = this.database.transaction(() => {
       const head = this.grants.synchronizeVerifiedExports(input.offers.map(offer => offer.grant), now);
       for (const offer of input.offers) this.persistOffer(offer, now);
-      return head;
+      const acceptanceHistory = this.acceptanceHistory(principal.peerId, input.localAgentId);
+      return { peerId: principal.peerId, localAgentId: input.localAgentId, historyDigest,
+        exportId: head.value.exportId, grantRevision: head.value.revision, grantDigest: head.digest,
+        exportHistoryLength: input.offers.length, acceptanceHistory };
     }).immediate();
     this.onChanged(principal.scope.teamId);
-    const result = { peerId: principal.peerId, localAgentId: input.localAgentId, historyDigest,
-      exportId: current.value.exportId, grantRevision: current.value.revision, grantDigest: current.digest };
     return { schemaVersion: 1, ...result, proof: this.authority.signPeerProof({ ...context,
       audienceNodeId: principal.participantNodeId, subjectDigest: peerDigest(result) }, now) };
   }
@@ -89,6 +91,11 @@ export class PeerAgentService {
     if (grant.peerId !== input.peerId || grant.localAgentId !== input.localAgentId || row.grant_digest !== input.grantDigest ||
         row.offer_digest !== input.offerDigest) throw new PeerStoreError("PAYLOAD_CONFLICT");
     const result = this.operation(owner.memberId, input.operationId, input, now, () => {
+      // Keep bounded history space for later revocations. No decision is silently dropped.
+      const size = this.database.prepare(`SELECT count(*) AS n, coalesce(sum(length(CAST(o.result_json AS BLOB))), 0) AS bytes
+        FROM peer_agent_acceptance_log l JOIN peer_agent_operations o USING (owner_member_id, operation_id)
+        WHERE l.peer_id = ?`).get(grant.peerId) as { n: number; bytes: number };
+      if (size.n >= 1024 || size.bytes >= 256 * 1024) throw new PeerStoreError("SCOPE_DENIED");
       const current = this.grants.currentAcceptance(grant.peerId, grant.localAgentId)?.value;
       if ((current?.acceptanceId ?? null) !== input.expectedAcceptanceId || (current?.revision ?? null) !== input.expectedAcceptanceRevision) throw new PeerStoreError("STALE_AUTHORIZATION");
       const membershipRow = this.database.prepare("SELECT membership_id FROM peer_memberships WHERE peer_id = ?").get(grant.peerId) as { membership_id: string };
@@ -164,6 +171,23 @@ export class PeerAgentService {
   private getOffer(exportId: string, revision: number): OfferRow | undefined {
     return this.database.prepare("SELECT payload_json, offer_digest, grant_digest FROM peer_agent_offers WHERE export_id = ? AND grant_revision = ?")
       .get(exportId, revision) as OfferRow | undefined;
+  }
+  private acceptanceHistory(peerId: string, localAgentId: string): PeerAgentAcceptanceRecord[] {
+    const rows = this.database.prepare(`SELECT l.sequence, o.result_json FROM peer_agent_acceptance_log l
+      JOIN peer_agent_operations o USING (owner_member_id, operation_id)
+      WHERE l.peer_id = ? AND l.local_agent_id = ? ORDER BY l.sequence`).all(peerId, localAgentId) as
+      { sequence: number; result_json: string }[];
+    const history = rows.map(row => ({ schemaVersion: 1 as const, sequence: row.sequence,
+      ...JSON.parse(row.result_json) as AcceptanceResult }));
+    for (const [index, record] of history.entries()) {
+      this.assert("PeerAgentAcceptanceRecord", record);
+      if (record.sequence !== index + 1 || record.acceptance.peerId !== peerId ||
+          record.projection.localAgentId !== localAgentId) throw new PeerStoreError("STALE_AUTHORIZATION");
+    }
+    const current = this.grants.currentAcceptance(peerId, localAgentId)?.value, last = history.at(-1)?.acceptance;
+    if ((current ? peerDigest(current) : null) !== (last ? peerDigest(last) : null) ||
+        history.length > 2048 || Buffer.byteLength(JSON.stringify(history)) > 768 * 1024) throw new PeerStoreError("STALE_AUTHORIZATION");
+    return history;
   }
   private assertOffer(offer: PeerAgentOffer, principal: PeerPrincipal): void {
     const grant = offer.grant;

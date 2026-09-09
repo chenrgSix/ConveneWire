@@ -228,9 +228,8 @@ All Peer Go race tests and vet pass, including concurrent local review,
 configuration/private/trust negatives, immutable history, clock rollback,
 withdrawal without a Runtime and explicit replacement. All 130 Contracts Node
 checks, Go fixtures, generation/types, Server build and docs/link checks pass.
-Native callers and multi-revision synchronization remain in the active delivery
-chain; this transport helper does not yet run a
-background connector or execute work.
+Native callers remain in BRG-081/WEB-085; the synchronization helper below does
+not itself run a background connector or execute work.
 
 ### Peer Agent registry materialization
 
@@ -289,15 +288,60 @@ configuration for a live head. Withdrawal can still sync when that Runtime is
 gone. The client rechecks local history around network waits, verifies the
 receipt's whole-history and final-head digests, and retains the same grant
 identities after response loss. The actual TLS fixture drops the first sync
-response after a multi-revision withdrawal commits, reopens the Participant,
-retries without a Runtime and verifies no reactivation or duplicate acceptance.
+response after Host acceptance, reopens the Participant and retries. It also
+verifies multi-revision withdrawal, retry without a Runtime, no reactivation
+and no duplicate acceptance.
 
 Verification passes 21 focused Server tests, 130 Contracts Node checks plus
 generated/types/Go fixtures, all Peer Go race tests, vet, Server build and
 docs/link checks. The preceding complete Server run passed 732 checks; this
-increment adds five synchronization tests. Host acceptance-history delivery
-and local effective-projection validation remain in REG-007 before native
-controller and Runtime integration.
+increment adds five synchronization tests. Acceptance delivery and local
+projection validation are implemented in the following increment.
+
+### Participant Acceptance synchronization
+
+Migration 0101 orders Host decisions by a durable sequence private to each
+Peer/local Agent pair. Same-clock decisions retain writer order across revoked
+and new Acceptance lineages; another Agent's activity cannot advance this
+sequence. The log, Owner operation, acceptance revision and projection
+materialization commit together. Upgrades preserve existing operation order
+and projection identities. History cannot be rewritten, removed or synthesized
+from a bare acceptance row without an explicit Owner decision.
+
+The signed synchronization receipt contains the complete Acceptance history,
+exact reviewed offer digests, stable projection mapping and acknowledged Export
+history length/digest. The Host bounds active decision history and reserves
+capacity for revocation. No history is silently truncated. Synchronization
+publishes existing decisions; it never accepts an Agent automatically.
+
+The Participant stores the signed receipt in optional private
+`acceptanceSnapshots`, alongside append-only Acceptance revisions. Existing
+join-only stores remain readable. A replacement snapshot must preserve its
+previous history prefix and carry a fresh pinned Host proof. Every read verifies
+the retained signature at its original issue time, contiguous decision order,
+exact local offer correspondence and stable projection identity. Missing,
+reordered, widened or substituted records fail atomically, even when signed.
+
+`Exporter.Effective` requires a current reviewed local Runtime configuration,
+active connection/membership, the exact current Export and Host Acceptance,
+Room/capability intersection and unexpired authority. Bare legacy acceptance
+rows or a projection alone grant no work. This method evaluates stored bilateral
+authority; RUN-020 still requires live Host admission immediately before start.
+
+Verification includes same-clock ordering, scoped cursors, transaction rollback,
+version-100 backfill, forged/widened/reordered snapshots, expiry, changed Runtime
+configuration, stale-grant denial, revocation and restart. Actual Go/Server TLS
+coverage recovers a lost signed receipt, persists accepted authority, follows
+Host revoke/new acceptance while preserving projection identity, then withdraws
+offline revisions without reviving work. Native sharing controls, shared-core
+execution and final A/B/C manual acceptance retain their own task gates.
+
+Completion evidence: the full Server suite passes 740 tests. The final UTF-8
+capacity correction and reserved-revocation case pass all 19 affected tests.
+All 130 Contracts Node tests, generated/type checks and Go fixtures pass;
+Peer Go race tests, actual TLS interop, vet and Server build pass. Documentation,
+local links and whitespace checks also pass. These are local automatic checks;
+CI, shared-core collaboration E2E and physical acceptance are separate gates.
 
 ## Registry verification
 

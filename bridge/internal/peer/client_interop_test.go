@@ -270,8 +270,43 @@ func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *test
 	if VerifyOfferReceipt(offerReceipt, tampered, f.Host, signer.Identity(), prepared.OperationID, offerReceipt.Proof.Payload.Nonce, now) == nil {
 		t.Fatal("offer receipt metadata substituted")
 	}
+	roomID := prepared.Offer.Grant.RoomIDS[0]
+	if _, err := exporter.Effective(exportRequest.MembershipID, source.AgentID, roomID, now); err == nil {
+		t.Fatal("unaccepted offer became executable")
+	}
 	if count := f.control(t, map[string]any{"action": "accept-agent"}); count["offers"] != 1 || count["acceptances"] != 1 {
 		t.Fatal("explicit Host acceptance", count)
+	}
+	if _, err = client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, "op_tlsacceptsync001"); !errors.Is(err, ErrTransport) {
+		t.Fatal("lost acceptance snapshot response", err)
+	}
+	reopened, err = OpenStore(root, signer.Identity(), signer.LocalUserID())
+	if err != nil {
+		t.Fatal(err)
+	}
+	exporter, _ = NewExporter(reopened, func(string) (ExportSource, error) { return source, nil })
+	accepted, err := client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, "op_tlsacceptsync001")
+	if err != nil || len(accepted.AcceptanceHistory) != 1 {
+		t.Fatal("acceptance recovery", err)
+	}
+	firstEffective, err := exporter.Effective(exportRequest.MembershipID, source.AgentID, roomID, now)
+	if err != nil {
+		t.Fatal("verified bilateral authorization", err)
+	}
+	f.control(t, map[string]any{"action": "revoke-agent"})
+	if _, err := client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, "op_tlsrevokesync001"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := exporter.Effective(exportRequest.MembershipID, source.AgentID, roomID, now); err == nil {
+		t.Fatal("Host revoke ignored")
+	}
+	f.control(t, map[string]any{"action": "accept-agent"})
+	if _, err := client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, "op_tlsnewsync001"); err != nil {
+		t.Fatal(err)
+	}
+	effective, err := exporter.Effective(exportRequest.MembershipID, source.AgentID, roomID, now)
+	if err != nil || effective.Projection.ProjectionAgentID != firstEffective.Projection.ProjectionAgentID || effective.Acceptance.AcceptanceID == firstEffective.Acceptance.AcceptanceID {
+		t.Fatal("new acceptance did not preserve mapping", err)
 	}
 	source.Configuration.Role = "Revised while offline"
 	exportRequest.OperationID = "op_tlsexportrevision002"
@@ -292,8 +327,8 @@ func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *test
 	}
 	exporter, _ = NewExporter(reopened, func(string) (ExportSource, error) { return ExportSource{}, ErrExport })
 	syncOperation := "op_tlsexportsync001"
-	if _, err = client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, syncOperation); !errors.Is(err, ErrTransport) {
-		t.Fatal("lost sync receipt", err)
+	if _, err = client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, syncOperation); err != nil {
+		t.Fatal("withdrawal sync", err)
 	}
 	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 3 || count["enabledPeers"] != 0 {
 		t.Fatal("atomic withdrawal", count)
@@ -307,7 +342,7 @@ func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *test
 	if err != nil || synchronized.GrantRevision != 3 {
 		t.Fatal("sync after reopen without Runtime", err)
 	}
-	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 3 || count["acceptances"] != 1 || count["enabledPeers"] != 0 {
+	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 3 || count["acceptances"] != 3 || count["enabledPeers"] != 0 {
 		t.Fatal("sync retry revived authority", count)
 	}
 	history, err := exporter.History(exportRequest.MembershipID, source.AgentID, now)

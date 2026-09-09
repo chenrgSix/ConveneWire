@@ -77,10 +77,16 @@ try {
     else if (command.action === "accept-agent") {
       const offered = agents.listOffers(owner, teamId)[0]!;
       const grant = offered.offer.grant;
-      agents.accept(owner, { schemaVersion: 1, operationId: "op_tlsacceptagent001", peerId: grant.peerId,
+      const sequence = (database.prepare("SELECT count(*) AS n FROM peer_agent_operations").get() as { n: number }).n + 1;
+      agents.accept(owner, { schemaVersion: 1, operationId: `op_tlsacceptagent${sequence}`, peerId: grant.peerId,
         localAgentId: grant.localAgentId, exportId: grant.exportId, grantRevision: grant.revision, grantDigest: peerDigest(grant),
         offerDigest: offered.offerDigest, roomIds: grant.roomIds, capabilities: grant.capabilities, expiresAt: grant.expiresAt,
         expectedAcceptanceId: offered.acceptance?.acceptanceId ?? null, expectedAcceptanceRevision: offered.acceptance?.revision ?? null }, now);
+    }
+    else if (command.action === "revoke-agent") {
+      const current = agents.listOffers(owner, teamId)[0]!.acceptance!;
+      agents.revoke(owner, { schemaVersion: 1, operationId: "op_tlsrevokeagent001",
+        acceptanceId: current.acceptanceId, expectedRevision: current.revision }, now);
     }
     const counts = database.prepare("SELECT count(*) AS memberships FROM peer_memberships").get();
     const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;

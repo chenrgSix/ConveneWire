@@ -159,6 +159,14 @@ local Owner, machine credentials, drafts and callbacks are never forwarded to
 another origin. One-use browser entry must derive from current explicit human
 membership rather than the Peer machine credential alone.
 
+Acceptance synchronization retains a complete Host-signed decision history with
+a sequence private to one Peer/local Agent pair. Writer order survives equal
+timestamps, lineage replacement and restart without revealing another Agent's
+activity. The Participant verifies immutable history prefixes, exact reviewed
+offer correspondence and stable projection identity before replacing its private
+snapshot. Stored signature evidence does not renew authority or replace the
+live admission required immediately before execution.
+
 OPS-019 supplies an explicitly enabled reachable Peer/browser entry over existing
 HTTPS/private-network trust mechanisms. The Local Node supervisor/control and
 Owner bootstrap remain loopback-only and cannot be exposed through a generic

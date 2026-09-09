@@ -16,6 +16,7 @@ import { AgentTaskRepository } from "../src/task/task-repository.js";
 import { MessageService } from "../src/team-room/message-service.js";
 import { RunService } from "../src/run/run-service.js";
 import { ContextPlanner } from "../src/task/context-planner.js";
+import { migrationVersionsAfter } from "./helpers/migration-frontier.js";
 
 test("accepted Peer projections retain separate identity and cannot use Device/manual publication", async t => {
   const f = await peerAgentFixture(t);
@@ -120,7 +121,7 @@ test("version-99 projections upgrade without identity reassignment and a failed 
   assert.equal(db.pragma("foreign_keys", { simple: true }), 1); assert.equal(db.pragma("legacy_alter_table", { simple: true }), 0);
   db.close();
   const migrated = await migrateDatabase(f.databasePath);
-  assert.deepEqual(migrated.appliedVersions, [100]);
+  assert.deepEqual(migrated.appliedVersions, migrationVersionsAfter(99));
   db = openDatabase(f.databasePath); f.resources.defer(() => { if (db.open) db.close(); });
   const agent = db.prepare("SELECT * FROM agents WHERE agent_id = ?").get(id) as Record<string, unknown>;
   assert.equal(agent.integration_mode, "peer"); assert.equal(agent.owner_member_id, f.membership.memberId);

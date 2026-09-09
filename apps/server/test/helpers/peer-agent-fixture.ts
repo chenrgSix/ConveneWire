@@ -37,7 +37,7 @@ export async function peerAgentFixture(t: Parameters<typeof fixture>[0], maximum
     roomIds: value.grant.roomIds, capabilities: value.grant.capabilities, expiresAt: value.grant.expiresAt,
     expectedAcceptanceId: null, expectedAcceptanceRevision: null });
   const sync = (offers = [offer], at = now): PeerAgentSyncRequest => {
-    const content = { schemaVersion: 1 as const, localAgentId: offer.grant.localAgentId, offers };
+    const content = { schemaVersion: 1 as const, localAgentId: offers[0]?.grant.localAgentId ?? offer.grant.localAgentId, offers };
     const payload = { ...signed(offer, at).proof.payload, subjectDigest: peerDigest(content) };
     return { ...content, proof: { payload, signature: sign(null, peerProofTranscript(payload), key).toString("base64url") } };
   };

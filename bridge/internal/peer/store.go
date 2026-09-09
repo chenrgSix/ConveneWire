@@ -30,11 +30,12 @@ type JoinReceipt struct {
 	Proof             wire.PeerProof             `json:"proof"`
 }
 type LocalConnection struct {
-	Receipt      JoinReceipt                  `json:"receipt"`
-	State        string                       `json:"state"`
-	Exports      []wire.AgentExportGrant      `json:"exports"`
-	Acceptances  []wire.RemoteAgentAcceptance `json:"acceptances"`
-	LocalExports []LocalExport                `json:"localExports,omitempty"`
+	Receipt             JoinReceipt                  `json:"receipt"`
+	State               string                       `json:"state"`
+	Exports             []wire.AgentExportGrant      `json:"exports"`
+	Acceptances         []wire.RemoteAgentAcceptance `json:"acceptances"`
+	LocalExports        []LocalExport                `json:"localExports,omitempty"`
+	AcceptanceSnapshots []ExportSyncReceipt          `json:"acceptanceSnapshots,omitempty"`
 }
 type State struct {
 	SchemaVersion int64                 `json:"schemaVersion"`
@@ -188,7 +189,7 @@ func transition(previous, next State, now time.Time) error {
 	}
 	for i, c := range next.Connections {
 		if i >= len(previous.Connections) {
-			if c.State != "active" || len(c.Exports) != 0 || len(c.Acceptances) != 0 || len(c.LocalExports) != 0 || !wire.ProofTimeValid(wire.PeerProofPayload(c.Receipt.Proof.Payload), now) {
+			if c.State != "active" || len(c.Exports) != 0 || len(c.Acceptances) != 0 || len(c.LocalExports) != 0 || len(c.AcceptanceSnapshots) != 0 || !wire.ProofTimeValid(wire.PeerProofPayload(c.Receipt.Proof.Payload), now) {
 				return ErrStore
 			}
 			expiry, err := time.Parse(time.RFC3339Nano, c.Receipt.Membership.ExpiresAt)
@@ -198,6 +199,9 @@ func transition(previous, next State, now time.Time) error {
 			continue
 		}
 		old := previous.Connections[i]
+		if acceptanceSnapshotTransition(old, c, now) != nil {
+			return ErrStore
+		}
 		if len(c.LocalExports) < len(old.LocalExports) {
 			return ErrStore
 		}
