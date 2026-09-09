@@ -34,8 +34,11 @@ type authorityConnector struct {
 }
 
 func runAuthorities(ctx context.Context, loaded config.Config, credential pairing.Credential, version string,
-	observer operations.Observer, identities map[string]string, configuration wire.AuthorityConnectionsConfig) error {
+	observer operations.Observer, identities map[string]string, configuration wire.AuthorityConnectionsConfig, native *nativeResources) error {
 	shared := &delivery.ResourceGate{}
+	if native != nil {
+		shared = native.shared
+	}
 	connectors, err := configureAuthorities(loaded, credential, identities, configuration, shared)
 	if err != nil {
 		return err
@@ -53,35 +56,32 @@ func runAuthorities(ctx context.Context, loaded config.Config, credential pairin
 			return err
 		}
 	}
-	partitions, err := authority.OwnedPartitions(loaded.DataDir)
-	if err != nil {
-		return err
-	}
-	for _, partition := range partitions {
-		b := partition.Binding
-		processes, err := admission.OpenGovernedProcessStore(ctx, partition.DataDir, admission.Owner{ServerURL: b.Pin.ServerOrigin, TeamID: b.TeamID, DeviceID: b.DeviceID, OwnerMemberID: b.OwnerMemberID})
+	var processes *admission.GovernedProcessStore
+	if native != nil {
+		processes = native.processes
+	} else {
+		partitions, err := authority.OwnedPartitions(loaded.DataDir)
 		if err != nil {
 			return err
 		}
-		fenceErr := processes.FenceAll(ctx)
-		closeErr := processes.Close()
-		if err := errors.Join(fenceErr, closeErr); err != nil {
+		for _, partition := range partitions {
+			b := partition.Binding
+			if err := fenceDeviceProcesses(ctx, partition.DataDir, admission.Owner{ServerURL: b.Pin.ServerOrigin, TeamID: b.TeamID, DeviceID: b.DeviceID, OwnerMemberID: b.OwnerMemberID}); err != nil {
+				return err
+			}
+		}
+		processRoot := filepath.Join(loaded.DataDir, "core-runtime-processes")
+		if err := privatefs.EnsureDirectory(processRoot); err != nil {
 			return err
 		}
-	}
-	processRoot := filepath.Join(loaded.DataDir, "core-runtime-processes")
-	if err := privatefs.EnsureDirectory(processRoot); err != nil {
-		return err
-	}
-	processes, err := admission.OpenGovernedProcessStore(ctx, processRoot, admission.Owner{ServerURL: credential.ServerURL, TeamID: credential.TeamID, DeviceID: credential.DeviceID, OwnerMemberID: credential.OwnerMemberID})
-	if err != nil {
-		return err
-	}
-	defer processes.Close()
-	// Fence every Authority's ordinary orphan before any connector may execute,
-	// even when the owning Host is offline during core recovery.
-	if err := processes.FenceAll(ctx); err != nil {
-		return err
+		processes, err = admission.OpenGovernedProcessStore(ctx, processRoot, admission.Owner{ServerURL: credential.ServerURL, TeamID: credential.TeamID, DeviceID: credential.DeviceID, OwnerMemberID: credential.OwnerMemberID})
+		if err != nil {
+			return err
+		}
+		defer processes.Close()
+		if err := processes.FenceAll(ctx); err != nil {
+			return err
+		}
 	}
 	spaces, err := authority.NewSpaceDirectory(loaded.DataDir)
 	if err != nil {

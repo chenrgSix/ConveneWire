@@ -35,8 +35,18 @@ The process-store foundation passes Admission, Runtime and shared-core Go race
 tests and vet. Focused coverage terminates an actual orphaned process after
 restart, rejects a replaced/missing Node binding and foreign process namespace,
 and preserves legacy Device record bytes and namespace hashes. Windows amd64
-test cross-compilation passes; this is not Windows execution evidence. Core
-composition and Peer transport are still in progress under BRG-081.
+test cross-compilation passes; this is not Windows execution evidence.
+
+The native shell now supplies the installation identity to the existing Console
+core. Single- and multiple-Device paths use one Node process owner and shared
+physical Workspace scheduler. Startup fences retained legacy process stores
+before selecting the new namespace. Current identity and Peer-store validity
+are checked again before connection and admission; no network input can supply
+this native context. The real bundled Local Node fixture completes ordinary
+Run/Discussion work with Node-owned process records, restarts without replay,
+and restores the same identity and process owner from backup. Core/Local Node
+race tests, vet and this offline native fixture pass. Peer transport and local
+approval composition remain in progress under BRG-081.
 
 ## Local Node supervision
 

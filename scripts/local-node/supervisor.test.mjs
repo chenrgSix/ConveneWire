@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { readFile, writeFile, rename, rm, mkdir } from "node:fs/promises";
+import { readFile, writeFile, rename, rm, mkdir, readdir } from "node:fs/promises";
 import { once } from "node:events";
 import net from "node:net";
 import https from "node:https";
@@ -153,6 +153,23 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     ["contribution", "completed", 2], ["finalization", "completed", 1]
   ]);
   const identityBefore = await readFile(path.join(dataRoot, "identity.json"));
+  const processRoot = path.join(dataRoot, "bridge", "core-node-processes");
+  const processOwnerBefore = await readFile(path.join(processRoot, "node-process-owner.json"));
+  const processOwner = JSON.parse(processOwnerBefore);
+  assert.equal(processOwner.nodeId, ready.nodeId);
+  assert.equal(processOwner.localUserId, ownerId);
+  assert.equal(Object.hasOwn(processOwner, "deviceId"), false);
+  const processRecords = path.join(processRoot, "governed-runtime-processes");
+  const [processNamespace] = await readdir(processRecords);
+  const processFiles = await readdir(path.join(processRecords, processNamespace));
+  const prepared = processFiles.filter(name => name.endsWith(".prepared.json"));
+  assert.equal(prepared.length, 4, "every actual Runtime child must belong to the Node process owner");
+  for (const file of prepared) {
+    const record = JSON.parse(await readFile(path.join(processRecords, processNamespace, file), "utf8"));
+    assert.equal(record.version, 4); assert.deepEqual(record.nodeOwner, processOwner);
+    assert.equal(Object.hasOwn(record, "owner"), false);
+    assert.ok(processFiles.includes(file.replace(".prepared.json", ".finished.json")), "process completion was not durably recorded");
+  }
   const callsBefore = await readFile(path.join(root, "fixture-calls.jsonl"), "utf8");
   assert.equal(callsBefore.trim().split("\n").length, 4);
   const snapshot = path.join(root, "snapshot");
@@ -233,6 +250,7 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   await running.event("console");
   assert.equal((await request(`/api/discussions/${discussionId}`)).discussion.state, "completed");
   assert.equal(await readFile(path.join(root, "fixture-calls.jsonl"), "utf8"), callsBefore, "restore replayed completed work");
+  assert.deepEqual(await readFile(path.join(processRoot, "node-process-owner.json")), processOwnerBefore);
   // A fresh request must still execute through the restored Bridge inbox.
   await until(async () => (await request(`/api/teams/${team.teamId}/agents`)).every((agent) => agent.presence === "ready"), "restored Bridge readiness");
   const next = await request(`/api/rooms/${room.roomId}/messages`, { content: "Verify a new request after restore", mentionAgentId: agents[0].agentId });

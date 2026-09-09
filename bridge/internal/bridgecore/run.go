@@ -104,8 +104,19 @@ func RunObservedWithProvisioning(
 	if err != nil {
 		return err
 	}
+	var native *nativeResources
+	if node := nativeNodeFromContext(ctx); node != nil {
+		native, err = openNativeResources(ctx, node, loaded, credential, identities)
+		if err != nil {
+			return err
+		}
+		defer native.processes.Close()
+	}
 	if connections != nil {
-		return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections)
+		return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections, native)
+	}
+	if native != nil {
+		return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, native.primary, nil, native.processes, loaded.LocalNodeID)
 	}
 	return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, delivery.NewAgentExecutionGate(), nil, nil, "")
 }
@@ -115,6 +126,18 @@ func RunObservedWithProvisioning(
 func runConnector(ctx context.Context, loaded config.Config, credential pairing.Credential, bridgeVersion string,
 	observer operations.Observer, handleProvision connection.ProvisionHandler, identities map[string]string,
 	gate delivery.ExecutionGate, proof func(context.Context) error, processes bridgeruntime.GovernedProcessTracker, authorityID string) error {
+	if node := nativeNodeFromContext(ctx); node != nil {
+		connectorProof := proof
+		proof = func(ctx context.Context) error {
+			if err := node.check(); err != nil {
+				return err
+			}
+			if connectorProof != nil {
+				return connectorProof(ctx)
+			}
+			return nil
+		}
+	}
 	loaded = loaded.WithDeviceExecutionTrust(credential.ServerURL, credential.DeviceID, credential.OwnerMemberID)
 	inbox, err := delivery.Open(filepath.Join(loaded.DataDir, "inbox"))
 	if err != nil {

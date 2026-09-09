@@ -9,8 +9,11 @@ import (
 	"path/filepath"
 	"sync"
 
+	"convenewire.dev/bridge/internal/bridgecore"
 	"convenewire.dev/bridge/internal/config"
+	"convenewire.dev/bridge/internal/connection"
 	"convenewire.dev/bridge/internal/console"
+	"convenewire.dev/bridge/internal/operations"
 	"convenewire.dev/bridge/internal/pairing"
 	contracts "convenewire.dev/contracts/generated/go/localnode"
 )
@@ -26,6 +29,7 @@ type Shell struct {
 	version      string
 	requestID    string
 	closed       bool
+	native       *bridgecore.NativeNode
 }
 
 func NewShell(hub *Supervisor, workspace, version string, dependencies console.Dependencies) *Shell {
@@ -99,7 +103,25 @@ func (shell *Shell) attach(binding contracts.Binding) error {
 			return err
 		}
 	}
-	service, err := console.New(console.Options{ConfigPath: configPath, DataDir: dataDir, Workspace: shell.workspace, Version: shell.version}, shell.dependencies)
+	if shell.native == nil {
+		shell.native, err = bridgecore.NewNativeNode(root, shell.Hub.Data.Identity)
+		if err != nil {
+			return err
+		}
+	}
+	dependencies := shell.dependencies
+	native := shell.native
+	if run := dependencies.RunBridge; run != nil {
+		dependencies.RunBridge = func(ctx context.Context, cfg config.Config, credential pairing.Credential, observer operations.Observer) error {
+			return run(bridgecore.WithNativeNode(ctx, native), cfg, credential, observer)
+		}
+	}
+	if run := dependencies.RunBridgeWithProvisioning; run != nil {
+		dependencies.RunBridgeWithProvisioning = func(ctx context.Context, cfg config.Config, credential pairing.Credential, observer operations.Observer, handler connection.ProvisionHandler) error {
+			return run(bridgecore.WithNativeNode(ctx, native), cfg, credential, observer, handler)
+		}
+	}
+	service, err := console.New(console.Options{ConfigPath: configPath, DataDir: dataDir, Workspace: shell.workspace, Version: shell.version}, dependencies)
 	if err != nil {
 		return err
 	}
