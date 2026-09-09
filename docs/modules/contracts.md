@@ -34,6 +34,12 @@ requires exact grant correspondence and immutable history prefixes, while the
 Exporter requires current configuration correspondence before publication.
 Configuration values and the private history are never part of an offer.
 
+`PeerAgentSyncRequest` signs the complete ordered offer history for one stable
+local Agent; its receipt binds that history digest and the resulting exact Host
+head. Synchronization is atomic and cannot itself create an Acceptance. Both
+languages enforce closed fields and the bounded Peer JSON limit; historical
+expiry does not authorize a new active grant.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

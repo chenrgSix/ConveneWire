@@ -273,6 +273,50 @@ func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *test
 	if count := f.control(t, map[string]any{"action": "accept-agent"}); count["offers"] != 1 || count["acceptances"] != 1 {
 		t.Fatal("explicit Host acceptance", count)
 	}
+	source.Configuration.Role = "Revised while offline"
+	exportRequest.OperationID = "op_tlsexportrevision002"
+	state, err = reopened.Read()
+	if err != nil {
+		t.Fatal(err)
+	}
+	revised, err := exporter.Prepare(state.Revision, exportRequest, now)
+	if err != nil {
+		t.Fatal("offline revision", err)
+	}
+	state, err = reopened.Read()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = exporter.Withdraw(state.Revision, exportRequest.MembershipID, revised.Offer.Grant.ExportID, 2, "op_tlswithdraw001", now); err != nil {
+		t.Fatal("offline withdrawal", err)
+	}
+	exporter, _ = NewExporter(reopened, func(string) (ExportSource, error) { return ExportSource{}, ErrExport })
+	syncOperation := "op_tlsexportsync001"
+	if _, err = client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, syncOperation); !errors.Is(err, ErrTransport) {
+		t.Fatal("lost sync receipt", err)
+	}
+	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 3 || count["enabledPeers"] != 0 {
+		t.Fatal("atomic withdrawal", count)
+	}
+	reopened, err = OpenStore(root, signer.Identity(), signer.LocalUserID())
+	if err != nil {
+		t.Fatal(err)
+	}
+	exporter, _ = NewExporter(reopened, func(string) (ExportSource, error) { return ExportSource{}, ErrExport })
+	synchronized, err := client.SyncExports(context.Background(), exporter, exportRequest.MembershipID, source.AgentID, syncOperation)
+	if err != nil || synchronized.GrantRevision != 3 {
+		t.Fatal("sync after reopen without Runtime", err)
+	}
+	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 3 || count["acceptances"] != 1 || count["enabledPeers"] != 0 {
+		t.Fatal("sync retry revived authority", count)
+	}
+	history, err := exporter.History(exportRequest.MembershipID, source.AgentID, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if VerifyExportSyncReceipt(synchronized, history[:2], receipt.Membership.PeerID, source.AgentID, f.Host, signer.Identity(), syncOperation, synchronized.Proof.Payload.Nonce, now) == nil {
+		t.Fatal("sync receipt accepted truncated history")
+	}
 	entry, err := client.HumanEntry(context.Background(), human, receipt.Membership.MembershipID, wire.PeerScope(receipt.Membership.Scope), "op_tlsbrowser001")
 	if err != nil {
 		t.Fatal("human entry", err)

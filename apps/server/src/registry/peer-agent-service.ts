@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import type Database from "better-sqlite3";
 import type {
   PeerAgentOffer, PeerAgentOfferRequest, PeerAgentOfferReceipt, PeerAgentAcceptanceRequest,
-  PeerAgentRevokeRequest, PeerAgentAcceptanceReceipt, RemoteAgentAcceptance
+  PeerAgentRevokeRequest, PeerAgentAcceptanceReceipt, RemoteAgentAcceptance, PeerAgentSyncRequest, PeerAgentSyncReceipt
 } from "@convene-wire/contracts/peer";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { validatePeer } from "@convene-wire/contracts/peer-validation";
@@ -12,7 +12,7 @@ import { PeerMembershipRepository, PeerStoreError } from "../data/peer-membershi
 import { createOpaqueId } from "../domain/identifiers.js";
 import type { AuthService, WebPrincipal } from "../security/auth-service.js";
 import type { AuthorityService } from "../security/authority-service.js";
-import type { PeerAdmissionService } from "../security/peer-admission-service.js";
+import type { PeerAdmissionService, PeerPrincipal } from "../security/peer-admission-service.js";
 import { verifyPeerProof } from "../security/peer-proof-verifier.js";
 
 interface OfferRow { payload_json: string; offer_digest: string; grant_digest: string }
@@ -29,34 +29,38 @@ export class PeerAgentService {
 
   public offer(token: string, input: PeerAgentOfferRequest, now: string): PeerAgentOfferReceipt {
     this.assert("PeerAgentOfferRequest", input);
-    for (const label of [input.offer.displayName, input.offer.role]) {
-      if (label !== label.trim() || /[\u0000-\u001f\u007f]/u.test(label)) throw new PeerStoreError("INVALID_MESSAGE");
-    }
     const principal = this.admission.authenticateMachine(token, now), { grant } = input.offer;
-    if (grant.peerId !== principal.peerId || grant.authorityNodeId !== principal.hostNodeId ||
-        grant.participantNodeId !== principal.participantNodeId || grant.teamId !== principal.scope.teamId) throw new PeerStoreError("SCOPE_DENIED");
-    // V1 cannot discharge independent private-output consent on this transport.
-    if (grant.capabilities.supportsOwnerPrivateOutput) throw new PeerStoreError("SCOPE_DENIED");
+    this.assertOffer(input.offer, principal);
     const offerDigest = peerDigest(input.offer), grantDigest = peerDigest(grant);
     const context = { purpose: "agent.export" as const, audienceNodeId: this.authority.nodeId,
       operationId: input.proof.payload.operationId, nonce: input.proof.payload.nonce, subjectDigest: offerDigest };
     verifyPeerProof(input.proof, { nodeId: principal.participantNodeId, publicKey: principal.participantPublicKey }, context, now);
-    this.database.transaction(() => {
-      const previous = this.getOffer(grant.exportId, grant.revision);
-      if (previous) {
-        if (previous.offer_digest !== offerDigest || previous.grant_digest !== grantDigest) throw new PeerStoreError("PAYLOAD_CONFLICT");
-        return;
-      }
-      const count = this.database.prepare(`SELECT count(*) AS n FROM peer_agent_offers o
-        JOIN peer_export_lineages l ON l.export_id = o.export_id WHERE l.peer_id = ?`).get(principal.peerId) as { n: number };
-      // Retain space for withdrawal even after the active publication limit.
-      if (count.n >= 2048 && grant.state === "active") throw new PeerStoreError("SCOPE_DENIED");
-      this.grants.recordVerifiedExport(grant, now);
-      this.database.prepare(`INSERT INTO peer_agent_offers (export_id, grant_revision, grant_digest, offer_digest, payload_json, received_at)
-        VALUES (?, ?, ?, ?, ?, ?)`).run(grant.exportId, grant.revision, grantDigest, offerDigest, JSON.stringify(input.offer), now);
-    }).immediate();
+    this.database.transaction(() => this.persistOffer(input.offer, now)).immediate();
     this.onChanged(grant.teamId);
     const result = { exportId: grant.exportId, grantRevision: grant.revision, grantDigest, offerDigest };
+    return { schemaVersion: 1, ...result, proof: this.authority.signPeerProof({ ...context,
+      audienceNodeId: principal.participantNodeId, subjectDigest: peerDigest(result) }, now) };
+  }
+
+  public synchronize(token: string, input: PeerAgentSyncRequest, now: string): PeerAgentSyncReceipt {
+    this.assert("PeerAgentSyncRequest", input);
+    const principal = this.admission.authenticateMachine(token, now);
+    for (const offer of input.offers) {
+      this.assertOffer(offer, principal);
+      if (offer.grant.localAgentId !== input.localAgentId) throw new PeerStoreError("SCOPE_DENIED");
+    }
+    const historyDigest = peerDigest({ schemaVersion: 1, localAgentId: input.localAgentId, offers: input.offers });
+    const context = { purpose: "agent.export" as const, audienceNodeId: this.authority.nodeId,
+      operationId: input.proof.payload.operationId, nonce: input.proof.payload.nonce, subjectDigest: historyDigest };
+    verifyPeerProof(input.proof, { nodeId: principal.participantNodeId, publicKey: principal.participantPublicKey }, context, now);
+    const current = this.database.transaction(() => {
+      const head = this.grants.synchronizeVerifiedExports(input.offers.map(offer => offer.grant), now);
+      for (const offer of input.offers) this.persistOffer(offer, now);
+      return head;
+    }).immediate();
+    this.onChanged(principal.scope.teamId);
+    const result = { peerId: principal.peerId, localAgentId: input.localAgentId, historyDigest,
+      exportId: current.value.exportId, grantRevision: current.value.revision, grantDigest: current.digest };
     return { schemaVersion: 1, ...result, proof: this.authority.signPeerProof({ ...context,
       audienceNodeId: principal.participantNodeId, subjectDigest: peerDigest(result) }, now) };
   }
@@ -160,6 +164,30 @@ export class PeerAgentService {
   private getOffer(exportId: string, revision: number): OfferRow | undefined {
     return this.database.prepare("SELECT payload_json, offer_digest, grant_digest FROM peer_agent_offers WHERE export_id = ? AND grant_revision = ?")
       .get(exportId, revision) as OfferRow | undefined;
+  }
+  private assertOffer(offer: PeerAgentOffer, principal: PeerPrincipal): void {
+    const grant = offer.grant;
+    for (const label of [offer.displayName, offer.role]) {
+      if (label !== label.trim() || /[\u0000-\u001f\u007f]/u.test(label)) throw new PeerStoreError("INVALID_MESSAGE");
+    }
+    if (grant.peerId !== principal.peerId || grant.authorityNodeId !== principal.hostNodeId ||
+        grant.participantNodeId !== principal.participantNodeId || grant.teamId !== principal.scope.teamId ||
+        grant.capabilities.supportsOwnerPrivateOutput) throw new PeerStoreError("SCOPE_DENIED");
+  }
+  private persistOffer(offer: PeerAgentOffer, now: string): void {
+    const { grant } = offer, offerDigest = peerDigest(offer), grantDigest = peerDigest(grant);
+    const previous = this.getOffer(grant.exportId, grant.revision);
+    if (previous) {
+      if (previous.offer_digest !== offerDigest || previous.grant_digest !== grantDigest) throw new PeerStoreError("PAYLOAD_CONFLICT");
+      return;
+    }
+    const count = this.database.prepare(`SELECT count(*) AS n FROM peer_agent_offers o
+      JOIN peer_export_lineages l ON l.export_id = o.export_id WHERE l.peer_id = ?`).get(grant.peerId) as { n: number };
+    // Retain space for withdrawal even after the active publication limit.
+    if (count.n >= 2048 && grant.state === "active") throw new PeerStoreError("SCOPE_DENIED");
+    this.grants.recordVerifiedExport(grant, now);
+    this.database.prepare(`INSERT INTO peer_agent_offers (export_id, grant_revision, grant_digest, offer_digest, payload_json, received_at)
+      VALUES (?, ?, ?, ?, ?, ?)`).run(grant.exportId, grant.revision, grantDigest, offerDigest, JSON.stringify(offer), now);
   }
   private requireOwner(actor: WebPrincipal, teamId: string) {
     this.auth.requireFullWebSession(actor);

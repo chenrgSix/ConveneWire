@@ -268,6 +268,37 @@ and actual Go/Server TLS recovery with the Peer Go race suite pass. Docs,
 local links and whitespace checks pass. Runtime transport, native/UI calls
 and end-to-end collaboration acceptance retain their own task gates.
 
+### Offline Export synchronization
+
+The authenticated `POST /api/peer/agents/sync` accepts one complete reviewed
+local Agent history, with a fresh Participant proof over its ordered content.
+This endpoint has the bounded 1 MiB Peer limit for recovery; individual offers
+and admission requests keep their smaller limits. Oversized Peer bodies return
+HTTP 413 with a closed error code.
+
+The Host verifies all identities, immutable offer metadata and contiguous
+lineages in one transaction. Expired or withdrawn prefixes cannot become
+temporarily active, and the final Host head must exactly match the signed local
+head. Unexpired active final grants still need current Room permission. Failed
+history or metadata writes restore the old projection, acceptance and Room
+state together. Reordered retired IDs, skipped revisions and stale Participant
+heads cannot roll back Host authority.
+
+The Go Exporter supplies only reviewed history and validates current Runtime
+configuration for a live head. Withdrawal can still sync when that Runtime is
+gone. The client rechecks local history around network waits, verifies the
+receipt's whole-history and final-head digests, and retains the same grant
+identities after response loss. The actual TLS fixture drops the first sync
+response after a multi-revision withdrawal commits, reopens the Participant,
+retries without a Runtime and verifies no reactivation or duplicate acceptance.
+
+Verification passes 21 focused Server tests, 130 Contracts Node checks plus
+generated/types/Go fixtures, all Peer Go race tests, vet, Server build and
+docs/link checks. The preceding complete Server run passed 732 checks; this
+increment adds five synchronization tests. Host acceptance-history delivery
+and local effective-projection validation remain in REG-007 before native
+controller and Runtime integration.
+
 ## Registry verification
 
 - Reconnect converges publication without duplicate Agents.

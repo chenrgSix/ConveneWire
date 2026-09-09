@@ -26,6 +26,39 @@ export class PeerAuthorizationRepository {
   }
 
   public recordVerifiedExport(grant: AgentExportGrant, now: string): Revision<AgentExportGrant> {
+    return this.recordExport(grant, now, false);
+  }
+
+  /** Fresh signed complete history is installed atomically. Intermediate grants
+   * may be expired or no longer in the Room ACL; only the final current head can
+   * grant rights, and it must match the Participant's current signed view. */
+  public synchronizeVerifiedExports(grants: AgentExportGrant[], now: string): Revision<AgentExportGrant> {
+    if (grants.length === 0 || grants.length > 2048) throw new PeerStoreError("INVALID_MESSAGE");
+    const first = grants[0]!;
+    return this.database.transaction(() => {
+      const member = this.memberForPeer(first.peerId);
+      this.memberships.requireActiveMembership(member.membershipId, now);
+      const seen = new Map<string, AgentExportGrant>();
+      let head = "";
+      for (const grant of grants) {
+        if (grant.peerId !== first.peerId || grant.localAgentId !== first.localAgentId) throw new PeerStoreError("SCOPE_DENIED");
+        const previous = seen.get(grant.exportId);
+        if (grant.revision !== (previous?.revision ?? 0) + 1) throw new PeerStoreError("PAYLOAD_CONFLICT");
+        if (!previous) head = grant.exportId;
+        seen.set(grant.exportId, grant);
+        this.recordExport(grant, now, true);
+      }
+      const current = this.currentExport(first.peerId, first.localAgentId);
+      const requested = seen.get(head)!;
+      if (!current || current.digest !== peerDigest(requested)) throw new PeerStoreError("STALE_AUTHORIZATION");
+      // A history ending in expiry/withdrawal is retained evidence, never a
+      // renewed grant. Fresh active authority still requires the current ACL.
+      if (requested.state === "active" && requested.expiresAt > now) this.assertActiveScope(requested, member, now);
+      return current;
+    }).immediate();
+  }
+
+  private recordExport(grant: AgentExportGrant, now: string, historical: boolean): Revision<AgentExportGrant> {
     if (!validatePeer("AgentExportGrant", grant)) throw new PeerStoreError("INVALID_MESSAGE");
     time(now);
     return this.database.transaction(() => {
@@ -34,7 +67,10 @@ export class PeerAuthorizationRepository {
       if (exact) return this.replay(exact, digest);
       const member = this.memberForPeer(grant.peerId);
       this.assertBinding(grant, member);
-      this.assertActiveScope(grant, member, now);
+      if (historical) {
+        if (grant.state === "active" && (time(grant.expiresAt) <= time(grant.issuedAt) || grant.expiresAt > member.expiresAt ||
+            (member.scope.kind === "room" && grant.roomIds.some(roomId => roomId !== member.scope.roomId)))) throw new PeerStoreError("SCOPE_DENIED");
+      } else this.assertActiveScope(grant, member, now);
       const lineage = this.lineage("export", grant.exportId);
       if (lineage && (lineage.peer_id !== grant.peerId || lineage.local_agent_id !== grant.localAgentId)) throw new PeerStoreError("PAYLOAD_CONFLICT");
       this.assertNext("export", grant.exportId, grant, lineage, now);

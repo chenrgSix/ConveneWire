@@ -374,7 +374,7 @@ export interface PeerControlMessage {
   grant?:                      PeerControlMessageGrant;
   role?:                       string;
   schemaVersion?:              number;
-  offer?:                      PeerControlMessageOffer;
+  offer?:                      PurpleOffer;
   proof?:                      PeerControlMessageProof;
   exportId?:                   string;
   grantDigest?:                string;
@@ -394,6 +394,8 @@ export interface PeerControlMessage {
   projection?:                 PeerControlMessageProjection;
   configurationDigest?:        string;
   intentDigest?:               string;
+  offers?:                     [FluffyOffer, ...FluffyOffer[]];
+  historyDigest?:              string;
 }
 
 export interface PeerControlMessageAcceptance {
@@ -458,7 +460,7 @@ export interface FluffyCapabilities {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface PeerControlMessageOffer {
+export interface PurpleOffer {
   displayName:   string;
   grant:         PurpleGrant;
   role:          string;
@@ -482,6 +484,38 @@ export interface PurpleGrant {
 }
 
 export interface TentacledCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface FluffyOffer {
+  displayName:   string;
+  grant:         FluffyGrant;
+  role:          string;
+  schemaVersion: number;
+}
+
+export interface FluffyGrant {
+  authorityNodeId:   string;
+  capabilities:      StickyCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface StickyCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -622,7 +656,7 @@ export interface PeerControlMessageProjection {
   acceptanceId:       string;
   acceptanceRevision: number;
   authorityNodeId:    string;
-  capabilities:       StickyCapabilities;
+  capabilities:       IndigoCapabilities;
   displayName:        string;
   exportId:           string;
   localAgentId:       string;
@@ -633,7 +667,7 @@ export interface PeerControlMessageProjection {
   teamId:             string;
 }
 
-export interface StickyCapabilities {
+export interface IndigoCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -755,38 +789,13 @@ export interface PeerLocalConnection {
 export interface PeerLocalConnectionAcceptance {
   acceptanceId:      string;
   authorityNodeId:   string;
-  capabilities:      IndigoCapabilities;
+  capabilities:      IndecentCapabilities;
   expiresAt:         string;
   exportId:          string;
   grantDigest:       string;
   grantRevision:     number;
   issuedAt:          string;
   memberId:          string;
-  participantNodeId: string;
-  peerId:            string;
-  revision:          number;
-  roomIds:           [string, ...string[]];
-  schemaVersion:     number;
-  state:             PeerMembershipState;
-  teamId:            string;
-}
-
-export interface IndigoCapabilities {
-  supportsInterrupt:            boolean;
-  supportsOwnerPrivateOutput:   boolean;
-  supportsResume:               boolean;
-  supportsStart:                boolean;
-  supportsStreaming:            boolean;
-  supportsTaskContextIsolation: boolean;
-}
-
-export interface PeerLocalConnectionExport {
-  authorityNodeId:   string;
-  capabilities:      IndecentCapabilities;
-  expiresAt:         string;
-  exportId:          string;
-  issuedAt:          string;
-  localAgentId:      string;
   participantNodeId: string;
   peerId:            string;
   revision:          number;
@@ -805,22 +814,7 @@ export interface IndecentCapabilities {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface PeerLocalConnectionLocalExport {
-  configurationDigest: string;
-  intentDigest:        string;
-  offer:               PurpleOffer;
-  operationId:         string;
-  schemaVersion:       number;
-}
-
-export interface PurpleOffer {
-  displayName:   string;
-  grant:         FluffyGrant;
-  role:          string;
-  schemaVersion: number;
-}
-
-export interface FluffyGrant {
+export interface PeerLocalConnectionExport {
   authorityNodeId:   string;
   capabilities:      HilariousCapabilities;
   expiresAt:         string;
@@ -837,6 +831,46 @@ export interface FluffyGrant {
 }
 
 export interface HilariousCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface PeerLocalConnectionLocalExport {
+  configurationDigest: string;
+  intentDigest:        string;
+  offer:               TentacledOffer;
+  operationId:         string;
+  schemaVersion:       number;
+}
+
+export interface TentacledOffer {
+  displayName:   string;
+  grant:         TentacledGrant;
+  role:          string;
+  schemaVersion: number;
+}
+
+export interface TentacledGrant {
+  authorityNodeId:   string;
+  capabilities:      AmbitiousCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface AmbitiousCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -946,38 +980,13 @@ export interface Connection {
 export interface ConnectionAcceptance {
   acceptanceId:      string;
   authorityNodeId:   string;
-  capabilities:      AmbitiousCapabilities;
+  capabilities:      CunningCapabilities;
   expiresAt:         string;
   exportId:          string;
   grantDigest:       string;
   grantRevision:     number;
   issuedAt:          string;
   memberId:          string;
-  participantNodeId: string;
-  peerId:            string;
-  revision:          number;
-  roomIds:           [string, ...string[]];
-  schemaVersion:     number;
-  state:             PeerMembershipState;
-  teamId:            string;
-}
-
-export interface AmbitiousCapabilities {
-  supportsInterrupt:            boolean;
-  supportsOwnerPrivateOutput:   boolean;
-  supportsResume:               boolean;
-  supportsStart:                boolean;
-  supportsStreaming:            boolean;
-  supportsTaskContextIsolation: boolean;
-}
-
-export interface ConnectionExport {
-  authorityNodeId:   string;
-  capabilities:      CunningCapabilities;
-  expiresAt:         string;
-  exportId:          string;
-  issuedAt:          string;
-  localAgentId:      string;
   participantNodeId: string;
   peerId:            string;
   revision:          number;
@@ -996,22 +1005,7 @@ export interface CunningCapabilities {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface ConnectionLocalExport {
-  configurationDigest: string;
-  intentDigest:        string;
-  offer:               FluffyOffer;
-  operationId:         string;
-  schemaVersion:       number;
-}
-
-export interface FluffyOffer {
-  displayName:   string;
-  grant:         TentacledGrant;
-  role:          string;
-  schemaVersion: number;
-}
-
-export interface TentacledGrant {
+export interface ConnectionExport {
   authorityNodeId:   string;
   capabilities:      MagentaCapabilities;
   expiresAt:         string;
@@ -1028,6 +1022,46 @@ export interface TentacledGrant {
 }
 
 export interface MagentaCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface ConnectionLocalExport {
+  configurationDigest: string;
+  intentDigest:        string;
+  offer:               StickyOffer;
+  operationId:         string;
+  schemaVersion:       number;
+}
+
+export interface StickyOffer {
+  displayName:   string;
+  grant:         StickyGrant;
+  role:          string;
+  schemaVersion: number;
+}
+
+export interface StickyGrant {
+  authorityNodeId:   string;
+  capabilities:      FriskyCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface FriskyCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -1790,7 +1824,7 @@ export interface PeerAgentOffer {
 
 export interface PeerAgentOfferGrant {
   authorityNodeId:   string;
-  capabilities:      FriskyCapabilities;
+  capabilities:      MischievousCapabilities;
   expiresAt:         string;
   exportId:          string;
   issuedAt:          string;
@@ -1804,7 +1838,7 @@ export interface PeerAgentOfferGrant {
   teamId:            string;
 }
 
-export interface FriskyCapabilities {
+export interface MischievousCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -1821,14 +1855,14 @@ export interface PeerAgentOfferRequest {
 
 export interface PeerAgentOfferRequestOffer {
   displayName:   string;
-  grant:         StickyGrant;
+  grant:         IndigoGrant;
   role:          string;
   schemaVersion: number;
 }
 
-export interface StickyGrant {
+export interface IndigoGrant {
   authorityNodeId:   string;
-  capabilities:      MischievousCapabilities;
+  capabilities:      BraggadociousCapabilities;
   expiresAt:         string;
   exportId:          string;
   issuedAt:          string;
@@ -1842,7 +1876,7 @@ export interface StickyGrant {
   teamId:            string;
 }
 
-export interface MischievousCapabilities {
+export interface BraggadociousCapabilities {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -1939,7 +1973,7 @@ export interface PeerAgentAcceptanceReceipt {
 export interface PeerAgentAcceptanceReceiptAcceptance {
   acceptanceId:      string;
   authorityNodeId:   string;
-  capabilities:      BraggadociousCapabilities;
+  capabilities:      Capabilities1;
   expiresAt:         string;
   exportId:          string;
   grantDigest:       string;
@@ -1955,7 +1989,7 @@ export interface PeerAgentAcceptanceReceiptAcceptance {
   teamId:            string;
 }
 
-export interface BraggadociousCapabilities {
+export interface Capabilities1 {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -1968,7 +2002,7 @@ export interface PeerAgentAcceptanceReceiptProjection {
   acceptanceId:       string;
   acceptanceRevision: number;
   authorityNodeId:    string;
-  capabilities:       Capabilities1;
+  capabilities:       Capabilities2;
   displayName:        string;
   exportId:           string;
   localAgentId:       string;
@@ -1979,7 +2013,7 @@ export interface PeerAgentAcceptanceReceiptProjection {
   teamId:             string;
 }
 
-export interface Capabilities1 {
+export interface Capabilities2 {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
@@ -2016,14 +2050,14 @@ export interface PeerLocalExport {
 
 export interface PeerLocalExportOffer {
   displayName:   string;
-  grant:         IndigoGrant;
+  grant:         IndecentGrant;
   role:          string;
   schemaVersion: number;
 }
 
-export interface IndigoGrant {
+export interface IndecentGrant {
   authorityNodeId:   string;
-  capabilities:      Capabilities2;
+  capabilities:      Capabilities3;
   expiresAt:         string;
   exportId:          string;
   issuedAt:          string;
@@ -2037,12 +2071,98 @@ export interface IndigoGrant {
   teamId:            string;
 }
 
-export interface Capabilities2 {
+export interface Capabilities3 {
   supportsInterrupt:            boolean;
   supportsOwnerPrivateOutput:   boolean;
   supportsResume:               boolean;
   supportsStart:                boolean;
   supportsStreaming:            boolean;
   supportsTaskContextIsolation: boolean;
+}
+
+export interface PeerAgentSyncRequest {
+  localAgentId:  string;
+  offers:        [PeerAgentSyncRequestOffer, ...PeerAgentSyncRequestOffer[]];
+  proof:         PeerAgentSyncRequestProof;
+  schemaVersion: number;
+}
+
+export interface PeerAgentSyncRequestOffer {
+  displayName:   string;
+  grant:         HilariousGrant;
+  role:          string;
+  schemaVersion: number;
+}
+
+export interface HilariousGrant {
+  authorityNodeId:   string;
+  capabilities:      Capabilities4;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface Capabilities4 {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface PeerAgentSyncRequestProof {
+  payload:   Payload7;
+  signature: string;
+}
+
+export interface Payload7 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerAgentSyncReceipt {
+  exportId:      string;
+  grantDigest:   string;
+  grantRevision: number;
+  historyDigest: string;
+  localAgentId:  string;
+  peerId:        string;
+  proof:         PeerAgentSyncReceiptProof;
+  schemaVersion: number;
+}
+
+export interface PeerAgentSyncReceiptProof {
+  payload:   Payload8;
+  signature: string;
+}
+
+export interface Payload8 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
 }
 

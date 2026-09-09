@@ -1,5 +1,5 @@
 import { createPrivateKey, createPublicKey, sign } from "node:crypto";
-import type { PeerAgentOffer, PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerProofPayload } from "@convene-wire/contracts/peer";
+import type { PeerAgentOffer, PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerProofPayload, PeerAgentSyncRequest } from "@convene-wire/contracts/peer";
 import { peerDigest, peerProofTranscript } from "@convene-wire/contracts/peer-proof";
 import { peerSecretHash } from "../../src/data/peer-membership-repository.js";
 import { PeerAuthorizationRepository } from "../../src/data/peer-authorization-repository.js";
@@ -36,6 +36,11 @@ export async function peerAgentFixture(t: Parameters<typeof fixture>[0], maximum
     grantRevision: value.grant.revision, grantDigest: peerDigest(value.grant), offerDigest: peerDigest(value),
     roomIds: value.grant.roomIds, capabilities: value.grant.capabilities, expiresAt: value.grant.expiresAt,
     expectedAcceptanceId: null, expectedAcceptanceRevision: null });
-  return { ...f, membership, auth, ownerSession, actor, admission, service, offer, signed, acceptance,
+  const sync = (offers = [offer], at = now): PeerAgentSyncRequest => {
+    const content = { schemaVersion: 1 as const, localAgentId: offer.grant.localAgentId, offers };
+    const payload = { ...signed(offer, at).proof.payload, subjectDigest: peerDigest(content) };
+    return { ...content, proof: { payload, signature: sign(null, peerProofTranscript(payload), key).toString("base64url") } };
+  };
+  return { ...f, membership, auth, ownerSession, actor, admission, service, offer, signed, acceptance, sync,
     token: i.machineToken, grants: new PeerAuthorizationRepository(f.database) };
 }

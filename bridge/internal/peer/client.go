@@ -197,7 +197,11 @@ func (c *Client) postMachine(ctx context.Context, path, requestKind string, valu
 		return ErrProof
 	}
 	raw, err := json.Marshal(value)
-	if err != nil || len(raw) > 16*1024 {
+	maximum := 16 * 1024
+	if path == "/api/peer/agents/sync" && requestKind == "PeerAgentSyncRequest" && token != "" {
+		maximum = wire.MaximumJSONBytes
+	}
+	if err != nil || len(raw) > maximum {
 		return ErrProof
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.origin+path, bytes.NewReader(raw))

@@ -14,7 +14,7 @@ import { peerDigest } from "@convene-wire/contracts/peer-proof";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
-let now = initialNow, dropNextClaim = true, dropNextOffer = true, previewRequests = 0;
+let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, previewRequests = 0;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
   try {
@@ -22,7 +22,8 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
     const chunks: Buffer[] = []; let size = 0;
     for await (const chunk of request) {
       const bytes = Buffer.from(chunk); size += bytes.length;
-      if (size > 16 * 1024) { response.writeHead(413).end(); return; }
+      const maximum = request.url === "/api/peer/agents/sync" ? 1024 * 1024 : 16 * 1024;
+      if (size > maximum) { response.writeHead(413).end(); return; }
       chunks.push(bytes);
     }
     if (request.url === "/api/peer/invitations/preview") previewRequests++;
@@ -34,6 +35,11 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
     }
     if (request.url === "/api/peer/agents/offers" && result.statusCode === 200 && dropNextOffer) {
       dropNextOffer = false;
+      request.socket.destroy();
+      return;
+    }
+    if (request.url === "/api/peer/agents/sync" && result.statusCode === 200 && dropNextSync) {
+      dropNextSync = false;
       request.socket.destroy();
       return;
     }
@@ -79,7 +85,8 @@ try {
     const counts = database.prepare("SELECT count(*) AS memberships FROM peer_memberships").get();
     const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;
     const acceptances = (database.prepare("SELECT count(*) AS n FROM peer_acceptance_revisions").get() as { n: number }).n;
-    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, offers, acceptances }) + "\n");
+    const enabledPeers = (database.prepare("SELECT count(*) AS n FROM agents WHERE integration_mode = 'peer' AND enabled = 1").get() as { n: number }).n;
+    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, offers, acceptances, enabledPeers }) + "\n");
   }
 } finally {
   listener.closeIdleConnections();

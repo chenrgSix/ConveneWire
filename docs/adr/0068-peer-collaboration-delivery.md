@@ -81,6 +81,15 @@ Every new Export or changed authorization begins without Host acceptance.
 Republishing, changing an Agent/Projection ID or reconnecting cannot undo a
 revocation. Host acceptance never changes local Runtime settings or disclosure.
 
+Offline Export synchronization installs the Participant's complete Agent
+history in one Host transaction. Expired intermediate grants are retained as
+history and cannot become visible active authority between writes. Immutable
+identity, invitation ceilings, contiguous revisions and retirement still apply;
+the resulting Host head must exactly match the signed Participant head. A
+fresh active head must satisfy current Room ACLs, and stale local history cannot
+roll the Host back. A synchronization receipt acknowledges this history only;
+it neither creates Host acceptance nor replaces live execution admission.
+
 Effective rights intersect membership, Room/Task permission, Export, Acceptance,
 Runtime capabilities and Participant policy. Both sides revalidate publication,
 eligibility, Run creation, delivery, execution admission and content settlement.

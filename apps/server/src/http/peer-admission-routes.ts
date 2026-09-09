@@ -1,5 +1,5 @@
 import type { FastifyRequest } from "fastify";
-import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevokeRequest } from "@convene-wire/contracts/peer";
+import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevokeRequest, PeerAgentSyncRequest } from "@convene-wire/contracts/peer";
 import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest, PeerIdentityRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerStoreError } from "../data/peer-membership-repository.js";
@@ -20,6 +20,10 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
       if (request.headers["x-forwarded-proto"] === "http") throw new PeerStoreError("SCOPE_DENIED");
     });
     peer.setErrorHandler((error, _request, reply) => {
+      if ((error as { code?: string }).code === "FST_ERR_CTP_BODY_TOO_LARGE") {
+        void reply.code(413).send({ code: "INVALID_MESSAGE" });
+        return;
+      }
       if (!(error instanceof PeerStoreError)) throw error;
       const code = error.code;
       const status = code === "UNAUTHENTICATED" ? 401 : code === "SCOPE_DENIED" ? 403 :
@@ -31,6 +35,11 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
       limitAnonymous(request, "peer-agent-offer");
       if (request.headers.origin || request.headers.cookie) throw new PeerStoreError("SCOPE_DENIED");
       return peerAgents.offer(bearerToken(request), body<PeerAgentOfferRequest>(request, "PeerAgentOfferRequest"), clock());
+    });
+    peer.post("/api/peer/agents/sync", { bodyLimit: 1024 * 1024 }, async request => {
+      limitAnonymous(request, "peer-agent-sync");
+      if (request.headers.origin || request.headers.cookie) throw new PeerStoreError("SCOPE_DENIED");
+      return peerAgents.synchronize(bearerToken(request), body<PeerAgentSyncRequest>(request, "PeerAgentSyncRequest"), clock());
     });
     peer.get<{ Params: { teamId: string } }>("/api/peer/teams/:teamId/agent-offers", async request =>
       ({ offers: peerAgents.listOffers(principal(request), request.params.teamId) }));
