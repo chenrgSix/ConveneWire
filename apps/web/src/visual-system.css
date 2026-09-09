@@ -730,11 +730,6 @@ summary:focus-visible {
   color: var(--cw-text);
 }
 
-:root[data-theme] .agent-message > .message-card {
-  border-color: var(--cw-border-subtle);
-  background: transparent;
-}
-
 :root[data-theme] .member-message > .message-card {
   border-color: var(--cw-accent-border);
   background: var(--cw-accent-soft);

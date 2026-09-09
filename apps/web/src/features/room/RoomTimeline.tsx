@@ -152,9 +152,10 @@ export function RoomTimeline({
 
         return (
           <article className={`message ${message.senderType}-message`} key={message.messageId} data-message-id={message.messageId}>
-            <span className={`avatar ${message.senderType}`}>{avatarLabel}</span>
-            <div className="message-card">
+            {message.senderType !== "agent" && <span className={`avatar ${message.senderType}`}>{avatarLabel}</span>}
+            <div className={message.senderType === "agent" ? "message-response" : "message-card"}>
               <header>
+                {message.senderType === "agent" && <span className="avatar agent" aria-hidden="true">{avatarLabel}</span>}
                 <strong>{senderName}</strong>
                 <time>{new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
               </header>
@@ -238,9 +239,9 @@ export function RoomTimeline({
           .toLocaleUpperCase(locale) || "A";
         return (
           <article className="message agent-message streaming-message" key={`stream-${runId}`}>
-            <span className="avatar agent">{avatarLabel}</span>
-            <div className="message-card">
+            <div className="message-response">
               <header>
+                <span className="avatar agent" aria-hidden="true">{avatarLabel}</span>
                 <strong>{senderName}</strong>
                 <span className="streaming-state" role="status">{t("generating")}</span>
               </header>

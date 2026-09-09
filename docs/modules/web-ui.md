@@ -15,6 +15,12 @@ collapsed from the header, with a browser-local preference. Agent replies offer
 exact Markdown copy on hover or keyboard focus; touch devices expose the action
 without hover. See [WEB-079 evidence](../acceptance/web-079-compact-conversation.md).
 
+WEB-080 renders completed and streaming Agent replies as unboxed conversation
+text, independently of member/system message cards. A compact identity row sits
+above the full-width Markdown, with the existing reply copy action below.
+Member bubbles, code blocks and execution evidence retain their own surfaces.
+See [reply presentation evidence](../acceptance/web-080-unboxed-replies.md).
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

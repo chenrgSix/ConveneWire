@@ -625,14 +625,11 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .message header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; }
 .message header strong { color: #e9eee9; font-size: 12px; font-weight: 750; }
 .message time { color: #717b75; font-size: 9px; font-variant-numeric: tabular-nums; }
-.agent-message { max-width: 900px; }
-.agent-message > .message-card { padding: 1px 2px 22px; border-width: 0 0 1px; border-color: #272e2a; border-radius: 0; background: transparent; box-shadow: none; }
 .member-message { grid-template-columns: minmax(0, 680px) 32px; justify-content: end; }
 .member-message > .avatar { grid-column: 2; grid-row: 1; }
 .member-message > .message-card { grid-column: 1; grid-row: 1; border-color: #3d4935; border-radius: 16px 5px 16px 16px; background: #20271d; box-shadow: 0 10px 28px rgb(0 0 0 / 10%); }
 .member-message header { justify-content: flex-end; }
 .system-message > .message-card { border-color: #34433e; background: #17211e; }
-.streaming-message > .message-card { border-color: rgb(139 173 80 / 38%); background: transparent; }
 .streaming-state { color: #b8d879; font-size: 10px; font-weight: 750; }
 .streaming-content { min-width: 0; }
 .agent-run-activity { max-width: 720px; margin: 8px 0 10px; border: 1px solid #303b31; border-radius: 10px; background: rgb(25 31 26 / 72%); color: #9da89f; }
@@ -1186,10 +1183,8 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 :root[data-theme="light"] .access-error { border-color: #cf8e86; background: #fff0ed; color: #8a3d35; }
 :root[data-theme="light"] .workspace-header { background: rgb(248 250 246 / 86%); }
 :root[data-theme="light"] .message-card { border-color: #d8ded8; background: rgb(255 255 255 / 94%); }
-:root[data-theme="light"] .agent-message > .message-card { border-color: #dfe4e0; background: transparent; box-shadow: none; }
 :root[data-theme="light"] .member-message > .message-card { border-color: #d2dbc7; background: #f8faf5; box-shadow: 0 10px 28px rgb(43 58 49 / 6%); }
 :root[data-theme="light"] .system-message > .message-card { border-color: #c8d8d1; background: #eef5f1; }
-:root[data-theme="light"] .streaming-message > .message-card { border-color: #cbd8be; background: transparent; }
 :root[data-theme="light"] .message header strong { color: #27312b; }
 :root[data-theme="light"] .message .avatar { border-color: #d0d8d2; background: #f8faf8; color: #425049; }
 :root[data-theme="light"] .message .avatar.member { border-color: #405236; background: #2f4028; color: #dff2ad; }
@@ -1293,7 +1288,6 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   .message .avatar { width: 30px; height: 30px; border-radius: 9px; }
   .member-message { grid-template-columns: minmax(0, 1fr) 30px; }
   .message-card { padding: 11px 12px; border-radius: 13px; }
-  .agent-message > .message-card { padding: 0 0 18px; border-radius: 0; }
   .member-message > .message-card { border-radius: 14px 5px 14px 14px; }
   .message-routing.with-runs { grid-template-columns: 1fr; }
   .run-card:only-child { max-width: none; }

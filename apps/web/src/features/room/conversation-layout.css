@@ -29,6 +29,13 @@
 .composer > .composer-preferences { grid-column: 1 / -1; min-height: 18px; padding: 0 2px; gap: 6px 12px; }
 .composer .composer-preference-hint { font-size: 11px; }
 
+.message.agent-message { grid-template-columns: minmax(0, 1fr); max-width: 100%; gap: 0; }
+.message-response { min-width: 0; color: var(--cw-text); }
+.message-response > header { align-items: center; min-height: 24px; margin-bottom: 12px; }
+.message-response > header .avatar { width: 24px; height: 24px; border-radius: 7px; }
+.message-response > .markdown-message { color: var(--cw-text); }
+.message-response > .markdown-message p { color: inherit; }
+
 .message-actions { display: flex; align-items: center; gap: 7px; min-height: 28px; margin-top: 8px; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
 .agent-message:hover .message-actions, .agent-message:focus-within .message-actions,
 .message-actions[data-copy-status="copied"], .message-actions[data-copy-status="failed"] { opacity: 1; pointer-events: auto; }
