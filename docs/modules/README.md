@@ -17,6 +17,32 @@ When documents disagree, use this order:
 An implementation change that alters a module contract must update its module
 document and the task list in the same commit.
 
+## Proposed Node-first evolution
+
+[ADR-0065](../adr/0065-node-first-authority-model.md), tracked by GOV-044, is a
+Proposed design draft. It records the Owner-confirmed Node-first direction and
+its architecture self-review; it does not amend current behavior or authorize
+Local Node, Multi-Authority or Peer implementation. Accepted ADRs and the current
+module boundaries below remain in force until an explicit scoped amendment.
+
+The proposed deployment boundary composes the existing Hub, Web, Go Runtime and
+SQLite. Team Authority owns collaboration writes; the Participant owns local
+execution. Authority connectors share one execution core and stable local Agent
+identity, with separately scoped contexts, credentials, grants and trust.
+
+| Owning modules | Proposed boundary to review before implementation |
+| --- | --- |
+| CON, SEC, REG, ROOM | AuthorityRef, distinct Peer identity, Room credential ceiling, bilateral Export/Acceptance and revocation |
+| BRG, ADP, WSP, REPO | Shared local Agent/resource arbitration, scoped Sessions and Participant-local Peer approval |
+| DATA, RUN | Hosted versus Remote ownership, immutable execution identity, cancellation and content-free reconciliation |
+| DISC, TASK, ART, EXEC | Preserve single-authority orchestration, Task isolation, exact evidence disclosure and governed execution |
+| WEB, OPS, QA | Local Node lifecycle, identity/data upgrades, Space isolation and separately evidenced milestone acceptance |
+
+The ADR holds the proposed invariants, permission/ownership matrices, recovery
+states, compatibility relationships and open decisions. It creates no new
+module scaffold. [TASKS.md](../TASKS.md) remains the only delivery checklist;
+follow-up milestone identifiers in the ADR are planning reservations only.
+
 ## Module Map
 
 | Prefix | Module | State Owner | Planned Code | Depends On |
