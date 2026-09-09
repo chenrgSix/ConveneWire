@@ -9,6 +9,12 @@ Room ownership and binds both Room and Task into cursors. Unfiltered Room API
 history remains available for explicit legacy readers. Existing Task drafts and
 browser history preserve the selected conversation.
 
+WEB-083 restores the older history and snapshot regressions to this boundary:
+fixtures resolve a default Task before injecting history failures, assert
+Task-filtered requests, and check retired versus active listeners across Task
+switches. Late-output, pagination and draft preservation evidence is recorded in
+[the regression repair](../acceptance/web-083-task-history-regressions.md).
+
 SEC-017 shows pending Runtime permissions only to the Device owner's full Web
 session in the selected Team and Room membership. A new request opens a dialog
 with the exact operation and **Allow once / Deny** controls; closing is not a

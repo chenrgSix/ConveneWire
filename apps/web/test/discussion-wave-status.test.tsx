@@ -131,7 +131,7 @@ function installFixture(input: {
         }
       });
     }
-    if (path === `/api/rooms/${room.roomId}/messages?limit=100&tail=true`) {
+    if (path === `/api/rooms/${room.roomId}/messages?limit=100&tail=true&taskId=${task.taskId}`) {
       return jsonResponse({
         items: input.messages ?? [],
         nextCursor: null,
@@ -474,12 +474,14 @@ test("Run status replaces duplicate Mention metadata in a Member message", async
       }],
       messageId: "message_prompt",
       roomId: room.roomId,
+      taskId: task.taskId,
       senderId: owner.memberId,
       senderType: "member",
       sequence: 1
     }],
     runs: [{
       runId: "run_wave_solver",
+      taskId: task.taskId,
       state: "completed",
       targetAgentId: agents[0]!.agentId,
       triggerMessageId: "message_prompt",

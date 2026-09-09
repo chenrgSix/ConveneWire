@@ -35,6 +35,35 @@ function message(room: Room, sequence: number, content: string): Message {
   };
 }
 
+function roomTask(room: Room): AgentTask {
+  return { taskId: `task_${room.roomId}`, roomId: room.roomId, parentTaskId: null,
+    title: `${room.name} conversation`, goal: "Keep this Task's history intact.",
+    state: "open", primaryAgentId: null, isDefault: true, updatedAt: now };
+}
+
+// Room metadata first resolves the default Task. Delay/fail the selected Task's
+// reads in these scenarios, rather than counting that earlier metadata lifetime.
+function taskHistoryFixture(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
+  const historyRooms = new Set<string>();
+  const metadataListeners: AbortSignal[] = [];
+  return (input, init = {}) => {
+    const url = new URL(String(input), "https://team.example.com");
+    const roomId = /^\/api\/rooms\/([^/]+)\/(?:messages|runs)$/u.exec(url.pathname)?.[1];
+    if (roomId && url.pathname.endsWith("/messages") && init.method !== "POST") {
+      assert.equal(url.searchParams.get("taskId"), `task_${roomId}`, "every history read must name its Task");
+      assert.ok(metadataListeners.every((signal) => signal.aborted), "metadata listeners retire before Task history starts");
+      historyRooms.add(roomId);
+    }
+    if (roomId && url.pathname.endsWith("/runs") && !historyRooms.has(roomId)) return Promise.resolve(response([]));
+    if (url.pathname.endsWith("/changes") && historyRooms.size === 0) {
+      assert.ok(init.signal);
+      metadataListeners.push(init.signal);
+      return pendingChange(init.signal);
+    }
+    return fetch(input, init);
+  };
+}
+
 function installDom(visible = false) {
   const dom = new JSDOM("<!doctype html><html><body></body></html>", {
     url: "https://team.example.com/", pretendToBeVisual: visible
@@ -85,7 +114,10 @@ function commonResponse(path: string, teams: Team[], rooms: Room[]): Response | 
     if (path === `/api/rooms/${room.roomId}/settings`) return response({
       room, participants: { memberIds: [member(teams.find((team) => team.teamId === room.teamId)!).memberId], agentIds: [] }
     });
-    if (["runs", "discussions", "tasks", "memory-candidates"].some((suffix) => path === `/api/rooms/${room.roomId}/${suffix}`)) return response([]);
+    if (path === `/api/rooms/${room.roomId}/tasks`) return response([roomTask(room)]);
+    if (path === `/api/tasks/${roomTask(room).taskId}/clarifications`) return response([]);
+    if (path === `/api/tasks/${roomTask(room).taskId}/artifacts`) return response({ artifacts: [], nextCursor: null });
+    if (["runs", "discussions", "memory-candidates"].some((suffix) => path === `/api/rooms/${room.roomId}/${suffix}`)) return response([]);
     if (path.startsWith(`/api/rooms/${room.roomId}/messages?`)) return response({
       items: [], nextCursor: null, olderCursor: null, syncCursor: `cursor_${room.roomId}_0`
     });
@@ -304,7 +336,7 @@ test("Room change listening waits for initial Run output and then advances the i
     triggerMessageId: initialMessage.messageId, targetAgentId: "agent_context_test",
     state: "working", updatedAt: now
   };
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     paths.push(path);
     if (path.startsWith(`/api/runs/${run.runId}/events?`)) {
@@ -327,7 +359,7 @@ test("Room change listening waits for initial Run output and then advances the i
     const result = commonResponse(path, [teamA], [roomA]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
@@ -346,7 +378,7 @@ test("Room change listening waits for initial Run output and then advances the i
     await page.findByText("New live message after initialization");
     assert.ok(page.getByText("Initial snapshot message"));
     assert.equal(page.getAllByText("New live message after initialization").length, 1);
-    assert.ok(paths.includes(`/api/rooms/${roomA.roomId}/messages?limit=100&cursor=cursor_initial_1`));
+    assert.ok(paths.includes(`/api/rooms/${roomA.roomId}/messages?limit=100&cursor=cursor_initial_1&taskId=${roomTask(roomA).taskId}`));
     assert.equal(paths.filter((path) => path.includes("messages?") && path.includes("tail=true")).length, 1);
   } finally { cleanup(); globalThis.fetch = originalFetch; dom.window.close(); }
 });
@@ -357,7 +389,7 @@ test("a late history page from the previous Room never enters the new Room", asy
   const secondRoom = { ...roomB, teamId: teamA.teamId };
   const history = deferred<Response>();
   let historyCalls = 0;
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     if (path.includes("/changes?")) return pendingChange(init.signal);
     if (path.startsWith(`/api/rooms/${roomA.roomId}/messages?`)) {
@@ -373,7 +405,7 @@ test("a late history page from the previous Room never enters the new Room", asy
     const result = commonResponse(path, [teamA], [roomA, secondRoom]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
@@ -412,7 +444,7 @@ test("six bounded history pages remain intact after a live message without skipp
     olderCursor: first > 1 ? `opaque-history-boundary-${first}` : null,
     syncCursor: `opaque-live-sequence-${first + 99}`
   });
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     if (path.startsWith(`/api/teams/${teamA.teamId}/changes?`)) {
       changes += 1;
@@ -446,7 +478,7 @@ test("six bounded history pages remain intact after a live message without skipp
     const result = commonResponse(path, [teamA], [roomA]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
@@ -489,7 +521,7 @@ test("reconciliation restores the older cursor after a failed first Room snapsho
     const sequence = first + index;
     return message(roomA, sequence, `Recovered history ${sequence}`);
   });
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     if (path.startsWith(`/api/teams/${teamA.teamId}/changes?`)) {
       changes += 1;
@@ -533,7 +565,7 @@ test("reconciliation restores the older cursor after a failed first Room snapsho
     const result = commonResponse(path, [teamA], [roomA]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
@@ -581,7 +613,7 @@ test("a concurrent late tail cannot replace the recovery cursor while an older p
     olderCursor: first > 1 ? `opaque-concurrent-history-${first}` : null,
     syncCursor: `opaque-concurrent-live-${first + 99}`
   });
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     if (path.startsWith(`/api/teams/${teamA.teamId}/changes?`)) {
       changes += 1;
@@ -623,7 +655,7 @@ test("a concurrent late tail cannot replace the recovery cursor while an older p
     const result = commonResponse(path, [teamA], [roomA]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
@@ -677,17 +709,12 @@ test("a late successful initial snapshot preserves history loaded after sending 
   const change = deferred<Response>();
   const beforeCursors: string[] = [];
   const forwardCursors: string[] = [];
-  let taskCreated = false;
   let messageSent = false;
   let outputReads = 0;
   let runReads = 0;
   let tailReads = 0;
   let changes = 0;
-  const task: AgentTask = {
-    taskId: "task_during_initial_snapshot", roomId: roomA.roomId, parentTaskId: null,
-    title: "Work during initial snapshot", goal: "Keep delivered history intact.",
-    state: "open", primaryAgentId: null, isDefault: false, updatedAt: now
-  };
+  const task = roomTask(roomA);
   const sentMessage = {
     ...message(roomA, 201, "Sent while initial output is pending"), taskId: task.taskId
   };
@@ -699,7 +726,7 @@ test("a late successful initial snapshot preserves history loaded after sending 
     triggerMessageId: historyMessage(200).messageId, targetAgentId: "agent_delayed_initial_snapshot",
     state: "working", updatedAt: now
   };
-  globalThis.fetch = async (input, init = {}) => {
+  globalThis.fetch = taskHistoryFixture(async (input, init = {}) => {
     const path = String(input);
     if (path.startsWith(`/api/runs/${initialRun.runId}/events?`)) {
       outputReads += 1;
@@ -713,15 +740,6 @@ test("a late successful initial snapshot preserves history loaded after sending 
       runReads += 1;
       return response(runReads === 1 ? [initialRun] : []);
     }
-    if (path === `/api/rooms/${roomA.roomId}/tasks`) {
-      if (init.method === "POST") {
-        taskCreated = true;
-        return response(task);
-      }
-      return response(taskCreated ? [task] : []);
-    }
-    if (path === `/api/tasks/${task.taskId}/clarifications`) return response([]);
-    if (path === `/api/tasks/${task.taskId}/artifacts`) return response({ artifacts: [], nextCursor: null });
     if (path === `/api/rooms/${roomA.roomId}/messages` && init.method === "POST") {
       messageSent = true;
       return response({ message: sentMessage, runs: [] });
@@ -732,11 +750,13 @@ test("a late successful initial snapshot preserves history loaded after sending 
       const before = query.get("beforeCursor");
       if (before) {
         beforeCursors.push(before);
-        assert.equal(before, "opaque-delayed-history-101",
-          "sending must preserve the history boundary initialized by Task creation");
+        assert.equal(before, beforeCursors.length === 1 ? "opaque-delayed-history-102" : "opaque-delayed-history-2",
+          "history must continue from the first committed tail, without skipping a boundary");
+        const first = beforeCursors.length === 1 ? 2 : 1;
         return response({
-          items: Array.from({ length: 100 }, (_, index) => historyMessage(index + 1)),
-          nextCursor: null, olderCursor: null, syncCursor: "opaque-delayed-live-100"
+          items: Array.from({ length: first === 2 ? 100 : 1 }, (_, index) => historyMessage(first + index)),
+          nextCursor: null, olderCursor: first === 2 ? "opaque-delayed-history-2" : null,
+          syncCursor: first === 2 ? "opaque-delayed-live-101" : "opaque-delayed-live-1"
         });
       }
       const cursor = query.get("cursor");
@@ -760,30 +780,28 @@ test("a late successful initial snapshot preserves history loaded after sending 
     const result = commonResponse(path, [teamA], [roomA]);
     if (result) return result;
     throw new Error(`Unexpected request: ${path}`);
-  };
+  });
   const { act, cleanup, fireEvent, render, waitFor, within } = await import("@testing-library/react");
   try {
     render(<App />);
     const page = within(dom.window.document.body);
     await waitFor(() => assert.equal(outputReads, 1));
     fireEvent.click(page.getByRole("button", { name: "对话", exact: true }));
-    fireEvent.click(page.getByRole("button", { name: "+ 新任务" }));
-    const dialog = within(await page.findByRole("dialog", { name: "创建长期任务" }));
-    fireEvent.change(dialog.getByLabelText("任务名称"), { target: { value: task.title } });
-    fireEvent.change(dialog.getByLabelText("任务目标"), { target: { value: task.goal } });
-    fireEvent.click(dialog.getByRole("button", { name: "创建并切换" }));
-    await waitFor(() => assert.equal((page.getByLabelText("当前任务") as HTMLSelectElement).value, task.taskId));
-    await page.findByText("Initial snapshot history 101");
-    assert.equal(tailReads, 2, "Task creation initializes history through its authoritative Room refresh");
+    assert.equal((page.getByLabelText("当前任务") as HTMLSelectElement).value, task.taskId);
+    assert.equal(page.queryByText("Initial snapshot history 101"), null, "initial history is still waiting for output");
+    assert.equal(tailReads, 1);
     fireEvent.change(page.getByLabelText("消息"), { target: { value: sentMessage.content } });
     fireEvent.click(page.getByRole("button", { name: "发送", exact: true }));
     await page.findByText(sentMessage.content);
-    await waitFor(() => assert.equal(tailReads, 3, "sending refreshes the tail while the initial output read remains pending"));
-    assert.ok(page.getByText("Initial snapshot history 101"));
+    await waitFor(() => assert.equal(tailReads, 2, "sending refreshes the tail while the initial output read remains pending"));
+    assert.ok(page.getByText("Initial snapshot history 102"));
     assert.equal(changes, 0);
     fireEvent.click(page.getByRole("button", { name: "加载更早的消息" }));
+    await page.findByText("Initial snapshot history 2");
+    assert.ok(page.getByText("Initial snapshot history 101"));
+    fireEvent.click(page.getByRole("button", { name: "加载更早的消息" }));
     await page.findByText("Initial snapshot history 1");
-    assert.deepEqual(beforeCursors, ["opaque-delayed-history-101"]);
+    assert.deepEqual(beforeCursors, ["opaque-delayed-history-102", "opaque-delayed-history-2"]);
     assert.equal(dom.window.document.querySelectorAll(".timeline [data-message-id]").length, 201);
     assert.equal(page.queryByRole("button", { name: "加载更早的消息" }), null);
     await act(async () => {
@@ -804,6 +822,6 @@ test("a late successful initial snapshot preserves history loaded after sending 
     assert.deepEqual(forwardCursors, ["opaque-delayed-live-201"]);
     assert.equal(dom.window.document.querySelectorAll(".timeline [data-message-id]").length, 202);
     assert.equal(page.queryByRole("button", { name: "加载更早的消息" }), null);
-    assert.equal(tailReads, 3);
+    assert.equal(tailReads, 2);
   } finally { cleanup(); globalThis.fetch = originalFetch; dom.window.close(); }
 });

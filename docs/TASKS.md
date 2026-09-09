@@ -790,6 +790,7 @@ or a registration receipt alone.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | TASK-015 | DONE | Isolate Task conversations and share explicit project knowledge and cited Results | TASK-006, TASK-013, WEB-081 | [Task isolation evidence](acceptance/task-015-context-isolation.md): ADR-0064 implemented; 690 Server tests, 32 Web cases, contracts, Go Runtime/connection test-vet-race and two real-Bridge deterministic scenarios pass; browser Task A/B isolation and reload verified; 85e3156 Central/native Bridge installed; original-CA assets/doctor and three capable ready Agents verified with data, pairing and approval configuration preserved |
+| WEB-083 | DONE | Restore history and snapshot regression coverage after Task context isolation | TASK-015, WEB-082 | [Regression repair evidence](acceptance/web-083-task-history-regressions.md): all nine failures repaired; 20 focused cases and final full Web 335/335 plus TypeScript passed; task-scoped reads, listener cancellation, pagination, late responses and draft checks preserved; test-only, installed runtime unchanged |
 
 ## Deferred Beyond MVP
 

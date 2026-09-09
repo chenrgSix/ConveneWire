@@ -28,6 +28,11 @@ cases in `context-races.test.tsx`, one message-status case in
 cases and failed the same nine. This change does not claim a green full suite.
 The build retains its existing large-chunk advisory.
 
+Follow-up [WEB-083](web-083-task-history-regressions.md) repaired the outdated
+Task-history and listener fixtures; all nine scenarios and the final full Web
+suite now pass (335/335 plus TypeScript). The failure counts above preserve the
+evidence at the time of WEB-082 installation.
+
 The in-app browser used the production build on a disposable Central with
 synthetic data. It verified the removed area switch, gear-to-Agents navigation,
 Account and security navigation, repeated gear click retaining that page, and

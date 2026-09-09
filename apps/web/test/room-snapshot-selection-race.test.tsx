@@ -52,7 +52,7 @@ async function assertSnapshotSelection(sendBeforeInitial: boolean) {
   let outputReads = 0;
   let taskCreated = false;
   let messageSent = false;
-  let changeReads = 0;
+  const changeRequests: AbortSignal[] = [];
   globalThis.fetch = async (input, init = {}) => {
     const path = String(input);
     if (path === "/api/auth/status") return json({ mode: "trusted-team", state: "authenticated", user, session: { expiresAt: "2099-09-30T00:00:00.000Z" } });
@@ -71,13 +71,21 @@ async function assertSnapshotSelection(sendBeforeInitial: boolean) {
     if (path.startsWith(`/api/runs/${run.runId}/events?`)) { outputReads += 1; return initialOutput; }
     if (path.endsWith("/clarifications")) return json([]);
     if (path.endsWith("/artifacts")) return json({ artifacts: [], nextCursor: null });
-    if (path === `/api/rooms/${room.roomId}/messages` && init.method === "POST") { messageSent = true; return json({ message: sentMessage, runs: [] }); }
-    if (path.startsWith(`/api/rooms/${room.roomId}/messages?`)) return json({
-      items: messageSent ? [sentMessage] : [], nextCursor: null, olderCursor: null,
-      syncCursor: messageSent ? "cursor_snapshot_live_1" : "cursor_snapshot_live_0"
-    });
+    if (path === `/api/rooms/${room.roomId}/messages` && init.method === "POST") {
+      assert.equal(JSON.parse(String(init.body)).taskId, createdTask.taskId);
+      messageSent = true;
+      return json({ message: sentMessage, runs: [] });
+    }
+    if (path.startsWith(`/api/rooms/${room.roomId}/messages?`)) {
+      const taskId = new URL(path, "https://team.example.com").searchParams.get("taskId");
+      assert.ok(taskId === originalTask.taskId || taskId === createdTask.taskId);
+      const items = taskId === createdTask.taskId && messageSent ? [sentMessage] : [];
+      return json({ items, nextCursor: null, olderCursor: null,
+        syncCursor: items.length ? "cursor_snapshot_live_1" : "cursor_snapshot_live_0" });
+    }
     if (path.includes("/changes?")) {
-      changeReads += 1;
+      assert.ok(init.signal);
+      changeRequests.push(init.signal);
       return new Promise<Response>((_resolve, reject) => {
         if (init.signal?.aborted) { reject(new DOMException("Aborted", "AbortError")); return; }
         init.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
@@ -104,8 +112,12 @@ async function assertSnapshotSelection(sendBeforeInitial: boolean) {
       await waitFor(() => assert.equal((page.getByLabelText("当前任务") as HTMLSelectElement).options.length, 2));
     }
     fireEvent.change(page.getByLabelText("消息"), { target: { value: "Unsent follow-up for the newly created Task" } });
+    await waitFor(() => assert.equal(changeRequests.filter((signal) => !signal.aborted).length, 1));
+    assert.equal(changeRequests.length, 2, "metadata bootstrap and the new Task each start a listener");
+    assert.equal(changeRequests[0]!.aborted, true, "the metadata listener must retire when its Task is selected");
     await act(async () => { resolveOutput(json([])); await initialOutput; });
-    await waitFor(() => assert.equal(changeReads, 1));
+    assert.equal(changeRequests.length, 2, "late output from the old Task must not restart its listener");
+    assert.equal(changeRequests.filter((signal) => !signal.aborted).length, 1);
     assert.equal((page.getByLabelText("当前任务") as HTMLSelectElement).value, createdTask.taskId,
       "an older initial Task list must not replace the successfully refreshed Task selection");
     assert.equal((page.getByLabelText("消息") as HTMLTextAreaElement).value, "Unsent follow-up for the newly created Task");
