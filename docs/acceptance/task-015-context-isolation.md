@@ -76,8 +76,23 @@ Screenshots: [Task A, dark](assets/task-015/task-a-dark.jpg),
 
 ## Installed local verification
 
-Pending the verified Central and Bridge update. Pairing, device approval mode,
-existing configuration and business data must remain unchanged.
+Central and the native macOS Bridge were updated to `v0.5.9-local.85e3156`, exact
+source `85e3156918df7d4bd7d27cef419dc902d3359b74`. The Central source package passed
+checksum verification; the controller made a verified SQLite backup before the
+update. Both installed Bridge executables report the new version and all eight
+application files match the packaged source build.
+
+The original-CA HTTPS endpoint serves `/assets/index-ZF-K54Xa.js` and
+`/assets/index-BC7mSYxP.css`. `doctor` passes checksums, private files, Compose,
+browser readiness, HTTPS and WebSocket ingress. Central authenticated the new
+Bridge source commit; all three Agents are ready and advertise Task context
+isolation. All measured business row counts, 36 client JSON files, installation
+identity, CA and schema 92 remain unchanged. Central approval revision 3 is
+preserved. No production Room messages or model calls were used for this check.
+
+Private before/after receipts and rollback packages remain under
+`var/local-upgrades/v0.5.9-local.85e3156-20260909/`; no private configuration or
+credentials are included in this document.
 
 This is conversation-context isolation, not filesystem isolation or a change to
 Room membership rights. Multiple Tasks using the same checkout still see its

@@ -788,7 +788,7 @@ or a registration receipt alone.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| TASK-015 | IN_PROGRESS | Isolate Task conversations and share explicit project knowledge and cited Results | TASK-006, TASK-013, WEB-081 | [Task isolation evidence](acceptance/task-015-context-isolation.md): ADR-0064 implemented; 690 Server tests, 32 Web cases, contracts, Go Runtime/connection test-vet-race and two real-Bridge deterministic scenarios pass; browser Task A/B isolation and reload verified; installed Central/Bridge update pending |
+| TASK-015 | DONE | Isolate Task conversations and share explicit project knowledge and cited Results | TASK-006, TASK-013, WEB-081 | [Task isolation evidence](acceptance/task-015-context-isolation.md): ADR-0064 implemented; 690 Server tests, 32 Web cases, contracts, Go Runtime/connection test-vet-race and two real-Bridge deterministic scenarios pass; browser Task A/B isolation and reload verified; 85e3156 Central/native Bridge installed; original-CA assets/doctor and three capable ready Agents verified with data, pairing and approval configuration preserved |
 
 ## Deferred Beyond MVP
 
