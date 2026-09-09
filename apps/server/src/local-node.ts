@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import type { LocalNodeReady } from "@convene-wire/contracts/local-node";
 import { createServerApp } from "./app.js";
 import { parseLocalNodeLaunch } from "./local-node/local-node-service.js";
+import { loadPeerIngressMaterial } from "./local-node/peer-ingress-configuration.js";
+import { PeerIngress } from "./local-node/peer-ingress.js";
 
 // Secrets travel only over the inherited pipe. EOF is a shutdown request and
 // also handles a supervisor crash on platforms without parent-death signals.
@@ -31,18 +33,22 @@ input.on("line", (line) => {
     if (line.length > 4096) throw new Error("Local Node launch message is too large");
     const launch = parseLocalNodeLaunch(JSON.parse(line));
     if (closeRequested) return;
+    const ingressMaterial = await loadPeerIngressMaterial(root);
+    const peerIngress = ingressMaterial ? new PeerIngress(ingressMaterial) : undefined;
     const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
     app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
-      webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
+      ...(peerIngress ? { peerIngress } : {}), webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });
+    if (closeRequested) { await stop(); return; }
+    await peerIngress?.listen(app.server);
     if (closeRequested) { await stop(); return; }
     const ready: LocalNodeReady = { schemaVersion: 1, nodeId: launch.identity.nodeId, origin, launchProof: launch.controlToken };
     process.stdout.write(`${JSON.stringify(ready)}\n`);
   })().catch(async () => {
     // Schema/SQLite/native errors can include source values; never print launch
     // input or credential-bearing error objects to desktop logs.
-    process.stderr.write("Local Hub startup failed; check bundle, data identity and saved port.\n");
+    process.stderr.write("Local Hub startup failed; check bundle, data identity, saved ports and Peer HTTPS configuration.\n");
     process.exitCode = 1;
     await stop(); input.close(); process.stdin.destroy();
   });

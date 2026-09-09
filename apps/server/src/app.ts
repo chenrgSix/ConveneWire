@@ -6,6 +6,7 @@ import { AuthorityService } from "./security/authority-service.js";
 import { registerAuthorityRoutes } from "./http/authority-routes.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
 import { LocalNodeService } from "./local-node/local-node-service.js";
+import type { PeerIngress } from "./local-node/peer-ingress.js";
 import { registerLocalNodeRoutes } from "./local-node/local-node-routes.js";
 import { RuntimeApprovalService } from "./run/runtime-approval-service.js";
 import { registerRuntimeApprovalRoutes } from "./http/runtime-approval-routes.js";
@@ -256,6 +257,7 @@ import { WorkspaceLeaseService } from
 export interface ServerAppOptions {
   localNode?: LocalNodeLaunch;
   localNodeSpaceDirectory?: string;
+  peerIngress?: PeerIngress;
   anonymousRateLimit?: {
     maximumAttempts: number;
     windowMilliseconds: number;
@@ -327,11 +329,20 @@ export async function createServerApp(
   const auth = new AuthService(database, clock);
   let localNode: LocalNodeService | undefined;
   try {
+    if (options.peerIngress && (!options.localNode || options.trustProxyHops)) throw new Error("Peer HTTPS ingress requires a native Local Node without proxy trust");
     if (options.localNode) {
       if (options.webAuth && options.webAuth.mode !== "local") throw new Error("Local Node requires local Web auth");
       localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString(), options.localNodeSpaceDirectory);
     } else if (database.prepare("SELECT 1 FROM local_node_installation").get()) {
       throw new Error("A Local Node database requires its installation identity");
+    }
+    if (options.peerIngress && database.prepare(`SELECT 1 FROM peer_invitations i
+      LEFT JOIN peer_memberships m ON m.membership_id = i.claimed_membership_id
+      WHERE json_extract(i.invitation_json, '$.hostOrigin') <> ? AND
+        ((i.state = 'open' AND json_extract(i.invitation_json, '$.expiresAt') > ?) OR
+          (m.state = 'active' AND m.expires_at > ?)) LIMIT 1`)
+      .get(options.peerIngress.configuration.origin, clock(), clock())) {
+      throw new Error("Restore the pinned origin or revoke existing Peer associations before changing ingress");
     }
   } catch (error) { database.close(); throw error; }
   const bridgeServerToken = normalizeBridgeServerToken(options.bridgeServerToken);
@@ -1053,6 +1064,15 @@ export async function createServerApp(
     }
   };
   const principal = (request: FastifyRequest): WebPrincipal => {
+    if (options.peerIngress?.kind(request.raw)) {
+      if (request.headers.authorization !== undefined || (unsafeHttpMethods.has(request.method) &&
+          request.headers.origin !== options.peerIngress.configuration.origin)) throw new AuthorizationError("FORBIDDEN", "Peer browser origin required");
+      const token = cookieValue(request, sessionCookieName(true));
+      if (!token) throw new AuthorizationError("UNAUTHENTICATED", "Peer human session required");
+      const actor = auth.authenticateWebSession(token, clock());
+      if (!actor.peerAccess) throw new AuthorizationError("FORBIDDEN", "Peer human session required");
+      return actor;
+    }
     if (webAuth.mode === "local") {
       return auth.authenticateWebSession(bearerToken(request), clock());
     }
@@ -1087,7 +1107,12 @@ export async function createServerApp(
 
   app.addHook("onRequest", async (request) => {
     requestStartedAt.set(request, process.hrtime.bigint());
-    localNode?.assertRequest(request);
+    const ingressKind = options.peerIngress?.kind(request.raw);
+    if (ingressKind) {
+      // Every reachable browser route is fenced before handlers, even if a
+      // future route in an allowed family accidentally omits its own principal.
+      if (ingressKind === "browser") principal(request);
+    } else localNode?.assertRequest(request);
     if (
       trustedOrigins?.secureCookies === false &&
       request.headers["x-forwarded-proto"] === "http" &&
@@ -1100,7 +1125,7 @@ export async function createServerApp(
         "Bridge authority requires the HTTPS machine origin"
       );
     }
-    if (webAuth.mode === "local" && !isLoopbackHost(request.headers.host)) {
+    if (!ingressKind && webAuth.mode === "local" && !isLoopbackHost(request.headers.host)) {
       throw new AuthorizationError(
         "FORBIDDEN",
         "Local Web access requires a loopback Host"
@@ -1156,6 +1181,7 @@ export async function createServerApp(
   });
 
   app.addHook("preClose", async () => {
+    await options.peerIngress?.close();
     hostedAgents.shutdown();
   });
   app.addHook("onClose", async () => {
@@ -1231,11 +1257,12 @@ export async function createServerApp(
     });
   });
 
-  const peerAdmission = new PeerAdmissionService(database, auth, authority);
+  const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
   const routeContext: ServerRouteContext = {
     peerAdmission,
     peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => teamChanges.notify(teamId)),
-    peerHumanEntry: new PeerHumanEntryService(database, auth, authority),
+    peerHumanEntry: new PeerHumanEntryService(database, auth, authority, options.peerIngress?.configuration.origin),
+    ...(options.peerIngress ? { peerIngress: options.peerIngress } : {}),
     authority,
     ...(localNode ? { localNode } : {}),
     app,

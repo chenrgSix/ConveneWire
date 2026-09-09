@@ -340,12 +340,23 @@ provide no Windows native or installed-client evidence.
 
 ## Local Node desktop and recovery
 
+`node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-ingress-configuration.test.ts test/native-peer-ingress.test.ts test/local-node.test.ts test/peer-human-entry.test.ts`
+checks explicit Peer HTTPS configuration, actual TLS admission/browser scope,
+Owner/control/Device isolation, origin pins, port collision and pending/slow
+client shutdown. It uses owned loopback certificates and temporary roots.
+The configuration/deployment procedure is in
+[Native Peer HTTPS ingress](modules/operations-deployment.md#native-peer-https-ingress).
+
 `npm run test:local-node` builds a disposable native host and offline Pi fixture,
 then drives the real bundled Hub/Bridge with an empty PATH. No model credentials
 or installed profile are used. `npm run package:local-node` builds a native local
 development desktop ZIP under `dist/local-node-desktop`; append `-- /absolute/new-output`
 to select a fresh output directory. The wrapper cleans its own temporary Hub
 staging directory. It does not install, publish or enable login startup.
+
+The native test also enables HTTPS in its stopped disposable profile, verifies
+local and Peer port conflicts, confirms Owner/control isolation, and checks
+that stop and backup/restore preserve the same identity and TLS configuration.
 
 A fresh packaged profile defaults to the Local Hub. Existing remote profiles
 keep Bridge mode. Explicit desktop flags are `--hub-bundle /absolute/hub`,

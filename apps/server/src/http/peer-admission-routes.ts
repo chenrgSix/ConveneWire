@@ -11,7 +11,7 @@ function body<T>(request: FastifyRequest, kind: string): T {
   catch { throw new PeerStoreError("INVALID_MESSAGE"); }
 }
 
-export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry, peerAgents, principal, clock, limitAnonymous, webAuth }: ServerRouteContext): void {
+export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry, peerAgents, peerIngress, principal, clock, limitAnonymous, webAuth }: ServerRouteContext): void {
   void app.register(async peer => {
     peer.removeContentTypeParser("application/json");
     peer.addContentTypeParser("application/json", { parseAs: "buffer", bodyLimit: 16 * 1024 }, (_request, bytes, done) => done(null, bytes));
@@ -74,10 +74,11 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
         const input = body<PeerBrowserEntryRequest>(request, "PeerBrowserEntryRequest");
         if (action === "preview") return peerHumanEntry.preview(input, clock());
         const result = peerHumanEntry.consume(input, clock());
-        if (webAuth.mode === "trusted-team") void reply.header("set-cookie", sessionCookie(result.session, true));
+        const mode = peerIngress?.kind(request.raw) ? "trusted-team" : webAuth.mode;
+        if (mode === "trusted-team") void reply.header("set-cookie", sessionCookie(result.session, true));
         return { identity: result.identity, user: { ...result.user, peerAccess: result.peerAccess, canManageOwnerRecovery: false },
-          mode: webAuth.mode, session: { expiresAt: result.session.expiresAt,
-            ...(webAuth.mode === "local" ? { token: result.session.secret } : {}) } };
+          mode, session: { expiresAt: result.session.expiresAt,
+            ...(mode === "local" ? { token: result.session.secret } : {}) } };
       });
     }
     peer.post("/api/peer/invitations/preview", async request => {

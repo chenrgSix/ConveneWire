@@ -20,6 +20,7 @@ export function registerAuthRoutes({
   core,
   limitAnonymous,
   localNode,
+  peerIngress,
   optionalPrincipal,
   principal,
   requireTrustedOrigin,
@@ -31,20 +32,21 @@ export function registerAuthRoutes({
     : true;
   app.get("/api/auth/status", async (request, reply) => {
     noStore(reply);
+    const external = !!peerIngress?.kind(request.raw);
     const actor = optionalPrincipal(request);
     const user = actor ? core.getUser(actor.userId) : undefined;
     if (actor && user) {
       return {
-        mode: webAuth.mode,
+        mode: external ? "trusted-team" : webAuth.mode,
         state: "authenticated",
         user: { ...user, ...(actor.clientAccess ? { clientTeamId: actor.clientAccess.teamId } : {}), ...(actor.peerAccess ? { peerAccess: actor.peerAccess } : {}), canManageOwnerRecovery: !actor.clientAccess && !actor.peerAccess && (trustedWeb?.isInstallationOwner(user.userId) ?? false) },
         session: { expiresAt: auth.getWebSessionExpiresAt(actor.sessionId) }
       };
     }
     return {
-      mode: webAuth.mode,
-      state: trustedWeb?.status() ?? "local_bootstrap",
-      ...(localNode ? { localNode: true } : {})
+      mode: external ? "trusted-team" : webAuth.mode,
+      state: external ? "sign_in_required" : trustedWeb?.status() ?? "local_bootstrap",
+      ...(external ? { peerOnly: true } : localNode ? { localNode: true } : {})
     };
   });
   app.get("/api/auth/session", async (request, reply) => {
@@ -63,7 +65,7 @@ export function registerAuthRoutes({
     noStore(reply);
     const actor = principal(request);
     auth.revokeWebSession(actor.sessionId, clock());
-    if (webAuth.mode === "trusted-team") {
+    if (webAuth.mode === "trusted-team" || peerIngress?.kind(request.raw)) {
       void reply.header("set-cookie", clearSessionCookie(secureCookies));
     }
     return { status: "signed_out" };

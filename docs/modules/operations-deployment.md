@@ -59,10 +59,67 @@ All 130 Contracts Node tests, generated/type checks and Go fixtures pass, as do
 Server build and documentation/link/whitespace checks. Test keys are public
 loopback fixtures copied into disposable private roots.
 
-This task must also wire the listener into Hub supervision, require scoped
-Peer human authentication for browser routes, reject local Owner/bootstrap/
-control and Device transports at the external entry, and retain actual TLS
-positive/negative and shutdown evidence. Delivery state stays in TASKS.md.
+The native launch path loads this configuration before reporting readiness.
+An enabled listener feeds requests into the same running Hub and tags the
+actual accepted TLS request in memory. External browser handlers require a
+current Peer human session before routing; Owner sessions and bearer credentials
+cannot become Peer browser authority. Browser entry installs only Secure,
+HttpOnly, SameSite=Strict cookies and never returns a reusable bearer token.
+Host/Origin checks, an explicit path boundary, duplicate credential-header
+rejection and refusal of all proxy/control headers apply before dispatch.
+Local Owner/bootstrap/control and Device endpoints remain unreachable there.
+Only the separate Peer Runtime WebSocket path can reach a future Peer adapter.
+
+The Peer origin is independent of the fixed loopback Device/Owner origin.
+Startup refuses a new origin while an unexpired invitation or membership pins
+another origin. Reopen the original configuration, revoke those associations,
+then explicitly configure a new origin and issue new invitations. Disabling
+the listener preserves its origin. Hub shutdown cancels a pending TLS bind and
+drains incomplete and upgraded sockets before closing the database; a port
+conflict cannot silently choose another port or replace another listener.
+
+### Configure an existing private Node root
+
+Stop the Node before changing ingress configuration. Under its private data
+root, create an Owner-only `peer-ingress` directory containing `config.json`,
+the server certificate chain and its unencrypted private key. On POSIX systems,
+the directory must have mode 0700 and every file mode 0600; retain the native
+Owner-only ACL on Windows. Paths in the configuration are filenames inside
+that directory, with no symlinks or absolute paths.
+
+```json
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "origin": "https://node-host.example:9443",
+  "listenHost": "0.0.0.0",
+  "certificateFile": "server-chain.pem",
+  "privateKeyFile": "server-key.pem"
+}
+```
+
+Replace the example hostname and port with the exact existing HTTPS name and
+port reachable by the intended participants. The certificate SAN must cover
+that hostname; the port defaults to 443 if omitted. Participants and browsers
+must already trust its CA or use their explicit scoped private-CA setup. Node
+public-key pinning remains an additional independent check. The listener does
+not install CA trust, change firewall/DNS rules or provide NAT/Relay routing.
+
+Set `enabled` to false while retaining the other fields to stop external entry
+on the next launch without changing the pinned origin. Stopped Node backups
+include the private ingress files and restore them with the original identity.
+Native configuration UI belongs to WEB-085; CI, external deployment and final
+physical acceptance retain their own gates. Delivery state stays in TASKS.md.
+
+Listener evidence: all 750 Server tests pass. The final startup-cancellation and
+immutable-configuration refinements pass all 17 affected configuration, actual
+TLS, Local Node and human-entry tests. Peer Go race/actual TLS interoperability
+and Server/Web builds pass. The real native supervisor fixture runs the bundled
+Hub with an empty PATH, verifies both port conflicts and external Owner/control
+denials, and preserves HTTPS configuration plus identity across stop, restart
+and backup/restore while retaining ordinary Run/Discussion outcomes. These
+checks use disposable local fixtures with no model calls; they do not claim a
+physical second device, installed CA trust, live CI or external deployment.
 
 ## Controller boundary
 
