@@ -2544,6 +2544,46 @@
           "pattern": "^[a-f0-9]{64}$"
         }
       }
+    },
+    "PeerIngressConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "enabled",
+        "origin",
+        "listenHost",
+        "certificateFile",
+        "privateKeyFile"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "listenHost": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "certificateFile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 84
+        },
+        "privateKeyFile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 84
+        }
+      }
     }
   }
 }

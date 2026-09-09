@@ -2534,3 +2534,12 @@ export interface Capabilities14 {
   supportsTaskContextIsolation: boolean;
 }
 
+export interface PeerIngressConfiguration {
+  certificateFile: string;
+  enabled:         boolean;
+  listenHost:      string;
+  origin:          string;
+  privateKeyFile:  string;
+  schemaVersion:   number;
+}
+

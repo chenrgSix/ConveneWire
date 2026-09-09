@@ -2510,6 +2510,15 @@ type Capabilities14 struct {
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
+type PeerIngressConfiguration struct {
+	CertificateFile string  `json:"certificateFile"`
+	Enabled         bool    `json:"enabled"`
+	ListenHost      string  `json:"listenHost"`
+	Origin          string  `json:"origin"`
+	PrivateKeyFile  string  `json:"privateKeyFile"`
+	SchemaVersion   float64 `json:"schemaVersion"`
+}
+
 type Kind string
 
 const (

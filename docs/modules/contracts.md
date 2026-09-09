@@ -47,6 +47,12 @@ Optional private `acceptanceSnapshots` retain the Host signature across restarts
 record prefixes are immutable, while a changed snapshot requires a fresh proof.
 Stored evidence never substitutes for a fresh execution-admission proof.
 
+OPS-019 adds closed `PeerIngressConfiguration` for the native Node's explicit
+HTTPS origin, literal listener address and private certificate/key filenames.
+The schema rejects unknown Device/proxy fields; canonical origin, safe filenames,
+filesystem protections and TLS identity are additional loader checks. Disabled
+configuration preserves its origin while opening no listener and reading no key.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

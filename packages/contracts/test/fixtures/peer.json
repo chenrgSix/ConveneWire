@@ -14414,6 +14414,105 @@
       "valid": false
     },
     {
+      "description": "PeerIngressConfiguration valid",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerIngressConfiguration rejects Device fallback",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture",
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires schemaVersion",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "enabled": true,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires enabled",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires origin",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires listenHost",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "origin": "Peer fixture",
+        "certificateFile": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires certificateFile",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "privateKeyFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerIngressConfiguration requires privateKeyFile",
+      "kind": "PeerIngressConfiguration",
+      "value": {
+        "schemaVersion": 1,
+        "enabled": true,
+        "origin": "Peer fixture",
+        "listenHost": "Peer fixture",
+        "certificateFile": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
       "kind": "PeerScope",
       "description": "Room ceiling requires exact Room",
       "value": {

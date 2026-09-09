@@ -37,6 +37,33 @@ publication. Stop the Node and take a recoverable snapshot before upgrading;
 retain the matching old bundle for rollback. SQL checksums and unknown-schema
 rejection remain enforced by the existing Server migration runner.
 
+## Native Peer HTTPS ingress
+
+OPS-019 uses an explicitly configured additional HTTPS listener in the native
+Hub process. The fixed loopback Hub origin continues to own local Owner entry,
+Device binding and supervisor control. The Peer listener shares the same Host
+services and database; it is not a generic reverse proxy. Its transport identity
+comes from the accepted TLS request, never a forwarded HTTP header.
+
+The private Node root owns `peer-ingress/config.json`, its certificate chain
+and private key. Configuration pins the canonical HTTPS origin, literal listen
+address and certificate/key filenames. Disabled configuration retains that
+origin without loading the key or starting a listener. Missing configuration
+in an existing ingress directory, unsafe paths/permissions, mismatched keys,
+invalid/expired certificates or a different TLS hostname fail closed. Existing
+Peer Node-key and origin pins remain separate from certificate trust.
+
+The configuration increment passes four focused Server tests covering disabled
+mode, strict JSON, origin/path/permission negatives and TLS key/SAN/expiry checks.
+All 130 Contracts Node tests, generated/type checks and Go fixtures pass, as do
+Server build and documentation/link/whitespace checks. Test keys are public
+loopback fixtures copied into disposable private roots.
+
+This task must also wire the listener into Hub supervision, require scoped
+Peer human authentication for browser routes, reject local Owner/bootstrap/
+control and Device transports at the external entry, and retain actual TLS
+positive/negative and shutdown evidence. Delivery state stays in TASKS.md.
+
 ## Controller boundary
 
 `convenewirectl` is a small Go 1.26.7 CLI. New source-build Central archives
