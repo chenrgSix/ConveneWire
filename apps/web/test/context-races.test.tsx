@@ -164,7 +164,7 @@ test("a previous Owner's credential response cannot refill the next member's UI 
     render(<App />);
     const page = within(dom.window.document.body);
     await page.findByRole("option", { name: "Team Alpha" });
-    fireEvent.click(page.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
     fireEvent.click(page.getByRole("button", { name: "新增智能体" }));
     fireEvent.click(page.getByRole("button", { name: "接入 MCP 客户端" }));
     fireEvent.change(page.getByLabelText("MCP 智能体名称"), { target: { value: "Old Owner Private Agent" } });
@@ -231,7 +231,7 @@ test("a late Team registry batch cannot overwrite a newly selected Team", async 
     await waitFor(() => assert.ok(paths.includes(`/api/teams/${teamA.teamId}/devices`)));
     fireEvent.change(page.getByRole("combobox", { name: "选择团队" }), { target: { value: teamB.teamId } });
     await waitFor(() => assert.equal((page.getByLabelText("选择房间") as HTMLSelectElement).value, roomB.roomId));
-    fireEvent.click(page.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
     fireEvent.click(page.getByRole("button", { name: "团队与成员", exact: true }));
     await page.findAllByText("Bravo Member");
     await act(async () => {
@@ -267,7 +267,7 @@ for (const exit of ["close", "Team switch"] as const) {
       render(<App />);
       const page = within(dom.window.document.body);
       await page.findByRole("option", { name: "Team Alpha" });
-      fireEvent.click(page.getByRole("button", { name: "管理", exact: true }));
+      fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
       fireEvent.click(page.getByRole("button", { name: "新增智能体" }));
       fireEvent.click(page.getByRole("button", { name: "接入 MCP 客户端" }));
       fireEvent.change(page.getByLabelText("MCP 智能体名称"), { target: { value: "Pending MCP Agent" } });

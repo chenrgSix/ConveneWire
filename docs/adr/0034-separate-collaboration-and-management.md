@@ -25,7 +25,9 @@ flows. Reuse existing configuration and pairing controllers, permission checks,
 revision fences and secret clearing. Device registration is not an online signal.
 Local Runtime settings stay on the client; Central Hosted Agents remain HTTP-only.
 
-An area switch remembers the current Collaboration destination in memory for the
+The header Settings gear opens the management area (WEB-082 replaces the former
+sidebar Collaboration/Management switch and account avatar). A header back
+button restores the current Collaboration destination, remembered in memory for the
 same session and Team, including its Task, tab and filters. Room synchronization
 and scoped draft/outbox ownership remain with their existing controllers. Returning
 to Collaboration restores that destination without submitting work. History and

@@ -1619,7 +1619,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
           tab: undefined, runId: undefined, lifecycleState: undefined, ownerMemberId: undefined, search: undefined, attention: undefined, filterRoomId: undefined, filterAgentId: undefined, priority: undefined, view: managing ? activeView : "work" })}
         canCreateTeam={!session?.clientTeamId} onNewTeam={() => setTeamDialogOpen(true)} onNewRoom={() => setRoomCreateOpen(true)}
         onRoom={(roomId) => navigate({ roomId, view: "room", taskId: undefined, workTaskId: undefined, tab: undefined, runId: undefined })}
-        onView={selectWorkspaceView} onCollaboration={returnToCollaboration}>
+        onView={selectWorkspaceView}>
         {selectedTeam && selectedRoom && (
           <details className="product-participants">
             <summary>{t("roomParticipants")} <span>{roomMembers.length + roomAgents.length}</span></summary>
@@ -1674,9 +1674,14 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
               onClick={toggleSidebar}>
               <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /></svg>
             </button>
+            {managing && <button className="settings-back" type="button" onClick={returnToCollaboration}
+              aria-label={locale === "zh-CN" ? "返回工作" : "Back to work"}
+              title={locale === "zh-CN" ? "返回工作" : "Back to work"}>
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m12 5-7 7 7 7M5 12h14" /></svg>
+            </button>}
             <div className="workspace-heading-copy">
               <p className="eyebrow">
-                {managing ? (locale === "zh-CN" ? "管理" : "MANAGEMENT") : (locale === "zh-CN" ? "协作" : "COLLABORATION")}
+                {managing ? (locale === "zh-CN" ? "设置" : "SETTINGS") : (locale === "zh-CN" ? "协作" : "COLLABORATION")}
               </p>
               <h2>
                 {activeView === "work" && selectedTeam
@@ -1738,8 +1743,13 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
           </div>
           <div className="workspace-controls">
 
-            <button className="header-account" onClick={() => selectWorkspaceView("security")} type="button" aria-label={locale === "zh-CN" ? "打开账户与安全" : "Open account & security"}>
-              {session?.displayName.slice(0, 1).toUpperCase()}
+            <button className="header-settings" onClick={() => { if (!managing) selectWorkspaceView(selectedTeamId ? "agents" : "security"); }}
+              type="button" aria-current={managing ? "page" : undefined}
+              aria-label={locale === "zh-CN" ? "设置" : "Settings"} title={locale === "zh-CN" ? "设置" : "Settings"}>
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9.5 3-.6 2.3-1.4.8-2.3-.6-2.5 4.3L4.5 12l-1.8 2.2 2.5 4.3 2.3-.6 1.4.8.6 2.3h5l.6-2.3 1.4-.8 2.3.6 2.5-4.3L19.5 12l1.8-2.2-2.5-4.3-2.3.6-1.4-.8-.6-2.3z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
             </button>
             <button
               aria-label={t("language")}

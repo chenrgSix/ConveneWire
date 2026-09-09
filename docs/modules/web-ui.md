@@ -192,11 +192,15 @@ bounded dialog scrolling, contained Tab navigation and Escape/focus restoration.
 
 [ADR-0034](../adr/0034-separate-collaboration-and-management.md) separates
 Collaboration (default Workbench, Task detail and Room conversation) from
-Management (Agents, Devices, Team and members, Account and security). Inventory
+Settings (Agents, Devices, Team and members, Account and security). The header
+gear opens Settings in place of the former account avatar and sidebar area
+switch. With a Team it opens Agents; without one it opens Account and security.
+Clicking it within Settings preserves the current destination. A header back
+button returns to work, including while the sidebar is collapsed. Inventory
 pages show status and explicit actions; creation, pairing and configuration are
 mounted only when requested. Account settings remain available without a Team.
 The same-session, same-Team Collaboration destination is remembered in memory
-across management visits, including Task/tab/filter context; existing scoped
+across settings visits, including Task/tab/filter context; existing scoped
 draft and Room controllers remain the only owners. Team/identity changes clear
 transient forms and cannot restore another context. Device registration and
 Agent availability are presented separately. Existing view links remain valid,
@@ -277,7 +281,7 @@ discarded; copied links never contain credentials, drafts or recovery receipts.
 - Selected Room participant roster projected from Team members and visible Agents.
 - Owner-only Room settings for participant access, multi-Agent Discussion,
   `@all`, Agent-to-Agent handoffs, and maximum handoff depth.
-- Contextual navigation for Collaboration or Management, with Room participants
+- Contextual navigation for work or Settings, with Room participants
   available on demand in conversation rather than beside configuration pages.
 - The same area and destination controls at desktop and narrow widths.
 - Persistent light and dark presentation themes for desktop and narrow screens.

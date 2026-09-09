@@ -316,19 +316,29 @@ test("folder task navigation crosses Rooms, preserves drafts and restores select
   f.assertNoCommands();
 });
 
-test("management returns to the exact Work Task, tab and filters without a domain command", async (t) => {
+test("header Settings replaces the area switch and returns to the exact Work Task, tab and filters", async (t) => {
   const f = await fixture(t);
   f.setUrl(f.navigation({ workTaskId: f.firstTask.taskId, tab: "results", scope: "team", search: "Navigation" }));
   f.render(<App />);
   await f.expectTab(f.firstTask, "Results");
-  f.fireEvent.click(f.page.getByRole("button", { name: "Management", exact: true }));
+  assert.equal(f.page.queryByRole("navigation", { name: "Product area" }), null);
+  assert.equal(f.page.queryByRole("button", { name: "Open account & security" }), null);
+  assert.equal(f.page.queryByRole("button", { name: "Back to work" }), null);
+  assert.ok(f.page.getByRole("button", { name: "Settings", exact: true }).querySelector("svg"));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Settings", exact: true }));
   await f.page.findByRole("searchbox", { name: "Search Agents" });
+  assert.ok(f.page.getByRole("navigation", { name: "Settings navigation" }));
+  assert.equal(f.page.getByRole("button", { name: "Settings", exact: true }).getAttribute("aria-current"), "page");
   assert.equal(f.page.queryByRole("combobox", { name: "Select Room" }), null);
   assert.equal(f.page.queryByRole("textbox", { name: "Message", exact: true }), null);
   for (const name of ["Devices", "Team & members", "Account & security"]) {
     f.fireEvent.click(f.page.getByRole("button", { name, exact: true }));
   }
-  f.fireEvent.click(f.page.getByRole("button", { name: "Collaboration", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Settings", exact: true }));
+  assert.equal(f.query().get("view"), "security", "clicking Settings again retains the current settings page");
+  f.fireEvent.click(f.page.getByRole("button", { name: "Collapse sidebar" }));
+  assert.equal(f.page.queryByRole("navigation", { name: "Settings navigation" }), null);
+  f.fireEvent.click(f.page.getByRole("button", { name: "Back to work", exact: true }));
   await f.expectTab(f.firstTask, "Results");
   assert.equal(f.query().get("scope"), "team");
   assert.equal(f.query().get("search"), "Navigation");
@@ -342,10 +352,10 @@ test("a Team switch in management cannot restore the previous Team's Task", asyn
   f.setUrl(f.navigation({ workTaskId: f.firstTask.taskId, tab: "results" }));
   f.render(<App />);
   await f.expectTab(f.firstTask, "Results");
-  f.fireEvent.click(f.page.getByRole("button", { name: "Management", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Settings", exact: true }));
   f.fireEvent.change(f.page.getByRole("combobox", { name: "Select Team" }), { target: { value: f.otherTeam.teamId } });
   await f.waitFor(() => assert.equal(f.query().get("team"), f.otherTeam.teamId));
-  f.fireEvent.click(f.page.getByRole("button", { name: "Collaboration", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Back to work", exact: true }));
   await f.page.findByRole("region", { name: "Work" });
   assert.equal(f.query().has("workTask"), false);
   assert.equal(f.query().get("team"), f.otherTeam.teamId);
@@ -358,7 +368,7 @@ test("history traverses management destinations and restores the authorized Work
   f.setUrl(f.navigation({ workTaskId: f.firstTask.taskId, tab: "artifacts" }));
   f.render(<App />);
   await f.expectTab(f.firstTask, "Artifacts");
-  f.fireEvent.click(f.page.getByRole("button", { name: "Management", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Settings", exact: true }));
   f.fireEvent.click(f.page.getByRole("button", { name: "Devices", exact: true }));
   await f.traverse("back");
   await f.page.findByRole("searchbox", { name: "Search Agents" });

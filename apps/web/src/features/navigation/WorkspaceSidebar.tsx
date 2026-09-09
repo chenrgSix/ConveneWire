@@ -30,7 +30,6 @@ interface Props {
   onNewRoom: () => void;
   onRoom: (roomId: string) => void;
   onView: (view: WorkspaceView) => void;
-  onCollaboration: () => void;
 }
 
 export function WorkspaceSidebar(props: Props) {
@@ -53,10 +52,6 @@ export function WorkspaceSidebar(props: Props) {
         </select>
         {props.canCreateTeam !== false && <button aria-label={translate(locale, "newTeam")} title={translate(locale, "newTeam")} onClick={props.onNewTeam} type="button">＋</button>}
       </div>
-      <nav className="product-area-switch" aria-label={zh ? "产品区域" : "Product area"}>
-        <button aria-current={!managing ? "page" : undefined} onClick={props.onCollaboration} type="button">{zh ? "协作" : "Collaboration"}</button>
-        <button aria-current={managing ? "page" : undefined} onClick={() => { if (!managing) props.onView(teamId ? "agents" : "security"); }} type="button">{zh ? "管理" : "Management"}</button>
-      </nav>
       {teamId && props.onOpenAttention && <div className="product-attention" aria-live="polite">
         {props.attentionItem ? <button type="button" className="product-attention-link" onClick={() => props.onOpenAttention?.(props.attentionItem!)}>
           <span className="attention-dot" aria-hidden="true" />{zh ? "我的任务待处理" : "My work needs attention"}
@@ -66,7 +61,7 @@ export function WorkspaceSidebar(props: Props) {
           : <span className="product-attention-clear">{props.attentionLoading ? (zh ? "正在检查待处理工作…" : "Checking pending work…") : (zh ? "暂无待输入、审核或确认的工作" : "No work awaiting input, review or acknowledgement")}</span>}
       </div>}
       {managing ? (
-        <nav className="product-destinations" aria-label={zh ? "管理导航" : "Management navigation"}>
+        <nav className="product-destinations" aria-label={zh ? "设置导航" : "Settings navigation"}>
           {destinations.map(([view, name, icon]) => (
             <button key={view} disabled={!teamId && view !== "security"} aria-current={activeView === view ? "page" : undefined} onClick={() => props.onView(view)} type="button">
               <span aria-hidden="true">{icon}</span>{name}
@@ -98,9 +93,7 @@ export function WorkspaceSidebar(props: Props) {
           {activeView === "room" && children}
         </div>
       )}
-      <p className="product-sidebar-note">{managing
-        ? (zh ? "配置在这里，对话在协作区。" : "Configure here. Continue conversations in Collaboration.")
-        : (zh ? "让人与智能体，一起完成工作。" : "People and Agents, working together.")}</p>
+      <p className="product-sidebar-note">{zh ? "让人与智能体，一起完成工作。" : "People and Agents, working together."}</p>
     </aside>
   );
 }

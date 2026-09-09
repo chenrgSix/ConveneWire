@@ -106,6 +106,11 @@ test("trusted-team first setup keeps recovery material component-local", async (
     await page.findByRole("heading", { name: "创建你的第一个 Team" });
     const teamsRequest = requests.find(({ path }) => path === "/api/teams");
     assert.equal(new Headers(teamsRequest?.headers).has("authorization"), false);
+    fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
+    await page.findByRole("heading", { name: "账户与安全", exact: true });
+    assert.equal((page.getByRole("button", { name: "智能体", exact: true }) as HTMLButtonElement).disabled, true);
+    fireEvent.click(page.getByRole("button", { name: "返回工作", exact: true }));
+    await page.findByRole("heading", { name: "创建你的第一个 Team" });
   } finally {
     cleanup();
     dom.window.close();
@@ -248,7 +253,7 @@ test("Owner creates and copies a member invite, then signs out and recovers", as
     render(<App />);
     const page = within(dom.window.document.body);
     await page.findByRole("heading", { name: "创建一个对话房间" });
-    fireEvent.click(page.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
     fireEvent.click(page.getByRole("button", { name: "团队与成员" }));
     fireEvent.click(page.getByRole("button", { name: "邀请 Team 成员" }));
     fireEvent.change(page.getByLabelText("成员显示名称"), { target: { value: "Bob" } });

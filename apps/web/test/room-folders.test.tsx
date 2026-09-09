@@ -26,7 +26,7 @@ async function fixture(t: TestContext) {
   const opened: string[][] = [];
   const props = { activeView: "room" as const, locale: "en" as const, teams: [], teamId: room.teamId, rooms: [room], roomId: room.roomId,
     session, tasks: [task("first")], taskId: "first", onTask: (roomId: string, taskId: string) => opened.push([roomId, taskId]),
-    onTeam: () => undefined, onNewTeam: () => undefined, onNewRoom: () => undefined, onRoom: (id: string) => opened.push([id]), onView: () => undefined, onCollaboration: () => undefined };
+    onTeam: () => undefined, onNewTeam: () => undefined, onNewRoom: () => undefined, onRoom: (id: string) => opened.push([id]), onView: () => undefined };
   return { ...testing, props, opened };
 }
 

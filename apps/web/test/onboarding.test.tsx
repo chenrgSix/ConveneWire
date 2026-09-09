@@ -603,14 +603,14 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     const roomSidebar = participants.closest("aside");
     assert.ok(roomSidebar);
     assert.ok(within(roomSidebar).getByRole("navigation", { name: "协作导航" }));
-    assert.equal(within(roomSidebar).queryByRole("navigation", { name: "管理导航" }), null);
+    assert.equal(within(roomSidebar).queryByRole("navigation", { name: "设置导航" }), null);
     assert.equal(within(roomSidebar).queryByRole("contentinfo"), null);
     assert.equal(within(roomSidebar).queryByLabelText("新房间名称"), null);
     assert.equal((screen.getByLabelText("选择房间") as HTMLSelectElement).value, room.roomId);
     assert.equal(screen.queryByLabelText("新房间名称"), null);
     assert.equal(screen.queryByRole("combobox", { name: "提及智能体" }), null);
 
-    fireEvent.click(screen.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "设置", exact: true }));
     fireEvent.click(screen.getByRole("button", { name: "团队与成员" }));
     fireEvent.click(screen.getByRole("button", { name: "资源生命周期" }));
     const lifecycleDialog = await screen.findByRole("dialog", { name: "管理 Team 与房间" });
@@ -634,7 +634,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
       screen.queryByRole("dialog", { name: "管理 Team 与房间" }),
       null
     ));
-    fireEvent.click(screen.getByRole("button", { name: "协作", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "返回工作", exact: true }));
     await screen.findByRole("heading", { name: "delivery" });
 
     fireEvent.click(screen.getByRole("button", { name: "房间操作" }));
@@ -659,7 +659,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     );
     assert.ok(shortcutArchiveRequest);
 
-    fireEvent.click(screen.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "设置", exact: true }));
     fireEvent.click(screen.getByRole("button", { name: "团队与成员" }));
     fireEvent.click(screen.getByRole("button", { name: "资源生命周期" }));
     const reopenedLifecycleDialog = await screen.findByRole("dialog", { name: "管理 Team 与房间" });
@@ -680,7 +680,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
       null
     ));
     fireEvent.change(screen.getByRole("combobox", { name: "选择团队" }), { target: { value: team.teamId } });
-    fireEvent.click(screen.getByRole("button", { name: "协作", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "返回工作", exact: true }));
     fireEvent.click(screen.getByRole("button", { name: "工作", exact: true }));
     await screen.findByRole("region", { name: "工作台" });
     fireEvent.click(screen.getAllByRole("button", { name: "对话" })[0]!);
@@ -697,7 +697,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     screen.getByRole("button", { name: "移除提及 Review Bot（Team 成员）" });
     fireEvent.change(messageInput, { target: { value: "请" } });
     assert.equal(screen.queryByRole("button", { name: "移除提及 Review Bot（Team 成员）" }), null);
-    fireEvent.click(screen.getByRole("button", { name: "管理", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "设置", exact: true }));
     await screen.findByRole("heading", { name: "智能体", exact: true });
     assert.equal(screen.queryByRole("heading", { name: "从我的 Bridge 创建 Agent" }), null);
     fireEvent.click(screen.getByRole("button", { name: "新增智能体" }));
@@ -786,7 +786,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     assert.equal(revokeRequest.body, undefined);
     assert.equal(new Headers(revokeRequest.headers).has("content-type"), false);
 
-    fireEvent.click(screen.getByRole("button", { name: "协作", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "返回工作", exact: true }));
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
     fireEvent.click(screen.getByRole("button", { name: "+ 新任务" }));
     const taskDialog = await screen.findByRole("dialog", { name: "创建长期任务" });

@@ -151,12 +151,6 @@ summary:focus-visible {
   color: var(--cw-text);
 }
 
-:root[data-theme] .product-area-switch {
-  border-color: var(--cw-border-subtle);
-  background: var(--cw-surface-inset);
-}
-
-:root[data-theme] .product-area-switch [aria-current],
 :root[data-theme] .product-destinations button[aria-current] {
   background: var(--cw-accent-soft);
   box-shadow: inset 3px 0 0 var(--cw-accent);
@@ -167,10 +161,6 @@ summary:focus-visible {
   background: var(--cw-surface-hover);
   color: var(--cw-text);
   box-shadow: none;
-}
-
-:root[data-theme] .product-area-switch [aria-current] {
-  box-shadow: inset 0 0 0 1px var(--cw-accent-border);
 }
 
 :root[data-theme] .product-sidebar button:hover:not(:disabled) {
@@ -208,12 +198,13 @@ summary:focus-visible {
   letter-spacing: -.035em;
 }
 
-:root[data-theme] .header-account {
+:root[data-theme] .header-settings[aria-current] {
   border-color: var(--cw-accent-border);
   background: var(--cw-accent-soft);
   color: var(--cw-accent-hover);
 }
 
+:root[data-theme] .header-settings,
 :root[data-theme] .header-chat,
 :root[data-theme] .header-locale,
 :root[data-theme] .header-theme,
@@ -225,6 +216,7 @@ summary:focus-visible {
   color: var(--cw-text-secondary);
 }
 
+:root[data-theme] .header-settings:hover,
 :root[data-theme] .header-chat:hover,
 :root[data-theme] .header-chat.active,
 :root[data-theme] .header-locale:hover,

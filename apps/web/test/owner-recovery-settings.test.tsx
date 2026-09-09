@@ -194,7 +194,7 @@ test("App shows recovery settings only for the authenticated installation Owner,
       const page = within(dom.window.document.body);
       await page.findByRole("heading", { name: "创建你的第一个 Team" });
       assert.equal(page.queryByRole("button", { name: "恢复密钥" }), null);
-      fireEvent.click(page.getByRole("button", { name: "打开账户与安全" }));
+      fireEvent.click(page.getByRole("button", { name: "设置", exact: true }));
       assert.equal(Boolean(page.queryByRole("button", { name: "恢复密钥" })), allowed);
       cleanup();
     }
@@ -226,7 +226,7 @@ test("real App and Central replace a key, preserve the Cookie and restore the sa
     };
     render(<App />);
     const page = within(dom.window.document.body);
-    fireEvent.click(await page.findByRole("button", { name: "打开账户与安全" }));
+    fireEvent.click(await page.findByRole("button", { name: "设置", exact: true }));
     fireEvent.click(await page.findByRole("button", { name: "恢复密钥", exact: true }));
     fireEvent.click(await page.findByRole("button", { name: "生成新恢复密钥" }));
     const key = (page.getByLabelText("新恢复密钥（尚未确认生效）") as HTMLInputElement).value;

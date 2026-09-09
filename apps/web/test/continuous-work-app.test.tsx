@@ -169,12 +169,12 @@ test("a management visit preserves the selected Room Task and unsent draft witho
   const editor = await f.openRoomTask(f.firstTask);
   f.fireEvent.change(editor, { target: { value: "Continue after configuring the team" } });
   await f.page.findByText(/Saved in this tab/u);
-  f.fireEvent.click(f.page.getByRole("button", { name: "Management", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Settings", exact: true }));
   for (const name of ["Devices", "Team & members", "Account & security"]) {
     f.fireEvent.click(f.page.getByRole("button", { name, exact: true }));
     assert.equal(f.page.queryByRole("textbox", { name: "Message", exact: true }), null);
   }
-  f.fireEvent.click(f.page.getByRole("button", { name: "Collaboration", exact: true }));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Back to work", exact: true }));
   const restored = await f.page.findByRole("textbox", { name: "Message", exact: true }) as HTMLTextAreaElement;
   assert.equal(restored.value, "Continue after configuring the team");
   assert.equal((f.page.getByRole("combobox", { name: "Current Task" }) as HTMLSelectElement).value, f.firstTask.taskId);
