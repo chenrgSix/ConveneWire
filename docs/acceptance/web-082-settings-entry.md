@@ -37,6 +37,10 @@ rendering were inspected. At the narrow width, header controls were inside the
 viewport with zero horizontal page overflow, and Settings/back worked with both
 expanded and collapsed navigation. No model calls were made.
 
+The narrow screenshot embeds that same authenticated App in a 390 by 844
+same-origin frame. The temporary frame and QA servers were removed after
+acceptance, and the browser viewport override was reset.
+
 Screenshots: [conversation](assets/web-082/conversation-light.jpg),
 [settings light](assets/web-082/settings-light.jpg),
 [settings dark](assets/web-082/settings-dark.jpg),
@@ -44,5 +48,16 @@ Screenshots: [conversation](assets/web-082/conversation-light.jpg),
 
 ## Local installation
 
-Local Central packaging, installation and served-asset checks are pending.
-The Bridge implementation and owner authorization configuration are unchanged.
+Central was upgraded after a verified SQLite backup to
+`v0.5.10-local.d28f2ed`, exact source
+`d28f2ed850fb8afd1919996e3c497f9f5f6da5d3`. Package verification passed.
+The original-CA HTTPS endpoint serves the new gear/back controls and no longer
+includes the old area switch or avatar. Doctor passed the release, Compose,
+HTTPS and WebSocket checks.
+
+Installation identity, schema 92, private CA and measured business row counts
+were preserved, as were 36 client JSON files and eight Bridge application files.
+Three Agents are ready and Central approval remains revision 3. Bridge remains
+on `v0.5.9-local.85e3156`. Private local upgrade receipts include the before/after
+hashes, business counts, matching baseline failures and served-asset checks.
+No external release, CI or new live-model acceptance is claimed.
