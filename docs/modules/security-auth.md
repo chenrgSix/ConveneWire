@@ -68,8 +68,8 @@ credentials independent. Membership revocation fences both audiences.
 Verification passes 32 focused Server tests, including real HTTP cookie/Origin
 checks, narrower Room scope, replay/expiry, revoke, rollback and reopen; the full
 129-test Node/Go contract command and Server build also pass. Participant signing and Host receipt checks are implemented below. The separate
-private human vault is described below. HTTP client/native join integration
-remains pending; manual browser acceptance remains at the end.
+private human vault is described below. Native join interface integration
+remains under BRG-081/WEB-085; manual browser acceptance remains at the end.
 
 ## Participant proof and receipt checks
 
@@ -116,8 +116,37 @@ Closed schemas bound both private stores. Tests cover failure between the stores
 reopen with the same frozen intent, stale-response denial, fresh retry retaining
 the original Runtime receipt, concurrent binding, local withdrawal, tamper, missing
 history and stopped copy. Peer Go race/vet pass; 12 focused Server tests and all
-130 Node/Go contract checks, generated/types and Server build pass. Native join UI
-and the Peer HTTP client still need integration; no manual acceptance is implied.
+130 Node/Go contract checks, generated/types and Server build pass. The Peer HTTP client is described below. Native Owner controls and the Runtime
+connector belong to BRG-081/WEB-085; no manual acceptance is implied.
+
+## Peer admission transport
+
+SEC-019 completes the independent invitation/membership and human-entry service
+and Participant libraries. The [Go client](../../bridge/internal/peer/client.go)
+verifies Host Node/key/origin before transmitting a secret. It owns a bounded
+HTTP transport with normal certificate/hostname verification, optional explicit
+private roots, no cookie jar, no redirects and no inherited Device/server tokens.
+Untrusted response bodies never become returned error text. Claim sends only the
+frozen journal intent and records both verified receipts before completing it.
+Human entry rechecks local withdrawal across network waits.
+
+An actual Go Participant talks over HTTPS to a disposable TLS facade invoking the
+real Server HTTP handlers and database. The test deliberately drops a successful
+claim response; reopening local stores and retrying creates exactly one Host
+member. It also exchanges the independent browser ticket, verifies scoped secure
+cookies and denies renewal after Host revocation. Wrong CA or Node key fails
+before an invitation secret reaches the preview route. Redirect and cookie/legacy
+credential forwarding tests pass. All fixtures drain their child/listener and
+remove their temporary data; they use no external models or installed profiles.
+
+Verification passes Peer Go race/vet, the HTTPS interoperability scenario and
+130 Node/Go contract checks. A final full Server run passed 718 of 722 tests; four
+expected-version assertions lagged migrations 0097/0098. The explicit expected
+migration frontier is now shared by the historical fixtures, and all 23 affected
+migration checks pass after correction. Earlier focused Peer checks, Server build,
+documentation lint and local links pass. This is library/HTTP admission evidence;
+Peer Agent registration, the native controller/UI, reachable deployment and Run
+transport remain REG-007, BRG-081, WEB-085, OPS-019 and RUN-020 work.
 
 ## Peer human credential ceilings
 

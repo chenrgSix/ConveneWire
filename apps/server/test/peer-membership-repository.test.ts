@@ -1,3 +1,4 @@
+import { migrationVersionsAfter } from "./helpers/migration-frontier.js";
 import assert from "node:assert/strict";
 import { readFile, mkdir, readdir, copyFile, stat } from "node:fs/promises";
 import path from "node:path";
@@ -137,7 +138,7 @@ test("migration 0095 preserves the previous Authority identity and ordinary huma
   const identityBefore = database.prepare("SELECT * FROM authority_identity").get();
   const sessionBefore = database.prepare("SELECT * FROM web_sessions").get() as Record<string, unknown>;
   const result = await migrateDatabase(databasePath);
-  assert.deepEqual(result.appliedVersions, [95, 96, 97, 98]);
+  assert.deepEqual(result.appliedVersions, migrationVersionsAfter(94));
   assert.deepEqual(database.prepare("SELECT * FROM authority_identity").get(), identityBefore);
   assert.deepEqual(database.prepare("SELECT * FROM web_sessions").get(), { ...sessionBefore, peer_access_required: 0 });
   assert.equal(new AuthorityService(database, authority.browserOrigin).publicKey, authority.publicKey);
