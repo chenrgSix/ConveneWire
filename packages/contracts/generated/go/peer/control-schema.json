@@ -1380,6 +1380,24 @@
               "$ref": "#/$defs/PeerError"
             }
           }
+        },
+        {
+          "$ref": "#/$defs/PeerAgentOffer"
+        },
+        {
+          "$ref": "#/$defs/PeerAgentOfferRequest"
+        },
+        {
+          "$ref": "#/$defs/PeerAgentOfferReceipt"
+        },
+        {
+          "$ref": "#/$defs/PeerAgentAcceptanceRequest"
+        },
+        {
+          "$ref": "#/$defs/PeerAgentRevokeRequest"
+        },
+        {
+          "$ref": "#/$defs/PeerAgentAcceptanceReceipt"
         }
       ]
     },
@@ -2085,6 +2103,260 @@
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
           "format": "date-time"
+        }
+      }
+    },
+    "PeerAgentOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "grant",
+        "displayName",
+        "role"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "grant": {
+          "$ref": "#/$defs/AgentExportGrant"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "PeerAgentOfferRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "offer",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "offer": {
+          "$ref": "#/$defs/PeerAgentOffer"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerAgentOfferReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "exportId",
+        "grantRevision",
+        "grantDigest",
+        "offerDigest",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "grantRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "offerDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerAgentAcceptanceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "peerId",
+        "localAgentId",
+        "exportId",
+        "grantRevision",
+        "grantDigest",
+        "offerDigest",
+        "roomIds",
+        "capabilities",
+        "expiresAt",
+        "expectedAcceptanceId",
+        "expectedAcceptanceRevision"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "localAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "grantRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "offerDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "roomIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "$ref": "#/$defs/PeerCapabilities"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expectedAcceptanceId": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^acceptance_[A-Za-z0-9_-]{8,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectedAcceptanceRevision": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "PeerAgentRevokeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "acceptanceId",
+        "expectedRevision"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "acceptanceId": {
+          "type": "string",
+          "pattern": "^acceptance_[A-Za-z0-9_-]{8,128}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "PeerAgentAcceptanceReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "acceptance",
+        "projection",
+        "offerDigest",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "acceptance": {
+          "$ref": "#/$defs/RemoteAgentAcceptance"
+        },
+        "projection": {
+          "$ref": "#/$defs/RemoteAgentProjection"
+        },
+        "offerDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
         }
       }
     }

@@ -162,7 +162,45 @@ Agents after commit. A transition from no usable Room to a usable Room may
 restore ready state, but an unrelated Room edit does not erase a persisted
 provider-execution failure.
 
-## Verification
+## Peer offers and Host acceptance
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) assigns Participant Export
+and Host Acceptance to separate writers. REG-007 now admits a signed
+`PeerAgentOffer` through `POST /api/peer/agents/offers`. The machine credential
+and a fresh pinned Participant proof are both required; browser credentials
+cannot publish an offer. The immutable offer binds the exact grant plus its
+display name and role. Metadata changes require a new grant revision, and V1
+rejects owner-private output before an offer is persisted.
+
+The full Host Owner can inspect the Team's current offer heads and explicitly
+accept a reviewed offer digest, grant revision/digest, Room subset, capability
+subset and expiry. Acceptance uses an expected current Acceptance ID/revision;
+concurrent decisions cannot silently overwrite each other. Offer persistence,
+acceptance history and operation replay use immediate transactions. Failed
+transactions allocate neither partial authority nor a new projection identity.
+
+Migration 0099 retains immutable offers, Host operation results and one stable
+projection ID for each Peer/local Agent pair. A projection ID is allocated only
+after acceptance. Changed or replaced Exports invalidate the stored authority
+intersection; replaying old offers or Host operations only acknowledges history.
+Revocation appends a terminal revision. A later explicit acceptance can create
+a new Acceptance lineage while retaining the stable projection identity.
+
+The Host signs receipts over the full accepted content, including the projection
+and offer digest. These receipts do not replace live admission freshness.
+This increment does not yet materialize projections in the ordinary Agent
+registry or wire native sharing actions; those remain within REG-007 and the
+following BRG-081/WEB-085 integration. No Device is synthesized.
+
+Verification: 25 focused Server tests pass, including protocol routes,
+credential separation, signature and scope negatives, duplicate/concurrent
+decisions, revoke/republication, interrupted transactions, reopen and upgrade.
+All 130 Contracts Node tests, generated/type checks and Go fixtures pass;
+the Peer Go race suite (including real TLS Go/Server admission) and vet pass.
+Server build, documentation, links and whitespace checks pass. Manual A/B/C
+acceptance remains consolidated in QA-092 after the complete implementation.
+
+## Registry verification
 
 - Reconnect converges publication without duplicate Agents.
 - Expired heartbeat produces offline status.

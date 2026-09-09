@@ -98,6 +98,7 @@ export type PersistedRun = NonNullable<ReturnType<RunRepository["getRun"]>>;
 export interface ServerRouteContext {
   peerHumanEntry: import("../security/peer-human-entry-service.js").PeerHumanEntryService;
   peerAdmission: import("../security/peer-admission-service.js").PeerAdmissionService;
+  peerAgents: import("../registry/peer-agent-service.js").PeerAgentService;
   authority: import("../security/authority-service.js").AuthorityService;
   localNode?: LocalNodeService;
   app: FastifyInstance;

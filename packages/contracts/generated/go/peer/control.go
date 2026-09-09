@@ -351,11 +351,127 @@ type PeerError struct {
 }
 
 type PeerControlMessage struct {
-	MessageID       string                    `json:"messageId"`
-	Payload         PeerControlMessagePayload `json:"payload"`
-	ProtocolVersion ProtocolVersion           `json:"protocolVersion"`
-	Timestamp       string                    `json:"timestamp"`
-	Type            Type                      `json:"type"`
+	MessageID                  *string                         `json:"messageId,omitempty"`
+	Payload                    *PeerControlMessagePayload      `json:"payload,omitempty"`
+	ProtocolVersion            *ProtocolVersion                `json:"protocolVersion,omitempty"`
+	Timestamp                  *string                         `json:"timestamp,omitempty"`
+	Type                       *Type                           `json:"type,omitempty"`
+	DisplayName                *string                         `json:"displayName,omitempty"`
+	Grant                      *PeerControlMessageGrant        `json:"grant,omitempty"`
+	Role                       *string                         `json:"role,omitempty"`
+	SchemaVersion              *int64                          `json:"schemaVersion,omitempty"`
+	Offer                      *PeerControlMessageOffer        `json:"offer,omitempty"`
+	Proof                      *PeerControlMessageProof        `json:"proof,omitempty"`
+	ExportID                   *string                         `json:"exportId,omitempty"`
+	GrantDigest                *string                         `json:"grantDigest,omitempty"`
+	GrantRevision              *int64                          `json:"grantRevision,omitempty"`
+	OfferDigest                *string                         `json:"offerDigest,omitempty"`
+	Capabilities               *PeerControlMessageCapabilities `json:"capabilities,omitempty"`
+	ExpectedAcceptanceID       *string                         `json:"expectedAcceptanceId"`
+	ExpectedAcceptanceRevision *int64                          `json:"expectedAcceptanceRevision"`
+	ExpiresAt                  *string                         `json:"expiresAt,omitempty"`
+	LocalAgentID               *string                         `json:"localAgentId,omitempty"`
+	OperationID                *string                         `json:"operationId,omitempty"`
+	PeerID                     *string                         `json:"peerId,omitempty"`
+	RoomIDS                    []string                        `json:"roomIds,omitempty"`
+	AcceptanceID               *string                         `json:"acceptanceId,omitempty"`
+	ExpectedRevision           *int64                          `json:"expectedRevision,omitempty"`
+	Acceptance                 *PeerControlMessageAcceptance   `json:"acceptance,omitempty"`
+	Projection                 *PeerControlMessageProjection   `json:"projection,omitempty"`
+}
+
+type PeerControlMessageAcceptance struct {
+	AcceptanceID      string              `json:"acceptanceId"`
+	AuthorityNodeID   string              `json:"authorityNodeId"`
+	Capabilities      PurpleCapabilities  `json:"capabilities"`
+	ExpiresAt         string              `json:"expiresAt"`
+	ExportID          string              `json:"exportId"`
+	GrantDigest       string              `json:"grantDigest"`
+	GrantRevision     int64               `json:"grantRevision"`
+	IssuedAt          string              `json:"issuedAt"`
+	MemberID          string              `json:"memberId"`
+	ParticipantNodeID string              `json:"participantNodeId"`
+	PeerID            string              `json:"peerId"`
+	Revision          int64               `json:"revision"`
+	RoomIDS           []string            `json:"roomIds"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+	State             PeerMembershipState `json:"state"`
+	TeamID            string              `json:"teamId"`
+}
+
+type PurpleCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerControlMessageCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerControlMessageGrant struct {
+	AuthorityNodeID   string              `json:"authorityNodeId"`
+	Capabilities      FluffyCapabilities  `json:"capabilities"`
+	ExpiresAt         string              `json:"expiresAt"`
+	ExportID          string              `json:"exportId"`
+	IssuedAt          string              `json:"issuedAt"`
+	LocalAgentID      string              `json:"localAgentId"`
+	ParticipantNodeID string              `json:"participantNodeId"`
+	PeerID            string              `json:"peerId"`
+	Revision          int64               `json:"revision"`
+	RoomIDS           []string            `json:"roomIds"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+	State             PeerMembershipState `json:"state"`
+	TeamID            string              `json:"teamId"`
+}
+
+type FluffyCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerControlMessageOffer struct {
+	DisplayName   string      `json:"displayName"`
+	Grant         PurpleGrant `json:"grant"`
+	Role          string      `json:"role"`
+	SchemaVersion int64       `json:"schemaVersion"`
+}
+
+type PurpleGrant struct {
+	AuthorityNodeID   string                `json:"authorityNodeId"`
+	Capabilities      TentacledCapabilities `json:"capabilities"`
+	ExpiresAt         string                `json:"expiresAt"`
+	ExportID          string                `json:"exportId"`
+	IssuedAt          string                `json:"issuedAt"`
+	LocalAgentID      string                `json:"localAgentId"`
+	ParticipantNodeID string                `json:"participantNodeId"`
+	PeerID            string                `json:"peerId"`
+	Revision          int64                 `json:"revision"`
+	RoomIDS           []string              `json:"roomIds"`
+	SchemaVersion     int64                 `json:"schemaVersion"`
+	State             PeerMembershipState   `json:"state"`
+	TeamID            string                `json:"teamId"`
+}
+
+type TentacledCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
 type PeerControlMessagePayload struct {
@@ -484,6 +600,48 @@ type PayloadScope struct {
 	TeamID string  `json:"teamId"`
 }
 
+type PeerControlMessageProjection struct {
+	AcceptanceID       string             `json:"acceptanceId"`
+	AcceptanceRevision int64              `json:"acceptanceRevision"`
+	AuthorityNodeID    string             `json:"authorityNodeId"`
+	Capabilities       StickyCapabilities `json:"capabilities"`
+	DisplayName        string             `json:"displayName"`
+	ExportID           string             `json:"exportId"`
+	LocalAgentID       string             `json:"localAgentId"`
+	PeerID             string             `json:"peerId"`
+	ProjectionAgentID  string             `json:"projectionAgentId"`
+	Role               string             `json:"role"`
+	SchemaVersion      int64              `json:"schemaVersion"`
+	TeamID             string             `json:"teamId"`
+}
+
+type StickyCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerControlMessageProof struct {
+	Payload   StickyPayload `json:"payload"`
+	Signature string        `json:"signature"`
+}
+
+type StickyPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
 type PeerJoinReceipt struct {
 	Invitation        PeerJoinReceiptInvitation        `json:"invitation"`
 	MachineCredential PeerJoinReceiptMachineCredential `json:"machineCredential"`
@@ -547,11 +705,11 @@ type FluffyScope struct {
 }
 
 type PeerJoinReceiptProof struct {
-	Payload   StickyPayload `json:"payload"`
+	Payload   IndigoPayload `json:"payload"`
 	Signature string        `json:"signature"`
 }
 
-type StickyPayload struct {
+type IndigoPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -574,7 +732,7 @@ type PeerLocalConnection struct {
 type PeerLocalConnectionAcceptance struct {
 	AcceptanceID      string              `json:"acceptanceId"`
 	AuthorityNodeID   string              `json:"authorityNodeId"`
-	Capabilities      PurpleCapabilities  `json:"capabilities"`
+	Capabilities      IndigoCapabilities  `json:"capabilities"`
 	ExpiresAt         string              `json:"expiresAt"`
 	ExportID          string              `json:"exportId"`
 	GrantDigest       string              `json:"grantDigest"`
@@ -590,7 +748,7 @@ type PeerLocalConnectionAcceptance struct {
 	TeamID            string              `json:"teamId"`
 }
 
-type PurpleCapabilities struct {
+type IndigoCapabilities struct {
 	SupportsInterrupt            bool `json:"supportsInterrupt"`
 	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
 	SupportsResume               bool `json:"supportsResume"`
@@ -600,22 +758,22 @@ type PurpleCapabilities struct {
 }
 
 type PeerLocalConnectionExport struct {
-	AuthorityNodeID   string              `json:"authorityNodeId"`
-	Capabilities      FluffyCapabilities  `json:"capabilities"`
-	ExpiresAt         string              `json:"expiresAt"`
-	ExportID          string              `json:"exportId"`
-	IssuedAt          string              `json:"issuedAt"`
-	LocalAgentID      string              `json:"localAgentId"`
-	ParticipantNodeID string              `json:"participantNodeId"`
-	PeerID            string              `json:"peerId"`
-	Revision          int64               `json:"revision"`
-	RoomIDS           []string            `json:"roomIds"`
-	SchemaVersion     int64               `json:"schemaVersion"`
-	State             PeerMembershipState `json:"state"`
-	TeamID            string              `json:"teamId"`
+	AuthorityNodeID   string               `json:"authorityNodeId"`
+	Capabilities      IndecentCapabilities `json:"capabilities"`
+	ExpiresAt         string               `json:"expiresAt"`
+	ExportID          string               `json:"exportId"`
+	IssuedAt          string               `json:"issuedAt"`
+	LocalAgentID      string               `json:"localAgentId"`
+	ParticipantNodeID string               `json:"participantNodeId"`
+	PeerID            string               `json:"peerId"`
+	Revision          int64                `json:"revision"`
+	RoomIDS           []string             `json:"roomIds"`
+	SchemaVersion     int64                `json:"schemaVersion"`
+	State             PeerMembershipState  `json:"state"`
+	TeamID            string               `json:"teamId"`
 }
 
-type FluffyCapabilities struct {
+type IndecentCapabilities struct {
 	SupportsInterrupt            bool `json:"supportsInterrupt"`
 	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
 	SupportsResume               bool `json:"supportsResume"`
@@ -687,11 +845,11 @@ type StickyScope struct {
 }
 
 type PurpleProof struct {
-	Payload   IndigoPayload `json:"payload"`
-	Signature string        `json:"signature"`
+	Payload   IndecentPayload `json:"payload"`
+	Signature string          `json:"signature"`
 }
 
-type IndigoPayload struct {
+type IndecentPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -722,7 +880,7 @@ type Connection struct {
 type ConnectionAcceptance struct {
 	AcceptanceID      string                `json:"acceptanceId"`
 	AuthorityNodeID   string                `json:"authorityNodeId"`
-	Capabilities      TentacledCapabilities `json:"capabilities"`
+	Capabilities      HilariousCapabilities `json:"capabilities"`
 	ExpiresAt         string                `json:"expiresAt"`
 	ExportID          string                `json:"exportId"`
 	GrantDigest       string                `json:"grantDigest"`
@@ -738,7 +896,7 @@ type ConnectionAcceptance struct {
 	TeamID            string                `json:"teamId"`
 }
 
-type TentacledCapabilities struct {
+type HilariousCapabilities struct {
 	SupportsInterrupt            bool `json:"supportsInterrupt"`
 	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
 	SupportsResume               bool `json:"supportsResume"`
@@ -748,22 +906,22 @@ type TentacledCapabilities struct {
 }
 
 type ConnectionExport struct {
-	AuthorityNodeID   string              `json:"authorityNodeId"`
-	Capabilities      StickyCapabilities  `json:"capabilities"`
-	ExpiresAt         string              `json:"expiresAt"`
-	ExportID          string              `json:"exportId"`
-	IssuedAt          string              `json:"issuedAt"`
-	LocalAgentID      string              `json:"localAgentId"`
-	ParticipantNodeID string              `json:"participantNodeId"`
-	PeerID            string              `json:"peerId"`
-	Revision          int64               `json:"revision"`
-	RoomIDS           []string            `json:"roomIds"`
-	SchemaVersion     int64               `json:"schemaVersion"`
-	State             PeerMembershipState `json:"state"`
-	TeamID            string              `json:"teamId"`
+	AuthorityNodeID   string                `json:"authorityNodeId"`
+	Capabilities      AmbitiousCapabilities `json:"capabilities"`
+	ExpiresAt         string                `json:"expiresAt"`
+	ExportID          string                `json:"exportId"`
+	IssuedAt          string                `json:"issuedAt"`
+	LocalAgentID      string                `json:"localAgentId"`
+	ParticipantNodeID string                `json:"participantNodeId"`
+	PeerID            string                `json:"peerId"`
+	Revision          int64                 `json:"revision"`
+	RoomIDS           []string              `json:"roomIds"`
+	SchemaVersion     int64                 `json:"schemaVersion"`
+	State             PeerMembershipState   `json:"state"`
+	TeamID            string                `json:"teamId"`
 }
 
-type StickyCapabilities struct {
+type AmbitiousCapabilities struct {
 	SupportsInterrupt            bool `json:"supportsInterrupt"`
 	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
 	SupportsResume               bool `json:"supportsResume"`
@@ -835,11 +993,11 @@ type IndecentScope struct {
 }
 
 type FluffyProof struct {
-	Payload   IndecentPayload `json:"payload"`
-	Signature string          `json:"signature"`
+	Payload   HilariousPayload `json:"payload"`
+	Signature string           `json:"signature"`
 }
 
-type IndecentPayload struct {
+type HilariousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -944,11 +1102,11 @@ type AmbitiousScope struct {
 }
 
 type PeerInvitationPreviewProof struct {
-	Payload   HilariousPayload `json:"payload"`
+	Payload   AmbitiousPayload `json:"payload"`
 	Signature string           `json:"signature"`
 }
 
-type HilariousPayload struct {
+type AmbitiousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1028,11 +1186,11 @@ type PeerHumanBindingReceiptParticipant struct {
 }
 
 type PeerHumanBindingReceiptProof struct {
-	Payload   AmbitiousPayload `json:"payload"`
-	Signature string           `json:"signature"`
+	Payload   CunningPayload `json:"payload"`
+	Signature string         `json:"signature"`
 }
 
-type AmbitiousPayload struct {
+type CunningPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1088,11 +1246,11 @@ type HumanParticipant struct {
 }
 
 type HumanProof struct {
-	Payload   CunningPayload `json:"payload"`
+	Payload   MagentaPayload `json:"payload"`
 	Signature string         `json:"signature"`
 }
 
-type CunningPayload struct {
+type MagentaPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1168,11 +1326,11 @@ type MischievousScope struct {
 }
 
 type RuntimeProof struct {
-	Payload   MagentaPayload `json:"payload"`
-	Signature string         `json:"signature"`
+	Payload   FriskyPayload `json:"payload"`
+	Signature string        `json:"signature"`
 }
 
-type MagentaPayload struct {
+type FriskyPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1196,11 +1354,11 @@ type PeerHumanEntryRequest struct {
 }
 
 type PeerHumanEntryRequestProof struct {
-	Payload   FriskyPayload `json:"payload"`
-	Signature string        `json:"signature"`
+	Payload   MischievousPayload `json:"payload"`
+	Signature string             `json:"signature"`
 }
 
-type FriskyPayload struct {
+type MischievousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1244,11 +1402,11 @@ type CredentialScope struct {
 }
 
 type PeerHumanEntryProof struct {
-	Payload   MischievousPayload `json:"payload"`
-	Signature string             `json:"signature"`
+	Payload   BraggadociousPayload `json:"payload"`
+	Signature string               `json:"signature"`
 }
 
-type MischievousPayload struct {
+type BraggadociousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1309,11 +1467,11 @@ type PeerIdentityProofHost struct {
 }
 
 type PeerIdentityProofProof struct {
-	Payload   BraggadociousPayload `json:"payload"`
-	Signature string               `json:"signature"`
+	Payload   Payload1 `json:"payload"`
+	Signature string   `json:"signature"`
 }
 
-type BraggadociousPayload struct {
+type Payload1 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1368,11 +1526,11 @@ type PurpleParticipant struct {
 }
 
 type TentacledProof struct {
-	Payload   Payload1 `json:"payload"`
+	Payload   Payload2 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload1 struct {
+type Payload2 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1435,11 +1593,11 @@ type FluffyParticipant struct {
 }
 
 type StickyProof struct {
-	Payload   Payload2 `json:"payload"`
+	Payload   Payload3 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload2 struct {
+type Payload3 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1503,6 +1661,231 @@ type PreviewProof struct {
 }
 
 type PreviewProofPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerAgentOffer struct {
+	DisplayName   string              `json:"displayName"`
+	Grant         PeerAgentOfferGrant `json:"grant"`
+	Role          string              `json:"role"`
+	SchemaVersion int64               `json:"schemaVersion"`
+}
+
+type PeerAgentOfferGrant struct {
+	AuthorityNodeID   string              `json:"authorityNodeId"`
+	Capabilities      CunningCapabilities `json:"capabilities"`
+	ExpiresAt         string              `json:"expiresAt"`
+	ExportID          string              `json:"exportId"`
+	IssuedAt          string              `json:"issuedAt"`
+	LocalAgentID      string              `json:"localAgentId"`
+	ParticipantNodeID string              `json:"participantNodeId"`
+	PeerID            string              `json:"peerId"`
+	Revision          int64               `json:"revision"`
+	RoomIDS           []string            `json:"roomIds"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+	State             PeerMembershipState `json:"state"`
+	TeamID            string              `json:"teamId"`
+}
+
+type CunningCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerAgentOfferRequest struct {
+	Offer         PeerAgentOfferRequestOffer `json:"offer"`
+	Proof         PeerAgentOfferRequestProof `json:"proof"`
+	SchemaVersion int64                      `json:"schemaVersion"`
+}
+
+type PeerAgentOfferRequestOffer struct {
+	DisplayName   string      `json:"displayName"`
+	Grant         FluffyGrant `json:"grant"`
+	Role          string      `json:"role"`
+	SchemaVersion int64       `json:"schemaVersion"`
+}
+
+type FluffyGrant struct {
+	AuthorityNodeID   string              `json:"authorityNodeId"`
+	Capabilities      MagentaCapabilities `json:"capabilities"`
+	ExpiresAt         string              `json:"expiresAt"`
+	ExportID          string              `json:"exportId"`
+	IssuedAt          string              `json:"issuedAt"`
+	LocalAgentID      string              `json:"localAgentId"`
+	ParticipantNodeID string              `json:"participantNodeId"`
+	PeerID            string              `json:"peerId"`
+	Revision          int64               `json:"revision"`
+	RoomIDS           []string            `json:"roomIds"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+	State             PeerMembershipState `json:"state"`
+	TeamID            string              `json:"teamId"`
+}
+
+type MagentaCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerAgentOfferRequestProof struct {
+	Payload   Payload4 `json:"payload"`
+	Signature string   `json:"signature"`
+}
+
+type Payload4 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerAgentOfferReceipt struct {
+	ExportID      string                     `json:"exportId"`
+	GrantDigest   string                     `json:"grantDigest"`
+	GrantRevision int64                      `json:"grantRevision"`
+	OfferDigest   string                     `json:"offerDigest"`
+	Proof         PeerAgentOfferReceiptProof `json:"proof"`
+	SchemaVersion int64                      `json:"schemaVersion"`
+}
+
+type PeerAgentOfferReceiptProof struct {
+	Payload   Payload5 `json:"payload"`
+	Signature string   `json:"signature"`
+}
+
+type Payload5 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerAgentAcceptanceRequest struct {
+	Capabilities               PeerAgentAcceptanceRequestCapabilities `json:"capabilities"`
+	ExpectedAcceptanceID       *string                                `json:"expectedAcceptanceId"`
+	ExpectedAcceptanceRevision *int64                                 `json:"expectedAcceptanceRevision"`
+	ExpiresAt                  string                                 `json:"expiresAt"`
+	ExportID                   string                                 `json:"exportId"`
+	GrantDigest                string                                 `json:"grantDigest"`
+	GrantRevision              int64                                  `json:"grantRevision"`
+	LocalAgentID               string                                 `json:"localAgentId"`
+	OfferDigest                string                                 `json:"offerDigest"`
+	OperationID                string                                 `json:"operationId"`
+	PeerID                     string                                 `json:"peerId"`
+	RoomIDS                    []string                               `json:"roomIds"`
+	SchemaVersion              int64                                  `json:"schemaVersion"`
+}
+
+type PeerAgentAcceptanceRequestCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerAgentRevokeRequest struct {
+	AcceptanceID     string `json:"acceptanceId"`
+	ExpectedRevision int64  `json:"expectedRevision"`
+	OperationID      string `json:"operationId"`
+	SchemaVersion    int64  `json:"schemaVersion"`
+}
+
+type PeerAgentAcceptanceReceipt struct {
+	Acceptance    PeerAgentAcceptanceReceiptAcceptance `json:"acceptance"`
+	OfferDigest   string                               `json:"offerDigest"`
+	Projection    PeerAgentAcceptanceReceiptProjection `json:"projection"`
+	Proof         PeerAgentAcceptanceReceiptProof      `json:"proof"`
+	SchemaVersion int64                                `json:"schemaVersion"`
+}
+
+type PeerAgentAcceptanceReceiptAcceptance struct {
+	AcceptanceID      string              `json:"acceptanceId"`
+	AuthorityNodeID   string              `json:"authorityNodeId"`
+	Capabilities      FriskyCapabilities  `json:"capabilities"`
+	ExpiresAt         string              `json:"expiresAt"`
+	ExportID          string              `json:"exportId"`
+	GrantDigest       string              `json:"grantDigest"`
+	GrantRevision     int64               `json:"grantRevision"`
+	IssuedAt          string              `json:"issuedAt"`
+	MemberID          string              `json:"memberId"`
+	ParticipantNodeID string              `json:"participantNodeId"`
+	PeerID            string              `json:"peerId"`
+	Revision          int64               `json:"revision"`
+	RoomIDS           []string            `json:"roomIds"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+	State             PeerMembershipState `json:"state"`
+	TeamID            string              `json:"teamId"`
+}
+
+type FriskyCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerAgentAcceptanceReceiptProjection struct {
+	AcceptanceID       string                  `json:"acceptanceId"`
+	AcceptanceRevision int64                   `json:"acceptanceRevision"`
+	AuthorityNodeID    string                  `json:"authorityNodeId"`
+	Capabilities       MischievousCapabilities `json:"capabilities"`
+	DisplayName        string                  `json:"displayName"`
+	ExportID           string                  `json:"exportId"`
+	LocalAgentID       string                  `json:"localAgentId"`
+	PeerID             string                  `json:"peerId"`
+	ProjectionAgentID  string                  `json:"projectionAgentId"`
+	Role               string                  `json:"role"`
+	SchemaVersion      int64                   `json:"schemaVersion"`
+	TeamID             string                  `json:"teamId"`
+}
+
+type MischievousCapabilities struct {
+	SupportsInterrupt            bool `json:"supportsInterrupt"`
+	SupportsOwnerPrivateOutput   bool `json:"supportsOwnerPrivateOutput"`
+	SupportsResume               bool `json:"supportsResume"`
+	SupportsStart                bool `json:"supportsStart"`
+	SupportsStreaming            bool `json:"supportsStreaming"`
+	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type PeerAgentAcceptanceReceiptProof struct {
+	Payload   Payload6 `json:"payload"`
+	Signature string   `json:"signature"`
+}
+
+type Payload6 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`

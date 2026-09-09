@@ -97,6 +97,11 @@ export class PeerAuthorizationRepository {
     return id ? this.getExport(id) : undefined;
   }
 
+  public currentAcceptance(peerId: string, localAgentId: string): Revision<RemoteAgentAcceptance> | undefined {
+    const id = this.head("acceptance", peerId, localAgentId);
+    return id ? this.getAcceptance(id) : undefined;
+  }
+
   /** Current stored intersection only; live signed admission is still required by RUN-020. */
   public requireEffective(peerId: string, localAgentId: string, roomId: string, now: string) {
     time(now);

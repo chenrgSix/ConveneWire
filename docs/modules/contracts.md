@@ -18,6 +18,15 @@ rounding can change an authorization counter. Schemas do not themselves prove
 that a caller holds the referenced grant; current identity/authority checks
 belong to SEC-019, REG-007 and RUN-020.
 
+REG-007 adds closed signed offer/receipt and explicit Host accept/revoke
+requests. An offer digest covers its exact grant and bounded display metadata.
+Host acceptance freezes that digest and uses expected Acceptance ID/revision
+for concurrency control. Retry proof freshness does not change semantic
+identity or renew authorization. The Host receipt binds the accepted grant,
+projection and offer digest. Cross-language fixtures cover every new field,
+unknown-field denial and strict raw decoding; label whitespace/control cleanup
+is an additional service-level check.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

@@ -9648,6 +9648,1514 @@
       "valid": false
     },
     {
+      "description": "PeerAgentOffer valid",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "schemaVersion": 1,
+        "grant": {
+          "schemaVersion": 1,
+          "exportId": "export_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "displayName": "Peer fixture",
+        "role": "Peer fixture"
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentOffer rejects Device fallback",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "schemaVersion": 1,
+        "grant": {
+          "schemaVersion": 1,
+          "exportId": "export_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "displayName": "Peer fixture",
+        "role": "Peer fixture",
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOffer requires schemaVersion",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "grant": {
+          "schemaVersion": 1,
+          "exportId": "export_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "displayName": "Peer fixture",
+        "role": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOffer requires grant",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "schemaVersion": 1,
+        "displayName": "Peer fixture",
+        "role": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOffer requires displayName",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "schemaVersion": 1,
+        "grant": {
+          "schemaVersion": 1,
+          "exportId": "export_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "role": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOffer requires role",
+      "kind": "PeerAgentOffer",
+      "value": {
+        "schemaVersion": 1,
+        "grant": {
+          "schemaVersion": 1,
+          "exportId": "export_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "displayName": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferRequest valid",
+      "kind": "PeerAgentOfferRequest",
+      "value": {
+        "schemaVersion": 1,
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentOfferRequest rejects Device fallback",
+      "kind": "PeerAgentOfferRequest",
+      "value": {
+        "schemaVersion": 1,
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferRequest requires schemaVersion",
+      "kind": "PeerAgentOfferRequest",
+      "value": {
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferRequest requires offer",
+      "kind": "PeerAgentOfferRequest",
+      "value": {
+        "schemaVersion": 1,
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferRequest requires proof",
+      "kind": "PeerAgentOfferRequest",
+      "value": {
+        "schemaVersion": 1,
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt valid",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentOfferReceipt rejects Device fallback",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires schemaVersion",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires exportId",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires grantRevision",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires grantDigest",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires offerDigest",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentOfferReceipt requires proof",
+      "kind": "PeerAgentOfferReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest valid",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest rejects Device fallback",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1,
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires schemaVersion",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires operationId",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires peerId",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires localAgentId",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires exportId",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires grantRevision",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires grantDigest",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires offerDigest",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires roomIds",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires capabilities",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires expiresAt",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expectedAcceptanceId": "acceptance_peerfixture0001",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires expectedAcceptanceId",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceRequest requires expectedAcceptanceRevision",
+      "kind": "PeerAgentAcceptanceRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "peerId": "peer_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "roomIds": [
+          "room_peerfixture0001"
+        ],
+        "capabilities": {
+          "supportsStart": true,
+          "supportsInterrupt": true,
+          "supportsResume": true,
+          "supportsStreaming": true,
+          "supportsTaskContextIsolation": true,
+          "supportsOwnerPrivateOutput": true
+        },
+        "expiresAt": "2026-09-10T02:00:30.000Z",
+        "expectedAcceptanceId": "acceptance_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentRevokeRequest valid",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "acceptanceId": "acceptance_peerfixture0001",
+        "expectedRevision": 1
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentRevokeRequest rejects Device fallback",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "acceptanceId": "acceptance_peerfixture0001",
+        "expectedRevision": 1,
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentRevokeRequest requires schemaVersion",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "operationId": "op_peerfixture0001",
+        "acceptanceId": "acceptance_peerfixture0001",
+        "expectedRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentRevokeRequest requires operationId",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "schemaVersion": 1,
+        "acceptanceId": "acceptance_peerfixture0001",
+        "expectedRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentRevokeRequest requires acceptanceId",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "expectedRevision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentRevokeRequest requires expectedRevision",
+      "kind": "PeerAgentRevokeRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "acceptanceId": "acceptance_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt valid",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt rejects Device fallback",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt requires schemaVersion",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt requires acceptance",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt requires projection",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt requires offerDigest",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerAgentAcceptanceReceipt requires proof",
+      "kind": "PeerAgentAcceptanceReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "acceptance": {
+          "schemaVersion": 1,
+          "acceptanceId": "acceptance_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "roomIds": [
+            "room_peerfixture0001"
+          ],
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          },
+          "revision": 1,
+          "state": "active",
+          "issuedAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "projection": {
+          "schemaVersion": 1,
+          "projectionAgentId": "agent_peerfixture0001",
+          "authorityNodeId": "node_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "displayName": "Peer fixture",
+          "role": "Peer fixture",
+          "capabilities": {
+            "supportsStart": true,
+            "supportsInterrupt": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsTaskContextIsolation": true,
+            "supportsOwnerPrivateOutput": true
+          }
+        },
+        "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "valid": false
+    },
+    {
       "kind": "PeerScope",
       "description": "Room ceiling requires exact Room",
       "value": {

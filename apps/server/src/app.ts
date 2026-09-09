@@ -1,5 +1,6 @@
 import { PeerHumanEntryService } from "./security/peer-human-entry-service.js";
 import { PeerAdmissionService } from "./security/peer-admission-service.js";
+import { PeerAgentService } from "./registry/peer-agent-service.js";
 import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { AuthorityService } from "./security/authority-service.js";
 import { registerAuthorityRoutes } from "./http/authority-routes.js";
@@ -1230,8 +1231,10 @@ export async function createServerApp(
     });
   });
 
+  const peerAdmission = new PeerAdmissionService(database, auth, authority);
   const routeContext: ServerRouteContext = {
-    peerAdmission: new PeerAdmissionService(database, auth, authority),
+    peerAdmission,
+    peerAgents: new PeerAgentService(database, auth, authority, peerAdmission),
     peerHumanEntry: new PeerHumanEntryService(database, auth, authority),
     authority,
     ...(localNode ? { localNode } : {}),
