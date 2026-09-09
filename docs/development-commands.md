@@ -350,6 +350,15 @@ workspace. `--stdio` is a private automation channel; its one-use entry and
 Console URLs contain credentials and must not be published or logged. EOF stops
 the Console/Bridge before the Hub and releases the data lease.
 
+For a bounded browser inspection of the same disposable QA-090 scenario, set
+`CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE=/absolute/new-private-preview.json` and run
+`node scripts/test/run-with-temp-root.mjs --timeout-ms 450000 -- node --test scripts/local-node/supervisor.test.mjs`.
+After the product loop passes, the scenario writes a private file containing
+fresh entry/Console URLs and waits up to five minutes. Open the entry within its
+two-minute validity, then create `/absolute/new-private-preview.json.done` to
+finish. Both files and the owned process/data roots are removed on completion.
+Do not publish these credential-bearing preview files.
+
 Before an upgrade, stop the desktop and create a stopped snapshot with
 `convenewire-node --data-dir /absolute/private-node-root --backup /absolute/new-snapshot`.
 Keep the snapshot and original compatible bundle together. To restore, preserve

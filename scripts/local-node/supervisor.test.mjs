@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, rename, rm } from "node:fs/promises";
 import { once } from "node:events";
 import net from "node:net";
 import path from "node:path";
@@ -37,7 +37,7 @@ func main(){
  json.NewEncoder(os.Stdout).Encode(map[string]any{"type":"message_end","message":map[string]any{"role":"assistant","content":[]any{map[string]string{"type":"text","text":reply}},"stopReason":"stop"}})
 }`;
 
-test("native supervisor binds one Team, configures a real Bridge, runs offline and recovers the same installation", { timeout: 240_000 }, async (t) => {
+test("native Local Node completes Run and Discussion, then restores the same Owner and execution state", { timeout: process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE ? 420_000 : 240_000 }, async (t) => {
   const resources = await createTestResources(t, "convenewire-local-node-e2e-");
   const root = resources.directory;
   const bundle = path.join(root, "hub");
@@ -120,8 +120,42 @@ test("native supervisor binds one Team, configures a real Bridge, runs offline a
   }, "ordinary Run completion");
   const messages = await request(`/api/rooms/${room.roomId}/messages`);
   assert.equal(messages.items.filter((item) => item.senderType === "agent" && item.content.includes("Local Node fixture reply")).length, 1);
+  const reviewer = await consoleRequest("/api/agents", { kind: "pi", name: "Local Reviewer", role: "Reviewer", executablePath: fixtureBinary, workspace: root });
+  assert.equal(reviewer.status, 201, JSON.stringify(reviewer.body));
+  const participants = await until(async () => {
+    const list = await request(`/api/teams/${team.teamId}/agents`);
+    return list.length === 2 && list.every((agent) => agent.presence === "ready") ? list : null;
+  }, "two ready Agents");
+  const started = await request(`/api/rooms/${room.roomId}/discussions`, {
+    goal: "Use the offline fixture to verify that the Owner retains final control of this local discussion.",
+    participantAgentIds: participants.map((agent) => agent.agentId), mode: "review", outputMode: "decision_record",
+    policy: { initialLeaseTurns: 1, automaticMaxTurns: 1, hardMaxTurns: 3, maxDurationSeconds: 300,
+      plateauWindow: 2, minimumCompletionConfidence: 0.8, finalizationReserveTurns: 1, requireReviewer: true, allowAutomaticFinish: false }
+  });
+  const discussionId = started.discussion.discussionId;
+  const boundary = await until(async () => {
+    const view = await request(`/api/discussions/${discussionId}`);
+    if (!["active", "stop_requested", "awaiting_extension"].includes(view.discussion.state)) throw new Error(`Unexpected Discussion boundary: ${JSON.stringify(view)}`);
+    return view.discussion.state === "awaiting_extension" ? view : null;
+  }, "Discussion Owner boundary");
+  assert.equal(boundary.turns.length, 2);
+  assert.ok(boundary.turns.every((turn) => turn.state === "completed" && turn.assessment));
+  await request(`/api/discussions/${discussionId}/actions`, { action: "finish" });
+  const completed = await until(async () => {
+    const view = await request(`/api/discussions/${discussionId}`);
+    return view.discussion.state === "completed" ? view : null;
+  }, "Discussion finalization");
+  assert.equal(completed.discussion.stateReason, "user_requested_finish");
+  assert.equal(completed.discussion.budget.agentRunsUsed, 3);
+  assert.equal(completed.turns.filter((turn) => turn.kind === "finalization" && turn.state === "completed").length, 1);
+  assert.deepEqual(completed.waves.map((wave) => [wave.phase, wave.state, wave.expectedMembers]), [
+    ["contribution", "completed", 2], ["finalization", "completed", 1]
+  ]);
   const identityBefore = await readFile(path.join(dataRoot, "identity.json"));
   const callsBefore = await readFile(path.join(root, "fixture-calls.jsonl"), "utf8");
+  assert.equal(callsBefore.trim().split("\n").length, 4);
+  const snapshot = path.join(root, "snapshot");
+  await assert.rejects(exec(hostBinary, ["--data-dir", dataRoot, "--backup", snapshot]), /already|owned|lock/i);
   const duplicate = launch();
   const duplicateResult = await duplicate.host.terminal;
   assert.notEqual(duplicateResult.code, 0); assert.equal(duplicate.events.length, 0);
@@ -141,9 +175,42 @@ test("native supervisor binds one Team, configures a real Bridge, runs offline a
   assert.equal(reopened.origin, ready.origin); assert.equal(reopened.nodeId, ready.nodeId);
   owner = await ownerEntry(reopened); assert.equal(owner.user.userId, ownerId);
   await running.event("console");
-  const restored = await request(`/api/teams/${team.teamId}/agents`);
-  assert.equal(restored[0].agentId, agents[0].agentId);
+  const restored = await until(async () => {
+    const list = await request(`/api/teams/${team.teamId}/agents`);
+    return list.length === 2 && list.every((agent) => agent.presence === "ready") ? list : null;
+  }, "restart Agent readiness");
+  assert.deepEqual(restored.map((agent) => agent.agentId).sort(), participants.map((agent) => agent.agentId).sort());
   assert.equal((await request(`/api/rooms/${room.roomId}/runs`)).find((item) => item.runId === runId).state, "completed");
+  const recoveredDiscussion = await request(`/api/discussions/${discussionId}`);
+  assert.equal(recoveredDiscussion.discussion.state, "completed");
+  assert.deepEqual(recoveredDiscussion.turns.map((turn) => turn.runId), completed.turns.map((turn) => turn.runId));
   assert.equal(await readFile(path.join(root, "fixture-calls.jsonl"), "utf8"), callsBefore, "restart executed completed work again");
   await running.stop();
+  await exec(hostBinary, ["--data-dir", dataRoot, "--backup", snapshot]);
+  await rename(dataRoot, path.join(root, "preserved-stopped-node"));
+  await exec(hostBinary, ["--data-dir", dataRoot, "--restore", snapshot]);
+  running = launch();
+  const recovered = await running.event("ready");
+  assert.equal(recovered.origin, ready.origin); assert.equal(recovered.nodeId, ready.nodeId);
+  owner = await ownerEntry(recovered); assert.equal(owner.user.userId, ownerId);
+  await running.event("console");
+  assert.equal((await request(`/api/discussions/${discussionId}`)).discussion.state, "completed");
+  assert.equal(await readFile(path.join(root, "fixture-calls.jsonl"), "utf8"), callsBefore, "restore replayed completed work");
+  // A fresh request must still execute through the restored Bridge inbox.
+  await until(async () => (await request(`/api/teams/${team.teamId}/agents`)).every((agent) => agent.presence === "ready"), "restored Bridge readiness");
+  const next = await request(`/api/rooms/${room.roomId}/messages`, { content: "Verify a new request after restore", mentionAgentId: agents[0].agentId });
+  await until(async () => (await request(`/api/rooms/${room.roomId}/runs`)).find((run) => run.runId === next.runs[0].runId)?.state === "completed", "post-restore Run");
+  assert.equal((await readFile(path.join(root, "fixture-calls.jsonl"), "utf8")).trim().split("\n").length, 5);
+  await running.stop();
+  if (process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE) {
+    const previewFile = path.resolve(process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE);
+    running = launch();
+    const previewReady = await running.event("ready");
+    const previewConsole = await running.event("console");
+    await writeFile(previewFile, JSON.stringify({ ...previewReady, ...previewConsole, teamId: team.teamId, roomId: room.roomId, discussionId }), { flag: "wx", mode: 0o600 });
+    resources.defer(() => rm(previewFile, { force: true }));
+    resources.defer(() => rm(`${previewFile}.done`, { force: true }));
+    await until(async () => readFile(`${previewFile}.done`).then(() => true, () => false), "browser preview completion", 300_000);
+    await running.stop();
+  }
 });

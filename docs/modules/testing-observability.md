@@ -1,5 +1,16 @@
 # Testing and Observability
 
+## Local Node acceptance
+
+[QA-090](../acceptance/qa-090-local-node-product-loop.md) exercises Milestone A's
+real bundled Hub, Go Supervisor and existing Bridge with native offline Runtime
+fixtures. One local Team, two Agents, ordinary Run, an Owner-finished Discussion,
+same-identity restart and stopped snapshot restore share one durable installation.
+The execution journal must not grow on restart/restore; a new request must still
+complete. Browser and extracted native-package checks supplement the production
+process scenario. This gate grants no Peer capability, model budget, actual
+installation, native Windows acceptance, CI or publication status.
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) defines cumulative
 software-team acceptance in EX-01 through EX-14. Required evidence includes real
 temporary Git, actual Go Bridge processes and verifier commands, two-Bridge
