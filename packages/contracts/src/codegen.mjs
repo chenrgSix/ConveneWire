@@ -1454,6 +1454,16 @@ func mustDecodeCanonicalPropertyTrees() map[string]canonicalPropertyTree {
 
 export async function generateContractTypes(packageRoot) {
   const schemas = await loadSchemas(packageRoot);
+  const authoritySchema = schemas.get("https://agentroom.dev/schemas/authority/foundation.schema.json");
+  const authorityTypes = Object.entries(authoritySchema.$defs).map(([name, schema]) => ({
+    name, schema: dereference(schema, authoritySchema, schemas)
+  }));
+  const authorityTypescript = "// Code generated from JSON Schema; DO NOT EDIT.\n\n" + formatTypeScript(await render(authorityTypes, "typescript", {
+    "just-types": "true", "prefer-unions": "true"
+  }));
+  const authorityGo = formatGo("// Code generated from JSON Schema; DO NOT EDIT.\n\n" + await render(authorityTypes, "go", {
+    "just-types-and-package": "true", package: "authoritycontracts"
+  }));
   const localNodeSchema = schemas.get("https://agentroom.dev/schemas/local-node/control.schema.json");
   const localNodeTypes = Object.entries(localNodeSchema.$defs).map(([name, schema]) => ({
     name, schema: dereference(schema, localNodeSchema, schemas)
@@ -1781,6 +1791,9 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
+    authorityValidator: formatGo(await readFile(path.join(packageRoot, "src/go-authority-validator.template"), "utf8")),
+    authorityProof: formatGo(await readFile(path.join(packageRoot, "src/go-authority-proof.template"), "utf8")),
+    authorityTypescript, authorityGo, authoritySchema: `${JSON.stringify(authoritySchema, null, 2)}\n`,
     localNodeValidator: formatGo(await readFile(path.join(packageRoot, "src/go-local-node-validator.template"), "utf8")),
     localNodeTypescript, localNodeGo, localNodeSchema: `${JSON.stringify(localNodeSchema, null, 2)}\n`,
     goDisclosureSchema: `${JSON.stringify({

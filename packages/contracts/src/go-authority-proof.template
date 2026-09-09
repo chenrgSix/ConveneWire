@@ -1,0 +1,18 @@
+// Code generated from the Authority proof contract template; DO NOT EDIT.
+package authoritycontracts
+
+import "encoding/json"
+
+const ProofLifetimeSeconds = 30
+const ProofClockSkewSeconds = 5
+
+// ProofTranscript uses the fixed-order ASCII schema fields, excluding signature.
+// Decode must validate the closed payload before this function is used.
+func ProofTranscript(payload AuthorityProofPayload) []byte {
+  encoded, _ := json.Marshal([]string{
+    "convenewire.authority.proof.v1", payload.AuthorityNodeID, payload.PublicKey,
+    payload.TeamID, payload.DeviceID, payload.OwnerMemberID, payload.BrowserOrigin,
+    payload.Nonce, payload.IssuedAt, payload.ExpiresAt,
+  })
+  return encoded
+}

@@ -1,0 +1,521 @@
+[
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "team",
+      "objectId": "team_same_fixture123"
+    },
+    "description": "typed reference team"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "room",
+      "objectId": "room_same_fixture123"
+    },
+    "description": "typed reference room"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "message",
+      "objectId": "msg_same_fixture123"
+    },
+    "description": "typed reference message"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "task",
+      "objectId": "task_same_fixture123"
+    },
+    "description": "typed reference task"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "run",
+      "objectId": "run_same_fixture123"
+    },
+    "description": "typed reference run"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "discussion",
+      "objectId": "discussion_same_fixture123"
+    },
+    "description": "typed reference discussion"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "wave",
+      "objectId": "wave_same_fixture123"
+    },
+    "description": "typed reference wave"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "turn",
+      "objectId": "turn_same_fixture123"
+    },
+    "description": "typed reference turn"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "result",
+      "objectId": "result_same_fixture123"
+    },
+    "description": "typed reference result"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": true,
+    "value": {
+      "authorityNodeId": "node_authority_carol",
+      "objectType": "run",
+      "objectId": "run_same_fixture123"
+    },
+    "description": "same ID under another Authority"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": false,
+    "value": {
+      "authorityNodeId": "node_authority_alice",
+      "objectType": "run",
+      "objectId": "room_same_fixture123"
+    },
+    "description": "cross-type ID denied"
+  },
+  {
+    "kind": "AuthorityRef",
+    "valid": false,
+    "value": {
+      "authorityNodeId": "https://alice.example",
+      "objectType": "run",
+      "objectId": "run_same_fixture123"
+    },
+    "description": "URL is not Authority ID"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": true,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+      }
+    },
+    "description": "signed Device scope proof"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA",
+        "admin": true
+      }
+    },
+    "description": "unknown authority field"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+      }
+    },
+    "description": "missing scope"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "invalid"
+      }
+    },
+    "description": "wrong signature encoding"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "0.9",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+      }
+    },
+    "description": "old protocol"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example/@token",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09T10:00:00.000Z",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+      }
+    },
+    "description": "unsafe browser origin"
+  },
+  {
+    "kind": "AuthorityProof",
+    "valid": false,
+    "value": {
+      "protocolVersion": "1.0",
+      "messageId": "msg_authority_proof123",
+      "timestamp": "2026-09-09T10:00:00.000Z",
+      "type": "authority.proof",
+      "payload": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "teamId": "team_authority_fixture",
+        "deviceId": "device_participant_123",
+        "ownerMemberId": "member_local_owner123",
+        "browserOrigin": "https://alice.example:8443",
+        "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+        "issuedAt": "2026-09-09",
+        "expiresAt": "2026-09-09T10:00:30.000Z",
+        "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+      }
+    },
+    "description": "noncanonical timestamp"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": true,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "device",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://carol.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol",
+          "projections": [
+            {
+              "localAgentId": "agent_local_solver123",
+              "projectionAgentId": "agent_shared_alias123",
+              "name": "Shared Solver"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "explicit independent Device binding"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "peer",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://carol.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol",
+          "projections": [
+            {
+              "localAgentId": "agent_local_solver123",
+              "projectionAgentId": "agent_shared_alias123",
+              "name": "Shared Solver"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "Peer mode cannot fall back"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "device",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://carol.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol"
+        }
+      ]
+    },
+    "description": "implicit local mapping forbidden"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "device",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://owner:token@alice.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol",
+          "projections": [
+            {
+              "localAgentId": "agent_local_solver123",
+              "projectionAgentId": "agent_shared_alias123",
+              "name": "Shared Solver"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "credential URL forbidden"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "device",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://carol.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol",
+          "projections": [
+            {
+              "localAgentId": "agent_local_solver123",
+              "projectionAgentId": "agent_shared_alias123",
+              "name": "Shared Solver"
+            }
+          ],
+          "fullTrust": true
+        }
+      ]
+    },
+    "description": "extra trust cannot appear"
+  },
+  {
+    "kind": "AuthorityConnectionsConfig",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "primary": {
+        "authorityNodeId": "node_authority_alice",
+        "serverOrigin": "https://alice.example:8443"
+      },
+      "connectors": [
+        {
+          "mode": "device",
+          "pin": {
+            "authorityNodeId": "node_authority_carol",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "serverOrigin": "https://carol.example"
+          },
+          "teamId": "team_authority_fixture",
+          "deviceId": "device_participant_123",
+          "ownerMemberId": "member_local_owner123",
+          "label": "Carol Team",
+          "credentialDir": "/owner/private/carol",
+          "projections": [
+            {
+              "localAgentId": "agent_local_solver123",
+              "projectionAgentId": "agent_shared_alias123",
+              "name": "Shared Solver"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "missing primary pin"
+  },
+  {
+    "kind": "AuthoritySpaceDirectory",
+    "valid": true,
+    "value": {
+      "schemaVersion": 1,
+      "spaces": [
+        {
+          "authorityNodeId": "node_authority_alice",
+          "teamId": "team_authority_fixture",
+          "label": "Alice",
+          "browserOrigin": "https://alice.example:8443",
+          "kind": "remote"
+        }
+      ]
+    },
+    "description": "reference only directory"
+  },
+  {
+    "kind": "AuthoritySpaceDirectory",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "spaces": [
+        {
+          "authorityNodeId": "node_authority_alice",
+          "teamId": "team_authority_fixture",
+          "label": "Alice",
+          "browserOrigin": "https://alice.example:8443",
+          "kind": "remote",
+          "token": "must-not-forward"
+        }
+      ]
+    },
+    "description": "no credentials in Space"
+  }
+]

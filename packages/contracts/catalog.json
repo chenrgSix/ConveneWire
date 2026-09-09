@@ -75,6 +75,11 @@
       "id": "https://agentroom.dev/schemas/local-node/control.schema.json",
       "kind": "common",
       "path": "schemas/local-node/control.schema.json"
+    },
+    {
+      "id": "https://agentroom.dev/schemas/authority/foundation.schema.json",
+      "kind": "common",
+      "path": "schemas/authority/foundation.schema.json"
     }
   ]
 }

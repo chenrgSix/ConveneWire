@@ -9,6 +9,14 @@ pins nonce, identity/key, existing Team/Device/Owner and expiry; it creates no
 Peer or human permission. Existing Device envelopes and Inbox payload digests
 remain compatible. Peer admission is a separate future contract.
 
+CON-027 supplies the [closed foundation schema](../../packages/contracts/schemas/authority/foundation.schema.json),
+generated language types, reference/configuration fixtures and one shared
+Ed25519 proof vector. The fixed-order ASCII transcript binds `browserOrigin`
+as well as the machine binding; lifetime and skew are 30 and 5 seconds.
+`npm run test --workspace @convene-wire/contracts` passes 122 Node tests,
+generation/type checks and Go fixtures. Runtime proof verification and durable
+adoption belong to DATA-009.
+
 ## Local Node private control
 
 DATA-008 adds [the Local Node control schema](../../packages/contracts/schemas/local-node/control.schema.json)

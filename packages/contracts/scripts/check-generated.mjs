@@ -8,6 +8,11 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  authorityValidator: await readFile(path.join(generatedRoot, "go", "authority", "validation.go"), "utf8"),
+  authorityProof: await readFile(path.join(generatedRoot, "go", "authority", "proof.go"), "utf8"),
+  authorityTypescript: await readFile(path.join(generatedRoot, "typescript", "authority.ts"), "utf8"),
+  authorityGo: await readFile(path.join(generatedRoot, "go", "authority", "foundation.go"), "utf8"),
+  authoritySchema: await readFile(path.join(generatedRoot, "go", "authority", "foundation-schema.json"), "utf8"),
   localNodeValidator: await readFile(path.join(generatedRoot, "go", "localnode", "validation.go"), "utf8"),
   localNodeTypescript: await readFile(path.join(generatedRoot, "typescript", "local-node.ts"), "utf8"),
   localNodeGo: await readFile(path.join(generatedRoot, "go", "localnode", "control.go"), "utf8"),
@@ -73,7 +78,10 @@ const actual = {
 
 if (await readFile(path.join(generatedRoot, "runtime", "local-node-schema.json"), "utf8") !== expected.localNodeSchema) throw new Error("Local Node runtime schema is stale");
 
+if (await readFile(path.join(generatedRoot, "runtime", "authority-schema.json"), "utf8") !== expected.authoritySchema) throw new Error("Authority runtime schema is stale");
+
 for (const output of [
+  "authorityValidator", "authorityProof", "authorityTypescript", "authorityGo", "authoritySchema",
   "localNodeValidator", "localNodeTypescript", "localNodeGo", "localNodeSchema",
   "goDisclosureSchema", "goDisclosureRuntime",
   "goExecutionSchema",

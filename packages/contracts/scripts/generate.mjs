@@ -9,6 +9,7 @@ const generatedRoot = path.join(packageRoot, "generated");
 const output = await generateContractTypes(packageRoot);
 
 await Promise.all([
+  mkdir(path.join(generatedRoot, "go", "authority"), { recursive: true }),
   mkdir(path.join(generatedRoot, "go", "localnode"), { recursive: true }),
   mkdir(path.join(generatedRoot, "typescript"), { recursive: true }),
   mkdir(path.join(generatedRoot, "runtime"), { recursive: true }),
@@ -18,6 +19,12 @@ await Promise.all([
   mkdir(path.join(generatedRoot, "go", "work"), { recursive: true })
 ]);
 await Promise.all([
+  writeFile(path.join(generatedRoot, "go", "authority", "validation.go"), output.authorityValidator),
+  writeFile(path.join(generatedRoot, "go", "authority", "proof.go"), output.authorityProof),
+  writeFile(path.join(generatedRoot, "typescript", "authority.ts"), output.authorityTypescript),
+  writeFile(path.join(generatedRoot, "go", "authority", "foundation.go"), output.authorityGo),
+  writeFile(path.join(generatedRoot, "go", "authority", "foundation-schema.json"), output.authoritySchema),
+  writeFile(path.join(generatedRoot, "runtime", "authority-schema.json"), output.authoritySchema),
   writeFile(path.join(generatedRoot, "go", "localnode", "validation.go"), output.localNodeValidator),
   writeFile(path.join(generatedRoot, "typescript", "local-node.ts"), output.localNodeTypescript),
   writeFile(path.join(generatedRoot, "go", "localnode", "control.go"), output.localNodeGo),

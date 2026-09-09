@@ -1,0 +1,535 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentroom.dev/schemas/authority/foundation.schema.json",
+  "title": "Authority Runtime foundation",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/AuthorityRef"
+    },
+    {
+      "$ref": "#/$defs/AuthorityProofRequest"
+    },
+    {
+      "$ref": "#/$defs/AuthorityProof"
+    },
+    {
+      "$ref": "#/$defs/AuthorityConnectionsConfig"
+    },
+    {
+      "$ref": "#/$defs/AuthoritySpaceDirectory"
+    }
+  ],
+  "$defs": {
+    "AuthorityRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "team",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "room",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "message",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "task",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "run",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "discussion",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^discussion_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "wave",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^wave_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "turn",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^turn_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorityNodeId",
+            "objectType",
+            "objectId"
+          ],
+          "properties": {
+            "authorityNodeId": {
+              "type": "string",
+              "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+            },
+            "objectType": {
+              "const": "result",
+              "type": "string"
+            },
+            "objectId": {
+              "type": "string",
+              "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        }
+      ]
+    },
+    "AuthorityPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorityNodeId",
+        "serverOrigin",
+        "publicKey"
+      ],
+      "properties": {
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "serverOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "publicKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "AuthorityProofRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nonce"
+      ],
+      "properties": {
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "AuthorityProofPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorityNodeId",
+        "publicKey",
+        "teamId",
+        "deviceId",
+        "ownerMemberId",
+        "browserOrigin",
+        "nonce",
+        "issuedAt",
+        "expiresAt",
+        "signature"
+      ],
+      "properties": {
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "publicKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "browserOrigin": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 512,
+              "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+            },
+            {
+              "const": "",
+              "type": "string"
+            }
+          ]
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "issuedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        }
+      }
+    },
+    "AuthorityProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolVersion",
+        "messageId",
+        "timestamp",
+        "type",
+        "payload"
+      ],
+      "properties": {
+        "protocolVersion": {
+          "const": "1.0",
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "type": {
+          "const": "authority.proof",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AuthorityProofPayload"
+        }
+      }
+    },
+    "AuthorityAgentMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "localAgentId",
+        "projectionAgentId",
+        "name"
+      ],
+      "properties": {
+        "localAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "projectionAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "AuthorityConnector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "pin",
+        "teamId",
+        "deviceId",
+        "ownerMemberId",
+        "label",
+        "credentialDir",
+        "projections"
+      ],
+      "properties": {
+        "mode": {
+          "const": "device",
+          "type": "string"
+        },
+        "pin": {
+          "$ref": "#/$defs/AuthorityPin"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "credentialDir": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "projections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/AuthorityAgentMapping"
+          }
+        }
+      }
+    },
+    "AuthorityConnectionsConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "primary",
+        "connectors"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "primary": {
+          "$ref": "#/$defs/AuthorityPin"
+        },
+        "connectors": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/AuthorityConnector"
+          }
+        }
+      }
+    },
+    "AuthoritySpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorityNodeId",
+        "teamId",
+        "label",
+        "browserOrigin",
+        "kind"
+      ],
+      "properties": {
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "browserOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "hosted",
+            "remote"
+          ]
+        }
+      }
+    },
+    "AuthoritySpaceDirectory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "spaces"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "spaces": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/AuthoritySpace"
+          }
+        }
+      }
+    }
+  }
+}

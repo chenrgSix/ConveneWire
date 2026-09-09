@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "authorityNodeId": "node_authority_alice",
+    "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+    "teamId": "team_authority_fixture",
+    "deviceId": "device_participant_123",
+    "ownerMemberId": "member_local_owner123",
+    "browserOrigin": "https://alice.example:8443",
+    "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk",
+    "issuedAt": "2026-09-09T10:00:00.000Z",
+    "expiresAt": "2026-09-09T10:00:30.000Z",
+    "signature": "lE4w5R9daRy8PZe6VBsWMCXIu6oe5Pz-YLYkbe4SKds6rdoxZ-dy12VjI_j5ydige7q9Txikg__oST_502vSBA"
+  },
+  "transcript": "[\"convenewire.authority.proof.v1\",\"node_authority_alice\",\"6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw\",\"team_authority_fixture\",\"device_participant_123\",\"member_local_owner123\",\"https://alice.example:8443\",\"CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk\",\"2026-09-09T10:00:00.000Z\",\"2026-09-09T10:00:30.000Z\"]"
+}
