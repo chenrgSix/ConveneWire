@@ -38,3 +38,16 @@ type LocalNodeBinding struct {
 	TeamID        string `json:"teamId"`
 	Token         string `json:"token"`
 }
+
+type LocalNodeControlState struct {
+	Binding          *Binding `json:"binding"`
+	ConsoleRequestID string   `json:"consoleRequestId"`
+}
+
+type Binding struct {
+	DeviceID      string `json:"deviceId"`
+	OwnerMemberID string `json:"ownerMemberId"`
+	ServerURL     string `json:"serverUrl"`
+	TeamID        string `json:"teamId"`
+	Token         string `json:"token"`
+}

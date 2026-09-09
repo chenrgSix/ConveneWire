@@ -9,6 +9,11 @@ reset/expiry directs the user back to the desktop. Existing Central and scoped
 Client Access entry flows retain their permissions. See
 [DATA-008 evidence](../acceptance/data-008-local-node-identity.md).
 
+BRG-079 adds explicit one-Team local Runtime binding and a request to open the
+native Agent Console. Initial page load and Team navigation never bind or move
+the Runtime. Accepting a scoped Client Access entry retires any cached local
+Owner session so a later reload cannot silently restore broader permissions.
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies
 to the selected Task, including the default conversation. Switching Tasks retires

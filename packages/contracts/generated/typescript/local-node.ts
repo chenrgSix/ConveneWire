@@ -37,3 +37,16 @@ export interface LocalNodeBinding {
   token:         string;
 }
 
+export interface LocalNodeControlState {
+  binding:          Binding | null;
+  consoleRequestId: string;
+}
+
+export interface Binding {
+  deviceId:      string;
+  ownerMemberId: string;
+  serverUrl:     string;
+  teamId:        string;
+  token:         string;
+}
+

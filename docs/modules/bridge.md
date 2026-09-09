@@ -1,5 +1,17 @@
 # Local Bridge
 
+## Local Node supervision
+
+[ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child
+and explicit single-Team local binding. The desktop verifies native resources,
+holds the private data lease and authenticates child readiness. Hub failure
+stops the existing Console/Bridge core before releasing ownership. Fresh local
+profiles begin with no Agents; Console remains the owner-controlled Runtime
+setup surface. Local mode blocks connection replacement and re-pairing. Existing
+remote profiles and `--bridge-only` keep the released Bridge path. Web navigation
+cannot change a local binding or grant execution trust. See
+[supervisor evidence](../acceptance/brg-079-local-node-supervisor.md).
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), advertises
 `supportsTaskContextIsolation` and accepts optional `session.contextPolicy` equal
 to `task_isolated_v1`. The policy joins the native binding key without changing

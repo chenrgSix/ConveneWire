@@ -11,6 +11,14 @@ export function registerLocalNodeRoutes({ app, localNode, principal, clock, limi
     noStore(reply); localNode.requireControl(request);
     return { binding: localNode.binding(clock()) };
   });
+  app.get("/api/local-node/control/state", async (request, reply) => {
+    noStore(reply); localNode.requireControl(request);
+    return localNode.controlState(clock());
+  });
+  app.post("/api/local-node/open-console", async (request, reply) => {
+    noStore(reply);
+    return localNode.requestConsole(principal(request));
+  });
   app.post("/api/local-node/session", async (request, reply) => {
     noStore(reply); limitAnonymous(request, "local-node-entry");
     const body = bodyObject(request);

@@ -122,5 +122,21 @@
       "origin": "http://example.com:48123",
       "launchProof": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     }
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "valid": true,
+    "value": {
+      "binding": null,
+      "consoleRequestId": ""
+    }
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "valid": false,
+    "value": {
+      "binding": null,
+      "consoleRequestId": "oops"
+    }
   }
 ]

@@ -84,6 +84,18 @@ sed "s/__VERSION__/${bundle_version}/g" \
     -o "${helper}" \
     ./cmd/convenewire-bridge
 )
+if [[ -n "${LOCAL_HUB_BUNDLE:-}" ]]; then
+  node "${repository_root}/scripts/local-node/bundle.mjs" verify "${LOCAL_HUB_BUNDLE}"
+  node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync(process.argv[1])); if(m.sourceCommit!==process.argv[2] || m.releaseVersion!==process.argv[3]) throw new Error("Hub and desktop build identities differ")' "${LOCAL_HUB_BUNDLE}/hub-manifest.json" "${source_commit}" "${release_tag}"
+  cp -R "${LOCAL_HUB_BUNDLE}" "${contents}/Resources/hub"
+  (
+    cd "${bridge_root}"
+    CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath \
+      -ldflags="-s -w -X main.version=${release_tag} -X main.sourceCommit=${source_commit}" \
+      -o "${contents}/Resources/bin/convenewire-node" ./cmd/convenewire-node
+  )
+fi
+
 # A dependency can override CGO linker flags. Verify the emitted Mach-O, not
 # just the plist or environment, before any archive can be distributed.
 build_target=$(xcrun vtool -show-build "${binary}")

@@ -24,6 +24,7 @@ import {
 } from "./api-client.js";
 import { type Locale, type TranslationKey, translate } from "./i18n.js";
 import { ClientEntryGate, clientEntryFromFragment, type ClientEntrySession } from "./features/auth/ClientEntryGate.js";
+import { LocalNodeRuntime } from "./features/local-node/LocalNodeRuntime.js";
 import { AccessGate } from "./features/auth/AccessGate.js";
 import { AccountWorkspace } from "./features/auth/AccountWorkspace.js";
 import { DeviceWorkspace } from "./features/device/DeviceWorkspace.js";
@@ -125,6 +126,7 @@ export function App() {
     const params = new URLSearchParams({ team: result.identity.teamId, view: result.identity.roomId ? "room" : "work" });
     if (result.identity.roomId) params.set("room", result.identity.roomId);
     window.history.replaceState(null, "", `${window.location.pathname}?${params}`);
+    try { sessionStorage.removeItem("convenewire.local-node-session"); } catch { /* Scoped entry must not restore an older Owner tab session. */ }
     setClientEntrySession(result); setEntryTicket(null);
   }} />;
   return <WorkspaceApp clientEntrySession={clientEntrySession} />;
@@ -1669,6 +1671,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
       </WorkspaceSidebar>
 
       <main className="workspace">
+        {isLocalNode && session && <LocalNodeRuntime session={session} team={selectedTeam} teams={teams} locale={locale} />}
         <header className="workspace-header">
           <div className="workspace-heading">
             <button className="sidebar-toggle" type="button" aria-controls="workspace-navigation" aria-expanded={!sidebarCollapsed}

@@ -135,6 +135,7 @@ type ConnectionView struct {
 }
 
 type State struct {
+	LocalNodeID             string                      `json:"localNodeId,omitempty"`
 	DeviceExecutionTrust    DeviceTrustView             `json:"deviceExecutionTrust"`
 	ClientAccessAvailable   bool                        `json:"clientAccessAvailable"`
 	ShareReasoningSummaries bool                        `json:"shareReasoningSummaries"`
@@ -785,6 +786,14 @@ func (s *Service) authorize(next http.HandlerFunc) http.HandlerFunc {
 			writeError(response, http.StatusUnauthorized, "Console token is required")
 			return
 		}
+		s.mu.Lock()
+		localNode := s.configuration != nil && s.configuration.LocalNodeID != ""
+		s.mu.Unlock()
+		if localNode && (strings.HasPrefix(request.URL.Path, "/api/enrollment/") || strings.HasPrefix(request.URL.Path, "/api/device-pairing/") ||
+			request.URL.Path == "/api/connection-settings" || request.URL.Path == "/api/config") {
+			writeError(response, http.StatusConflict, "本地 Node 的连接由桌面管理，请在本机 Agent 页面配置 Runtime")
+			return
+		}
 		securityHeaders(http.HandlerFunc(next)).ServeHTTP(response, request)
 	}
 }
@@ -1359,6 +1368,12 @@ func (s *Service) requireConfigurationMutationLocked() error {
 }
 
 func (s *Service) replaceConfigurationLocked(configuration config.Config) error {
+	if s.configuration != nil && s.configuration.LocalNodeID != "" {
+		if configuration.ServerURL != s.configuration.ServerURL || configuration.DataDir != s.configuration.DataDir {
+			return fmt.Errorf("Local Node binding must remain in its installation profile")
+		}
+		configuration.LocalNodeID = s.configuration.LocalNodeID
+	}
 	if err := s.requireReasoningConsentChangeLocked(configuration); err != nil {
 		return err
 	}
@@ -1722,6 +1737,7 @@ func editRuntimeMetadata(previous config.AgentConfig, input RuntimeInput) (confi
 }
 
 func (s *Service) applyConfigView(configuration config.Config) error {
+	s.state.LocalNodeID = configuration.LocalNodeID
 	identities, err := identity.LoadOrCreate(configuration.DataDir, configuration.Agents)
 	if err != nil {
 		return fmt.Errorf("load Agent identities: %w", err)

@@ -610,6 +610,9 @@ function closeConnectionModal() {
 }
 
 function render(state) {
+  for (const selector of [".pairing-panel", "#edit-connection", ".client-entry-card"]) {
+    document.querySelector(selector)?.classList.toggle("hidden", Boolean(state.localNodeId));
+  }
   const trust = state.deviceExecutionTrust ?? {mode: "restricted", revision: 0, editable: false};
   document.getElementById("device-trust-state").textContent = `${trust.mode === "full" ? "已完全信任" : trust.mode === "central-approval" ? "权限请求在中心审批" : "使用原有权限"} · ${trust.central ?? "尚未连接中心"} · 授权版本 ${trust.revision}`;
   document.getElementById("device-trust-toggle").textContent = trust.mode === "full" ? "关闭完全信任" : "开启完全信任";

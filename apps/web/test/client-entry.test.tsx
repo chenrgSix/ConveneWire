@@ -120,10 +120,12 @@ test("real client entry confirms once, replaces identity and opens its authorize
   assert.equal(window.location.hash, "");
   assert.equal(f.calls.includes("/api/auth/client-entry/claim"), false);
   assert.equal(f.cookie(), f.ownerCookie);
+  sessionStorage.setItem("convenewire.local-node-session", "previous-owner-tab-session");
   const button = screen.getByRole("button", { name: "确认并进入" });
   f.fireEvent.click(button); f.fireEvent.click(button);
   await screen.findByRole("textbox", { name: "消息" });
   assert.equal(f.calls.filter((url) => url === "/api/auth/client-entry/claim").length, 1);
+  assert.equal(sessionStorage.getItem("convenewire.local-node-session"), null);
   assert.equal(new URLSearchParams(window.location.search).get("team"), f.teamId);
   assert.equal(new URLSearchParams(window.location.search).get("room"), f.roomId);
   assert.equal(f.calls.includes("/api/bootstrap"), false);

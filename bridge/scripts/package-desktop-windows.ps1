@@ -139,6 +139,20 @@ finally {
   $env:GOARCH = $previousGOARCH
 }
 
+if (-not [string]::IsNullOrWhiteSpace($env:LOCAL_HUB_BUNDLE)) {
+  $hubBundle = (Resolve-Path -LiteralPath $env:LOCAL_HUB_BUNDLE).Path
+  & node (Join-Path $repositoryRoot "scripts/local-node/bundle.mjs") verify $hubBundle
+  if ($LASTEXITCODE -ne 0) { throw "Local Hub bundle verification failed" }
+  $hubManifest = Get-Content -Raw -LiteralPath (Join-Path $hubBundle "hub-manifest.json") | ConvertFrom-Json
+  if ($hubManifest.sourceCommit -ne $sourceCommit -or $hubManifest.releaseVersion -ne $ReleaseTag) { throw "Hub and desktop build identities differ" }
+  Copy-Item -Recurse -LiteralPath $hubBundle -Destination (Join-Path $staging "hub")
+  Push-Location $bridgeRoot
+  try {
+    & go build -trimpath "-ldflags=-s -w -X main.version=$ReleaseTag -X main.sourceCommit=$sourceCommit" -o (Join-Path $staging "convenewire-node.exe") ./cmd/convenewire-node
+    if ($LASTEXITCODE -ne 0) { throw "Local Node helper build failed" }
+  } finally { Pop-Location }
+}
+
 Copy-Item (Join-Path $bridgeRoot "README.md") (Join-Path $staging "README.md")
 Copy-Item (Join-Path $repositoryRoot "LICENSE") (Join-Path $staging "LICENSE")
 Copy-Item (Join-Path $repositoryRoot "NOTICE") (Join-Path $staging "NOTICE")

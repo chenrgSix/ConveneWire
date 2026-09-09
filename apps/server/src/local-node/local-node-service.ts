@@ -25,6 +25,7 @@ export class LocalNodeService {
   public readonly origin: string;
   private readonly tickets = new Map<string, number>();
   private readonly key: Buffer;
+  private consoleRequestId = "";
 
   public constructor(
     private readonly database: Database.Database,
@@ -89,6 +90,17 @@ export class LocalNodeService {
     this.tickets.delete(key);
     const session = this.auth.issueWebSession(this.launch.identity.ownerUserId, now, new Date(Date.parse(now) + 24 * 60 * 60 * 1000).toISOString());
     return { user: this.core.getUser(this.launch.identity.ownerUserId)!, session: { token: session.secret, expiresAt: session.expiresAt } };
+  }
+
+  public requestConsole(actor: WebPrincipal) {
+    this.requireOwner(actor);
+    if (!this.status().teamId) throw new Error("Choose the local Runtime Team first");
+    this.consoleRequestId = randomBytes(32).toString("base64url");
+    return { requested: true };
+  }
+
+  public controlState(now: string) {
+    return { binding: this.binding(now), consoleRequestId: this.consoleRequestId };
   }
 
   public status() {

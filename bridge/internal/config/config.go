@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -16,6 +17,7 @@ import (
 )
 
 type Config struct {
+	LocalNodeID             string                  `json:"localNodeId,omitempty"`
 	DeviceExecutionTrust    *DeviceExecutionTrust   `json:"deviceExecutionTrust,omitempty"`
 	SchemaVersion           int                     `json:"schemaVersion"`
 	ServerURL               string                  `json:"serverUrl"`
@@ -508,7 +510,12 @@ func (c Config) Validate() error {
 	if !filepath.IsAbs(c.DataDir) {
 		return fmt.Errorf("dataDir must resolve to an absolute path")
 	}
-	if len(c.Agents) == 0 {
+	if c.LocalNodeID != "" {
+		if !regexp.MustCompile(`^node_[A-Za-z0-9_-]{8,128}$`).MatchString(c.LocalNodeID) || parsed.Scheme != "http" || parsed.Hostname() != "127.0.0.1" {
+			return fmt.Errorf("Local Node profiles require a stable Node identity and exact IPv4 loopback Hub")
+		}
+	}
+	if len(c.Agents) == 0 && c.LocalNodeID == "" {
 		return fmt.Errorf("at least one Agent configuration is required")
 	}
 	names := make(map[string]struct{}, len(c.Agents))

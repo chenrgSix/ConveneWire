@@ -40,7 +40,7 @@ Evidence comes from:
 - [Server security/reopen tests](../../apps/server/test/local-node.test.ts): fixed
   Owner, single-use/expired tickets, browser control rejection, foreign origins,
   encrypted binding, response retry, revocation, mismatched data and SQLite backup.
-- [Web entry test](../../apps/web/test/local-node-entry.test.ts): poisoned browser
+- [Web entry test](../../apps/web/test/local-node-entry.test.tsx): poisoned browser
   User cache, fragment removal, tab reload, browser reset and expired sessions.
 - [Go data tests](../../bridge/internal/localnode/data_test.go): exclusive root,
   stable identity, stopped snapshot/restore, missing/corrupt/newer identity,

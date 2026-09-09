@@ -30,6 +30,13 @@ publication. The desktop owns supervision; persistence owns identity and data.
 Legacy Central source packages and Compose operations retain their existing
 behavior. [TASKS.md](../TASKS.md) records delivery status.
 
+BRG-079's native package wrapper embeds this verified Hub with the desktop and
+the `convenewire-node` lifecycle helper. Hub and desktop share the exact source
+commit and release version. Packaging remains separate from installation and
+publication. Stop the Node and take a recoverable snapshot before upgrading;
+retain the matching old bundle for rollback. SQL checksums and unknown-schema
+rejection remain enforced by the existing Server migration runner.
+
 ## Controller boundary
 
 `convenewirectl` is a small Go 1.26.7 CLI. New source-build Central archives

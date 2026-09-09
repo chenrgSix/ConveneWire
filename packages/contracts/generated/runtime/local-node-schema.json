@@ -14,6 +14,9 @@
     },
     {
       "$ref": "#/$defs/LocalNodeBinding"
+    },
+    {
+      "$ref": "#/$defs/LocalNodeControlState"
     }
   ],
   "$defs": {
@@ -131,6 +134,31 @@
         "token": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "LocalNodeControlState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding",
+        "consoleRequestId"
+      ],
+      "properties": {
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalNodeBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "consoleRequestId": {
+          "type": "string",
+          "maxLength": 43,
+          "pattern": "^([A-Za-z0-9_-]{43})?$"
         }
       }
     }

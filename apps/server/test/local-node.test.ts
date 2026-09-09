@@ -46,6 +46,9 @@ test("Local Node fixed Owner, one-time entry, origin isolation and durable bindi
   assert.equal((await claim(ticket)).statusCode, 403);
   const token = response.json().session.token as string;
   const owner = { host, origin, authorization: `Bearer ${token}` };
+  assert.equal((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: { host, origin } })).statusCode, 401);
+  assert.equal((await app.inject({ url: "/api/local-node/control/state", headers: owner })).statusCode, 403);
+  assert.notEqual((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: owner })).statusCode, 200);
   const team = (await app.inject({ method: "POST", url: "/api/teams", headers: owner, payload: { name: "Local Team" } })).json().team;
   const bindURL = `/api/local-node/teams/${team.teamId}/bind`;
   const bound = await app.inject({ method: "POST", url: bindURL, headers: owner });
@@ -53,6 +56,12 @@ test("Local Node fixed Owner, one-time entry, origin isolation and durable bindi
   const firstBinding = (await app.inject({ url: "/api/local-node/control/binding", headers: control })).json().binding;
   assert.ok(firstBinding.token);
   assert.ok(!bound.body.includes(firstBinding.token));
+  assert.equal((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: owner })).statusCode, 200);
+  const state = (await app.inject({ url: "/api/local-node/control/state", headers: control })).json();
+  assert.deepEqual(state.binding, firstBinding);
+  assert.match(state.consoleRequestId, /^[A-Za-z0-9_-]{43}$/u);
+  await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: owner });
+  assert.notEqual((await app.inject({ url: "/api/local-node/control/state", headers: control })).json().consoleRequestId, state.consoleRequestId);
   assert.deepEqual((await app.inject({ method: "POST", url: bindURL, headers: owner })).json(), bound.json());
   const other = (await app.inject({ method: "POST", url: "/api/teams", headers: owner, payload: { name: "Other Team" } })).json().team;
   assert.notEqual((await app.inject({ method: "POST", url: `/api/local-node/teams/${other.teamId}/bind`, headers: owner })).statusCode, 200);

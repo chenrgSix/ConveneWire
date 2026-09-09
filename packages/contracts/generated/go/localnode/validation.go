@@ -31,7 +31,7 @@ func Decode(kind string, data []byte, result any) error {
 			return
 		}
 		schemas = make(map[string]*jsonschema.Schema)
-		for _, name := range []string{"LocalNodeIdentity", "LocalNodeLaunch", "LocalNodeReady", "LocalNodeBinding"} {
+		for _, name := range []string{"LocalNodeIdentity", "LocalNodeLaunch", "LocalNodeReady", "LocalNodeBinding", "LocalNodeControlState"} {
 			schemas[name], compileError = compiler.Compile(uri + "#/$defs/" + name)
 			if compileError != nil {
 				return

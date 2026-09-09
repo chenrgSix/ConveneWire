@@ -329,3 +329,32 @@ changes, and includes every regular file's size and SHA-256. This inventory
 checks bundle integrity; release authenticity still comes from the verified
 outer distribution. Never copy private data into a bundle. macOS package tests
 provide no Windows native or installed-client evidence.
+
+## Local Node desktop and recovery
+
+`npm run test:local-node` builds a disposable native host and offline Pi fixture,
+then drives the real bundled Hub/Bridge with an empty PATH. No model credentials
+or installed profile are used. `npm run package:local-node` builds a native local
+development desktop ZIP under `dist/local-node-desktop`; append `-- /absolute/new-output`
+to select a fresh output directory. The wrapper cleans its own temporary Hub
+staging directory. It does not install, publish or enable login startup.
+
+A fresh packaged profile defaults to the Local Hub. Existing remote profiles
+keep Bridge mode. Explicit desktop flags are `--hub-bundle /absolute/hub`,
+`--node-data /absolute/private-node-root`, optional `--workspace /absolute/workspace`,
+and `--bridge-only` for the released remote path.
+
+For headless local operation use the packaged `convenewire-node` helper with
+`--hub-bundle /absolute/hub --data-dir /absolute/private-node-root` and an explicit
+workspace. `--stdio` is a private automation channel; its one-use entry and
+Console URLs contain credentials and must not be published or logged. EOF stops
+the Console/Bridge before the Hub and releases the data lease.
+
+Before an upgrade, stop the desktop and create a stopped snapshot with
+`convenewire-node --data-dir /absolute/private-node-root --backup /absolute/new-snapshot`.
+Keep the snapshot and original compatible bundle together. To restore, preserve
+the failed root separately and use
+`convenewire-node --data-dir /absolute/private-node-root --restore /absolute/new-snapshot`.
+Restore requires the original root to be absent and refuses a different target,
+tampered contents, links or a live owner. Do not operate the preserved copy as a
+second writable Node. Neither helper silently downgrades a newer SQLite schema.

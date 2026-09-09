@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { resolveBuildIdentity } from "./observability/build-identity.js";
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,7 +31,8 @@ input.on("line", (line) => {
     if (line.length > 4096) throw new Error("Local Node launch message is too large");
     const launch = parseLocalNodeLaunch(JSON.parse(line));
     if (closeRequested) return;
-    app = await createServerApp({ databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch,
+    const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
+    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch,
       webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });

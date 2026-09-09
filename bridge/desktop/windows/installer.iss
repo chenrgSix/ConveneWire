@@ -66,6 +66,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+#if FileExists(SourceDir + "\hub\hub-manifest.json")
+Source: "{#SourceDir}\hub\*"; DestDir: "{app}\hub"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}\convenewire-node.exe"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 Source: "{#SourceDir}\ConveneWire Bridge.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDir}\convenewire-bridge.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion

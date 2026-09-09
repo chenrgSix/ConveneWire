@@ -455,3 +455,18 @@ func TestAgentConfigScopesStructuredOutputProtocolToGenericRuntime(t *testing.T)
 		t.Fatal("Pi was allowed to claim the Generic output protocol")
 	}
 }
+
+func TestEmptyLocalNodeProfileCannotBecomeARemoteBridge(t *testing.T) {
+	cfg := Config{SchemaVersion: CurrentSchemaVersion, LocalNodeID: "node_fixture_12345", ServerURL: "http://127.0.0.1:48123",
+		DeviceName: "Local Node", DataDir: t.TempDir(), Agents: []AgentConfig{}}
+	if err := cfg.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	for _, mutation := range []func(*Config){func(c *Config) { c.LocalNodeID = "" }, func(c *Config) { c.LocalNodeID = "node_invalid"; c.ServerURL = "https://remote.example" }, func(c *Config) { c.LocalNodeID = "invalid" }} {
+		candidate := cfg
+		mutation(&candidate)
+		if err := candidate.Validate(); err == nil {
+			t.Fatal("accepted an unbound empty or foreign Local Node profile")
+		}
+	}
+}

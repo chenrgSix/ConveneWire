@@ -46,6 +46,9 @@ func main() {
 }
 
 func run() error {
+	hubBundle := flag.String("hub-bundle", "", "native Local Hub bundle (explicit Local Node mode)")
+	nodeData := flag.String("node-data", "", "private Local Node data root")
+	bridgeOnly := flag.Bool("bridge-only", false, "use the legacy remote Bridge profile")
 	configPath := flag.String("config", "", "path to Bridge JSON configuration")
 	dataDir := flag.String("data-dir", "", "directory for Bridge state and credential")
 	workspace := flag.String("workspace", "", "default local Runtime workspace")
@@ -89,6 +92,24 @@ func run() error {
 	return runWithDesktopInstance(func() (*desktopInstance, error) {
 		return acquireDesktopInstance(initialPairingLink, activation)
 	}, func(instance *desktopInstance) error {
+		bundle := *hubBundle
+		if bundle == "" && !*bridgeOnly && initialPairingLink == "" {
+			executable, err := os.Executable()
+			if err != nil {
+				return err
+			}
+			bundle = bundledLocalHub(executable, *configPath)
+		}
+		if bundle != "" {
+			if *bridgeOnly || initialPairingLink != "" {
+				return fmt.Errorf("Local Node mode cannot be combined with remote pairing or --bridge-only")
+			}
+			root := *nodeData
+			if root == "" {
+				root = filepath.Join(filepath.Dir(*configPath), "local-node")
+			}
+			return runLocalNodeDesktop(bundle, root, *workspace, *background, activation, instance)
+		}
 		return runPrimaryDesktop(*configPath, *dataDir, *workspace, initialPairingLink, *background, activation, instance)
 	})
 }

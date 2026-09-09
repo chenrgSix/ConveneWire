@@ -1333,3 +1333,18 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .browser-verification img { width: 100%; max-width: 900px; }
 :root[data-theme] .browser-verification h4, :root[data-theme] .browser-verification li, :root[data-theme] .browser-verification p { color: var(--cw-text); }
 .verification-log-preview pre { color: var(--cw-text, #edf1eb); font-size: 12px; }
+
+.local-node-runtime {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border, #39433e);
+  font-size: 13px;
+}
+.local-node-runtime > div { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.local-node-runtime span { opacity: .75; }
+.local-node-runtime button { padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.local-node-runtime p { flex-basis: 100%; margin: 0; color: var(--danger, #e77c71); }
