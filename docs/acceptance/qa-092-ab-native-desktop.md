@@ -26,12 +26,25 @@ records and running core. The [legacy Bridge entry](evidence/qa092/legacy-entry.
 was separately checked using an empty explicit temporary profile and
 `--bridge-only`, without pairing or starting a model.
 
-A terminated Hub produced the native
-[Hub-stopped dialog](evidence/qa092/hub-stopped.png), stating that Runtime had
-stopped. Same-identity native restart after that particular fault was not
-accepted: the long-running manual fixture had reached its cleanup deadline.
-The separate packaged supervisor tests and three-Host core crash/recovery tests
-remain passing evidence for their respective non-GUI paths.
+A fresh process-owned fixture on 2026-09-10 completed one native Run and a
+two-Agent Discussion with one Owner-requested Finalizer, then sent SIGKILL only
+to the verified Hub child of that desktop process. The
+[native fault dialog](evidence/qa092/native-recovery-fault.png) stated that
+Runtime had stopped. After exiting through the native application menu, the
+fixture waited for process exit and reopened the same package with the same
+explicit configuration, Node data and Workspace arguments.
+
+The [reopened native window](evidence/qa092/native-recovery-reopened.png) showed
+the original Team. [Recovery assertions](evidence/qa092/native-recovery.json)
+verified byte-identical identity, the original completed Run, Discussion and
+turn Run IDs, two ready Agents and no repeated offline fixture calls. A
+new native Run then completed, increasing the invocation count from four to
+five. No external model calls were made. This closes the native Hub-fault
+recovery gate left open by the earlier expired preview.
+Exiting again through the native application menu returned exit code zero and
+stopped the Hub. All owned process groups were drained before the temporary
+profile and extracted application were removed. This application-menu action
+does not stand in for the remaining tray-menu gate.
 
 ## Native Space navigation
 
@@ -55,13 +68,13 @@ Space Web regressions passed. The final package was built after those fixes.
 The browser extension repeatedly timed out even though installation and native
 host diagnostics passed. Opening a blank test-profile window did not restore
 communication. Browser DOM inspection is therefore not claimed.
+The browser connection failed again on 2026-09-10; repeated environment recovery
+was not counted as acceptance evidence.
 
 ## Remaining acceptance and test limitations
 
 - Exercise the actual tray menu's open/configure/quit actions. The system-UI
   inspection tool timed out, so window activation is not counted as tray evidence.
-- Repeat native Hub-fault recovery with a process-owned fixture that drains the
-  GUI before cleanup, preserving the exact identity and completed records.
 - Visually inspect the independent browser login page when browser control works.
   Native dispatch/no-credential evidence above does not replace that visual check.
 
@@ -70,6 +83,13 @@ The first bounded manual preview finished and cleaned successfully. A subsequent
 removed the disposable profile before the last recovery check. It is recorded as
 a failed preview, not a product pass. The ad-hoc manual-preview code was withdrawn;
 normal test wrappers retain their original lifecycle behavior.
+
+The new ad-hoc fixture needed setup corrections before the accepted recovery
+run: use the canonical macOS temporary path required by the existing private
+repository store, explicitly request the Console, and wait for asynchronous
+native exit before restarting. These failed fixture attempts are not product
+passes. Each attempt stopped its owned process groups before removing its
+temporary data; no product behavior or security guard was changed.
 
 During an exit-state inspection, the UI tool automatically relaunched the test
 package without its explicit arguments and loaded the default Bridge profile.

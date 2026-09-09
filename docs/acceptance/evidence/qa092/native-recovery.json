@@ -1,0 +1,21 @@
+{
+  "source": "896f72d08d8600bfae2d7bfffd4181ad0313525c",
+  "nodeId": "node_JzyjyK8IN5esqXgwIIyzQSajFRBnK-PgvVQBkFLD540",
+  "ownerUserId": "user_i4dl9bQRKqJNjjZueH8ye7nR82YpJs-LONfdEPmFOTs",
+  "teamId": "team_EuTjXOqBcZ-hT0d41f-FSQ",
+  "runId": "run_gbp_xglmSvvPvfKrRs41QA",
+  "discussionId": "discussion_7xJfAhm-CpJOfqoxwH7Ggw",
+  "agentIds": [
+    "agent_fqV1QV5bnY3rwr0Z40NFSg",
+    "agent_ebBTS6paxGvsb5SZ71DLHA"
+  ],
+  "modelCalls": 0,
+  "newRunId": "run_fbRLfwzd8jNM7dkY22egyA",
+  "identityBytesUnchanged": true,
+  "completedRunPreserved": true,
+  "completedDiscussionAndTurnIdsPreserved": true,
+  "replayedCalls": 0,
+  "newRunCompleted": true,
+  "nativeQuitExitCode": 0,
+  "hubStoppedAfterQuit": true
+}
