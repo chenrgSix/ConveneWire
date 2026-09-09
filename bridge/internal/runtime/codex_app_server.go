@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -24,6 +25,13 @@ var (
 )
 
 func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emit EmitFunc) error {
+	if c.LocalApproval != nil && (request.Run.CentralApproval != nil || request.Run.DeviceTrust != nil ||
+		(c.Config.Sandbox != "read-only" && c.Config.Sandbox != "workspace-write") ||
+		c.Config.CentralApprovalRevision != 0 || c.Config.TrustedExecutionRevision != 0 || conversationWork(request.Run) ||
+		c.Config.OwnerPrivateOutput || request.Run.OwnerPrivateOutput != nil && *request.Run.OwnerPrivateOutput ||
+		request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
+		return emitCodexFailure(ctx, emit, "LOCAL_APPROVAL_CHANGED", "Peer approval cannot use Device, private or governed authority.")
+	}
 	approval := request.Run.CentralApproval
 	if approval != nil && (approval.Revision < 1 || approval.Revision != c.Config.CentralApprovalRevision || c.Approve == nil ||
 		request.Run.DeviceTrust != nil || conversationWork(request.Run) || c.Config.OwnerPrivateOutput ||
@@ -121,7 +129,20 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 	if err != nil {
 		return emitCodexFailure(ctx, emit, "CODEX_START_FAILED", "Codex stdin could not be opened.")
 	}
-	stdout, err := command.StdoutPipe()
+	var stdout io.ReadCloser
+	var ownedOutput *os.File
+	if c.LocalApproval != nil {
+		// Own the pipe so Wait can observe child exit during an approval without
+		// closing buffered stdout before the parser has consumed it.
+		stdout, ownedOutput, err = os.Pipe()
+		if err == nil {
+			command.Stdout = ownedOutput
+			defer stdout.Close()
+			defer ownedOutput.Close()
+		}
+	} else {
+		stdout, err = command.StdoutPipe()
+	}
 	if err != nil {
 		return emitCodexFailure(ctx, emit, "CODEX_START_FAILED", "Codex stdout could not be opened.")
 	}
@@ -129,6 +150,21 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 	command.Stderr = stderr
 	if err := managedCommand.Start(); err != nil {
 		return emitCodexFailure(ctx, emit, "CODEX_START_FAILED", "Codex process could not be started.")
+	}
+	wait := managedCommand.Wait
+	approvalContext := runContext
+	if c.LocalApproval != nil {
+		_ = ownedOutput.Close()
+		var invalidate context.CancelFunc
+		approvalContext, invalidate = context.WithCancel(processContext)
+		defer invalidate()
+		finished := make(chan error, 1)
+		go func() {
+			err := managedCommand.Wait()
+			invalidate()
+			finished <- err
+		}()
+		wait = func() error { return <-finished }
 	}
 
 	writer := json.NewEncoder(stdin)
@@ -145,7 +181,7 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		}},
 	}); err != nil {
 		cancelProcess()
-		_ = managedCommand.Wait()
+		_ = wait()
 		return emitCodexFailure(ctx, emit, "CODEX_START_FAILED", "Codex initialization could not be sent.")
 	}
 
@@ -164,6 +200,20 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		parser.approve = c.Approve
 		parser.approvalContext = runContext
 		parser.approvalAgentID = request.Run.TargetAgentID
+	}
+	if c.LocalApproval != nil {
+		local, err := c.LocalApproval(approvalContext)
+		if err != nil || local.Revision < 1 || local.Approve == nil || local.Close == nil || approvalContext.Err() != nil {
+			if local.Close != nil {
+				local.Close()
+			}
+			cancelProcess()
+			_ = wait()
+			return emitCodexFailure(ctx, emit, "LOCAL_APPROVAL_CHANGED", "Participant-local approval is unavailable.")
+		}
+		defer local.Close()
+		parser.approve, parser.approvalRevision = local.Approve, local.Revision
+		parser.approvalContext, parser.approvalAgentID = approvalContext, request.Run.TargetAgentID
 	}
 	parser.bootstrapInstruction = runtimePromptWithArtifacts(bootstrapRun, request.Artifacts)
 	parser.artifacts = request.Artifacts
@@ -239,7 +289,7 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		protocolError = scanner.Err()
 	}
 	cancelProcess()
-	waitError := managedCommand.Wait()
+	waitError := wait()
 	if executionError != nil {
 		return executionError
 	}
@@ -349,6 +399,7 @@ type codexAppServerMessage struct {
 }
 
 type codexAppServerParser struct {
+	approvalRevision                    int64
 	approve                             ApprovalFunc
 	approvalContext                     context.Context
 	approvalAgentID                     string
@@ -412,7 +463,8 @@ func newCodexAppServerSessionParser(
 	resumeID string,
 ) *codexAppServerParser {
 	return &codexAppServerParser{
-		config: configuration, instruction: instruction,
+		approvalRevision: configuration.CentralApprovalRevision,
+		config:           configuration, instruction: instruction,
 		bootstrapInstruction: instruction, sessions: sessions,
 		sessionKey: sessionKey, resumeID: resumeID,
 		reasoning:         make(map[string]*activityTextPreview),

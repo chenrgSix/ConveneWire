@@ -48,6 +48,19 @@ and restores the same identity and process owner from backup. Core/Local Node
 race tests, vet and this offline native fixture pass. Peer transport and local
 approval composition remain in progress under BRG-081.
 
+The Participant approval kernel binds each local decision to the immutable Peer
+execution, reviewed Export revision, opaque live-process owner and exact Runtime
+callback. It retains no transferable decision across restart. Disconnect, Run
+expiry, process exit, Peer revocation and core shutdown invalidate continuation;
+post-decision Host/local freshness checks are canceled on revocation. Codex has
+a separate local approval factory, retains the restricted sandbox and requires
+the Runtime's human-reviewer confirmation. Device trust, Central approval,
+private output and governed execution cannot be combined with this path. An
+owned output pipe permits process exit detection while the parser awaits an
+Owner decision. Focused actual-process tests cover allow/deny/disconnect/exit;
+Peer/Runtime/core/Local Node race tests and vet pass. Transport and authenticated
+Console handlers still need to connect this kernel to real Peer Runs.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

@@ -82,11 +82,11 @@ func (p *codexAppServerParser) answerApproval(message codexAppServerMessage) ([]
 		expires = deadline
 	}
 	request := contracts.RuntimeApprovalRequestedPayload{RequestID: "approval_" + hex.EncodeToString(random),
-		RunID: p.runID, AgentID: p.approvalAgentID, Revision: p.config.CentralApprovalRevision,
+		RunID: p.runID, AgentID: p.approvalAgentID, Revision: p.approvalRevision,
 		OperationKind: kind, Details: details, ExpiresAt: expires}
 	approved, err := p.approve(p.approvalContext, request)
 	if err != nil {
-		return nil, fmt.Errorf("Central approval is unavailable")
+		return nil, fmt.Errorf("Runtime approval is unavailable")
 	}
 	if approved && p.approvalContext.Err() == nil {
 		decision = "accept"

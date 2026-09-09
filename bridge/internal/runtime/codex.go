@@ -10,11 +10,20 @@ import (
 )
 
 type CodexAdapter struct {
+	// Supplied only by the Participant's owning core, once per live child.
+	// It never imports a Device trust or Central approval pin.
+	LocalApproval   func(context.Context) (LocalApprovalSession, error)
 	Approve         ApprovalFunc
 	Config          config.AgentConfig
 	Sessions        RuntimeSessionStore
 	ProcessTracker  GovernedProcessTracker
 	ProcessIdentity GovernedProcessIdentity
+}
+
+type LocalApprovalSession struct {
+	Revision int64
+	Approve  ApprovalFunc
+	Close    func()
 }
 
 func (c CodexAdapter) Name() string { return "codex" }

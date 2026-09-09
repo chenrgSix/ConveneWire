@@ -210,6 +210,9 @@ func TestCentralApprovalProcessFixture(t *testing.T) {
 			cwd, _ := os.Getwd()
 			_ = encoder.Encode(map[string]any{"id": 8, "method": "item/commandExecution/requestApproval", "params": map[string]any{
 				"threadId": "thread-test", "turnId": "turn-test", "itemId": "command-test", "environmentId": "local", "command": "printf approved > permission-test.txt", "cwd": cwd}})
+			if os.Getenv("CONVENE_WIRE_APPROVAL_FIXTURE_EXIT") == "1" {
+				os.Exit(0)
+			}
 		case 8:
 			if message.Result["decision"] == "accept" {
 				_ = os.WriteFile("permission-test.txt", []byte("approved"), 0600)
