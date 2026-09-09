@@ -10,6 +10,30 @@ cannot reset deduplication. Ambiguous external history is preserved and refused,
 never silently relabeled. This stores execution evidence and remote references,
 not replicated collaboration state.
 
+Migration 0094 allocates the Central identity once and seals it after initial
+binding. Local Hub derives its Ed25519 seed from the existing private installation
+secret and stores only its public key in this table. Missing or mismatched
+identity requires recovery. Device-authenticated `POST /api/bridge/authority-proof`
+requires any configured machine server token; `GET /api/authority` exposes only
+public identity to a full human session. Unconfigured legacy local Servers have
+an empty browser origin and cannot advertise a remote Web view.
+
+The Bridge authority package verifies exact canonical TLS/loopback origins,
+nonce/key/binding/signature and 30-second lifetime, then records private ownership
+under `authorities/primary.json`. Primary Inbox bytes and existing native Session
+bindings remain in place. Additional partitions are `authorities/<nodeId>` with
+an immutable receipt and no imported history. B admits one connector per
+Authority; changing its credential or endpoint requires an explicit future
+transition. A missing receipt or removed connector configuration fails closed.
+The owning Runtime core supplies the root lease before using these storage APIs.
+
+DATA-009 verification covers real Server-to-Go proof, restart/stopped SQLite
+backup, key/nonce/time/credential denials, immutable/missing identity, original
+Inbox digest and duplicate preservation, private partition binding and missing
+receipt denial. Two new Server checks, the existing two Local Node and seven
+migration checks, Go authority race/vet and Server build pass. Tests use private
+disposable roots and no model calls; shared Runtime delivery belongs to BRG-080.
+
 ## Local Node identity and stopped recovery
 
 [ADR-0066](../adr/0066-local-node-delivery.md) and

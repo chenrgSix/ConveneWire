@@ -96,6 +96,7 @@ import type { IsolatedWorkspaceLeaseService } from
 export type PersistedRun = NonNullable<ReturnType<RunRepository["getRun"]>>;
 
 export interface ServerRouteContext {
+  authority: import("../security/authority-service.js").AuthorityService;
   localNode?: LocalNodeService;
   app: FastifyInstance;
   artifactContentBinding: ArtifactContentBindingService;

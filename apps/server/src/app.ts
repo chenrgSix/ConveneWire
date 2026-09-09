@@ -1,3 +1,5 @@
+import { AuthorityService } from "./security/authority-service.js";
+import { registerAuthorityRoutes } from "./http/authority-routes.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
 import { LocalNodeService } from "./local-node/local-node-service.js";
 import { registerLocalNodeRoutes } from "./local-node/local-node-routes.js";
@@ -331,6 +333,9 @@ export async function createServerApp(
   const trustedOrigins = webAuth.mode === "trusted-team"
     ? trustedWebOrigins(webAuth)
     : undefined;
+  let authority: AuthorityService;
+  try { authority = new AuthorityService(database, localNode?.origin ?? trustedOrigins?.browserOrigin ?? "", options.localNode); }
+  catch (error) { database.close(); throw error; }
   const deploymentTrust = createDeploymentTrustProvider(
     options.deploymentTrustFile,
     trustedOrigins?.publicOrigin
@@ -1222,6 +1227,7 @@ export async function createServerApp(
   });
 
   const routeContext: ServerRouteContext = {
+    authority,
     ...(localNode ? { localNode } : {}),
     app,
     artifactContentBinding,
@@ -1306,6 +1312,7 @@ export async function createServerApp(
   registerBridgeSocketRoutes(routeContext);
   registerArtifactRoutes(routeContext);
   registerAuthRoutes(routeContext);
+  registerAuthorityRoutes(routeContext);
   registerLocalNodeRoutes(routeContext);
   registerClientAccessRoutes(routeContext);
 

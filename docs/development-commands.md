@@ -31,6 +31,8 @@ The contracts Go module pins the selected Go toolchain.
 - `npm run dev:server` — run the Fastify API on port 3000.
 - `npm run dev:web` — run the Vite browser UI with an API proxy.
 - `npm run generate --workspace @convene-wire/contracts` — regenerate wire types.
+- `node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- npx tsx --test apps/server/test/authority.test.ts` — authenticated Host identity, stopped backup and real Go proof interoperability, without model calls.
+- `node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- go test -race ./internal/authority` — private Authority partitions, identity/freshness denials and preserved legacy Inbox records; the separately invoked Server fixture supplies live proof interoperability.
 - `rg '^#' convenewire_network_design_v0.2.md` — review heading hierarchy.
 - `npm run lint:docs` — lint maintained Markdown.
 - `rg '^\| [A-Z]+-[0-9]+' docs/TASKS.md` — review registered task IDs.
