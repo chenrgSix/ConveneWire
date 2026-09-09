@@ -104,3 +104,32 @@ Pi/generic runtimes, private/governed runs, session-wide grants, stdin injection
 network-only approval requests and other interactive methods are excluded.
 An actual model must emit a supported permission request to exercise the live
 path. Default-off owner settings were not changed by this implementation.
+
+## Installed local preview
+
+The existing macOS Bridge and local Central were updated to
+`v0.5.5-local.6f8d633`, exact implementation commit
+`6f8d6339c48beb5d1d6aca1210b1ae575d4ff020`. Native desktop/helper packaging and
+Central source-package verification passed. The controller created a verified
+SQLite backup, upgraded the same installation from schema 91 to 92, and passed
+`doctor`, including HTTPS and WebSocket readiness.
+
+Eight installed application files match their candidate bytes. All 30 client
+JSON files, existing business row counts, installation identity and private CA
+were preserved. Three existing Agents returned to ready; the authenticated
+Bridge observation reports the exact candidate source. The original-CA HTTPS
+assets contain Central approval, compact composer, sidebar collapse and reply
+copy controls. The separate development entry remains absent.
+
+The first tool-launched Desktop inherited the tool's outbound proxy and its
+local Central request returned EOF. A process-local `NO_PROXY` entry for the
+existing local Central corrected the launch; no system proxy or configuration
+file was changed. The final authenticated observation confirms the new source,
+rather than relying on retained Agent presence. Computer Use could not locate
+the native window, so native-window interaction is not claimed as verified.
+
+The real device remains restricted and its approval table contains zero rows;
+this update did not submit a real conversation, call a model or enable consent.
+Owner test instructions above apply after the owner enables Central approval.
+Private backups and installation receipts remain in the ignored local upgrade
+directory; they are not committed or uploaded.
