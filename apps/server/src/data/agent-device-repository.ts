@@ -84,6 +84,7 @@ export class AgentDeviceRepository {
     agent: AgentRecord,
     options?: CreateAgentOptions
   ): void {
+    if (agent.integrationMode === "peer") throw new Error("Peer Agents require explicit bilateral acceptance");
     assertHostedAgentBoundary(agent);
     const roomIds = options?.roomIds;
     if (agent.integrationMode === "hosted") {
@@ -160,6 +161,7 @@ export class AgentDeviceRepository {
   }
 
   public updateAgentPublication(agent: AgentRecord): void {
+    if (agent.integrationMode === "peer" || this.getAgent(agent.agentId)?.integrationMode === "peer") throw new Error("Peer publication requires a new verified offer");
     this.database.prepare(`
       UPDATE agents
       SET name = @name, role = @role, capabilities_json = @capabilitiesJson,
@@ -318,6 +320,7 @@ export class AgentDeviceRepository {
   ): AgentRecord {
     const existing = this.getAgent(agentId);
     if (!existing) throw new Error(`Agent not found: ${agentId}`);
+    if (existing.integrationMode === "peer") throw new Error("Use explicit Peer acceptance or revocation");
     const presence = enabled
       ? existing.integrationMode === "manual" ? "manual"
         : existing.integrationMode === "hosted" ? "degraded"

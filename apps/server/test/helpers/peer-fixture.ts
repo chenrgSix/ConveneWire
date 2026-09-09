@@ -1,12 +1,12 @@
 import { randomBytes } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import type { TestContext } from "node:test";
 import type { PeerInvitation, PeerInvitationClaim, PeerScope } from "@convene-wire/contracts/peer";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { createTestResources } from "../../../../scripts/test/resources.mjs";
 import { openDatabase } from "../../src/data/database.js";
-import { migrateDatabase } from "../../src/data/migration-runner.js";
+import { defaultMigrationsDirectory, migrateDatabase } from "../../src/data/migration-runner.js";
 import { CoreRepository } from "../../src/data/core-repository.js";
 import { PeerMembershipRepository, PeerStoreError, peerSecretHash } from "../../src/data/peer-membership-repository.js";
 import { AuthorityService } from "../../src/security/authority-service.js";
@@ -19,10 +19,20 @@ const fixtureProof = JSON.parse(await readFile(new URL("../../../../packages/con
 export const secret = () => randomBytes(32).toString("base64url");
 export const denied = (code: string) => (error: unknown) => error instanceof PeerStoreError && error.code === code;
 
-export async function fixture(t: TestContext) {
+export async function fixture(t: TestContext, maximumMigration?: number) {
   const resources = await createTestResources(t, "convenewire-peer-membership-");
   const databasePath = path.join(resources.directory, "host.sqlite");
-  await migrateDatabase(databasePath);
+  let migrations: string | undefined;
+  if (maximumMigration !== undefined) {
+    migrations = path.join(resources.directory, "migrations");
+    await mkdir(migrations);
+    for (const file of await readdir(defaultMigrationsDirectory)) {
+      if (/^\d{4}_.+\.sql$/u.test(file) && Number(file.slice(0, 4)) <= maximumMigration) {
+        await copyFile(path.join(defaultMigrationsDirectory, file), path.join(migrations, file));
+      }
+    }
+  }
+  await migrateDatabase(databasePath, migrations);
   let database = openDatabase(databasePath);
   resources.defer(() => { if (database.open) database.close(); });
   const identity = new AuthorityService(database, "https://host.example.test");
@@ -51,4 +61,3 @@ export async function fixture(t: TestContext) {
     }
   };
 }
-

@@ -92,7 +92,7 @@ export interface AgentRecord {
   deviceId: string | null;
   name: string;
   role: string;
-  integrationMode: "managed" | "manual" | "fake" | "hosted";
+  integrationMode: "managed" | "manual" | "fake" | "hosted" | "peer";
   capabilities: AgentCapabilities;
   runtimePolicy: AgentRuntimePolicy | null;
   configuredModel?: string | null;

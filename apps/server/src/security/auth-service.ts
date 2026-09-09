@@ -338,7 +338,7 @@ export class AuthService {
     `).get(agentId) as
       | {
           owner_member_id: string;
-          integration_mode: "managed" | "manual" | "fake" | "hosted";
+          integration_mode: "managed" | "manual" | "fake" | "hosted" | "peer";
           enabled: number;
           user_id: string | null;
         }

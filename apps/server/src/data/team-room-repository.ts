@@ -130,7 +130,7 @@ export class TeamRoomRepository {
         SELECT @roomId, agent_id, @createdAt
         FROM agents
         WHERE team_id = @teamId AND enabled = 1
-          AND integration_mode <> 'hosted'
+          AND integration_mode NOT IN ('hosted', 'peer')
       `).run(room);
     });
   }

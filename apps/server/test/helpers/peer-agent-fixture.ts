@@ -8,8 +8,8 @@ import { PeerAdmissionService } from "../../src/security/peer-admission-service.
 import { AuthService } from "../../src/security/auth-service.js";
 import { fixture, now, expiry, ownerId, ownerMember, roomId, secret } from "./peer-fixture.js";
 
-export async function peerAgentFixture(t: Parameters<typeof fixture>[0]) {
-  const f = await fixture(t), i = f.invite();
+export async function peerAgentFixture(t: Parameters<typeof fixture>[0], maximumMigration?: number) {
+  const f = await fixture(t, maximumMigration), i = f.invite();
   const key = createPrivateKey({ key: Buffer.concat([Buffer.from("302e020100300506032b657004220420", "hex"), Buffer.alloc(32, 19)]), format: "der", type: "pkcs8" });
   i.claim.participant.publicKey = createPublicKey(key).export({ format: "der", type: "spki" }).subarray(-32).toString("base64url");
   f.store.createInvitation(i.invitation, ownerMember, peerSecretHash(i.inviteSecret), now);

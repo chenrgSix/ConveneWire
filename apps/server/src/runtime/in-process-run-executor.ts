@@ -88,6 +88,7 @@ export class InProcessRunExecutor {
       throw new Error(`Run cannot be started from state: ${initial.state}`);
     }
     const agent = this.core.getAgent(initial.targetAgentId);
+    if (agent?.integrationMode === "peer") throw new Error("Peer Runs require the authenticated Participant executor");
     const trigger = this.core.getMessage(initial.triggerMessageId);
     if (!agent || !agent.enabled || !trigger) {
       throw new Error("Run target is unavailable");
@@ -129,6 +130,7 @@ export class InProcessRunExecutor {
     const { agent, request } = prepared;
     const current = this.runs.getRun(prepared.run.runId);
     if (!current) throw new Error(`Run not found: ${prepared.run.runId}`);
+    if (this.core.getAgent(current.targetAgentId)?.integrationMode === "peer") throw new Error("Peer Runs require the authenticated Participant executor");
     if (terminalStates.has(current.state)) return current;
     if (
       current.targetAgentId !== agent.agentId ||

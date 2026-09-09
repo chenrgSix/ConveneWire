@@ -1707,7 +1707,7 @@ export class RunRepository {
       FROM agents WHERE agent_id = ?
     `).get(run.targetAgentId) as {
       device_id: string | null;
-      integration_mode: "managed" | "manual" | "fake" | "hosted";
+      integration_mode: "managed" | "manual" | "fake" | "hosted" | "peer";
       capabilities_json: string;
       runtime_policy_json: string | null;
       workspace_alias: string | null;
@@ -1760,7 +1760,7 @@ export class RunRepository {
         deviceId: agent.device_id,
         runtimeKind: agent.integration_mode === "managed"
           ? "generic"
-          : agent.integration_mode === "hosted"
+          : agent.integration_mode === "hosted" || agent.integration_mode === "peer"
             ? "not_recorded"
             : agent.integration_mode,
         workspaceAlias: agent.workspace_alias

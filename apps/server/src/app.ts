@@ -813,7 +813,7 @@ export async function createServerApp(
     }
     const agent = core.getAgent(run.targetAgentId);
     const adapter = fakeAdapters.get(run.targetAgentId);
-    if (adapter) {
+    if (adapter && agent?.integrationMode === "fake") {
       const turn = discussionRepository.findTurnByRun(run.runId);
       const firstSequence = run.lastSequence + 1;
       adapter.enqueue({
@@ -1234,7 +1234,7 @@ export async function createServerApp(
   const peerAdmission = new PeerAdmissionService(database, auth, authority);
   const routeContext: ServerRouteContext = {
     peerAdmission,
-    peerAgents: new PeerAgentService(database, auth, authority, peerAdmission),
+    peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => teamChanges.notify(teamId)),
     peerHumanEntry: new PeerHumanEntryService(database, auth, authority),
     authority,
     ...(localNode ? { localNode } : {}),

@@ -188,9 +188,9 @@ a new Acceptance lineage while retaining the stable projection identity.
 
 The Host signs receipts over the full accepted content, including the projection
 and offer digest. These receipts do not replace live admission freshness.
-This increment does not yet materialize projections in the ordinary Agent
-registry or wire native sharing actions; those remain within REG-007 and the
-following BRG-081/WEB-085 integration. No Device is synthesized.
+The subsequent registry increment materializes accepted projections as the
+independent `peer` integration mode described below. Native sharing actions
+remain in BRG-081/WEB-085. No Device is synthesized.
 
 Verification: 25 focused Server tests pass, including protocol routes,
 credential separation, signature and scope negatives, duplicate/concurrent
@@ -228,9 +228,45 @@ All Peer Go race tests and vet pass, including concurrent local review,
 configuration/private/trust negatives, immutable history, clock rollback,
 withdrawal without a Runtime and explicit replacement. All 130 Contracts Node
 checks, Go fixtures, generation/types, Server build and docs/link checks pass.
-Registry materialization, native callers and multi-revision synchronization
-remain in the active delivery chain; this transport helper does not yet run a
+Native callers and multi-revision synchronization remain in the active delivery
+chain; this transport helper does not yet run a
 background connector or execute work.
+
+### Peer Agent registry materialization
+
+Migration 0100 adds the distinct `peer` Agent mode and preserves the existing
+Agent foreign-key graph. The migration temporarily uses connection-local
+legacy rename semantics for the table rebuild, restores them before completion,
+and runs the migration runner's foreign-key verification. Version-99 accepted
+projections retain their original IDs, metadata and current scope on upgrade;
+stale/revoked grants do not restore access. Failed rebuilds roll back schema
+and data together.
+
+Only explicit Host acceptance materializes the registry record and approved
+Room participation. A Peer Agent has its bound Participant Member, no Device,
+no local paths/runtime policy and no manual MCP authority. Generic publication,
+enablement and identity conversion cannot rewrite it. Newly created Rooms do
+not automatically include Peer Agents. Database checks enforce the current
+membership, Room ACL and exact bilateral grant intersection when adding a
+Peer Agent to a Room.
+
+Changed current Exports or Acceptances disable and remove the prior projection
+from Rooms until an explicit valid decision materializes it again. Membership
+revocation removes projected Room access; removing the Peer human from a Room
+also removes its Agents there. Historical retries do not rematerialize Agents
+or restore manually removed participation. `peer_agent_room_authority` exposes
+the stored current intersection and its expiry; it does not replace fresh
+Participant Run admission. Peer Presence remains offline until the transport
+integration. The in-process executor rejects Peer targets, and fake adapter
+dispatch is confined to fake Agents.
+
+The full Server regression passes 732 tests, including projection lifecycle,
+negative identity/MCP/Room checks, in-process execution denial, version-99
+upgrade/rollback and populated legacy Agent graph preservation. The final
+Team-archive view restriction also passes all five focused projection tests. Server build
+and actual Go/Server TLS recovery with the Peer Go race suite pass. Docs,
+local links and whitespace checks pass. Runtime transport, native/UI calls
+and end-to-end collaboration acceptance retain their own task gates.
 
 ## Registry verification
 

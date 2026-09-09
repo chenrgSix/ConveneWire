@@ -7,6 +7,7 @@ import type {
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { validatePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerAuthorizationRepository } from "../data/peer-authorization-repository.js";
+import { PeerAgentProjectionRepository } from "../data/peer-agent-projection-repository.js";
 import { PeerMembershipRepository, PeerStoreError } from "../data/peer-membership-repository.js";
 import { createOpaqueId } from "../domain/identifiers.js";
 import type { AuthService, WebPrincipal } from "../security/auth-service.js";
@@ -21,7 +22,8 @@ type AcceptanceResult = Omit<PeerAgentAcceptanceReceipt, "schemaVersion" | "proo
 export class PeerAgentService {
   private readonly grants: PeerAuthorizationRepository;
   public constructor(private readonly database: Database.Database, private readonly auth: AuthService,
-    private readonly authority: AuthorityService, private readonly admission: PeerAdmissionService) {
+    private readonly authority: AuthorityService, private readonly admission: PeerAdmissionService,
+    private readonly onChanged: (teamId: string) => void = () => {}) {
     this.grants = new PeerAuthorizationRepository(database);
   }
 
@@ -53,6 +55,7 @@ export class PeerAgentService {
       this.database.prepare(`INSERT INTO peer_agent_offers (export_id, grant_revision, grant_digest, offer_digest, payload_json, received_at)
         VALUES (?, ?, ?, ?, ?, ?)`).run(grant.exportId, grant.revision, grantDigest, offerDigest, JSON.stringify(input.offer), now);
     }).immediate();
+    this.onChanged(grant.teamId);
     const result = { exportId: grant.exportId, grantRevision: grant.revision, grantDigest, offerDigest };
     return { schemaVersion: 1, ...result, proof: this.authority.signPeerProof({ ...context,
       audienceNodeId: principal.participantNodeId, subjectDigest: peerDigest(result) }, now) };
@@ -107,6 +110,7 @@ export class PeerAgentService {
         acceptanceId: acceptance.acceptanceId, acceptanceRevision: acceptance.revision,
         displayName: offer.displayName, role: offer.role, capabilities: acceptance.capabilities } };
     });
+    this.onChanged(result.acceptance.teamId);
     return this.receipt(result, input.operationId, now);
   }
 
@@ -126,6 +130,7 @@ export class PeerAgentService {
       this.grants.recordAcceptance(acceptance, owner.memberId, now);
       return { ...previous, acceptance, projection: { ...previous.projection, acceptanceRevision: acceptance.revision } };
     });
+    this.onChanged(result.acceptance.teamId);
     return this.receipt(result, input.operationId, now);
   }
 
@@ -144,6 +149,7 @@ export class PeerAgentService {
         return JSON.parse(previous.result_json) as AcceptanceResult;
       }
       const result = work();
+      new PeerAgentProjectionRepository(this.database).materialize(result, now);
       this.database.prepare(`INSERT INTO peer_agent_operations (owner_member_id, operation_id, intent_digest,
         acceptance_id, acceptance_revision, result_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`)
         .run(ownerMemberId, operationId, intent, result.acceptance.acceptanceId, result.acceptance.revision, JSON.stringify(result), now);
