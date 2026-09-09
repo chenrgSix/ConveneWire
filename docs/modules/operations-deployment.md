@@ -20,7 +20,9 @@ browser trust a private CA.
 ## Local Node distribution
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by
-OPS-018. It contains its own Node executable, native SQLite and production
+OPS-018, implemented by [the native bundle tool](../../scripts/local-node/bundle.mjs)
+and its [closed inventory schema](../../scripts/local-node/hub-manifest.schema.json).
+It contains its own Node executable, native SQLite and production
 Server/Web/Contracts closure, migrations and licenses. A versioned platform and
 file-digest manifest is verified before launch. Bundle generation is native to
 the target platform; local verification does not authorize installation or

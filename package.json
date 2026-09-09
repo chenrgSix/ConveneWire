@@ -66,7 +66,9 @@
     "test:discussion-gpt55": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- tsx --test scripts/bench/criterion-gpt55.test.mjs scripts/bench/criterion-gpt55-report.test.mjs",
     "bench:discussion-gpt55": "node scripts/test/run-with-temp-root.mjs --timeout-ms 1950000 -- tsx scripts/bench/criterion-gpt55-run.mjs --execute-qa077-frozen-six",
     "test:discussion-strong-single": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/strong-discussion.test.mjs scripts/bench/export-review-specimen.test.mjs",
-    "bench:discussion-strong-single": "node scripts/test/run-with-temp-root.mjs --timeout-ms 3090000 -- node scripts/bench/strong-discussion-run.mjs --execute-qa078-frozen-twelve"
+    "bench:discussion-strong-single": "node scripts/test/run-with-temp-root.mjs --timeout-ms 3090000 -- node scripts/bench/strong-discussion-run.mjs --execute-qa078-frozen-twelve",
+    "build:local-hub": "npm run build --workspace @convene-wire/server && npm run build --workspace @convene-wire/web",
+    "test:local-hub-bundle": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/local-node/bundle.test.mjs"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.2",

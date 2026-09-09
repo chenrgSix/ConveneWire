@@ -305,3 +305,27 @@ identities do not complete QA-084's independent-human-owner governance evidence.
 - `CONVENE_WIRE_BROWSER_EXECUTABLE=/absolute/tools/chrome-headless-shell CONVENE_WIRE_WORK_EVIDENCE_DIR=/absolute/owned-evidence node scripts/test/run-with-temp-root.mjs -- node_modules/.bin/tsx --test --test-name-pattern='conversation completes' tests/e2e/governed-two-bridge-integration.test.ts` — actual temporary Central/Bridge, one local form policy, one read-only conversation and two ordinary Room composer development requests, physical Git/command/browser receipts, restart and parent revocation. Build Web first with `npm run build --workspace @convene-wire/web`. Runtime is deterministic and makes no model calls. The evidence directory is explicitly retained; all process/profile/repository state is disposable. Omitting the browser variable exercises only API/Git/command acceptance.
 
 - `CONVENE_WIRE_BROWSER_EXECUTABLE=/absolute/tools/chrome-headless-shell CONVENE_WIRE_WORK_EVIDENCE_DIR=/absolute/owned-evidence node scripts/test/run-with-temp-root.mjs -- node_modules/.bin/tsx --test --test-name-pattern='trusted device executes ordinary' tests/e2e/governed-two-bridge-integration.test.ts` — local device trust UI, ordinary Room request, direct temporary Git commit without policy registration, Central consent display, restart and revocation. No model or real owner consent is used. Build Web first. Combine with the previous scenario using `--test-name-pattern='conversation completes|trusted device executes ordinary'`.
+
+## Native Local Hub bundle
+
+OPS-018 builds a native directory for the desktop supervisor. Node 22 and locked
+production dependencies must already be present on the build machine. The
+result carries Node and does not require Node/npm/Docker on the user's machine.
+
+```sh
+npm run build:local-hub
+mkdir -p dist
+node scripts/local-node/bundle.mjs build dist/local-hub
+node scripts/local-node/bundle.mjs verify dist/local-hub
+npm run test:local-hub-bundle
+```
+
+The output must not already exist. Node's distribution license is read beside
+its installation (`../LICENSE` from the executable directory); builders with a
+different distribution layout set `CONVENE_WIRE_NODE_LICENSE` to that license
+file. Packaging validates the native Node version and SQLite load with an empty
+PATH. The manifest records the source commit and whether the checkout has local
+changes, and includes every regular file's size and SHA-256. This inventory
+checks bundle integrity; release authenticity still comes from the verified
+outer distribution. Never copy private data into a bundle. macOS package tests
+provide no Windows native or installed-client evidence.

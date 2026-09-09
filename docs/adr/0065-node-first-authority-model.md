@@ -631,8 +631,8 @@ No whole Accepted ADR needs superseding. The scoped changes and the legacy/Peer
 approval distinction above resolve the identified semantic conflicts at design
 level. Acceptance fixes these invariants; it does not claim that key lifecycle,
 revocation freshness or the settlement credential is implementation-ready.
-GOV-044 can finish as a documentation task; further task authorization and the
-relevant contract decisions remain required before any runtime work.
+GOV-044 is a documentation task. Milestone A is authorized; further task
+authorization and contract decisions remain required before Milestones B/C.
 
 ## Verification
 
