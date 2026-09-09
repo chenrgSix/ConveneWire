@@ -37,5 +37,20 @@ Inspected screenshots: [desktop light](assets/web-080/desktop-light.jpg),
 [narrow dark](assets/web-080/narrow-dark.jpg).
 All fixture content is synthetic; no real model or owner permission was used.
 
-The installed local Central update is pending. No CI or other platform
-acceptance is claimed.
+## Installed local preview
+
+Central was upgraded through the verified source-package controller to
+`v0.5.7-local.c132242`, exact implementation source
+`c13224291cd7c685d2934183fd6efcaf65ccfaae`, after a verified SQLite backup.
+The original-CA HTTPS endpoint serves the new `message-response` markup/styles,
+and `doctor` passed release checksums, Compose, browser/HTTPS readiness and
+WebSocket ingress.
+
+All business row counts, 36 client JSON files, eight Bridge application files,
+installation identity, schema version and private CA were preserved. Three
+Agents returned ready and Central approval remains revision 3. Bridge stays on
+its already accepted `v0.5.6-local.ef61656` implementation. Fixture tabs were
+closed and their disposable servers and temporary roots were cleaned. Private
+upgrade receipts remain in the ignored local upgrade directory.
+
+No CI or other platform acceptance is claimed.

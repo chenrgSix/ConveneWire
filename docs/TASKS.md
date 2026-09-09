@@ -781,7 +781,7 @@ or a registration receipt alone.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | WEB-079 | DONE | Compact Room composer, collapse navigation and copy Agent replies on hover | WEB-078, WEB-041, WEB-058 | [Conversation evidence](acceptance/web-079-compact-conversation.md): full Web coverage with repaired onboarding assertion, 26 final focused cases/build, real browser clipboard and 1280/900/390 px layout checks passed; cf067d5 installed locally, original Bridge/config/identity preserved, three Agents ready and doctor passed |
-| WEB-080 | IN_PROGRESS | Present Agent replies as unboxed conversation text | WEB-079 | Separate completed and streaming replies from message cards; verify identity, Markdown and hover copy across themes and narrow screens, then update the local preview |
+| WEB-080 | DONE | Present Agent replies as unboxed conversation text | WEB-079 | [Reply presentation evidence](acceptance/web-080-unboxed-replies.md): completed/streaming responses separated from cards; four Markdown/clipboard checks and build passed; browser verified both themes, hover copy and 390-pixel component rendering; c132242 Central installed, original-CA served assets and doctor passed, three Agents ready with client/approval configuration preserved |
 
 ## Deferred Beyond MVP
 
