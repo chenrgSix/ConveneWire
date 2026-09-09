@@ -41,7 +41,7 @@ export async function jsonRequest<T>(
   token?: string
 ): Promise<T> {
   const generation = webSessionGeneration;
-  const publicEntry = /^\/api\/(?:bootstrap$|auth\/(?:status$|setup$|recover-owner$|recover-member$|member-invitations\/claim$|client-entry\/(?:preview|claim)$))/u.test(path);
+  const publicEntry = /^\/api\/(?:bootstrap$|local-node\/session$|auth\/(?:status$|setup$|recover-owner$|recover-member$|member-invitations\/claim$|client-entry\/(?:preview|claim)$))/u.test(path);
   const requireCurrentSession = () => {
     if (!publicEntry && generation !== webSessionGeneration) {
       throw new StaleWebSessionError();
@@ -96,7 +96,29 @@ export function bridgeServerURL(): string {
   return window.location.origin;
 }
 
-export async function localBootstrap(): Promise<LocalSession> {
+export async function localBootstrap(localNode = false): Promise<LocalSession> {
+  if (localNode) {
+    const key = "convenewire.local-node-session";
+    const ticket = /^#\/local-node\/([A-Za-z0-9_-]{43})$/u.exec(window.location.hash)?.[1];
+    if (ticket) {
+      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      const result = await jsonRequest<{ user: { userId: string; displayName: string }; session: { token: string } }>(
+        "/api/local-node/session", { method: "POST", body: JSON.stringify({ ticket }) });
+      sessionStorage.setItem(key, result.session.token);
+      return { ...result.user, token: result.session.token };
+    }
+    const token = sessionStorage.getItem(key);
+    if (token) {
+      try {
+        const result = await jsonRequest<{ user: { userId: string; displayName: string } }>("/api/auth/session", {}, token);
+        return { ...result.user, token };
+      } catch (error) {
+        if (error instanceof HttpRequestError && error.status === 401) sessionStorage.removeItem(key);
+        else throw error;
+      }
+    }
+    throw new Error("Open this local workspace from the ConveneWire desktop app.");
+  }
   const saved = localStorage.getItem(userKey);
   const existing = saved
     ? JSON.parse(saved) as { userId: string; displayName: string }

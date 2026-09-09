@@ -19,6 +19,7 @@ export function registerAuthRoutes({
   clock,
   core,
   limitAnonymous,
+  localNode,
   optionalPrincipal,
   principal,
   requireTrustedOrigin,
@@ -42,7 +43,8 @@ export function registerAuthRoutes({
     }
     return {
       mode: webAuth.mode,
-      state: trustedWeb?.status() ?? "local_bootstrap"
+      state: trustedWeb?.status() ?? "local_bootstrap",
+      ...(localNode ? { localNode: true } : {})
     };
   });
   app.get("/api/auth/session", async (request, reply) => {
@@ -148,7 +150,7 @@ export function registerAuthRoutes({
         session: { expiresAt: result.session.expiresAt }
       };
     });
-  } else {
+  } else if (!localNode) {
     app.post("/api/bootstrap", async (request) => {
       const body = bodyObject(request);
       const displayName = requiredString(body.displayName, "displayName");

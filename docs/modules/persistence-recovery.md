@@ -1,5 +1,16 @@
 # Persistence and Recovery
 
+## Local Node identity and stopped recovery
+
+[ADR-0066](../adr/0066-local-node-delivery.md) and
+[DATA-008 evidence](../acceptance/data-008-local-node-identity.md) define the
+private Node root, fixed Owner, origin/seed-to-database binding, additive migration
+0093 and encrypted single-Team Device receipt. Missing or mismatched identity
+never creates another Owner. Stopped snapshots preserve all business/execution
+state and require the original absent location for restore. Local Node databases
+cannot be opened through ordinary Central bootstrap. Delivery status remains in
+[TASKS.md](../TASKS.md).
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) requires immutable
 plan versions, fingerprinted operations, atomic graph/Task compilation and
 Run-dispatch intents on the shared transaction boundary. Git/CI/PR side effects

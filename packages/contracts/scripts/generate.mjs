@@ -9,6 +9,7 @@ const generatedRoot = path.join(packageRoot, "generated");
 const output = await generateContractTypes(packageRoot);
 
 await Promise.all([
+  mkdir(path.join(generatedRoot, "go", "localnode"), { recursive: true }),
   mkdir(path.join(generatedRoot, "typescript"), { recursive: true }),
   mkdir(path.join(generatedRoot, "runtime"), { recursive: true }),
   mkdir(path.join(generatedRoot, "go", "pairing"), { recursive: true }),
@@ -17,6 +18,11 @@ await Promise.all([
   mkdir(path.join(generatedRoot, "go", "work"), { recursive: true })
 ]);
 await Promise.all([
+  writeFile(path.join(generatedRoot, "go", "localnode", "validation.go"), output.localNodeValidator),
+  writeFile(path.join(generatedRoot, "typescript", "local-node.ts"), output.localNodeTypescript),
+  writeFile(path.join(generatedRoot, "go", "localnode", "control.go"), output.localNodeGo),
+  writeFile(path.join(generatedRoot, "go", "localnode", "control-schema.json"), output.localNodeSchema),
+  writeFile(path.join(generatedRoot, "runtime", "local-node-schema.json"), output.localNodeSchema),
   writeFile(path.join(generatedRoot, "go", "runtime", "disclosure-schema.json"), output.goDisclosureSchema),
   writeFile(path.join(generatedRoot, "go", "runtime", "disclosure.go"), output.goDisclosureRuntime),
   writeFile(path.join(generatedRoot, "go", "runtime", "execution-schema.json"), output.goExecutionSchema),

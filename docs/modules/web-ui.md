@@ -1,5 +1,14 @@
 # Web UI
 
+## Local Node entry
+
+[ADR-0066](../adr/0066-local-node-delivery.md) adds a desktop-issued one-use entry
+fragment. Web removes it, exchanges it for the fixed local Owner and keeps the
+bearer in tab session storage. Browser User cache is not installation identity;
+reset/expiry directs the user back to the desktop. Existing Central and scoped
+Client Access entry flows retain their permissions. See
+[DATA-008 evidence](../acceptance/data-008-local-node-identity.md).
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies
 to the selected Task, including the default conversation. Switching Tasks retires

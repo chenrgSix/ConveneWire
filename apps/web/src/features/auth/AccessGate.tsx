@@ -5,6 +5,7 @@ import type { AuthGateState, Theme } from "../../models.js";
 import { errorLabel } from "../../presentation.js";
 
 interface AccessGateProps {
+  localNode?: boolean;
   busy: boolean;
   error: string | null;
   locale: Locale;
@@ -20,6 +21,7 @@ interface AccessGateProps {
 }
 
 export function AccessGate({
+  localNode = false,
   busy,
   error,
   locale,
@@ -82,10 +84,10 @@ export function AccessGate({
         {state === "local_bootstrap" && (
           <>
             <h1>{t("localAccess")}</h1>
-            <p>{t("localAccessHelp")}</p>
-            <button className="access-primary" disabled={busy} onClick={() => void onEnterLocal()} type="button">
+            <p>{localNode ? (locale === "zh-CN" ? "请从 ConveneWire 桌面端打开此本地空间。" : "Open this local workspace from the ConveneWire desktop app.") : t("localAccessHelp")}</p>
+            {!localNode && <button className="access-primary" disabled={busy} onClick={() => void onEnterLocal()} type="button">
               {t("enterLocalWorkspace")}
-            </button>
+            </button>}
           </>
         )}
         {state === "setup_required" && (

@@ -431,6 +431,7 @@ export interface AuthenticatedUser {
 }
 
 export type AuthStatus = {
+  localNode?: boolean;
   mode: AuthMode;
   state: Exclude<AuthGateState, "loading" | "claim_required">;
   user?: AuthenticatedUser;

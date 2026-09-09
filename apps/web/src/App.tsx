@@ -131,6 +131,7 @@ export function App() {
 }
 
 function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntrySession | null }) {
+  const [isLocalNode, setIsLocalNode] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return localStorage.getItem("agent-room.sidebar-collapsed") === "true"; }
     catch { return false; }
@@ -743,11 +744,11 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     await loadTeams(next);
   }
 
-  async function enterLocalSession() {
+  async function enterLocalSession(localNode = isLocalNode) {
     setBusy(true);
     setError(null);
     try {
-      const next = await localBootstrap();
+      const next = await localBootstrap(localNode);
       await activateSession(next, "local", next.token);
     } catch (reason) {
       if (isStaleWebSessionError(reason)) return;
@@ -846,6 +847,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
       .then(async (status) => {
         if (stopped) return;
         setAuthMode(status.mode);
+        setIsLocalNode(status.localNode === true);
         if (pendingInvitationToken && status.mode === "trusted-team") {
           setAuthState("claim_required");
           return;
@@ -858,7 +860,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         }
         if (status.state === "local_bootstrap") {
           setAuthState("local_bootstrap");
-          await enterLocalSession();
+          await enterLocalSession(status.localNode === true);
           return;
         }
         setAuthState(status.state);
@@ -1593,7 +1595,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         error={error}
         locale={locale}
         onClaimInvitation={claimInvitation}
-        onEnterLocal={enterLocalSession}
+        localNode={isLocalNode}
+        onEnterLocal={() => enterLocalSession()}
         onRecoverOwner={recoverOwner}
         onRecoverMember={recoverMember}
         onSetupOwner={setupOwner}

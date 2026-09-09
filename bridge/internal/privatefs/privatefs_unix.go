@@ -12,6 +12,14 @@ func owned(info os.FileInfo) bool {
 	return ok && value.Uid == uint32(os.Geteuid()) && info.Mode().Perm()&0077 == 0
 }
 
+// CreateDirectory reserves a new owner-only directory without adopting an existing path.
+func CreateDirectory(target string) error {
+	if err := os.Mkdir(target, 0700); err != nil {
+		return err
+	}
+	return EnsureDirectory(target)
+}
+
 func EnsureDirectory(target string) error {
 	if err := os.MkdirAll(target, 0700); err != nil {
 		return err

@@ -153,7 +153,12 @@ func attributes(sd *windows.SECURITY_DESCRIPTOR) *windows.SecurityAttributes {
 	return &windows.SecurityAttributes{Length: uint32(unsafe.Sizeof(windows.SecurityAttributes{})), SecurityDescriptor: sd}
 }
 
-func EnsureDirectory(target string) error {
+func EnsureDirectory(target string) error { return ensureDirectory(target, false) }
+
+// CreateDirectory creates its protected DACL before any private child is written.
+func CreateDirectory(target string) error { return ensureDirectory(target, true) }
+
+func ensureDirectory(target string, exclusive bool) error {
 	absolute, release, err := lockParents(target)
 	if err != nil {
 		return err
@@ -167,7 +172,7 @@ func EnsureDirectory(target string) error {
 	if err != nil {
 		return err
 	}
-	if err := windows.CreateDirectory(name, attributes(sd)); err != nil && !errors.Is(err, windows.ERROR_ALREADY_EXISTS) {
+	if err := windows.CreateDirectory(name, attributes(sd)); err != nil && (exclusive || !errors.Is(err, windows.ERROR_ALREADY_EXISTS)) {
 		return err
 	}
 	handle, err := windows.CreateFile(name, windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL, windows.FILE_SHARE_READ, nil,

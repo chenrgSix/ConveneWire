@@ -1,3 +1,6 @@
+import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
+import { LocalNodeService } from "./local-node/local-node-service.js";
+import { registerLocalNodeRoutes } from "./local-node/local-node-routes.js";
 import { RuntimeApprovalService } from "./run/runtime-approval-service.js";
 import { registerRuntimeApprovalRoutes } from "./http/runtime-approval-routes.js";
 import { EvidenceDisclosureService } from "./task/evidence-disclosure-service.js";
@@ -245,6 +248,7 @@ import { WorkspaceLeaseService } from
   "./workspace/workspace-lease-service.js";
 
 export interface ServerAppOptions {
+  localNode?: LocalNodeLaunch;
   anonymousRateLimit?: {
     maximumAttempts: number;
     windowMilliseconds: number;
@@ -313,6 +317,15 @@ export async function createServerApp(
     }
   );
   const auth = new AuthService(database);
+  let localNode: LocalNodeService | undefined;
+  try {
+    if (options.localNode) {
+      if (options.webAuth && options.webAuth.mode !== "local") throw new Error("Local Node requires local Web auth");
+      localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString());
+    } else if (database.prepare("SELECT 1 FROM local_node_installation").get()) {
+      throw new Error("A Local Node database requires its installation identity");
+    }
+  } catch (error) { database.close(); throw error; }
   const bridgeServerToken = normalizeBridgeServerToken(options.bridgeServerToken);
   const webAuth = options.webAuth ?? { mode: "local" as const };
   const trustedOrigins = webAuth.mode === "trusted-team"
@@ -1064,6 +1077,7 @@ export async function createServerApp(
 
   app.addHook("onRequest", async (request) => {
     requestStartedAt.set(request, process.hrtime.bigint());
+    localNode?.assertRequest(request);
     if (
       trustedOrigins?.secureCookies === false &&
       request.headers["x-forwarded-proto"] === "http" &&
@@ -1208,6 +1222,7 @@ export async function createServerApp(
   });
 
   const routeContext: ServerRouteContext = {
+    ...(localNode ? { localNode } : {}),
     app,
     artifactContentBinding,
     artifactDeliveries,
@@ -1291,6 +1306,7 @@ export async function createServerApp(
   registerBridgeSocketRoutes(routeContext);
   registerArtifactRoutes(routeContext);
   registerAuthRoutes(routeContext);
+  registerLocalNodeRoutes(routeContext);
   registerClientAccessRoutes(routeContext);
 
   registerTeamRoomRoutes(routeContext);

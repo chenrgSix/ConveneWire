@@ -1,5 +1,14 @@
 # Contracts Module
 
+## Local Node private control
+
+DATA-008 adds [the Local Node control schema](../../packages/contracts/schemas/local-node/control.schema.json)
+for private installation identity, inherited launch input, authenticated readiness
+and the sealed single-Team binding response. Generated TypeScript/Go types and
+shared positive/negative fixtures preserve a closed version-1 contract. These
+messages are local supervisor IPC, not Peer identity or multi-Authority delivery.
+See [ADR-0066](../adr/0066-local-node-delivery.md).
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), adds optional
 `supportsTaskContextIsolation: boolean` to Bridge Runtime capabilities and
 `contextPolicy: "task_isolated_v1"` to logical Task session requests. Central sends

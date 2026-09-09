@@ -1,0 +1,126 @@
+[
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": true,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 48123,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "LocalNodeLaunch",
+    "valid": true,
+    "value": {
+      "schemaVersion": 1,
+      "identity": {
+        "schemaVersion": 1,
+        "nodeId": "node_fixture_12345",
+        "ownerUserId": "user_fixture_12345",
+        "port": 48123,
+        "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "controlToken": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  {
+    "kind": "LocalNodeReady",
+    "valid": true,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "origin": "http://127.0.0.1:48123",
+      "launchProof": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  {
+    "kind": "LocalNodeBinding",
+    "valid": true,
+    "value": {
+      "serverUrl": "http://127.0.0.1:48123",
+      "teamId": "team_fixture_12345",
+      "deviceId": "device_fixture_12345",
+      "ownerMemberId": "member_fixture_12345",
+      "token": "ccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 2,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 48123,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 0,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 65536,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "device_abcdefgh",
+      "port": 48123,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 48123,
+      "secret": "short"
+    }
+  },
+  {
+    "kind": "LocalNodeIdentity",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "ownerUserId": "user_fixture_12345",
+      "port": 48123,
+      "secret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "extra": true
+    }
+  },
+  {
+    "kind": "LocalNodeReady",
+    "valid": false,
+    "value": {
+      "schemaVersion": 1,
+      "nodeId": "node_fixture_12345",
+      "origin": "http://example.com:48123",
+      "launchProof": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  }
+]

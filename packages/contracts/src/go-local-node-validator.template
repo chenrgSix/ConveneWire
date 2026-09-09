@@ -1,0 +1,45 @@
+// Code generated from JSON Schema and the Local Node validator template; DO NOT EDIT.
+package localnodecontracts
+
+import (
+  "bytes"
+  _ "embed"
+  "encoding/json"
+  "errors"
+  "io"
+  "sync"
+
+  "github.com/santhosh-tekuri/jsonschema/v6"
+)
+
+//go:embed control-schema.json
+var source []byte
+var once sync.Once
+var schemas map[string]*jsonschema.Schema
+var compileError error
+
+// Decode validates the closed, versioned JSON Schema before decoding typed data.
+func Decode(kind string, data []byte, result any) error {
+  once.Do(func() {
+    compiler := jsonschema.NewCompiler()
+    var document any
+    if compileError = json.Unmarshal(source, &document); compileError != nil { return }
+    const uri = "https://agentroom.dev/schemas/local-node/control.schema.json"
+    if compileError = compiler.AddResource(uri, document); compileError != nil { return }
+    schemas = make(map[string]*jsonschema.Schema)
+    for _, name := range []string{"LocalNodeIdentity", "LocalNodeLaunch", "LocalNodeReady", "LocalNodeBinding"} {
+      schemas[name], compileError = compiler.Compile(uri + "#/$defs/" + name)
+      if compileError != nil { return }
+    }
+  })
+  if compileError != nil { return errors.New("Local Node schema is unavailable") }
+  schema, ok := schemas[kind]
+  if !ok || len(data) > 4096 { return errors.New("invalid Local Node message") }
+  var value any
+  decoder := json.NewDecoder(bytes.NewReader(data))
+  decoder.UseNumber()
+  if decoder.Decode(&value) != nil { return errors.New("invalid Local Node JSON") }
+  var extra any
+  if decoder.Decode(&extra) != io.EOF || schema.Validate(value) != nil { return errors.New("invalid Local Node message") }
+  return json.Unmarshal(data, result)
+}

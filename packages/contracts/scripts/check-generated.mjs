@@ -8,6 +8,10 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  localNodeValidator: await readFile(path.join(generatedRoot, "go", "localnode", "validation.go"), "utf8"),
+  localNodeTypescript: await readFile(path.join(generatedRoot, "typescript", "local-node.ts"), "utf8"),
+  localNodeGo: await readFile(path.join(generatedRoot, "go", "localnode", "control.go"), "utf8"),
+  localNodeSchema: await readFile(path.join(generatedRoot, "go", "localnode", "control-schema.json"), "utf8"),
   goDisclosureSchema: await readFile(path.join(generatedRoot, "go", "runtime", "disclosure-schema.json"), "utf8"),
   goDisclosureRuntime: await readFile(path.join(generatedRoot, "go", "runtime", "disclosure.go"), "utf8"),
   goExecutionSchema: await readFile(path.join(generatedRoot, "go", "runtime", "execution-schema.json"), "utf8"),
@@ -67,7 +71,10 @@ const actual = {
   )
 };
 
+if (await readFile(path.join(generatedRoot, "runtime", "local-node-schema.json"), "utf8") !== expected.localNodeSchema) throw new Error("Local Node runtime schema is stale");
+
 for (const output of [
+  "localNodeValidator", "localNodeTypescript", "localNodeGo", "localNodeSchema",
   "goDisclosureSchema", "goDisclosureRuntime",
   "goExecutionSchema",
   "goExecutionRuntime",

@@ -1,3 +1,4 @@
+import type { LocalNodeService } from "../local-node/local-node-service.js";
 import type { RuntimeApprovalService } from "../run/runtime-approval-service.js";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { ExecutionPlanService } from "../execution/execution-plan-service.js";
@@ -95,6 +96,7 @@ import type { IsolatedWorkspaceLeaseService } from
 export type PersistedRun = NonNullable<ReturnType<RunRepository["getRun"]>>;
 
 export interface ServerRouteContext {
+  localNode?: LocalNodeService;
   app: FastifyInstance;
   artifactContentBinding: ArtifactContentBindingService;
   artifactDeliveries: ArtifactDeliveryService;

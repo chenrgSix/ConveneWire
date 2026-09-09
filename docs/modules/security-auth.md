@@ -1,5 +1,16 @@
 # Security and Authorization
 
+## Local Node Owner and supervisor authority
+
+[ADR-0066](../adr/0066-local-node-delivery.md) separates a fixed installation
+Owner from a per-launch supervisor secret. Local Node disables legacy arbitrary
+User bootstrap, binds the exact loopback Host/Origin, refuses browser access to
+its control endpoints and uses one-use two-minute entry tickets. Persistent
+Device receipts are encrypted with the installation seed and reauthenticated
+before return; repeated selection cannot undo revocation. No local execution
+consent or full trust is inferred. [DATA-008 evidence](../acceptance/data-008-local-node-identity.md)
+covers the negative tests. Existing Central modes retain their authority rules.
+
 ADR-0063 permits exact command/file-change review only after local consent to
 Central approval. A full Web session belonging to the Device owner and current
 Room membership are required; Team administration does not replace ownership.

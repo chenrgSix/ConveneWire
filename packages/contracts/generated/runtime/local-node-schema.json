@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentroom.dev/schemas/local-node/control.schema.json",
+  "title": "Local Node private control protocol",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/LocalNodeIdentity"
+    },
+    {
+      "$ref": "#/$defs/LocalNodeLaunch"
+    },
+    {
+      "$ref": "#/$defs/LocalNodeReady"
+    },
+    {
+      "$ref": "#/$defs/LocalNodeBinding"
+    }
+  ],
+  "$defs": {
+    "LocalNodeIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "nodeId",
+        "ownerUserId",
+        "port",
+        "secret"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "nodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "LocalNodeLaunch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "identity",
+        "controlToken"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "identity": {
+          "$ref": "#/$defs/LocalNodeIdentity"
+        },
+        "controlToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "LocalNodeReady": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "nodeId",
+        "origin",
+        "launchProof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "nodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "origin": {
+          "type": "string",
+          "pattern": "^http://127\\.0\\.0\\.1:[0-9]{1,5}$"
+        },
+        "launchProof": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    },
+    "LocalNodeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverUrl",
+        "deviceId",
+        "teamId",
+        "ownerMemberId",
+        "token"
+      ],
+      "properties": {
+        "serverUrl": {
+          "type": "string",
+          "pattern": "^http://127\\.0\\.0\\.1:[0-9]{1,5}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        }
+      }
+    }
+  }
+}

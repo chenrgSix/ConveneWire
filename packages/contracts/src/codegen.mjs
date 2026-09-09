@@ -1454,6 +1454,16 @@ func mustDecodeCanonicalPropertyTrees() map[string]canonicalPropertyTree {
 
 export async function generateContractTypes(packageRoot) {
   const schemas = await loadSchemas(packageRoot);
+  const localNodeSchema = schemas.get("https://agentroom.dev/schemas/local-node/control.schema.json");
+  const localNodeTypes = Object.entries(localNodeSchema.$defs).map(([name, schema]) => ({
+    name, schema: dereference(schema, localNodeSchema, schemas)
+  }));
+  const localNodeTypescript = "// Code generated from JSON Schema; DO NOT EDIT.\n\n" + formatTypeScript(await render(localNodeTypes, "typescript", {
+    "just-types": "true", "prefer-unions": "true"
+  }));
+  const localNodeGo = formatGo("// Code generated from JSON Schema; DO NOT EDIT.\n\n" + await render(localNodeTypes, "go", {
+    "just-types-and-package": "true", package: "localnodecontracts"
+  }));
   const bridgeSchema = schemas.get(BRIDGE_SCHEMA_ID);
   const pairingSchema = schemas.get(PAIRING_SCHEMA_ID);
   const workSchema = schemas.get(WORK_SCHEMA_ID);
@@ -1771,6 +1781,8 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
+    localNodeValidator: formatGo(await readFile(path.join(packageRoot, "src/go-local-node-validator.template"), "utf8")),
+    localNodeTypescript, localNodeGo, localNodeSchema: `${JSON.stringify(localNodeSchema, null, 2)}\n`,
     goDisclosureSchema: `${JSON.stringify({
       $schema: "https://json-schema.org/draft/2020-12/schema",
       $id: "https://agentroom.dev/schemas/runtime/disclosure.json",
