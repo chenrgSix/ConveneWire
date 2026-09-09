@@ -72,6 +72,7 @@ export interface RunContextManifest {
   };
   permissions: {
     deviceTrustRevision?: number;
+    centralApprovalRevision?: number;
     filesystemAccess: "full-access" | "read-only" | "workspace-write" | "local-policy" |
       "not_recorded";
     networkAccess: "not_recorded" | "full-access";
@@ -1738,6 +1739,7 @@ export class RunRepository {
       ? JSON.parse(agent.runtime_policy_json) as {
           filesystemAccess?: "read-only" | "workspace-write" | "local-policy" | "full-access";
           deviceTrust?: {mode: "full"; revision: number};
+          centralApproval?: {revision: number};
         }
       : undefined;
     const parentRunIds = [...new Set([
@@ -1776,6 +1778,7 @@ export class RunRepository {
         filesystemAccess: allowDeviceTrust && runtimePolicy?.deviceTrust ? "full-access" : runtimePolicy?.filesystemAccess ?? "not_recorded",
         networkAccess: allowDeviceTrust && runtimePolicy?.deviceTrust ? "full-access" : "not_recorded",
         ...(allowDeviceTrust && runtimePolicy?.deviceTrust ? {deviceTrustRevision: runtimePolicy.deviceTrust.revision} : {}),
+        ...(allowDeviceTrust && runtimePolicy?.centralApproval ? {centralApprovalRevision: runtimePolicy.centralApproval.revision} : {}),
         interrupt: typeof capabilities.supportsInterrupt === "boolean"
           ? capabilities.supportsInterrupt ? "supported" : "unsupported"
           : "not_recorded",

@@ -120,6 +120,8 @@ export function AgentPolicySummary({
 }) {
   return (
     <dl className="agent-policy-summary">
+      {policy?.centralApproval && <div><dt>{locale === "zh-CN" ? "本机授权" : "Device consent"}</dt>
+        <dd>{locale === "zh-CN" ? `中心审批 · 版本 ${policy.centralApproval.revision} · 由设备主人决定` : `Central approval · revision ${policy.centralApproval.revision} · Device owner review`}</dd></div>}
       {policy?.deviceTrust && <div><dt>{locale === "zh-CN" ? "本机授权" : "Device consent"}</dt>
         <dd>{locale === "zh-CN" ? `完全信任 · 版本 ${policy.deviceTrust.revision} · 客户端可撤销` : `Full trust · revision ${policy.deviceTrust.revision} · revoke in client`}</dd></div>}
       <div>

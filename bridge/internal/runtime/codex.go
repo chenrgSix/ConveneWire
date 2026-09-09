@@ -10,6 +10,7 @@ import (
 )
 
 type CodexAdapter struct {
+	Approve         ApprovalFunc
 	Config          config.AgentConfig
 	Sessions        RuntimeSessionStore
 	ProcessTracker  GovernedProcessTracker

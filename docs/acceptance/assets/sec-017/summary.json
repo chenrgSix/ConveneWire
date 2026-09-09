@@ -1,0 +1,33 @@
+{
+  "kind": "central_approval_deterministic_no_model",
+  "browserReview": true,
+  "counts": {
+    "runs": 3,
+    "approvals": 3,
+    "authorizations": 0
+  },
+  "results": [
+    {
+      "decision": "allow",
+      "runId": "run_8zFMEycfc67BqJgY11--TQ",
+      "operationKind": "command",
+      "pid": 26841,
+      "sideEffect": true
+    },
+    {
+      "decision": "deny",
+      "runId": "run_0hW1nQvGa3qBGX7nc9L_2g",
+      "operationKind": "command",
+      "pid": 27745,
+      "sideEffect": false
+    },
+    {
+      "decision": "allow",
+      "runId": "run_-c4AxSzngWbd2Rrdgzy-ng",
+      "operationKind": "file_change",
+      "pid": 27931,
+      "sideEffect": true
+    }
+  ],
+  "revokedRevision": 2
+}

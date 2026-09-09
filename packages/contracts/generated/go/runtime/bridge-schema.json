@@ -64,7 +64,9 @@
             "run.reply",
             "discussion.supplemental_evidence",
             "run.cancel_requested",
-            "run.handoff_requested"
+            "run.handoff_requested",
+            "runtime.approval.requested",
+            "runtime.approval.decision"
           ]
         }
       },
@@ -2517,6 +2519,20 @@
                           "workspace-write",
                           "local-policy"
                         ]
+                      },
+                      "centralApproval": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "revision"
+                        ],
+                        "properties": {
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          }
+                        }
                       }
                     }
                   },
@@ -4956,6 +4972,11 @@
                           "maxDurationSeconds"
                         ],
                         "properties": {
+                          "centralApprovalRevision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
                           "deviceTrustRevision": {
                             "type": "integer",
                             "minimum": 1,
@@ -5089,6 +5110,20 @@
                     "type": "string",
                     "format": "date-time",
                     "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                  },
+                  "centralApproval": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "revision"
+                    ],
+                    "properties": {
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      }
+                    }
                   }
                 }
               }
@@ -5803,6 +5838,120 @@
                     }
                   }
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "runtime.approval.requested"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "requestId",
+                  "runId",
+                  "agentId",
+                  "revision",
+                  "operationKind",
+                  "details",
+                  "expiresAt"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "runId": {
+                    "type": "string",
+                    "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "agentId": {
+                    "type": "string",
+                    "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "details": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "expiresAt": {
+                    "title": "ConveneWire UTC Timestamp",
+                    "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                  },
+                  "operationKind": {
+                    "enum": [
+                      "command",
+                      "file_change"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "runtime.approval.decision"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "requestId",
+                  "runId",
+                  "digest",
+                  "decision"
+                ],
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "runId": {
+                    "type": "string",
+                    "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "decision": {
+                    "enum": [
+                      "pending",
+                      "allow",
+                      "deny",
+                      "expired"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -7337,6 +7486,20 @@
             "workspace-write",
             "local-policy"
           ]
+        },
+        "centralApproval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -9214,6 +9377,20 @@
                 "workspace-write",
                 "local-policy"
               ]
+            },
+            "centralApproval": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         },
@@ -14671,6 +14848,11 @@
                 "maxDurationSeconds"
               ],
               "properties": {
+                "centralApprovalRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
                 "deviceTrustRevision": {
                   "type": "integer",
                   "minimum": 1,
@@ -14804,6 +14986,20 @@
           "type": "string",
           "format": "date-time",
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "centralApproval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     },
@@ -15822,6 +16018,102 @@
           }
         }
       ]
+    },
+    "centralApprovalConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "runtimeApprovalRequestedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "runId",
+        "agentId",
+        "revision",
+        "operationKind",
+        "details",
+        "expiresAt"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "expiresAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "operationKind": {
+          "enum": [
+            "command",
+            "file_change"
+          ]
+        }
+      }
+    },
+    "runtimeApprovalDecisionPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "runId",
+        "digest",
+        "decision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "decision": {
+          "enum": [
+            "pending",
+            "allow",
+            "deny",
+            "expired"
+          ]
+        }
+      }
     }
   }
 }

@@ -317,7 +317,7 @@ export function registerBridgeSocketRoutes({
             : undefined;
           const validRuntimePolicy = runtimePolicy === undefined || (
             runtimePolicyObject !== undefined &&
-            Object.keys(runtimePolicyObject).every((key) => ["filesystemAccess", "deviceTrust"].includes(key)) &&
+            Object.keys(runtimePolicyObject).every((key) => ["filesystemAccess", "deviceTrust", "centralApproval"].includes(key)) &&
             isFilesystemAccessPolicy(runtimePolicyObject.filesystemAccess)
           );
           if (
@@ -358,6 +358,7 @@ export function registerBridgeSocketRoutes({
                 ? {
                     runtimePolicy: {
                       filesystemAccess: runtimePolicyObject.filesystemAccess,
+                      ...(runtimePolicyObject.centralApproval ? {centralApproval: runtimePolicyObject.centralApproval as NonNullable<AgentRuntimePolicy["centralApproval"]>} : {}),
                       ...(runtimePolicyObject.deviceTrust ? {deviceTrust: runtimePolicyObject.deviceTrust as NonNullable<AgentRuntimePolicy["deviceTrust"]>} : {})
                     }
                   }
@@ -399,7 +400,8 @@ export function registerBridgeSocketRoutes({
               now: clock()
             })
           );
-          if (!bridgeConnections.recordDeviceTrust(devicePrincipal.deviceId, registeredEpoch, publicationPayload.agentId as string,
+          if (!bridgeConnections.recordCentralApproval(devicePrincipal.deviceId, registeredEpoch, publicationPayload.agentId as string,
+            (runtimePolicyObject?.centralApproval as AgentRuntimePolicy["centralApproval"])?.revision) || !bridgeConnections.recordDeviceTrust(devicePrincipal.deviceId, registeredEpoch, publicationPayload.agentId as string,
             (runtimePolicyObject?.deviceTrust as AgentRuntimePolicy["deviceTrust"])?.revision) || !bridgeConnections.recordPrivateOutputAgent(devicePrincipal.deviceId, registeredEpoch,
             publicationPayload.agentId as string, capabilities.ownerPrivateOutput === true) || !bridgeConnections.recordGovernedAgentCapability(
             devicePrincipal.deviceId,

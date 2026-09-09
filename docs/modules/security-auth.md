@@ -7,6 +7,15 @@ The immutable request pins Run, Device, Agent, consent revision and connection
 epoch. Only an unexpired live request can continue its existing process. Details
 stay out of Room messages and logs. Full trust remains a separate local choice.
 
+The dedicated request route authenticates the paired Device; list/decision
+routes require a full owner Web session. Migration 0092 records immutable
+request bytes/digest and the original human decision separately from delivery
+expiry. Pending or allowed delivery is invalidated by cancellation intent,
+expiry, ownership/membership changes, connection replacement or restart. Deny
+cannot be reversed, and replay must match the original request and digest.
+Bounded requests, recognized-secret rejection and no credential redirects are
+covered by [SEC-017 negative tests](../acceptance/sec-017-central-runtime-approval.md).
+
 [ADR-0036](../adr/0036-add-governed-software-team-execution.md) preserves separate
 human approval, Agent proposal, local execution, verifier and integration
 authorities. Plan approval pins exact content; grants are local, revocable and

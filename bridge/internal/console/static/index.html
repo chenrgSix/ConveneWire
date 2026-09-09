@@ -127,12 +127,14 @@
               <button class="secondary" id="refresh-governed-state" type="button">刷新状态</button>
             </div>
             <section class="settings-card" id="device-execution-trust">
-              <h3>完全信任此设备</h3>
-              <p>自己的设备可开启一次，之后直接在对话中让 Codex 完成开发，无需逐个登记工作策略。</p>
+              <h3>设备执行权限</h3>
+              <p>选择这台设备的执行方式，之后直接在对话中提出需求。</p>
               <p id="device-trust-state" role="status"></p>
-              <p>开启后，当前中心里有权使用本机 Codex Agent 的成员可让它访问本机文件、执行命令、使用 Git、网络和浏览器。操作使用当前系统账户的权限，可能直接修改项目。其他 Runtime 继续遵循原有权限。</p>
-              <label class="checkbox-label"><input type="checkbox" id="device-trust-confirm">我确认对当前中心启用或关闭此设备的完全信任；切换会先停止正在执行的任务。</label>
-              <button type="button" class="primary" id="device-trust-toggle">开启完全信任</button>
+              <p>中心审批：保留沙箱，将 Codex 的命令、文件路径和修改详情发送到当前中心，只由你本人审批后继续。无需在客户端逐次确认。完全信任会跳过审批。</p>
+              <p>完全信任开启后，当前中心里有权使用本机 Codex Agent 的成员可让它访问本机文件、执行命令、使用 Git、网络和浏览器。操作使用当前系统账户的权限，可能直接修改项目。其他 Runtime 继续遵循原有权限。</p>
+              <label class="checkbox-label"><input type="checkbox" id="device-trust-confirm">我确认切换当前中心的设备权限；中心审批会发送待审操作详情，切换会先停止正在执行的任务。</label>
+              <button type="button" class="primary" id="device-approval-toggle">开启中心审批</button>
+              <button type="button" id="device-trust-toggle">开启完全信任</button>
               <p id="device-trust-result" role="status"></p>
             </section>
             <details class="settings-card disclosure-card" id="work-policy-advanced">

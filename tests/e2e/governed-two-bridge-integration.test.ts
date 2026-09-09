@@ -6,6 +6,8 @@ import {
   access,
   chmod,
   copyFile,
+  cp,
+  readdir,
   mkdir,
   readFile,
   writeFile
@@ -3380,7 +3382,7 @@ test("trusted device executes ordinary conversation without work policy registra
       await browser.evaluate("document.querySelector('[data-page-target=governed]').click()");
       await browser.until("document.querySelector('#device-trust-toggle').textContent === '关闭完全信任'");
       await browser.evaluate("document.querySelector('#device-trust-confirm').checked=true;document.querySelector('#device-trust-toggle').click()");
-      await browser.until("document.querySelector('#device-trust-state').textContent.includes('未开启完全信任')");await capture("device-trust-revoked.png");
+      await browser.until("document.querySelector('#device-trust-state').textContent.includes('使用原有权限')");await capture("device-trust-revoked.png");
     }else await requestJSON(local.origin,"POST","/api/device-execution-trust",{mode:"restricted",expectedRevision:1,confirm:true},local.token);
     await waitFor(async()=>(await policy())?.deviceTrust===undefined?true:undefined);
     const summary={kind:"trusted_device_fixture_no_model",counts,fullTrustRevision:1,revokedRevision:2,directGitCommit:true,policyRegistrationRequired:false,browserUI:Boolean(browser),baseCommit,finalCommit};
@@ -3388,4 +3390,84 @@ test("trusted device executes ordinary conversation without work policy registra
     t.diagnostic(JSON.stringify(summary));
   }catch(error){throw new Error(`SEC-016 stage ${stage}: ${String(error)}\n${history.map(p=>p.stderr).join("\n")}`,{cause:error});}
   finally{await Promise.allSettled(history.map(p=>p.stop()));}
+});
+
+
+test("central approval resumes the original Bridge Runtime only after an exact owner decision", {
+  timeout: process.env.CONVENE_WIRE_APPROVAL_PREVIEW ? 1_800_000 : 240_000,
+  skip: Boolean(packagedImage)
+}, async t => {
+  const resources = await createTestResources(t, "convene-wire-sec017-");
+  const directory = resources.directory, source = path.join(directory, "workspace");
+  const binary = path.join(directory, "convenewire-bridge"), configPath = path.join(directory, "bridge.json");
+  const databasePath = path.join(directory, "central-data", "central.sqlite");
+  const preview = process.env.CONVENE_WIRE_APPROVAL_PREVIEW === "1";
+  const webRoot = path.join(directory, "web");
+  const history: ProcessHandle[] = [];
+  try {
+    await prepareCentralData(databasePath); await mkdir(source);
+    await cp(path.join(repositoryRoot, "apps/web/dist"), webRoot, { recursive: true });
+    await prepareBridge(binary);
+    const port = await reservePort(), serverUrl = `http://127.0.0.1:${port}`;
+    const serverToken = `sec017-${randomUUID()}-${randomUUID()}`;
+    const central = startProcess(resources, process.execPath, ["--import", "tsx", "apps/server/src/server.ts"], {
+      cwd: repositoryRoot, env: { ...centralEnvironment(port, databasePath, serverToken), CONVENE_WIRE_WEB_ROOT: webRoot }, stdio: ["ignore", "pipe", "pipe"]
+    }); history.push(central);
+    await waitFor(async () => (await fetch(`${serverUrl}/api/health/ready`)).ok ? true : undefined);
+    const bootstrap = await requestJSON<any>(serverUrl, "POST", "/api/bootstrap", { displayName: "审批验收用户" });
+    const token = bootstrap.session.token;
+    const team = await requestJSON<any>(serverUrl, "POST", "/api/teams", { name: "中心审批验收" }, token);
+    const teamId = team.team.teamId;
+    const room = await requestJSON<any>(serverUrl, "POST", `/api/teams/${teamId}/rooms`, { name: "权限测试" }, token);
+    await writeJSON(configPath, { schemaVersion: 5, serverUrl, serverToken, deviceName: "测试设备", dataDir: path.join(directory,"bridge-data"), agents: [{
+      name: "审批测试 Agent", role: "Developer", adapter: "codex", runtimeKind: "codex", presetVersion: 5,
+      command: [process.execPath, path.join(repositoryRoot, "tests/e2e/fixtures/approval-runtime.mjs"), "app-server", "--listen", "stdio://"],
+      workspace: source, sandbox: "workspace-write", envAllowlist: ["PATH"]
+    }] });
+    const invite = await requestJSON<any>(serverUrl,"POST",`/api/teams/${teamId}/bridge-invites`,{deviceName:"测试设备"},token);
+    await bridgeCommand(binary,configPath,"build",["pair","--code",invite.code]);
+    const localProcess = startProcess(resources,binary,["console","--config",configPath,"--listen","127.0.0.1:0","--no-open"],{stdio:["ignore","pipe","pipe"]}); history.push(localProcess);
+    const localUrl = await waitFor(async () => /Bridge Console: (http:\/\/127\.0\.0\.1:\d+\/\?token=[^\s]+)/u.exec(localProcess.stdout)?.[1]);
+    const local = new URL(localUrl);
+    const agent = await waitForAgent(serverUrl,token,teamId,"审批测试 Agent");
+    await requestJSON(serverUrl,"PUT",`/api/rooms/${room.roomId}/participants`,{memberIds:[team.owner.memberId],agentIds:[agent.agentId]},token);
+    if (preview) console.log(JSON.stringify({localUrl,step:"enable-central-approval-in-client"}));
+    else await requestJSON(local.origin,"POST","/api/device-execution-trust",{mode:"central-approval",expectedRevision:0,confirm:true},local.searchParams.get("token")!);
+    await waitFor(async () => (await requestJSON<any[]>(serverUrl,"GET",`/api/teams/${teamId}/agents`,undefined,token)).find(a => a.agentId === agent.agentId)?.runtimePolicy?.centralApproval?.revision === 1 ? true : undefined, preview ? 600_000 : 30_000);
+    // Fixture-only entry seeds a synthetic local identity through a normal page
+    // navigation. No installed session, user profile or owner setting is used.
+    await writeFile(path.join(webRoot,"approval-fixture-entry.html"), `<!doctype html><title>Approval test entry</title><script>localStorage.setItem('agent-room.local-user',${JSON.stringify(JSON.stringify(bootstrap.user))});localStorage.setItem('agent-room.locale','zh-CN');location.replace(${JSON.stringify(`/?team=${teamId}&room=${room.roomId}&view=room`)});</script>`);
+    if (preview) console.log(JSON.stringify({ entry: `${serverUrl}/approval-fixture-entry.html`, localUrl, directory }));
+    const results: unknown[] = [];
+    for (const [index, decision] of (["allow", "deny", "allow"] as const).entries()) {
+      const before = new Set(await readdir(source));
+      const sent = await requestJSON<any>(serverUrl,"POST",`/api/rooms/${room.roomId}/messages`,{
+        content: index === 2 ? "FILE_APPROVAL_TEST 修改本次临时文件" : "COMMAND_APPROVAL_TEST 写入本次临时文件", mentionAgentId: agent.agentId
+      },token);
+      const runId = sent.runs[0].runId;
+      const item = await waitFor(async () => (await requestJSON<any>(serverUrl,"GET",`/api/teams/${teamId}/runtime-approvals`,undefined,token)).items.find((item:any) => item.runId === runId));
+      const recordName = (await readdir(source)).find(name => !before.has(name) && name.startsWith("request-"))!;
+      assert.ok(recordName);
+      const record = JSON.parse(await readFile(path.join(source,recordName),"utf8"));
+      await assert.rejects(access(record.target), {code:"ENOENT"});
+      assert.equal(item.request.operationKind,index === 2 ? "file_change" : "command");
+      if (preview) console.log(JSON.stringify({step:index+1, decision, pending:true, runId}));
+      else await requestJSON(serverUrl,"POST",`/api/runtime-approvals/${item.requestId}/decision`,{digest:item.digest,decision},token);
+      const run = await waitFor(async () => (await requestJSON<RunView[]>(serverUrl,"GET",`/api/rooms/${room.roomId}/runs`,undefined,token)).find(r=>r.runId===runId && ["completed","failed","canceled"].includes(r.state)),preview?600_000:60000);
+      assert.equal(run.state,"completed");
+      if(decision === "allow") assert.equal(await readFile(record.target,"utf8"),"approved\n");
+      else await assert.rejects(access(record.target),{code:"ENOENT"});
+      assert.equal((await readdir(source)).filter(name=>!before.has(name)&&name.startsWith("request-")).length,1,"approval replaced Runtime process");
+      results.push({decision,runId,operationKind:item.request.operationKind,pid:record.pid,sideEffect:decision === "allow"});
+    }
+    const db = new Database(databasePath,{readonly:true});
+    const counts={runs:(db.prepare("SELECT count(*) n FROM runs").get() as any).n,approvals:(db.prepare("SELECT count(*) n FROM runtime_approvals").get() as any).n,authorizations:(db.prepare("SELECT count(*) n FROM development_work_authorizations").get() as any).n}; db.close();
+    assert.deepEqual(counts,{runs:3,approvals:3,authorizations:0});
+    await requestJSON(local.origin,"POST","/api/device-execution-trust",{mode:"restricted",expectedRevision:1,confirm:true},local.searchParams.get("token")!);
+    const saved = JSON.parse(await readFile(configPath,"utf8")); assert.equal(saved.deviceExecutionTrust.mode,"restricted"); assert.equal(saved.deviceExecutionTrust.revision,2);
+    const evidence = {kind:"central_approval_deterministic_no_model",browserReview:preview,counts,results,revokedRevision:2};
+    if(process.env.CONVENE_WIRE_WORK_EVIDENCE_DIR) { await mkdir(process.env.CONVENE_WIRE_WORK_EVIDENCE_DIR,{recursive:true}); await writeJSON(path.join(process.env.CONVENE_WIRE_WORK_EVIDENCE_DIR,"summary.json"),evidence); }
+    t.diagnostic(JSON.stringify(evidence));
+  } catch(error) { throw new Error(`SEC-017 ${String(error)}\n${history.map(p=>p.stderr).join("\n")}`,{cause:error}); }
+  finally { await Promise.allSettled(history.map(p=>p.stop())); }
 });

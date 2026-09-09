@@ -24,14 +24,21 @@ func runtimePromptWithArtifacts(
 	if run.TargetAgentName == nil && len(run.RoutingAgents) == 0 &&
 		len(run.ContextMessages) == 0 && run.ContextPlan == nil &&
 		run.ContextManifest == nil &&
-		run.RoomContextBundle == nil && run.TaskID == nil && run.Session == nil && !conversationWork(run) && run.DeviceTrust == nil {
+		run.RoomContextBundle == nil && run.TaskID == nil && run.Session == nil && !conversationWork(run) && run.DeviceTrust == nil && run.CentralApproval == nil {
 		return instruction
+	}
+	approvalGuidance := "those decisions stay local."
+	if run.CentralApproval != nil {
+		approvalGuidance = "use the Runtime permission protocol for those requests."
 	}
 	sections := []string{
 		"You are handling one ConveneWire task in a shared Room.",
 		"If a specific piece of human domain information is required to continue, return only " +
 			"<agentroom-clarification>{\"kind\":\"task\",\"question\":\"...\",\"choices\":[\"...\",\"...\"]}</agentroom-clarification>. " +
-			"Omit choices for an open answer. Never use this for filesystem, shell, network, tool, Runtime, or permission approval; those decisions stay local.",
+			"Omit choices for an open answer. Never use this for filesystem, shell, network, tool, Runtime, or permission approval; " + approvalGuidance,
+	}
+	if run.CentralApproval != nil {
+		sections = append(sections, "The device owner enabled Central approval. Work on the current request with the configured sandbox. If an operation needs permission, request it through the Runtime permission protocol and wait for the owner decision. Do not ask the user to watch the local client or resend the task. Respect a denied operation and the original task scope.")
 	}
 	if conversationWork(run) {
 		sections = append(sections, "This is the read-only conversation stage. Answer questions, reading, review and discussion normally without modifying files. "+

@@ -18,6 +18,7 @@ export interface BridgeSocket {
 
 interface Connection {
   deviceTrustAgents: Map<string, number>;
+  centralApprovalAgents: Map<string, number>;
   deviceId: string;
   epoch: number;
   governedExecutionAgents: Map<string, GovernedExecutionCapability>;
@@ -63,6 +64,7 @@ export class BridgeConnectionRegistry {
       privateOutputAgents: new Set(),
       workPolicyAgents: new Map(),
       deviceTrustAgents: new Map(),
+      centralApprovalAgents: new Map(),
       socket
     });
     return true;
@@ -79,7 +81,9 @@ export class BridgeConnectionRegistry {
     if (!connection) {
       return false;
     }
-    const envelope = message as { type?: string; payload?: { targetAgentId?: string; ownerPrivateOutput?: boolean; deviceTrust?: {mode: string; revision: number} } };
+    const envelope = message as { type?: string; payload?: { targetAgentId?: string; ownerPrivateOutput?: boolean; centralApproval?: {revision: number}; deviceTrust?: {mode: string; revision: number} } };
+    if (envelope?.type === "run.requested" && envelope.payload?.centralApproval &&
+      connection.centralApprovalAgents.get(envelope.payload.targetAgentId ?? "") !== envelope.payload.centralApproval.revision) return false;
     if (envelope?.type === "run.requested" && envelope.payload?.deviceTrust &&
       (envelope.payload.deviceTrust.mode !== "full" || connection.deviceTrustAgents.get(envelope.payload.targetAgentId ?? "") !== envelope.payload.deviceTrust.revision)) return false;
     if (envelope?.type === "run.requested" && envelope.payload?.ownerPrivateOutput === true &&
@@ -107,6 +111,19 @@ export class BridgeConnectionRegistry {
     else if (Number.isSafeInteger(revision) && revision > 0) connection.deviceTrustAgents.set(agentId, revision);
     else return false;
     return true;
+  }
+
+  public recordCentralApproval(deviceId: string, epoch: number, agentId: string, revision?: number): boolean {
+    const connection = this.connections.get(deviceId);
+    if (!connection || connection.epoch !== epoch) return false;
+    if (revision === undefined) connection.centralApprovalAgents.delete(agentId);
+    else if (Number.isSafeInteger(revision) && revision > 0) connection.centralApprovalAgents.set(agentId, revision);
+    else return false;
+    return true;
+  }
+
+  public centralApprovalRevision(deviceId: string, agentId: string): number | undefined {
+    return this.connections.get(deviceId)?.centralApprovalAgents.get(agentId);
   }
 
   public activeEpoch(deviceId: string): number | undefined {

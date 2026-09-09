@@ -28,7 +28,9 @@
             "run.reply",
             "discussion.supplemental_evidence",
             "run.cancel_requested",
-            "run.handoff_requested"
+            "run.handoff_requested",
+            "runtime.approval.requested",
+            "runtime.approval.decision"
           ]
         }
       },
@@ -355,6 +357,44 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "runtime.approval.requested"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/runtimeApprovalRequestedPayload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "runtime.approval.decision"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/runtimeApprovalDecisionPayload"
+              }
+            }
+          }
         }
       ]
     }
@@ -655,7 +695,24 @@
         }
       }
     },
-    "deviceExecutionTrust": {"type":"object","additionalProperties":false,"required":["mode","revision"],"properties":{"mode":{"const":"full"},"revision":{"type":"integer","minimum":1,"maximum":9007199254740991}}},
+    "deviceExecutionTrust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "revision"
+      ],
+      "properties": {
+        "mode": {
+          "const": "full"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
     "runtimePolicySummary": {
       "type": "object",
       "additionalProperties": false,
@@ -663,13 +720,18 @@
         "filesystemAccess"
       ],
       "properties": {
-        "deviceTrust": {"$ref":"#/$defs/deviceExecutionTrust"},
+        "deviceTrust": {
+          "$ref": "#/$defs/deviceExecutionTrust"
+        },
         "filesystemAccess": {
           "enum": [
             "read-only",
             "workspace-write",
             "local-policy"
           ]
+        },
+        "centralApproval": {
+          "$ref": "#/$defs/centralApprovalConsent"
         }
       }
     },
@@ -685,9 +747,23 @@
         "supportsHandoff"
       ],
       "properties": {
-        "supportsConversationWork": {"type": "boolean", "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."},
-        "workPolicyOffers": {"type":"array","minItems":0,"maxItems":64,"items":{"$ref":"https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workPolicyOffer"},"description":"Owner-local standing policy offers. Omission means unsupported. An offer is not an exact Task grant or Runtime admission."},
-        "ownerPrivateOutput": {"type": "boolean", "description": "Explicit owner-private output mode. The Bridge retains candidate text locally and emits only content-free status; disclosure requires a separate exact-content owner grant."},
+        "supportsConversationWork": {
+          "type": "boolean",
+          "description": "Supports read-only direct conversation and a bounded semantic development proposal. Omission preserves legacy execution."
+        },
+        "workPolicyOffers": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 64,
+          "items": {
+            "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/workPolicyOffer"
+          },
+          "description": "Owner-local standing policy offers. Omission means unsupported. An offer is not an exact Task grant or Runtime admission."
+        },
+        "ownerPrivateOutput": {
+          "type": "boolean",
+          "description": "Explicit owner-private output mode. The Bridge retains candidate text locally and emits only content-free status; disclosure requires a separate exact-content owner grant."
+        },
         "governedExecution": {
           "$ref": "https://agentroom.dev/schemas/work/execution-runtime.schema.json#/$defs/capability"
         },
@@ -742,7 +818,26 @@
             ]
           },
           "then": {
-            "not": { "anyOf": [{ "properties": {"governedExecution": {}}, "required": ["governedExecution"] }, { "properties": {"workPolicyOffers": {}}, "required": ["workPolicyOffers"] }] },
+            "not": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "governedExecution": {}
+                  },
+                  "required": [
+                    "governedExecution"
+                  ]
+                },
+                {
+                  "properties": {
+                    "workPolicyOffers": {}
+                  },
+                  "required": [
+                    "workPolicyOffers"
+                  ]
+                }
+              ]
+            },
             "properties": {
               "supportsStart": {
                 "const": false
@@ -891,7 +986,9 @@
           "minLength": 1,
           "maxLength": 120,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-          "not": { "pattern": "^sk[-_]" }
+          "not": {
+            "pattern": "^sk[-_]"
+          }
         },
         "runtimeScopeId": {
           "$ref": "#/$defs/runtimeScopeId"
@@ -1140,7 +1237,10 @@
           "maxLength": 160
         },
         "buildKind": {
-          "enum": ["incremental", "rebase"]
+          "enum": [
+            "incremental",
+            "rebase"
+          ]
         },
         "provenanceMessageIds": {
           "type": "array",
@@ -1392,7 +1492,11 @@
           "pattern": "^relation_[A-Za-z0-9_-]{8,128}$"
         },
         "type": {
-          "enum": ["derives_from", "reviews", "verifies"]
+          "enum": [
+            "derives_from",
+            "reviews",
+            "verifies"
+          ]
         },
         "targetArtifactId": {
           "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/artifactId"
@@ -1415,13 +1519,17 @@
           "properties": {
             "createdByMemberId": {}
           },
-          "required": ["createdByMemberId"]
+          "required": [
+            "createdByMemberId"
+          ]
         },
         {
           "properties": {
             "createdByAgentId": {}
           },
-          "required": ["createdByAgentId"]
+          "required": [
+            "createdByAgentId"
+          ]
         }
       ],
       "allOf": [
@@ -1430,52 +1538,75 @@
             "properties": {
               "content": {}
             },
-            "required": ["content"]
+            "required": [
+              "content"
+            ]
           },
           "then": {
             "oneOf": [
               {
                 "properties": {
-                  "type": { "const": "patch" },
+                  "type": {
+                    "const": "patch"
+                  },
                   "content": {
                     "type": "object",
                     "properties": {
-                      "mediaType": { "const": "text/x-diff" }
+                      "mediaType": {
+                        "const": "text/x-diff"
+                      }
                     }
                   }
                 }
               },
               {
                 "properties": {
-                  "type": { "const": "document" },
+                  "type": {
+                    "const": "document"
+                  },
                   "content": {
                     "type": "object",
                     "properties": {
-                      "mediaType": { "const": "text/markdown" }
+                      "mediaType": {
+                        "const": "text/markdown"
+                      }
                     }
                   }
                 }
               },
               {
                 "properties": {
-                  "type": { "const": "test_result" },
+                  "type": {
+                    "const": "test_result"
+                  },
                   "content": {
                     "type": "object",
                     "properties": {
-                      "mediaType": { "const": "application/json" }
+                      "mediaType": {
+                        "const": "application/json"
+                      }
                     }
                   }
                 }
               },
               {
-                "required": ["commitSha"],
+                "required": [
+                  "commitSha"
+                ],
                 "properties": {
-                  "type": { "const": "commit" },
-                  "commitSha": { "type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
+                  "type": {
+                    "const": "commit"
+                  },
+                  "commitSha": {
+                    "type": "string",
+                    "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                  },
                   "content": {
                     "type": "object",
                     "properties": {
-                      "mediaType": { "const": "application/x-git-bundle" }
+                      "mediaType": {
+                        "const": "application/x-git-bundle"
+                      }
                     }
                   }
                 }
@@ -1644,7 +1775,10 @@
           "pattern": "^artifact://artifact_[A-Za-z0-9_-]{8,128}/[A-Za-z0-9][A-Za-z0-9._-]{0,254}$"
         },
         "materializationState": {
-          "enum": ["verified", "reused"]
+          "enum": [
+            "verified",
+            "reused"
+          ]
         }
       }
     },
@@ -1707,10 +1841,34 @@
         "sourceDiscussionIds"
       ],
       "anyOf": [
-        { "properties": { "sourceMessageIds": { "$ref": "#/$defs/nonEmptyMemoryMessageIds" } } },
-        { "properties": { "sourceArtifactIds": { "$ref": "#/$defs/nonEmptyMemoryArtifactIds" } } },
-        { "properties": { "sourceRunIds": { "$ref": "#/$defs/nonEmptyMemoryRunIds" } } },
-        { "properties": { "sourceDiscussionIds": { "$ref": "#/$defs/nonEmptyMemoryDiscussionIds" } } }
+        {
+          "properties": {
+            "sourceMessageIds": {
+              "$ref": "#/$defs/nonEmptyMemoryMessageIds"
+            }
+          }
+        },
+        {
+          "properties": {
+            "sourceArtifactIds": {
+              "$ref": "#/$defs/nonEmptyMemoryArtifactIds"
+            }
+          }
+        },
+        {
+          "properties": {
+            "sourceRunIds": {
+              "$ref": "#/$defs/nonEmptyMemoryRunIds"
+            }
+          }
+        },
+        {
+          "properties": {
+            "sourceDiscussionIds": {
+              "$ref": "#/$defs/nonEmptyMemoryDiscussionIds"
+            }
+          }
+        }
       ],
       "properties": {
         "memoryId": {
@@ -1737,7 +1895,11 @@
           "maxLength": 2000
         },
         "state": {
-          "enum": ["active", "superseded", "retracted"]
+          "enum": [
+            "active",
+            "superseded",
+            "retracted"
+          ]
         },
         "revision": {
           "type": "integer",
@@ -1833,7 +1995,11 @@
       "title": "Long-term Memory Scope Snapshot",
       "type": "object",
       "additionalProperties": false,
-      "required": ["revision", "activeComplete", "entries"],
+      "required": [
+        "revision",
+        "activeComplete",
+        "entries"
+      ],
       "properties": {
         "revision": {
           "type": "integer",
@@ -1890,10 +2056,26 @@
     "developmentProposal": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["title", "criteria"],
+      "required": [
+        "title",
+        "criteria"
+      ],
       "properties": {
-        "title": {"type": "string", "minLength": 1, "maxLength": 160},
-        "criteria": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 2000}}
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
       }
     },
     "runRequestedPayload": {
@@ -1913,9 +2095,17 @@
         "deadline"
       ],
       "properties": {
-        "deviceTrust": {"$ref":"#/$defs/deviceExecutionTrust"},
-        "conversationWork": {"type": "boolean", "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."},
-        "ownerPrivateOutput": {"type": "boolean", "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."},
+        "deviceTrust": {
+          "$ref": "#/$defs/deviceExecutionTrust"
+        },
+        "conversationWork": {
+          "type": "boolean",
+          "description": "Run a read-only conversational turn. A structured developmentProposal may request continuation under an existing owner policy; it grants no write permission."
+        },
+        "ownerPrivateOutput": {
+          "type": "boolean",
+          "description": "Frozen owner-private mode. A Bridge must match its local Agent mode or refuse startup."
+        },
         "runId": {
           "$ref": "https://agentroom.dev/schemas/common/identifiers.schema.json#/$defs/runId"
         },
@@ -1990,6 +2180,9 @@
         },
         "deadline": {
           "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "centralApproval": {
+          "$ref": "#/$defs/centralApprovalConsent"
         }
       }
     },
@@ -2353,7 +2546,9 @@
               "minLength": 1,
               "maxLength": 20000
             },
-            "developmentProposal": {"$ref": "#/$defs/developmentProposal"},
+            "developmentProposal": {
+              "$ref": "#/$defs/developmentProposal"
+            },
             "assessment": {
               "$ref": "#/$defs/agentAssessment"
             }
@@ -2482,6 +2677,98 @@
           }
         }
       ]
+    },
+    "centralApprovalConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "runtimeApprovalRequestedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "runId",
+        "agentId",
+        "revision",
+        "operationKind",
+        "details",
+        "expiresAt"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "expiresAt": {
+          "$ref": "https://agentroom.dev/schemas/common/utc-timestamp.schema.json"
+        },
+        "operationKind": {
+          "enum": [
+            "command",
+            "file_change"
+          ]
+        }
+      }
+    },
+    "runtimeApprovalDecisionPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "runId",
+        "digest",
+        "decision"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "pattern": "^approval_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "decision": {
+          "enum": [
+            "pending",
+            "allow",
+            "deny",
+            "expired"
+          ]
+        }
+      }
     }
   }
 }

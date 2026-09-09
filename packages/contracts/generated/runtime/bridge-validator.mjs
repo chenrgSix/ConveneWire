@@ -674,7 +674,16 @@ const canonicalPropertyTrees = {
                   }
                 }
               },
-              "filesystemAccess": {}
+              "filesystemAccess": {},
+              "centralApproval": {
+                "p": {
+                  "revision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  }
+                }
+              }
             }
           },
           "configuredModel": {},
@@ -1363,6 +1372,11 @@ const canonicalPropertyTrees = {
               },
               "permissions": {
                 "p": {
+                  "centralApprovalRevision": {
+                    "n": true,
+                    "l": "1",
+                    "u": "9007199254740991"
+                  },
                   "deviceTrustRevision": {
                     "n": true,
                     "l": "1",
@@ -1402,7 +1416,16 @@ const canonicalPropertyTrees = {
               "turnId": {}
             }
           },
-          "deadline": {}
+          "deadline": {},
+          "centralApproval": {
+            "p": {
+              "revision": {
+                "n": true,
+                "l": "1",
+                "u": "9007199254740991"
+              }
+            }
+          }
         }
       }
     }
@@ -1638,6 +1661,45 @@ const canonicalPropertyTrees = {
           "handoffId": {},
           "targetAgentId": {},
           "summary": {}
+        }
+      }
+    }
+  },
+  "runtime.approval.requested": {
+    "p": {
+      "protocolVersion": {},
+      "messageId": {},
+      "timestamp": {},
+      "type": {},
+      "payload": {
+        "p": {
+          "requestId": {},
+          "runId": {},
+          "agentId": {},
+          "revision": {
+            "n": true,
+            "l": "1",
+            "u": "9007199254740991"
+          },
+          "details": {},
+          "expiresAt": {},
+          "operationKind": {}
+        }
+      }
+    }
+  },
+  "runtime.approval.decision": {
+    "p": {
+      "protocolVersion": {},
+      "messageId": {},
+      "timestamp": {},
+      "type": {},
+      "payload": {
+        "p": {
+          "requestId": {},
+          "runId": {},
+          "digest": {},
+          "decision": {}
         }
       }
     }

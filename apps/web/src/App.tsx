@@ -42,6 +42,7 @@ import { DiscussionStatus } from "./features/discussion/DiscussionStatus.js";
 import { DiscussionComposerPolicy } from "./features/room/DiscussionComposerPolicy.js";
 import { useDiscussionController } from "./features/discussion/useDiscussionController.js";
 import { useComposerHeight } from "./features/room/useComposerHeight.js";
+import { RuntimeApprovals } from "./features/room/RuntimeApprovals.js";
 import { RoomTimeline } from "./features/room/RoomTimeline.js";
 import { RoomSettingsDialog } from "./features/room/RoomSettingsDialog.js";
 import { AgentModelLabel } from "./features/agent/AgentModelLabel.js";
@@ -1571,6 +1572,9 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     navigate({ view: "members", taskId: undefined, workTaskId: undefined, tab: undefined, runId: undefined });
   }
 
+  const runtimeAttentionScope = JSON.stringify([session?.userId, session?.token, selectedTeamId]);
+  const [runtimeAttention, setRuntimeAttention] = useState<{ scope: string; count: number } | null>(null);
+  const updateRuntimeAttention = useCallback((count: number) => setRuntimeAttention({ scope: runtimeAttentionScope, count }), [runtimeAttentionScope]);
   useComposerHeight(composerInputRef, messageContent, [authState, activeView, selectedRoomId, selectedTaskId].join(":"));
 
   if (authState !== "authenticated") {
@@ -1594,7 +1598,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
 
   return (
     <div className={`app-shell product-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${managing ? "management-area" : "collaboration-area"}`}>
-      <WorkspaceSidebar collapsed={sidebarCollapsed} attentionItem={attention.item} attentionFailed={attention.failed} attentionLoading={attention.loading}
+      <WorkspaceSidebar pendingPermissions={runtimeAttention?.scope === runtimeAttentionScope ? runtimeAttention.count : 0} collapsed={sidebarCollapsed} attentionItem={attention.item} attentionFailed={attention.failed} attentionLoading={attention.loading}
         onRetryAttention={() => void attention.refresh()}
         onOpenAttention={(item) => {
           const target = workActionTarget(item);
@@ -1757,6 +1761,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         {error && activeView !== "agents" && activeView !== "members" && !roomCreateOpen && <div className="error-banner" role="alert">{errorLabel(error, locale)}</div>}
         {restoringNavigation && <p className="navigation-status" role="status">{locale === "zh-CN" ? "正在验证并恢复工作位置…" : "Checking access and restoring your work…"}</p>}
         {copyStatus && <p className="navigation-status" role="status">{copyStatus}</p>}
+        {session && selectedTeamId && !session.clientTeamId && <RuntimeApprovals key={`${session.userId}:${selectedTeamId}:${session.token ?? "cookie"}`} teamId={selectedTeamId} token={session.token} locale={locale} onPendingChange={updateRuntimeAttention} />}
         {activeView === "security" && session ? (
           <AccountWorkspace session={session} authMode={authMode} locale={locale} theme={theme}
             onLocale={() => setLocale((current) => current === "zh-CN" ? "en" : "zh-CN")}

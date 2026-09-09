@@ -1,3 +1,4 @@
+import type { RuntimeApprovalService } from "../run/runtime-approval-service.js";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { ExecutionPlanService } from "../execution/execution-plan-service.js";
 import type { DevelopmentWorkService } from "../execution/development-work-service.js";
@@ -159,6 +160,7 @@ export interface ServerRouteContext {
   runs: RunService;
   results: ResultService;
   evidenceDisclosures: EvidenceDisclosureService;
+  runtimeApprovals: RuntimeApprovalService;
   taskArtifacts: TaskArtifactService;
   taskClarifications: TaskClarificationService;
   tasks: AgentTaskService;

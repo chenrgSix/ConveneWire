@@ -109,7 +109,11 @@ func publishedRuntimePolicy(agent config.AgentConfig) contracts.RuntimePolicy {
 			filesystemAccess = contracts.RuntimePolicyFilesystemAccess("read-only")
 		}
 	}
-	return contracts.RuntimePolicy{FilesystemAccess: filesystemAccess}
+	policy := contracts.RuntimePolicy{FilesystemAccess: filesystemAccess}
+	if agent.CentralApprovalRevision > 0 && agent.Adapter == "codex" && !agent.OwnerPrivateOutput {
+		policy.CentralApproval = &contracts.RuntimePolicyCentralApproval{Revision: agent.CentralApprovalRevision}
+	}
+	return policy
 }
 
 func governedHelloCapability() contracts.PayloadGovernedExecution {

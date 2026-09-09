@@ -1,3 +1,5 @@
+import { RuntimeApprovalService } from "./run/runtime-approval-service.js";
+import { registerRuntimeApprovalRoutes } from "./http/runtime-approval-routes.js";
 import { EvidenceDisclosureService } from "./task/evidence-disclosure-service.js";
 import { registerEvidenceDisclosureRoutes } from "./http/evidence-disclosure-routes.js";
 import path from "node:path";
@@ -552,6 +554,7 @@ export async function createServerApp(
   const bridgeConnections = new BridgeConnectionRegistry(
     () => new Date(clock())
   );
+  const runtimeApprovals = new RuntimeApprovalService(database, auth, core, runRepository, bridgeConnections);
   const developmentWork = new DevelopmentWorkService(database, transactions, auth, core, tasks,
     taskRepository, executionPlans, executionPlanRepository, messages, bridgeConnections, notifyExecutionChanged);
   const conversationWork = new ConversationWorkService(database, transactions, core, runRepository,
@@ -1270,6 +1273,7 @@ export async function createServerApp(
     runs,
     results,
     evidenceDisclosures,
+    runtimeApprovals,
     taskArtifacts,
     taskClarifications,
     tasks,
@@ -1295,6 +1299,7 @@ export async function createServerApp(
   registerRemoteEvidenceRoutes(routeContext);
   registerResultRoutes(routeContext);
   registerEvidenceDisclosureRoutes(routeContext);
+  registerRuntimeApprovalRoutes(routeContext);
   registerWorkbenchRoutes(routeContext);
   registerRegistryRoutes(routeContext);
   registerHostedAgentRoutes(routeContext);

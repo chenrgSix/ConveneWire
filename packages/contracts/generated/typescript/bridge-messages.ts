@@ -657,8 +657,13 @@ export interface StickyVerificationProfile {
 }
 
 export interface RuntimePolicy {
+  centralApproval?: RuntimePolicyCentralApproval;
   deviceTrust?:     RuntimePolicyDeviceTrust;
   filesystemAccess: RuntimePolicyFilesystemAccess;
+}
+
+export interface RuntimePolicyCentralApproval {
+  revision: number;
 }
 
 export interface RuntimePolicyDeviceTrust {
@@ -785,6 +790,7 @@ export interface RunRequestedMessage {
 }
 
 export interface RunRequestedPayload {
+  centralApproval?: PayloadCentralApproval;
   contextManifest?: ContextManifest;
   contextMessages:  ContextMessage[];
   contextPlan?:     RuntimeContextPlan;
@@ -824,6 +830,10 @@ export interface RunRequestedPayload {
   traceId:            string;
   triggerMessageId:   string;
   [property: string]: unknown;
+}
+
+export interface PayloadCentralApproval {
+  revision: number;
 }
 
 export interface ContextManifest {
@@ -1035,12 +1045,13 @@ export type ManifestVersion = "1.0";
 export type OmittedCategory = "unrelated_room_history" | "local_paths" | "environment_values" | "provider_credentials" | "provider_session_ids" | "hidden_reasoning" | "tool_payloads" | "other_workspaces";
 
 export interface Permissions {
-  deviceTrustRevision?: number;
-  filesystemAccess:     PermissionsFilesystemAccess;
-  handoff:              Handoff;
-  interrupt:            Handoff;
-  maxDurationSeconds:   number | null;
-  networkAccess:        NetworkAccess;
+  centralApprovalRevision?: number;
+  deviceTrustRevision?:     number;
+  filesystemAccess:         PermissionsFilesystemAccess;
+  handoff:                  Handoff;
+  interrupt:                Handoff;
+  maxDurationSeconds:       number | null;
+  networkAccess:            NetworkAccess;
 }
 
 export type PermissionsFilesystemAccess = "full-access" | "read-only" | "workspace-write" | "local-policy" | "not_recorded";
@@ -1556,6 +1567,71 @@ export interface RunHandoffRequestedPayload {
 
 export type RunHandoffRequestedMessageType = "run.handoff_requested";
 
+/**
+ * Fields shared by versioned cross-process messages.
+ */
+export interface RuntimeApprovalRequestedMessage {
+  messageId: string;
+  payload:   RuntimeApprovalRequestedPayload;
+  /**
+   * Major and minor protocol version negotiated by peers.
+   */
+  protocolVersion: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  timestamp: string;
+  type:      RuntimeApprovalRequestedMessageType;
+}
+
+export interface RuntimeApprovalRequestedPayload {
+  agentId: string;
+  details: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  expiresAt:     string;
+  operationKind: OperationKind;
+  requestId:     string;
+  revision:      number;
+  runId:         string;
+}
+
+export type OperationKind = "command" | "file_change";
+
+export type RuntimeApprovalRequestedMessageType = "runtime.approval.requested";
+
+/**
+ * Fields shared by versioned cross-process messages.
+ */
+export interface RuntimeApprovalDecisionMessage {
+  messageId: string;
+  payload:   RuntimeApprovalDecisionPayload;
+  /**
+   * Major and minor protocol version negotiated by peers.
+   */
+  protocolVersion: string;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  timestamp: string;
+  type:      RuntimeApprovalDecisionMessageType;
+}
+
+export interface RuntimeApprovalDecisionPayload {
+  decision:  Decision;
+  digest:    string;
+  requestId: string;
+  runId:     string;
+}
+
+export type Decision = "pending" | "allow" | "deny" | "expired";
+
+export type RuntimeApprovalDecisionMessageType = "runtime.approval.decision";
+
 export interface BridgeJoinRequest {
   agentName:  string;
   agentRole:  string;
@@ -1651,4 +1727,6 @@ export type BridgeMessage =
   | RunStatusMessage
   | RunReplyMessage
   | RunCancelRequestedMessage
-  | RunHandoffRequestedMessage;
+  | RunHandoffRequestedMessage
+  | RuntimeApprovalRequestedMessage
+  | RuntimeApprovalDecisionMessage;

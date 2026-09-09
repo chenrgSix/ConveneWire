@@ -611,9 +611,11 @@ function closeConnectionModal() {
 
 function render(state) {
   const trust = state.deviceExecutionTrust ?? {mode: "restricted", revision: 0, editable: false};
-  document.getElementById("device-trust-state").textContent = `${trust.mode === "full" ? "已完全信任" : "未开启完全信任"} · ${trust.central ?? "尚未连接中心"} · 授权版本 ${trust.revision}`;
+  document.getElementById("device-trust-state").textContent = `${trust.mode === "full" ? "已完全信任" : trust.mode === "central-approval" ? "权限请求在中心审批" : "使用原有权限"} · ${trust.central ?? "尚未连接中心"} · 授权版本 ${trust.revision}`;
   document.getElementById("device-trust-toggle").textContent = trust.mode === "full" ? "关闭完全信任" : "开启完全信任";
   document.getElementById("device-trust-toggle").disabled = !trust.editable;
+  document.getElementById("device-approval-toggle").textContent = trust.mode === "central-approval" ? "关闭中心审批" : "开启中心审批";
+  document.getElementById("device-approval-toggle").disabled = !trust.editable;
   currentState = state;
   clientEntryController.render(state);
   const waiting = Boolean(state.enrollment?.active);
@@ -1335,7 +1337,7 @@ syncTrustFields();
 void refresh();
 setInterval(refresh, 1000);
 
-document.getElementById("device-trust-toggle").addEventListener("click", async () => {
+async function changeDeviceTrust(mode) {
   const consent = document.getElementById("device-trust-confirm");
   const result = document.getElementById("device-trust-result");
   if (!consent.checked) { result.textContent = "请先确认当前中心与设备权限范围。"; return; }
@@ -1345,11 +1347,13 @@ document.getElementById("device-trust-toggle").addEventListener("click", async (
   toggle.disabled = true;
   try {
     const state = await request("/api/device-execution-trust", {method: "POST", body: JSON.stringify({
-      mode: trust.mode === "full" ? "restricted" : "full", expectedRevision: trust.revision, confirm: true
+      mode, expectedRevision: trust.revision, confirm: true
     })});
     consent.checked = false;
     render(state);
     result.textContent = state.bridgeRunning ? "设备设置已保存，正在向中心同步。" : "设备设置已保存；连接中心后会同步。";
   } catch (error) { result.textContent = String(error.message || error); }
   finally { await refresh(); }
-});
+}
+document.getElementById("device-trust-toggle").addEventListener("click", () => void changeDeviceTrust(currentState?.deviceExecutionTrust?.mode === "full" ? "restricted" : "full"));
+document.getElementById("device-approval-toggle").addEventListener("click", () => void changeDeviceTrust(currentState?.deviceExecutionTrust?.mode === "central-approval" ? "restricted" : "central-approval"));

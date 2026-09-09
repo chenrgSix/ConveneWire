@@ -534,6 +534,7 @@
           "additionalProperties": false,
           "required": ["filesystemAccess", "networkAccess", "interrupt", "handoff", "maxDurationSeconds"],
           "properties": {
+            "centralApprovalRevision": {"type":"integer","minimum":1,"maximum":9007199254740991},
             "deviceTrustRevision": {"type":"integer","minimum":1,"maximum":9007199254740991},
             "filesystemAccess": { "enum": ["full-access", "read-only", "workspace-write", "local-policy", "not_recorded"] },
             "networkAccess": { "enum": ["full-access", "disabled", "local-policy", "not_recorded"] },

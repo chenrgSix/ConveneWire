@@ -1,5 +1,13 @@
 # Web UI
 
+SEC-017 shows pending Runtime permissions only to the Device owner's full Web
+session in the selected Team and Room membership. A new request opens a dialog
+with the exact operation and **Allow once / Deny** controls; closing is not a
+decision. A pending control reopens it and the sidebar includes its count.
+Disconnected or submitting controls cannot approve. Agent details mirror the
+local Central approval revision without changing their filesystem access label.
+See [SEC-017 evidence](../acceptance/sec-017-central-runtime-approval.md).
+
 The Room composer uses one compact Task row, a content-sized input and concise
 draft feedback. Room policy switches remain in Room settings; selected recipients
 and routing blockers stay visible when relevant. The workspace sidebar can be

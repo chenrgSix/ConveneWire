@@ -5,6 +5,7 @@ import type { Room, Team, WorkspaceView } from "../../models.js";
 import { isManagementView } from "./workspace-navigation.js";
 
 interface Props {
+  pendingPermissions?: number;
   collapsed?: boolean;
   attentionItem?: WorkbenchItem | null;
   attentionFailed?: boolean;
@@ -56,6 +57,7 @@ export function WorkspaceSidebar(props: Props) {
           <span className="attention-dot" aria-hidden="true" />{zh ? "我的任务待处理" : "My work needs attention"}
           <small>{zh ? "查看下一步" : "Open next step"}</small>
         </button> : props.attentionFailed ? <button type="button" disabled={props.attentionLoading} onClick={props.onRetryAttention}>{zh ? "重新检查待处理工作" : "Check pending work again"}</button>
+          : (props.pendingPermissions ?? 0) > 0 ? <span className="product-attention-clear">{zh ? `${props.pendingPermissions} 项权限待审批` : `${props.pendingPermissions} permission requests pending`}</span>
           : <span className="product-attention-clear">{props.attentionLoading ? (zh ? "正在检查待处理工作…" : "Checking pending work…") : (zh ? "暂无待输入、审核或确认的工作" : "No work awaiting input, review or acknowledgement")}</span>}
       </div>}
       {managing ? (

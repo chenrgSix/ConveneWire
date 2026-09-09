@@ -534,8 +534,13 @@ type StickyVerificationProfile struct {
 }
 
 type RuntimePolicy struct {
+	CentralApproval  *RuntimePolicyCentralApproval `json:"centralApproval,omitempty"`
 	DeviceTrust      *RuntimePolicyDeviceTrust     `json:"deviceTrust,omitempty"`
 	FilesystemAccess RuntimePolicyFilesystemAccess `json:"filesystemAccess"`
+}
+
+type RuntimePolicyCentralApproval struct {
+	Revision int64 `json:"revision"`
 }
 
 type RuntimePolicyDeviceTrust struct {
@@ -619,9 +624,10 @@ type RunRequestedMessage struct {
 }
 
 type RunRequestedPayload struct {
-	ContextManifest *ContextManifest    `json:"contextManifest,omitempty"`
-	ContextMessages []ContextMessage    `json:"contextMessages"`
-	ContextPlan     *RuntimeContextPlan `json:"contextPlan,omitempty"`
+	CentralApproval *PayloadCentralApproval `json:"centralApproval,omitempty"`
+	ContextManifest *ContextManifest        `json:"contextManifest,omitempty"`
+	ContextMessages []ContextMessage        `json:"contextMessages"`
+	ContextPlan     *RuntimeContextPlan     `json:"contextPlan,omitempty"`
 	// Run a read-only conversational turn. A structured developmentProposal may request
 	// continuation under an existing owner policy; it grants no write permission.
 	ConversationWork *bool `json:"conversationWork,omitempty"`
@@ -649,6 +655,10 @@ type RunRequestedPayload struct {
 	TaskID            *string                  `json:"taskId,omitempty"`
 	TraceID           string                   `json:"traceId"`
 	TriggerMessageID  string                   `json:"triggerMessageId"`
+}
+
+type PayloadCentralApproval struct {
+	Revision int64 `json:"revision"`
 }
 
 type ContextManifest struct {
@@ -836,12 +846,13 @@ type Included struct {
 }
 
 type Permissions struct {
-	DeviceTrustRevision *int64                      `json:"deviceTrustRevision,omitempty"`
-	FilesystemAccess    PermissionsFilesystemAccess `json:"filesystemAccess"`
-	Handoff             Handoff                     `json:"handoff"`
-	Interrupt           Handoff                     `json:"interrupt"`
-	MaxDurationSeconds  *int64                      `json:"maxDurationSeconds"`
-	NetworkAccess       NetworkAccess               `json:"networkAccess"`
+	CentralApprovalRevision *int64                      `json:"centralApprovalRevision,omitempty"`
+	DeviceTrustRevision     *int64                      `json:"deviceTrustRevision,omitempty"`
+	FilesystemAccess        PermissionsFilesystemAccess `json:"filesystemAccess"`
+	Handoff                 Handoff                     `json:"handoff"`
+	Interrupt               Handoff                     `json:"interrupt"`
+	MaxDurationSeconds      *int64                      `json:"maxDurationSeconds"`
+	NetworkAccess           NetworkAccess               `json:"networkAccess"`
 }
 
 type Target struct {
@@ -1235,6 +1246,49 @@ type RunHandoffRequestedPayload struct {
 	TargetAgentID string `json:"targetAgentId"`
 }
 
+// Fields shared by versioned cross-process messages.
+type RuntimeApprovalRequestedMessage struct {
+	MessageID string                          `json:"messageId"`
+	Payload   RuntimeApprovalRequestedPayload `json:"payload"`
+	// Major and minor protocol version negotiated by peers.
+	ProtocolVersion string `json:"protocolVersion"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Timestamp time.Time                           `json:"timestamp"`
+	Type      RuntimeApprovalRequestedMessageType `json:"type"`
+}
+
+type RuntimeApprovalRequestedPayload struct {
+	AgentID string `json:"agentId"`
+	Details string `json:"details"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	ExpiresAt     time.Time     `json:"expiresAt"`
+	OperationKind OperationKind `json:"operationKind"`
+	RequestID     string        `json:"requestId"`
+	Revision      int64         `json:"revision"`
+	RunID         string        `json:"runId"`
+}
+
+// Fields shared by versioned cross-process messages.
+type RuntimeApprovalDecisionMessage struct {
+	MessageID string                         `json:"messageId"`
+	Payload   RuntimeApprovalDecisionPayload `json:"payload"`
+	// Major and minor protocol version negotiated by peers.
+	ProtocolVersion string `json:"protocolVersion"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Timestamp time.Time                          `json:"timestamp"`
+	Type      RuntimeApprovalDecisionMessageType `json:"type"`
+}
+
+type RuntimeApprovalDecisionPayload struct {
+	Decision  DecisionEnum `json:"decision"`
+	Digest    string       `json:"digest"`
+	RequestID string       `json:"requestId"`
+	RunID     string       `json:"runId"`
+}
+
 type BridgeJoinRequest struct {
 	AgentName  string `json:"agentName"`
 	AgentRole  string `json:"agentRole"`
@@ -1325,10 +1379,10 @@ type WorkAuthorizationReceiptReason string
 const (
 	AmbiguousPolicy    WorkAuthorizationReceiptReason = "ambiguous_policy"
 	Conflict           WorkAuthorizationReceiptReason = "conflict"
-	Expired            WorkAuthorizationReceiptReason = "expired"
 	OutsidePolicy      WorkAuthorizationReceiptReason = "outside_policy"
 	ProfileUnavailable WorkAuthorizationReceiptReason = "profile_unavailable"
 	ReasonAuthorized   WorkAuthorizationReceiptReason = "authorized"
+	ReasonExpired      WorkAuthorizationReceiptReason = "expired"
 	Revoked            WorkAuthorizationReceiptReason = "revoked"
 	SourceChanged      WorkAuthorizationReceiptReason = "source_changed"
 	Unavailable        WorkAuthorizationReceiptReason = "unavailable"
@@ -1709,6 +1763,34 @@ const (
 	RunHandoffRequested RunHandoffRequestedMessageType = "run.handoff_requested"
 )
 
+type OperationKind string
+
+const (
+	Command    OperationKind = "command"
+	FileChange OperationKind = "file_change"
+)
+
+type RuntimeApprovalRequestedMessageType string
+
+const (
+	RuntimeApprovalRequested RuntimeApprovalRequestedMessageType = "runtime.approval.requested"
+)
+
+type DecisionEnum string
+
+const (
+	Allow           DecisionEnum = "allow"
+	DecisionExpired DecisionEnum = "expired"
+	DecisionPending DecisionEnum = "pending"
+	Deny            DecisionEnum = "deny"
+)
+
+type RuntimeApprovalDecisionMessageType string
+
+const (
+	RuntimeApprovalDecision RuntimeApprovalDecisionMessageType = "runtime.approval.decision"
+)
+
 type BridgeJoinApprovalStatus string
 
 const (
@@ -1718,7 +1800,7 @@ const (
 type BridgeJoinPendingStatus string
 
 const (
-	Pending BridgeJoinPendingStatus = "pending"
+	StatusPending BridgeJoinPendingStatus = "pending"
 )
 
 type BridgeJoinPairedStatus string

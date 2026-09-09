@@ -396,12 +396,13 @@ type Included struct {
 }
 
 type Permissions struct {
-	DeviceTrustRevision *int64           `json:"deviceTrustRevision,omitempty"`
-	FilesystemAccess    FilesystemAccess `json:"filesystemAccess"`
-	Handoff             Handoff          `json:"handoff"`
-	Interrupt           Handoff          `json:"interrupt"`
-	MaxDurationSeconds  *int64           `json:"maxDurationSeconds"`
-	NetworkAccess       NetworkAccess    `json:"networkAccess"`
+	CentralApprovalRevision *int64           `json:"centralApprovalRevision,omitempty"`
+	DeviceTrustRevision     *int64           `json:"deviceTrustRevision,omitempty"`
+	FilesystemAccess        FilesystemAccess `json:"filesystemAccess"`
+	Handoff                 Handoff          `json:"handoff"`
+	Interrupt               Handoff          `json:"interrupt"`
+	MaxDurationSeconds      *int64           `json:"maxDurationSeconds"`
+	NetworkAccess           NetworkAccess    `json:"networkAccess"`
 }
 
 type Target struct {

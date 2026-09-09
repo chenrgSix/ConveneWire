@@ -46,3 +46,13 @@
   .composer .composer-preferences { gap: 4px 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .message-actions { transition: none; } }
+
+.runtime-approval-notice { position: fixed; right: 24px; top: 88px; z-index: 20; background: var(--accent, #635bff); color: white; border-radius: 10px; padding: 8px 14px; }
+.runtime-approval-details { max-height: min(45vh, 440px); overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; border: 1px solid var(--border, #dce0ea); border-radius: 10px; font-size: 13px; }
+
+.runtime-approval-review p { font-size: 14px; line-height: 1.6; margin: 8px 0; }
+.runtime-approval-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.runtime-approval-actions button { font: inherit; font-size: 14px; padding: 9px 18px; border-radius: 10px; border: 1px solid #879098; background: transparent; color: inherit; cursor: pointer; }
+.runtime-approval-actions button.primary { background: #635bff; border-color: #635bff; color: #fff; }
+.runtime-approval-actions button:disabled { opacity: .5; cursor: default; }
+.runtime-approval-actions button:focus-visible { outline: 2px solid #817bff; outline-offset: 3px; }

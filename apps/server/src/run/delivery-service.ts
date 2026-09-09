@@ -33,6 +33,7 @@ export interface DiscussionSupplementalEvidenceOffer {
 
 export interface DeliveryPayload {
   deviceTrust?: { mode: "full"; revision: number };
+  centralApproval?: { revision: number };
   conversationWork?: boolean;
   ownerPrivateOutput?: boolean;
   runId: string;
@@ -182,7 +183,7 @@ export class DeliveryService {
     }
     const trust = delivery.payload.deviceTrust;
     const currentPolicy = run && this.core.getAgent(run.targetAgentId)?.runtimePolicy;
-    if (trust && (currentPolicy?.deviceTrust?.mode !== "full" || currentPolicy.deviceTrust?.revision !== trust.revision)) {
+    if ((delivery.payload.centralApproval && currentPolicy?.centralApproval?.revision !== delivery.payload.centralApproval.revision) || (trust && (currentPolicy?.deviceTrust?.mode !== "full" || currentPolicy.deviceTrust?.revision !== trust.revision))) {
       if (run?.state === "queued") this.runs.applyEvent(runId, {
         type: "status", sequence: run.lastSequence + 1, status: "failed",
         error: {code: "DEVICE_TRUST_CHANGED", message: "The device owner changed execution trust. Continue from the current conversation.", retryable: false}
@@ -481,10 +482,12 @@ export class DeliveryService {
     const discussionSupplementalEvidence =
       this.discussionSupplementalEvidenceOffer(run.runId, agent);
     const payload: DeliveryPayload = {
+      ...(contextManifest.permissions.centralApprovalRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
+        ? {centralApproval: {revision: contextManifest.permissions.centralApprovalRevision}} : {}),
       ...(contextManifest.permissions.deviceTrustRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
         ? {deviceTrust: {mode: "full" as const, revision: contextManifest.permissions.deviceTrustRevision}} : {}),
       ...(agent.capabilities.supportsConversationWork === true &&
-        !contextManifest.permissions.deviceTrustRevision &&
+        !contextManifest.permissions.deviceTrustRevision && !contextManifest.permissions.centralApprovalRevision &&
         agent.capabilities.ownerPrivateOutput !== true && !contextManifest.execution &&
         !run.parentRunId && trigger.senderType === "member" &&
         trigger.senderId === run.requesterMemberId && trigger.mentions.length === 1 &&

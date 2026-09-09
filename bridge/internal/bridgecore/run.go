@@ -119,7 +119,7 @@ func RunObservedWithProvisioning(
 				adapters[agentID] = bridgeruntime.GenericAdapter{Config: configured}
 			case "codex":
 				adapters[agentID] = bridgeruntime.CodexAdapter{
-					Config: configured, Sessions: sessions,
+					Config: configured, Sessions: sessions, Approve: connection.AwaitCentralApproval(loaded, credential),
 				}
 			}
 		}

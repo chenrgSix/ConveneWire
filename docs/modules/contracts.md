@@ -1,5 +1,16 @@
 # Contracts Module
 
+SEC-017 adds optional `centralApproval: {revision}` to authenticated runtime
+policy and ordinary Run delivery, plus `centralApprovalRevision` in its frozen
+permission manifest. These fields cannot coexist with full trust or govern
+private/execution/proposal Runs. Two closed envelopes, `runtime.approval.requested`
+and `runtime.approval.decision`, use a dedicated Device-authenticated HTTP route.
+They do not belong to Room activity, `input_required` or the WebSocket dispatch
+switch. Requests pin identity, `operationKind`, bounded details and expiry;
+receipts bind request/Run/SHA-256 to pending/allow/deny/expired. Shared Node/Go
+fixtures verify exact keys, Unicode bounds and legacy omission. See
+[SEC-017 evidence](../acceptance/sec-017-central-runtime-approval.md).
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

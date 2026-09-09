@@ -122,6 +122,7 @@ func fingerprintRuntimeConfig(configuration config.AgentConfig) (string, error) 
 	envAllowlist := append([]string(nil), configuration.EnvAllowlist...)
 	sort.Strings(envAllowlist)
 	semantic := struct {
+		CentralApprovalRevision  int64    `json:"centralApprovalRevision,omitempty"`
 		TrustedExecutionRevision int64    `json:"trustedExecutionRevision,omitempty"`
 		Adapter                  string   `json:"adapter"`
 		RuntimeKind              string   `json:"runtimeKind"`
@@ -133,6 +134,7 @@ func fingerprintRuntimeConfig(configuration config.AgentConfig) (string, error) 
 		OwnerPrivateOutput       bool     `json:"ownerPrivateOutput,omitempty"`
 	}{
 		TrustedExecutionRevision: configuration.TrustedExecutionRevision,
+		CentralApprovalRevision:  configuration.CentralApprovalRevision,
 		Adapter:                  configuration.Adapter,
 		RuntimeKind:              configuration.RuntimeKind,
 		PresetVersion:            configuration.PresetVersion,

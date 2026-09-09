@@ -55,6 +55,7 @@ export interface Agent {
   runtimePolicy?: {
     filesystemAccess: "read-only" | "workspace-write" | "local-policy";
     deviceTrust?: { mode: "full"; revision: number };
+    centralApproval?: { revision: number };
   } | null;
 }
 

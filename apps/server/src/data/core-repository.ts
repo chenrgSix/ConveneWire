@@ -77,6 +77,7 @@ export interface AgentCapabilities {
 export interface AgentRuntimePolicy {
   filesystemAccess: "read-only" | "workspace-write" | "local-policy";
   deviceTrust?: { mode: "full"; revision: number };
+  centralApproval?: { revision: number };
 }
 
 export interface CreateAgentOptions {

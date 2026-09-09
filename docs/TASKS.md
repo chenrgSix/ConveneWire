@@ -773,7 +773,7 @@ or a registration receipt alone.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| SEC-017 | IN_PROGRESS | Forward exact Runtime permission requests to the Device owner in Central | SEC-016, WEB-079 | [ADR-0063](adr/0063-forward-runtime-approvals-to-device-owner.md) defines local consent, owner-only review and same-process continuation; pending contracts, authority negatives, cancellation/recovery and physical browser/process evidence |
+| SEC-017 | DONE | Forward exact Runtime permission requests to the Device owner in Central | SEC-016, WEB-079 | [Acceptance evidence](acceptance/sec-017-central-runtime-approval.md): generated Node/Go contracts, owner/session/digest/revision/restart negatives, cancellation and race checks, full Web/client UI suites and actual Central/Go Bridge plus browser-reviewed command allow/deny and file allow prove same-process continuation; no model calls or automatic owner opt-in |
 
 ## Compact conversation workspace
 

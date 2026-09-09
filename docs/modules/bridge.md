@@ -1,5 +1,14 @@
 # Local Bridge
 
+[ADR-0063](../adr/0063-forward-runtime-approvals-to-device-owner.md) adds the
+separate local **Central approval** mode. It retains the configured sandbox,
+pins the exact pairing/revision and forces Codex's user reviewer. The owner can
+allow or deny one command/file change in Central while Bridge holds the same
+Runtime callback. Mode changes drain execution before persistence; failed saves
+do not restart a worker with its former broader authority. The owner must opt
+in locally once; Central cannot enable this mode. See
+[SEC-017 evidence](../acceptance/sec-017-central-runtime-approval.md).
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

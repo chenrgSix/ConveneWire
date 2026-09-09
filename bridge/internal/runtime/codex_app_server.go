@@ -24,6 +24,12 @@ var (
 )
 
 func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emit EmitFunc) error {
+	approval := request.Run.CentralApproval
+	if approval != nil && (approval.Revision < 1 || approval.Revision != c.Config.CentralApprovalRevision || c.Approve == nil ||
+		request.Run.DeviceTrust != nil || conversationWork(request.Run) || c.Config.OwnerPrivateOutput ||
+		request.Run.OwnerPrivateOutput != nil && *request.Run.OwnerPrivateOutput || request.Run.ContextManifest != nil && request.Run.ContextManifest.Execution != nil) {
+		return emitCodexFailure(ctx, emit, "CENTRAL_APPROVAL_CHANGED", "Central approval no longer matches local consent.")
+	}
 	trusted := request.Run.DeviceTrust
 	if trusted != nil && (trusted.Mode != "full" || trusted.Revision < 1 ||
 		trusted.Revision != c.Config.TrustedExecutionRevision || conversationWork(request.Run) ||
@@ -154,6 +160,11 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		parserConfig, runtimePromptWithArtifacts(promptRun, request.Artifacts),
 		c.Sessions, sessionKey, resumeThreadID,
 	)
+	if approval != nil {
+		parser.approve = c.Approve
+		parser.approvalContext = runContext
+		parser.approvalAgentID = request.Run.TargetAgentID
+	}
 	parser.bootstrapInstruction = runtimePromptWithArtifacts(bootstrapRun, request.Artifacts)
 	parser.artifacts = request.Artifacts
 	parser.binding = sessionBinding
@@ -338,6 +349,11 @@ type codexAppServerMessage struct {
 }
 
 type codexAppServerParser struct {
+	approve                             ApprovalFunc
+	approvalContext                     context.Context
+	approvalAgentID                     string
+	approvalCallbacks                   map[string]bool
+	approvalFileChanges                 map[string]string
 	config                              config.AgentConfig
 	instruction                         string
 	bootstrapInstruction                string
@@ -399,7 +415,8 @@ func newCodexAppServerSessionParser(
 		config: configuration, instruction: instruction,
 		bootstrapInstruction: instruction, sessions: sessions,
 		sessionKey: sessionKey, resumeID: resumeID,
-		reasoning: make(map[string]*activityTextPreview),
+		reasoning:         make(map[string]*activityTextPreview),
+		approvalCallbacks: make(map[string]bool), approvalFileChanges: make(map[string]string),
 	}
 }
 
@@ -414,6 +431,10 @@ func (p *codexAppServerParser) consume(source []byte) (*OutputDelta, []any, erro
 		return nil, nil, fmt.Errorf("Codex app-server emitted trailing JSON")
 	}
 	if len(message.ID) > 0 && message.Method != "" {
+		if p.approve != nil {
+			messages, err := p.answerApproval(message)
+			return nil, messages, err
+		}
 		var requestID any
 		if err := json.Unmarshal(message.ID, &requestID); err != nil {
 			return nil, nil, fmt.Errorf("Codex app-server request id is malformed")
@@ -461,12 +482,17 @@ func (p *codexAppServerParser) consumeResponse(message codexAppServerMessage) (*
 		}, nil
 	case "2":
 		var result struct {
-			Thread struct {
+			ApprovalPolicy    string `json:"approvalPolicy"`
+			ApprovalsReviewer string `json:"approvalsReviewer"`
+			Thread            struct {
 				ID string `json:"id"`
 			} `json:"thread"`
 		}
 		if err := json.Unmarshal(message.Result, &result); err != nil || result.Thread.ID == "" {
 			return nil, nil, fmt.Errorf("Codex thread open response omitted thread id")
+		}
+		if p.approve != nil && (result.ApprovalPolicy != "on-request" || result.ApprovalsReviewer != "user") {
+			return nil, nil, errors.New("Codex did not confirm owner-reviewed approval support")
 		}
 		p.threadID = result.Thread.ID
 		if p.sessions != nil && p.sessionKey != nil {
@@ -644,6 +670,10 @@ func (p *codexAppServerParser) threadRequest() map[string]any {
 	params := map[string]any{
 		"cwd": p.config.Workspace, "sandbox": sandbox, "approvalPolicy": "never",
 	}
+	if p.approve != nil {
+		params["approvalPolicy"] = "on-request"
+		params["approvalsReviewer"] = "user"
+	}
 	method := "thread/start"
 	if p.resumeID != "" {
 		method = "thread/resume"
@@ -678,6 +708,7 @@ func (p *codexAppServerParser) consumeNotification(method string, params json.Ra
 		p.activities = append(p.activities, preview.project(value.ItemID, "Thinking", false)...)
 		return nil, nil, nil
 	case "item/started":
+		p.retainApprovalFileChanges(params)
 		if err := p.consumeActivityItem(params, "started"); err != nil {
 			return nil, nil, err
 		}

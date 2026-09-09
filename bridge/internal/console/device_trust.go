@@ -28,6 +28,9 @@ func (s *Service) deviceTrustViewLocked() DeviceTrustView {
 	if s.configuration.FullTrustRevision(s.credential.ServerURL, s.credential.DeviceID, s.credential.OwnerMemberID) > 0 {
 		view.Mode = "full"
 	}
+	if s.configuration.CentralApprovalRevision(s.credential.ServerURL, s.credential.DeviceID, s.credential.OwnerMemberID) > 0 {
+		view.Mode = "central-approval"
+	}
 	view.Editable = !s.closed && !s.governedMutation && s.joinCancel == nil && !s.runtimePreflight && len(s.runtimeTests) == 0
 	return view
 }
@@ -38,7 +41,7 @@ func (s *Service) updateDeviceExecutionTrust(response http.ResponseWriter, reque
 		ExpectedRevision int64  `json:"expectedRevision"`
 		Confirm          bool   `json:"confirm"`
 	}
-	if decodeJSON(request, &input) != nil || !input.Confirm || (input.Mode != "full" && input.Mode != "restricted") || input.ExpectedRevision < 0 || input.ExpectedRevision >= 9007199254740991 {
+	if decodeJSON(request, &input) != nil || !input.Confirm || (input.Mode != "full" && input.Mode != "restricted" && input.Mode != "central-approval") || input.ExpectedRevision < 0 || input.ExpectedRevision >= 9007199254740991 {
 		writeError(response, http.StatusBadRequest, "Confirm the exact device trust choice")
 		return
 	}
@@ -83,7 +86,7 @@ func (s *Service) updateDeviceExecutionTrust(response http.ResponseWriter, reque
 	s.governedMutation = false
 	s.mu.Unlock()
 	// A saved revocation remains saved even if reconnection fails.
-	if wasRunning && (err == nil || input.Mode != "restricted") {
+	if wasRunning && err == nil {
 		_, _ = s.StartBridge()
 	}
 	if err != nil {
