@@ -1,5 +1,38 @@
 # Persistence and Recovery
 
+## Peer membership persistence
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) assigns DATA-010 additive
+Peer storage. Migration 0095 separates Peer bindings, membership ceilings,
+invitation consumption, audience-specific hash-only credential verifiers and
+human session lineage from existing Device and legacy invitation tables.
+The [membership repository](../../apps/server/src/data/peer-membership-repository.ts)
+commits new Host User/Member/Peer IDs, scoped Room participation, the machine
+verifier and invitation receipt in one immediate transaction. Neither remote
+local-user IDs nor display names select existing Host users.
+
+The frozen claim intent includes its invitation digest, operation and recipient;
+fresh transport challenges do not change it. Exact authenticated retries return
+the original active association, including after the invitation's claim deadline.
+They never create another Member or restore revoked/expired credentials. A fresh
+invitation creates its own explicitly authorized association. The invitation
+preview pins the Host origin and a separate membership expiry.
+
+SQL guards retain immutable identity/ceiling/history, deny Owner promotion and
+out-of-scope Room roster additions, and prevent credential revival. New Rooms
+include active Team-scoped Peer members and omit Room guests or expired/revoked
+members. A human exchange binds one credential to one session with an immutable
+ceiling-required marker; missing lineage must fail closed in SEC-019.
+
+The membership increment passes 26 focused Server checks, Server build, docs
+lint, local links and whitespace checks. Coverage includes rollback-at-credential-write, exact retry,
+changed recipient/key/operation denial, revoke/reopen/stopped-backup, hash-only
+storage, Room/credential ceilings and the 0094-to-0095 upgrade fixture. The
+historical version-42 Task migration fixture seeds version-42 Room SQL instead
+of invoking current Peer-aware repository queries. Runtime signature/nonce and
+API/event visibility admission remain SEC-019; grant/acceptance lineage and
+Participant storage remain the next DATA-010 increment.
+
 ## Authority partition ownership
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) assigns DATA-009 the

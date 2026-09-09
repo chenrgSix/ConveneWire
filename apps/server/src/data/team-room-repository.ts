@@ -119,7 +119,11 @@ export class TeamRoomRepository {
       this.database.prepare(`
         INSERT INTO room_human_participants (room_id, member_id, added_at)
         SELECT @roomId, member_id, @createdAt
-        FROM team_members WHERE team_id = @teamId
+        FROM team_members m WHERE team_id = @teamId
+          AND NOT EXISTS (
+            SELECT 1 FROM peer_memberships p WHERE p.member_id = m.member_id
+              AND (p.scope_kind = 'room' OR p.state <> 'active' OR p.expires_at <= @createdAt)
+          )
       `).run(room);
       this.database.prepare(`
         INSERT INTO room_agent_participants (room_id, agent_id, added_at)
