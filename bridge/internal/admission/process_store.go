@@ -27,7 +27,8 @@ const (
 
 type governedProcessPreparedRecord struct {
 	Version    int                                   `json:"version"`
-	Owner      Owner                                 `json:"owner"`
+	Owner      *Owner                                `json:"owner,omitempty"`
+	NodeOwner  *NodeProcessOwner                     `json:"nodeOwner,omitempty"`
 	Identity   bridgeruntime.GovernedProcessIdentity `json:"identity"`
 	LockDigest string                                `json:"lockDigest"`
 	PreparedAt string                                `json:"preparedAt"`
@@ -61,6 +62,8 @@ type governedProcessView struct {
 type GovernedProcessStore struct {
 	mu           sync.Mutex
 	owner        Owner
+	nodeOwner    *NodeProcessOwner
+	nodeRoot     string
 	root         string
 	pins         []directoryPin
 	releaseOwner func() error
@@ -183,6 +186,10 @@ func OpenGovernedProcessStore(ctx context.Context, dataDir string, owner Owner) 
 	if !validOwner(owner) {
 		return nil, ErrAdmissionInvalid
 	}
+	return openProcessStore(ctx, dataDir, owner, nil)
+}
+
+func openProcessStore(ctx context.Context, dataDir string, owner Owner, nodeOwner *NodeProcessOwner) (*GovernedProcessStore, error) {
 	root, err := canonicalPrivateDirectory(dataDir)
 	if err != nil || filepath.Dir(root) == root {
 		return nil, ErrAdmissionInvalid
@@ -197,8 +204,24 @@ func OpenGovernedProcessStore(ctx context.Context, dataDir string, owner Owner) 
 		return nil, errors.Join(cause, store.Close())
 	}
 	ownerJSON, _ := json.Marshal(owner)
+	if nodeOwner != nil {
+		if err := bindNodeProcessOwner(root, *nodeOwner); err != nil {
+			return fail(err)
+		}
+		bound := *nodeOwner
+		store.nodeOwner, store.nodeRoot = &bound, root
+		ownerJSON, _ = json.Marshal(bound)
+		ownerJSON = append([]byte("convenewire.node.process-owner.v1\x00"), ownerJSON...)
+	} else if _, err := os.Lstat(filepath.Join(root, nodeProcessOwnerFile)); !errors.Is(err, os.ErrNotExist) {
+		return fail(ErrAdmissionChanged)
+	}
 	parent := filepath.Join(root, governedProcessDirectory)
 	store.root = filepath.Join(parent, digest(ownerJSON))
+	if nodeOwner != nil {
+		if err := requireNodeProcessNamespace(parent, filepath.Base(store.root)); err != nil {
+			return fail(err)
+		}
+	}
 	for _, directory := range []string{parent, store.root} {
 		if err := os.Mkdir(directory, 0o700); err != nil && !errors.Is(err, os.ErrExist) {
 			return fail(err)
@@ -237,9 +260,12 @@ func (s *GovernedProcessStore) PrepareProcess(identity bridgeruntime.GovernedPro
 		return nil, ErrAdmissionConflict
 	}
 	now := s.now().UTC()
-	record := governedProcessPreparedRecord{Version: 1, Owner: s.owner, Identity: identity,
+	record := governedProcessPreparedRecord{Version: 1, Owner: &s.owner, Identity: identity,
 		LockDigest: governedProcessLockDigest(identity),
 		PreparedAt: profileTime(now)}
+	if s.nodeOwner != nil {
+		record.Version, record.Owner, record.NodeOwner = 4, nil, s.nodeOwner
+	}
 	raw, err := json.Marshal(record)
 	if err != nil || len(raw) > maxProfileRecord {
 		return nil, ErrAdmissionInvalid
@@ -602,7 +628,7 @@ func (s *GovernedProcessStore) get(run string) (governedProcessView, error) {
 	if err := readAdmission(s.path(run, governedProcessPrepared), &prepared); err != nil {
 		return governedProcessView{}, err
 	}
-	if prepared.Version != 1 || prepared.Owner != s.owner || prepared.Identity.RunID != run ||
+	if !s.matchesProcessOwner(prepared) || prepared.Identity.RunID != run ||
 		bridgeruntime.ValidateGovernedProcessIdentity(prepared.Identity) != nil ||
 		prepared.LockDigest != governedProcessLockDigest(prepared.Identity) || !validProfileTime(prepared.PreparedAt) {
 		return governedProcessView{}, ErrAdmissionChanged
@@ -731,6 +757,15 @@ func (s *GovernedProcessStore) check() error {
 		if err != nil || current.Mode()&os.ModeSymlink != 0 || !current.IsDir() || !os.SameFile(current, pin.info) ||
 			(runtime.GOOS != "windows" && current.Mode().Perm()&0o077 != 0) {
 			return ErrAdmissionChanged
+		}
+	}
+	if s.nodeOwner != nil {
+		var bound NodeProcessOwner
+		if readAdmission(filepath.Join(s.nodeRoot, nodeProcessOwnerFile), &bound) != nil || bound != *s.nodeOwner {
+			return ErrAdmissionChanged
+		}
+		if err := requireNodeProcessNamespace(filepath.Dir(s.root), filepath.Base(s.root)); err != nil {
+			return err
 		}
 	}
 	return nil

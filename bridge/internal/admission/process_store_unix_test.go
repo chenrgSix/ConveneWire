@@ -111,3 +111,55 @@ func TestGovernedProcessLeaseFinishesOnlyAfterObservedProcessExit(t *testing.T) 
 		t.Fatalf("closed lease replay error=%v", err)
 	}
 }
+
+func TestNodeProcessStoreFencesLiveProcessTreeAfterRestartWithoutDeviceOwner(t *testing.T) {
+	store, directory, owner := nodeProcessStoreFixture(t)
+	identity := governedProcessIdentityFixture()
+	lease, err := store.PrepareProcess(identity)
+	if err != nil {
+		t.Fatal(err)
+	}
+	command := exec.Command("/bin/sh", "-c", "sleep 30")
+	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	command.ExtraFiles = []*os.File{lease.InheritedLockFile()}
+	if err := command.Start(); err != nil {
+		_ = lease.Abandon()
+		t.Fatal(err)
+	}
+	waited := false
+	defer func() {
+		if !waited {
+			_ = syscall.Kill(-command.Process.Pid, syscall.SIGKILL)
+			_ = command.Wait()
+		}
+	}()
+	observation := bridgeruntime.GovernedProcessObservation{PID: command.Process.Pid,
+		PlatformIdentity: fmt.Sprintf("process-group:%d", command.Process.Pid)}
+	if err := lease.Started(observation); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenNodeProcessStore(context.Background(), directory, owner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reopened.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := reopened.FenceAll(ctx); err != nil {
+		t.Fatal(err)
+	}
+	result := command.Wait()
+	waited = true
+	if result == nil {
+		t.Fatal("orphan Runtime completed without being fenced")
+	}
+	if err := reopened.RequireFinished(identity); err != nil {
+		t.Fatal("exact process termination evidence missing", err)
+	}
+	if _, err := reopened.PrepareProcess(identity); !errors.Is(err, ErrAdmissionConflict) {
+		t.Fatal("possible-start identity replayed", err)
+	}
+}

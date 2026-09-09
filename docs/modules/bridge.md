@@ -23,6 +23,21 @@ orphans for every persisted Authority, including offline or removed connectors.
 The shared scheduler releases a resource only after local process cleanup.
 See [BRG-080 evidence](../acceptance/brg-080-multi-authority-core.md).
 
+BRG-081 begins the Peer composition with a Node-owned process namespace bound
+to the installation's Node ID, public key and local User ID. It reuses the
+existing OS process lease, termination and restart proof machinery while
+retaining the original Device record format and digest. A Peer process must
+not require a fabricated Device owner. Core composition must fence every old
+Device/Authority process before admitting work through the new Node namespace;
+transport, Runtime sessions and local approval remain separate authority gates.
+
+The process-store foundation passes Admission, Runtime and shared-core Go race
+tests and vet. Focused coverage terminates an actual orphaned process after
+restart, rejects a replaced/missing Node binding and foreign process namespace,
+and preserves legacy Device record bytes and namespace hashes. Windows amd64
+test cross-compilation passes; this is not Windows execution evidence. Core
+composition and Peer transport are still in progress under BRG-081.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child
