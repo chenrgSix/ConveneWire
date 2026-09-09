@@ -83,6 +83,10 @@ func runAuthorities(ctx context.Context, loaded config.Config, credential pairin
 	if err := processes.FenceAll(ctx); err != nil {
 		return err
 	}
+	spaces, err := authority.NewSpaceDirectory(loaded.DataDir)
+	if err != nil {
+		return err
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	var workers sync.WaitGroup
@@ -106,7 +110,7 @@ func runAuthorities(ctx context.Context, loaded config.Config, credential pairin
 			attempt := 0
 			for ctx.Err() == nil {
 				attempt++
-				err := runAuthenticatedConnector(ctx, loaded.DataDir, c, version, scoped, processes)
+				err := runAuthenticatedConnector(ctx, loaded.DataDir, c, version, scoped, processes, spaces, loaded.LocalNodeID)
 				if errors.Is(err, connection.ErrConfigurationChanged) {
 					failures <- err
 					return
@@ -220,7 +224,7 @@ func configureAuthorities(loaded config.Config, credential pairing.Credential, i
 	return result, nil
 }
 
-func runAuthenticatedConnector(ctx context.Context, root string, c authorityConnector, version string, observer operations.Observer, processes bridgeruntime.GovernedProcessTracker) error {
+func runAuthenticatedConnector(ctx context.Context, root string, c authorityConnector, version string, observer operations.Observer, processes bridgeruntime.GovernedProcessTracker, spaces *authority.SpaceDirectory, localNodeID string) error {
 	if _, err := os.Lstat(filepath.Join(c.config.DataDir, "device-credential.json")); err == nil {
 		saved, err := pairing.Load(c.config.DataDir)
 		if err != nil || saved.Token != c.credential.Token || saved.ServerURL != c.credential.ServerURL || saved.TeamID != c.credential.TeamID || saved.DeviceID != c.credential.DeviceID || saved.OwnerMemberID != c.credential.OwnerMemberID {
@@ -258,6 +262,9 @@ func runAuthenticatedConnector(ctx context.Context, root string, c authorityConn
 				return err
 			}
 		}
+	}
+	if err := spaces.Observe(verified, c.config.DeviceName, c.pin.AuthorityNodeID == localNodeID); err != nil {
+		return err
 	}
 	proof := func(ctx context.Context) error {
 		current, err := pairing.Load(c.config.DataDir)

@@ -55,9 +55,9 @@ legacy managed-Bridge Result scenarios passed. Server/Web production builds pass
 A full Go run reached its 240-second wrapper limit. A 90-second-per-package
 diagnostic retry passed every package except the unchanged repository suite,
 which reached its timeout while running Git preparation fixtures. Runtime and
-Console also passed an isolated diagnostic run. The repository suite is being
-checked separately with its longer total fixture allowance; neither timeout is
-counted as a pass.
+Console also passed an isolated diagnostic run. The repository suite then passed separately in 206.7 seconds with a longer
+total fixture allowance. Every Bridge package has now passed; neither earlier
+timeout is counted as a pass.
 
 ## Configuration and limits
 

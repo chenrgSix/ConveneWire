@@ -1348,3 +1348,8 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .local-node-runtime span { opacity: .75; }
 .local-node-runtime button { padding: 7px 12px; border-radius: 8px; cursor: pointer; }
 .local-node-runtime p { flex-basis: 100%; margin: 0; color: var(--danger, #e77c71); }
+
+.space-directory { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 20px; border-bottom: 1px solid var(--border, #39433e); font-size: 13px; }
+.space-directory a { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border, #39433e); overflow-wrap: anywhere; }
+.space-directory a:hover { background: var(--cw-surface-raised, #39433e); }
+.space-directory small, .space-directory > span { opacity: .7; font-size: 11px; }

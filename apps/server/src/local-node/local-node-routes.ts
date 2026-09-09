@@ -25,6 +25,10 @@ export function registerLocalNodeRoutes({ app, localNode, principal, clock, limi
     if (Object.keys(body).length !== 1) throw new Error("Local Node entry accepts only a ticket");
     return localNode.claim(body.ticket, clock());
   });
+  app.get("/api/local-node/spaces", async (request, reply) => {
+    noStore(reply); localNode.requireOwner(principal(request));
+    return localNode.spaces();
+  });
   app.get("/api/local-node", async (request, reply) => {
     noStore(reply); localNode.requireOwner(principal(request));
     return localNode.status();

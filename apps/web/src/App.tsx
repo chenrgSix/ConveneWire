@@ -24,6 +24,7 @@ import {
 } from "./api-client.js";
 import { type Locale, type TranslationKey, translate } from "./i18n.js";
 import { ClientEntryGate, clientEntryFromFragment, type ClientEntrySession } from "./features/auth/ClientEntryGate.js";
+import { SpaceDirectory } from "./features/local-node/SpaceDirectory.js";
 import { LocalNodeRuntime } from "./features/local-node/LocalNodeRuntime.js";
 import { AccessGate } from "./features/auth/AccessGate.js";
 import { AccountWorkspace } from "./features/auth/AccountWorkspace.js";
@@ -1671,6 +1672,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
       </WorkspaceSidebar>
 
       <main className="workspace">
+        {isLocalNode && session && <SpaceDirectory session={session} locale={locale} />}
         {isLocalNode && session && <LocalNodeRuntime session={session} team={selectedTeam} teams={teams} locale={locale} />}
         <header className="workspace-header">
           <div className="workspace-heading">

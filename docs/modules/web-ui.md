@@ -9,6 +9,13 @@ its own human authentication, navigation, drafts and pending request lifecycle.
 Directory presence is not membership and cannot create a writable remote Room
 replica. A/B native desktop acceptance follows B's implementation checks.
 
+The shared core refreshes owner-private navigation references only after Host
+proof. The Local Hub checks bounded closed-schema references and local Owner
+access. Web refreshes the local directory with session guards and opens remote
+origins through credential-free, opener-free links. Previous-core observations
+are cleared; directory presence never means current connectivity. See
+[Space implementation evidence](../acceptance/web-084-authority-spaces.md).
+
 ## Local Node entry
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a desktop-issued one-use entry

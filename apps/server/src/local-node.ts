@@ -32,7 +32,7 @@ input.on("line", (line) => {
     const launch = parseLocalNodeLaunch(JSON.parse(line));
     if (closeRequested) return;
     const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
-    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch,
+    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
       webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });

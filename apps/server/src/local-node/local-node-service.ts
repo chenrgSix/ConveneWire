@@ -1,3 +1,4 @@
+import { readSpaceDirectory } from "./space-directory.js";
 import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type Database from "better-sqlite3";
 import type { FastifyRequest } from "fastify";
@@ -32,7 +33,8 @@ export class LocalNodeService {
     private readonly core: CoreRepository,
     private readonly auth: AuthService,
     public readonly launch: LocalNodeLaunch,
-    now: string
+    now: string,
+    private readonly spaceDirectoryPath?: string
   ) {
     parseLocalNodeLaunch(launch);
     this.origin = `http://127.0.0.1:${launch.identity.port}`;
@@ -101,6 +103,10 @@ export class LocalNodeService {
 
   public controlState(now: string) {
     return { binding: this.binding(now), consoleRequestId: this.consoleRequestId };
+  }
+
+  public spaces() {
+    return readSpaceDirectory(this.spaceDirectoryPath, this.launch.identity.nodeId, this.origin);
   }
 
   public status() {

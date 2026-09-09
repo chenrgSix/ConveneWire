@@ -251,6 +251,7 @@ import { WorkspaceLeaseService } from
 
 export interface ServerAppOptions {
   localNode?: LocalNodeLaunch;
+  localNodeSpaceDirectory?: string;
   anonymousRateLimit?: {
     maximumAttempts: number;
     windowMilliseconds: number;
@@ -323,7 +324,7 @@ export async function createServerApp(
   try {
     if (options.localNode) {
       if (options.webAuth && options.webAuth.mode !== "local") throw new Error("Local Node requires local Web auth");
-      localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString());
+      localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString(), options.localNodeSpaceDirectory);
     } else if (database.prepare("SELECT 1 FROM local_node_installation").get()) {
       throw new Error("A Local Node database requires its installation identity");
     }

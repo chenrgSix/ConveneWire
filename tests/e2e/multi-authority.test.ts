@@ -66,7 +66,9 @@ process.stdout.write(JSON.stringify({type:'message_end',message:{role:'assistant
     nodeId: `node_${secret()}`, ownerUserId: userId, port: localPort, secret: secret() } };
   async function host(label: "A" | "B" | "C", sharedDevice?: string) {
     const databasePath = path.join(root, `${label}.sqlite`);
-    const options = { databasePath, ...(label === "A" ? { localNode } : {}) };
+    const browserOrigin = `https://host-${label.toLowerCase()}.example`;
+    const options = { databasePath, ...(label === "A" ? { localNode, localNodeSpaceDirectory: path.join(dataDir, "authority-spaces.json") }
+      : { webAuth: { mode: "trusted-team" as const, publicOrigin: browserOrigin, ownerRecoveryToken: secret() } }) };
     let app = await createServerApp(options); let closed = false;
     const origin = await app.listen({ host: "127.0.0.1", port: label === "A" ? localPort : 0 });
     const port = Number(new URL(origin).port);
@@ -79,7 +81,7 @@ process.stdout.write(JSON.stringify({type:'message_end',message:{role:'assistant
     core.createRoom({ roomId, teamId, name: `Room ${label}`, collaborationPolicy: defaultRoomCollaborationPolicy, settingsRevision: 1, createdAt: now });
     const owner = auth.issueWebSession(userId, now, new Date(Date.now() + 3600_000).toISOString());
     const request = (method: HTTPMethods, url: string, payload?: unknown) => app.inject({ method, url,
-      headers: { host: new URL(origin).host, authorization: `Bearer ${owner.secret}` }, ...(payload === undefined ? {} : { payload: payload as Record<string, unknown> }) });
+      headers: { host: new URL(origin).host, ...(label === "A" ? { authorization: `Bearer ${owner.secret}` } : { origin: browserOrigin, cookie: `__Host-agentroom_session=${owner.secret}` }) }, ...(payload === undefined ? {} : { payload: payload as Record<string, unknown> }) });
     const ok = async (method: HTTPMethods, url: string, payload?: unknown) => { const response = await request(method, url, payload); assert.equal(response.statusCode, 200, response.body); return response.json(); };
     let credential;
     if (label === "A") {
@@ -159,7 +161,12 @@ process.stdout.write(JSON.stringify({type:'message_end',message:{role:'assistant
   const started = (name: string) => until(async () => (await log()).find(item => item.name === name && item.phase === "start"), `Runtime ${name} started`);
   // Publish the actual Runtime scope before freezing an offline delivery.
   // A manually seeded Agent without a scope is not a negotiated Runtime.
-  await Promise.all(hosts.map(ready)); await bridge.stop();
+  await Promise.all(hosts.map(ready));
+  const spaces = await a.ok("GET", "/api/local-node/spaces");
+  assert.equal(spaces.spaces.length, 3);
+  assert.deepEqual(spaces.spaces.filter((space: { kind: string }) => space.kind === "remote").map((space: { browserOrigin: string }) => space.browserOrigin).sort(), ["https://host-b.example", "https://host-c.example"]);
+  for (const h of hosts) assert.ok(!JSON.stringify(spaces).includes(h.credential.token));
+  await bridge.stop();
   hosts.forEach(h => h.seedCollision()); bridge = start();
   await Promise.all(hosts.map(h => completed(h, runId)));
   const collisions = (await log()).filter(item => item.name.startsWith("collision-"));
