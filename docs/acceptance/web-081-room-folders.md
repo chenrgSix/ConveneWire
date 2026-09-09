@@ -55,5 +55,20 @@ Screenshots: [desktop light](assets/web-081/desktop-light.jpg),
 
 ## Installed local preview
 
-Pending verified source packaging and local Central update. No real model calls,
-CI, external release or other physical-platform acceptance is claimed.
+Central was updated through the verified source-package controller to
+`v0.5.8-local.4de7fb3`, exact source
+`4de7fb3c0e4c8ef4b78e907db54daab1c056fc06`, after a verified SQLite backup.
+The original-CA HTTPS endpoint serves the new folder navigation JavaScript and
+CSS. `doctor` passed release checksums, Compose, browser/HTTPS readiness and
+WebSocket ingress.
+
+All measured business row counts, 36 client JSON files, eight Bridge application
+files, installation identity, schema version and private CA were preserved.
+Three Agents returned ready; Central approval remains revision 3. The Bridge
+continues using its accepted `v0.5.6-local.ef61656` implementation. QA browser
+tabs, the same-origin responsive wrapper and disposable servers were removed;
+the temporary-root wrapper confirmed cleanup. Private upgrade receipts remain
+in the ignored local upgrade directory.
+
+No real model calls, CI, external release or other physical-platform acceptance
+is claimed.
