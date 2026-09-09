@@ -211,6 +211,7 @@ async function render(sources, language, rendererOptions) {
 
 function formatGo(source) {
   const result = spawnSync("gofmt", {
+    timeout: 30000,
     encoding: "utf8",
     input: source
   });
@@ -1791,6 +1792,7 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
+    peerJson: formatGo(await readFile(path.join(packageRoot, "src/go-peer-json.template"), "utf8")),
     authorityValidator: formatGo(await readFile(path.join(packageRoot, "src/go-authority-validator.template"), "utf8")),
     authorityProof: formatGo(await readFile(path.join(packageRoot, "src/go-authority-proof.template"), "utf8")),
     authorityTypescript, authorityGo, authoritySchema: `${JSON.stringify(authoritySchema, null, 2)}\n`,

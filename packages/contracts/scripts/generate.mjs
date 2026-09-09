@@ -9,6 +9,7 @@ const generatedRoot = path.join(packageRoot, "generated");
 const output = await generateContractTypes(packageRoot);
 
 await Promise.all([
+  mkdir(path.join(generatedRoot, "go", "peer"), { recursive: true }),
   mkdir(path.join(generatedRoot, "go", "authority"), { recursive: true }),
   mkdir(path.join(generatedRoot, "go", "localnode"), { recursive: true }),
   mkdir(path.join(generatedRoot, "typescript"), { recursive: true }),
@@ -19,6 +20,7 @@ await Promise.all([
   mkdir(path.join(generatedRoot, "go", "work"), { recursive: true })
 ]);
 await Promise.all([
+  writeFile(path.join(generatedRoot, "go", "peer", "json.go"), output.peerJson),
   writeFile(path.join(generatedRoot, "go", "authority", "validation.go"), output.authorityValidator),
   writeFile(path.join(generatedRoot, "go", "authority", "proof.go"), output.authorityProof),
   writeFile(path.join(generatedRoot, "typescript", "authority.ts"), output.authorityTypescript),

@@ -1,5 +1,20 @@
 # Contracts Module
 
+## Peer collaboration contracts
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) starts CON-028. Peer semantic
+JSON has a separate bounded implementation in TypeScript and generated Go;
+legacy Device Inbox hashing is unchanged. Both reject duplicate decoded keys,
+invalid Unicode/UTF-8, non-finite numbers, excess depth and excess bytes.
+Serialization follows [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785.html),
+including UTF-16 property order and ECMAScript IEEE754 number spelling.
+
+The first increment passes 125 Contracts Node tests, generated/type checks and
+Go fixtures/vet, including actual Go/Node comparison over 2,000-plus deterministic
+IEEE754/Unicode inputs. The generator bounds each gofmt invocation to 30 seconds
+so an unresponsive formatter cannot hold generation indefinitely. Closed Peer
+control/execution schemas and signatures remain the next CON-028 increment.
+
 ## Multi-Authority foundation
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's

@@ -8,6 +8,7 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  peerJson: await readFile(path.join(generatedRoot, "go", "peer", "json.go"), "utf8"),
   authorityValidator: await readFile(path.join(generatedRoot, "go", "authority", "validation.go"), "utf8"),
   authorityProof: await readFile(path.join(generatedRoot, "go", "authority", "proof.go"), "utf8"),
   authorityTypescript: await readFile(path.join(generatedRoot, "typescript", "authority.ts"), "utf8"),
@@ -81,6 +82,7 @@ if (await readFile(path.join(generatedRoot, "runtime", "local-node-schema.json")
 if (await readFile(path.join(generatedRoot, "runtime", "authority-schema.json"), "utf8") !== expected.authoritySchema) throw new Error("Authority runtime schema is stale");
 
 for (const output of [
+  "peerJson",
   "authorityValidator", "authorityProof", "authorityTypescript", "authorityGo", "authoritySchema",
   "localNodeValidator", "localNodeTypescript", "localNodeGo", "localNodeSchema",
   "goDisclosureSchema", "goDisclosureRuntime",
