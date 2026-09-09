@@ -504,3 +504,378 @@ export type ProtocolVersion = "peer.v1";
 
 export type Type = "peer.challenge" | "peer.proof" | "peer.invitation" | "peer.invitation.claim" | "peer.membership" | "peer.agent.export" | "peer.agent.acceptance" | "peer.agent.projection" | "peer.run.admission" | "peer.run.settlement" | "peer.error";
 
+export interface PeerJoinReceipt {
+  invitation:        PeerJoinReceiptInvitation;
+  machineCredential: PeerJoinReceiptMachineCredential;
+  membership:        PeerJoinReceiptMembership;
+  proof:             PeerJoinReceiptProof;
+  schemaVersion:     number;
+}
+
+export interface PeerJoinReceiptInvitation {
+  expiresAt:           string;
+  host:                PurpleHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               PurpleScope;
+  teamLabel:           string;
+}
+
+export interface PurpleHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PurpleScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerJoinReceiptMachineCredential {
+  audience:      PeerMachineCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  peerId:        string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface PeerJoinReceiptMembership {
+  createdAt:         string;
+  expiresAt:         string;
+  hostNodeId:        string;
+  localUserId:       string;
+  memberId:          string;
+  membershipId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  schemaVersion:     number;
+  scope:             FluffyScope;
+  state:             PeerMembershipState;
+  userId:            string;
+}
+
+export interface FluffyScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerJoinReceiptProof {
+  payload:   StickyPayload;
+  signature: string;
+}
+
+export interface StickyPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerLocalConnection {
+  acceptances: PeerLocalConnectionAcceptance[];
+  exports:     PeerLocalConnectionExport[];
+  receipt:     PeerLocalConnectionReceipt;
+  state:       PeerLocalConnectionState;
+}
+
+export interface PeerLocalConnectionAcceptance {
+  acceptanceId:      string;
+  authorityNodeId:   string;
+  capabilities:      PurpleCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  grantDigest:       string;
+  grantRevision:     number;
+  issuedAt:          string;
+  memberId:          string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface PurpleCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface PeerLocalConnectionExport {
+  authorityNodeId:   string;
+  capabilities:      FluffyCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface FluffyCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface PeerLocalConnectionReceipt {
+  invitation:        PurpleInvitation;
+  machineCredential: PurpleMachineCredential;
+  membership:        PurpleMembership;
+  proof:             PurpleProof;
+  schemaVersion:     number;
+}
+
+export interface PurpleInvitation {
+  expiresAt:           string;
+  host:                FluffyHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               TentacledScope;
+  teamLabel:           string;
+}
+
+export interface FluffyHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface TentacledScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PurpleMachineCredential {
+  audience:      PeerMachineCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  peerId:        string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface PurpleMembership {
+  createdAt:         string;
+  expiresAt:         string;
+  hostNodeId:        string;
+  localUserId:       string;
+  memberId:          string;
+  membershipId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  schemaVersion:     number;
+  scope:             StickyScope;
+  state:             PeerMembershipState;
+  userId:            string;
+}
+
+export interface StickyScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PurpleProof {
+  payload:   IndigoPayload;
+  signature: string;
+}
+
+export interface IndigoPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export type PeerLocalConnectionState = "active" | "left" | "revoked";
+
+export interface PeerParticipantState {
+  connections:   Connection[];
+  localUserId:   string;
+  participant:   PeerParticipantStateParticipant;
+  revision:      number;
+  schemaVersion: number;
+}
+
+export interface Connection {
+  acceptances: ConnectionAcceptance[];
+  exports:     ConnectionExport[];
+  receipt:     ConnectionReceipt;
+  state:       PeerLocalConnectionState;
+}
+
+export interface ConnectionAcceptance {
+  acceptanceId:      string;
+  authorityNodeId:   string;
+  capabilities:      TentacledCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  grantDigest:       string;
+  grantRevision:     number;
+  issuedAt:          string;
+  memberId:          string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface TentacledCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface ConnectionExport {
+  authorityNodeId:   string;
+  capabilities:      StickyCapabilities;
+  expiresAt:         string;
+  exportId:          string;
+  issuedAt:          string;
+  localAgentId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  roomIds:           [string, ...string[]];
+  schemaVersion:     number;
+  state:             PeerMembershipState;
+  teamId:            string;
+}
+
+export interface StickyCapabilities {
+  supportsInterrupt:            boolean;
+  supportsOwnerPrivateOutput:   boolean;
+  supportsResume:               boolean;
+  supportsStart:                boolean;
+  supportsStreaming:            boolean;
+  supportsTaskContextIsolation: boolean;
+}
+
+export interface ConnectionReceipt {
+  invitation:        FluffyInvitation;
+  machineCredential: FluffyMachineCredential;
+  membership:        FluffyMembership;
+  proof:             FluffyProof;
+  schemaVersion:     number;
+}
+
+export interface FluffyInvitation {
+  expiresAt:           string;
+  host:                TentacledHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               IndigoScope;
+  teamLabel:           string;
+}
+
+export interface TentacledHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface IndigoScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface FluffyMachineCredential {
+  audience:      PeerMachineCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  peerId:        string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface FluffyMembership {
+  createdAt:         string;
+  expiresAt:         string;
+  hostNodeId:        string;
+  localUserId:       string;
+  memberId:          string;
+  membershipId:      string;
+  participantNodeId: string;
+  peerId:            string;
+  revision:          number;
+  schemaVersion:     number;
+  scope:             IndecentScope;
+  state:             PeerMembershipState;
+  userId:            string;
+}
+
+export interface IndecentScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface FluffyProof {
+  payload:   IndecentPayload;
+  signature: string;
+}
+
+export interface IndecentPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerParticipantStateParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+

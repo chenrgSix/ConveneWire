@@ -1381,6 +1381,112 @@
           }
         }
       ]
+    },
+    "PeerJoinReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitation",
+        "membership",
+        "machineCredential",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitation": {
+          "$ref": "#/$defs/PeerInvitation"
+        },
+        "membership": {
+          "$ref": "#/$defs/PeerMembership"
+        },
+        "machineCredential": {
+          "$ref": "#/$defs/PeerMachineCredential"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerLocalConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt",
+        "state",
+        "exports",
+        "acceptances"
+      ],
+      "properties": {
+        "receipt": {
+          "$ref": "#/$defs/PeerJoinReceipt"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "left",
+            "revoked"
+          ]
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AgentExportGrant"
+          },
+          "maxItems": 2048
+        },
+        "acceptances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RemoteAgentAcceptance"
+          },
+          "maxItems": 2048
+        }
+      }
+    },
+    "PeerParticipantState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "participant",
+        "localUserId",
+        "revision",
+        "connections"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PeerLocalConnection"
+          },
+          "maxItems": 64
+        }
+      }
     }
   }
 }

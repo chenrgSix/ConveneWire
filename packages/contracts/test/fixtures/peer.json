@@ -4164,6 +4164,1890 @@
       "valid": false
     },
     {
+      "description": "PeerJoinReceipt valid",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerJoinReceipt rejects Device fallback",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerJoinReceipt requires schemaVersion",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerJoinReceipt requires invitation",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerJoinReceipt requires membership",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerJoinReceipt requires machineCredential",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerJoinReceipt requires proof",
+      "kind": "PeerJoinReceipt",
+      "value": {
+        "schemaVersion": 1,
+        "invitation": {
+          "schemaVersion": 1,
+          "invitationId": "peerinvite_peerfixture0001",
+          "host": {
+            "nodeId": "node_peerfixture0001",
+            "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+          },
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "teamLabel": "Peer fixture",
+          "roomLabel": null,
+          "expiresAt": "2026-09-10T02:00:30.000Z",
+          "hostOrigin": "https://host.example.test",
+          "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "membership": {
+          "schemaVersion": 1,
+          "membershipId": "peermember_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "hostNodeId": "node_peerfixture0001",
+          "participantNodeId": "node_peerfixture0001",
+          "localUserId": "user_peerfixture0001",
+          "memberId": "member_peerfixture0001",
+          "userId": "user_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "revision": 1,
+          "state": "active",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "machineCredential": {
+          "schemaVersion": 1,
+          "audience": "peer.runtime",
+          "credentialId": "peercredential_peerfixture0001",
+          "peerId": "peer_peerfixture0001",
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection valid",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_peerfixture0001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": null,
+            "expiresAt": "2026-09-10T02:00:30.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "localUserId": "user_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.preview",
+              "signerNodeId": "node_peerfixture0001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_peerfixture0001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        },
+        "state": "active",
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerLocalConnection rejects Device fallback",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_peerfixture0001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": null,
+            "expiresAt": "2026-09-10T02:00:30.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "localUserId": "user_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.preview",
+              "signerNodeId": "node_peerfixture0001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_peerfixture0001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        },
+        "state": "active",
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection requires receipt",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "state": "active",
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection requires state",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_peerfixture0001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": null,
+            "expiresAt": "2026-09-10T02:00:30.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "localUserId": "user_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.preview",
+              "signerNodeId": "node_peerfixture0001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_peerfixture0001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        },
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection requires exports",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_peerfixture0001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": null,
+            "expiresAt": "2026-09-10T02:00:30.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "localUserId": "user_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.preview",
+              "signerNodeId": "node_peerfixture0001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_peerfixture0001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        },
+        "state": "active",
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection requires acceptances",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_peerfixture0001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": null,
+            "expiresAt": "2026-09-10T02:00:30.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "localUserId": "user_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "team",
+              "teamId": "team_peerfixture0001",
+              "roomId": null
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.preview",
+              "signerNodeId": "node_peerfixture0001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_peerfixture0001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        },
+        "state": "active",
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState valid",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "localUserId": "user_peerfixture0001",
+        "revision": 1,
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerParticipantState rejects Device fallback",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "localUserId": "user_peerfixture0001",
+        "revision": 1,
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ],
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState requires schemaVersion",
+      "kind": "PeerParticipantState",
+      "value": {
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "localUserId": "user_peerfixture0001",
+        "revision": 1,
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState requires participant",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "localUserId": "user_peerfixture0001",
+        "revision": 1,
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState requires localUserId",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "revision": 1,
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState requires revision",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "localUserId": "user_peerfixture0001",
+        "connections": [
+          {
+            "receipt": {
+              "schemaVersion": 1,
+              "invitation": {
+                "schemaVersion": 1,
+                "invitationId": "peerinvite_peerfixture0001",
+                "host": {
+                  "nodeId": "node_peerfixture0001",
+                  "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+                },
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "teamLabel": "Peer fixture",
+                "roomLabel": null,
+                "expiresAt": "2026-09-10T02:00:30.000Z",
+                "hostOrigin": "https://host.example.test",
+                "membershipExpiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "membership": {
+                "schemaVersion": 1,
+                "membershipId": "peermember_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "hostNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "localUserId": "user_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "userId": "user_peerfixture0001",
+                "scope": {
+                  "kind": "team",
+                  "teamId": "team_peerfixture0001",
+                  "roomId": null
+                },
+                "revision": 1,
+                "state": "active",
+                "createdAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "machineCredential": {
+                "schemaVersion": 1,
+                "audience": "peer.runtime",
+                "credentialId": "peercredential_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "proof": {
+                "payload": {
+                  "schemaVersion": 1,
+                  "purpose": "invitation.preview",
+                  "signerNodeId": "node_peerfixture0001",
+                  "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "audienceNodeId": "node_peerfixture0001",
+                  "operationId": "op_peerfixture0001",
+                  "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+                  "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "issuedAt": "2026-09-10T02:00:00.000Z",
+                  "expiresAt": "2026-09-10T02:00:30.000Z"
+                },
+                "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            },
+            "state": "active",
+            "exports": [
+              {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "acceptances": [
+              {
+                "schemaVersion": 1,
+                "acceptanceId": "acceptance_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "memberId": "member_peerfixture0001",
+                "exportId": "export_peerfixture0001",
+                "grantRevision": 1,
+                "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ]
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerParticipantState requires connections",
+      "kind": "PeerParticipantState",
+      "value": {
+        "schemaVersion": 1,
+        "participant": {
+          "nodeId": "node_peerfixture0001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "localUserId": "user_peerfixture0001",
+        "revision": 1
+      },
+      "valid": false
+    },
+    {
       "kind": "PeerScope",
       "description": "Room ceiling requires exact Room",
       "value": {

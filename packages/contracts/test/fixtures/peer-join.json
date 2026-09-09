@@ -1,0 +1,214 @@
+{
+  "now": "2026-09-10T02:00:00.000Z",
+  "state": {
+    "schemaVersion": 1,
+    "participant": {
+      "nodeId": "node_participant001",
+      "publicKey": "_RckOFqgx1tk-3jNYC-h2ZH96_drE8WO1wLqyDXp9hg"
+    },
+    "localUserId": "user_localowner0001",
+    "revision": 1,
+    "connections": [
+      {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_hostfixture001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": "Invited room",
+            "expiresAt": "2026-09-10T03:00:00.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_hostfixture001",
+            "participantNodeId": "node_participant001",
+            "localUserId": "user_localowner0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.claim",
+              "signerNodeId": "node_hostfixture001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_participant001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "9fbd05c7dcb0be42ee3d606cf8ccee2bb9cea4f76c1c85d9a4cb0de6e0f8e73b",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "jT6tON3nNeOwCTIjWYtVmH2-XJmWWwzHN0M6rl0kNPkz018mramGPiG61ro_9bkjPxjb4E2Bps8DJibFSm2hCA"
+          }
+        },
+        "state": "active",
+        "exports": [],
+        "acceptances": []
+      }
+    ]
+  },
+  "authorized": {
+    "schemaVersion": 1,
+    "participant": {
+      "nodeId": "node_participant001",
+      "publicKey": "_RckOFqgx1tk-3jNYC-h2ZH96_drE8WO1wLqyDXp9hg"
+    },
+    "localUserId": "user_localowner0001",
+    "revision": 2,
+    "connections": [
+      {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_hostfixture001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": "Invited room",
+            "expiresAt": "2026-09-10T03:00:00.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_hostfixture001",
+            "participantNodeId": "node_participant001",
+            "localUserId": "user_localowner0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.claim",
+              "signerNodeId": "node_hostfixture001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_participant001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "9fbd05c7dcb0be42ee3d606cf8ccee2bb9cea4f76c1c85d9a4cb0de6e0f8e73b",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "jT6tON3nNeOwCTIjWYtVmH2-XJmWWwzHN0M6rl0kNPkz018mramGPiG61ro_9bkjPxjb4E2Bps8DJibFSm2hCA"
+          }
+        },
+        "state": "active",
+        "exports": [
+          {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_participant001",
+            "authorityNodeId": "node_hostfixture001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": false
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          }
+        ],
+        "acceptances": [
+          {
+            "schemaVersion": 1,
+            "acceptanceId": "acceptance_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "authorityNodeId": "node_hostfixture001",
+            "participantNodeId": "node_participant001",
+            "teamId": "team_peerfixture0001",
+            "memberId": "member_peerfixture0001",
+            "exportId": "export_peerfixture0001",
+            "grantRevision": 1,
+            "grantDigest": "9d64f133d43c4a4e9c829c659b9bc04631f755402ee8de9561cbe1ee4322400d",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": false
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          }
+        ]
+      }
+    ]
+  }
+}

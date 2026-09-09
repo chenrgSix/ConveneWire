@@ -1,9 +1,8 @@
-import { readFileSync } from "node:fs";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { canonicalPeerJson, parsePeerJson } from "./peer-json.mjs";
+import schema from "../generated/runtime/peer-schema.json" with { type: "json" };
 
-const schema = JSON.parse(readFileSync(new URL("../generated/runtime/peer-schema.json", import.meta.url), "utf8"));
 const ajv = new Ajv2020({ strict: true });
 addFormats(ajv);
 ajv.addSchema(schema);

@@ -49,3 +49,25 @@ test("actual Go Peer decoder and proof transcript agree with Node", () => {
   }
   assert.equal(output.at(-1).transcript,vector.transcript);assert.equal(output.at(-1).signatureValid,true);
 });
+
+test("Peer private state binds the Host receipt to invitation, membership and machine credential", async () => {
+  const join = JSON.parse(await readFile(new URL("./fixtures/peer-join.json", import.meta.url)));
+  assert.equal(validatePeer("PeerParticipantState", join.state), true);
+  assert.equal(validatePeer("PeerParticipantState", join.authorized), true);
+  const receipt = join.state.connections[0].receipt;
+  const digest = value => peerDigest({ invitationDigest: peerDigest(value.invitation), membership: value.membership, machineCredential: value.machineCredential });
+  assert.equal(digest(receipt), receipt.proof.payload.subjectDigest);
+  const key = createPublicKey({ key: Buffer.concat([Buffer.from("302a300506032b6570032100", "hex"), Buffer.from(receipt.invitation.host.publicKey, "base64url")]), format: "der", type: "spki" });
+  assert.ok(verify(null, peerProofTranscript(receipt.proof.payload), key, Buffer.from(receipt.proof.signature, "base64url")));
+  for (const change of [
+    value => { value.invitation.hostOrigin = "https://changed.example.test"; },
+    value => { value.invitation.membershipExpiresAt = "2027-01-01T00:00:00.000Z"; },
+    value => { value.membership.localUserId = "user_substituted001"; },
+    value => { value.membership.scope.roomId = "room_substituted001"; },
+    value => { value.machineCredential.token = "A".repeat(43); }
+  ]) {
+    const changed = structuredClone(receipt);
+    change(changed);
+    assert.notEqual(digest(changed), receipt.proof.payload.subjectDigest);
+  }
+});

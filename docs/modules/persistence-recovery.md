@@ -51,7 +51,26 @@ after business permission expires.
 The authorization increment passes 17 focused membership/authorization/migration
 checks and Server build, including injected rollback during head replacement,
 wrong owner/identity/capability/scope, stale revisions, new-ID/replay denial,
-reopen and stopped backup. Participant private storage remains DATA-010 work.
+reopen and stopped backup.
+
+The [Participant store](../../bridge/internal/peer/store.go) retains closed,
+identity-bound signed join receipts, Runtime credentials and append-only bilateral
+histories under the shared core's existing exclusive root lease. The Host proof
+binds the invitation digest, exact membership and machine credential. Missing
+records in an established store, mismatched local Owner/key, altered scope,
+withdrawal revival and observed revision rollback fail closed. Atomic protected
+temporary-file replacement and an in-process shared revision lock give one CAS
+winner; a stopped copy preserves the exact receipt and history. The store never
+imports Device trust, execution approvals or human browser sessions.
+
+The private state has explicit limits of 64 connections, 2,048 revisions per
+history and the 1 MiB strict JSON byte ceiling. Rejected updates retain the old
+state. Five Go store checks and privatefs pass with race detection; owning vet,
+129 Node contract checks, generated/types/Go fixtures, Server build and an
+isolated empty-PATH bundled validator check pass. The validator imports its
+schema statically so bundling does not leave a source-relative filesystem read.
+Native Windows ACL execution and actual Peer transport remain later gates;
+SEC-019 now owns network and human admission.
 
 ## Authority partition ownership
 

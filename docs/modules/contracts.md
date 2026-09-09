@@ -33,6 +33,14 @@ removes them in a finally block and retains the 30-second bound. The existing
 two-pass deterministic-generation test and current-output check pass with this
 invocation path; no generated wire bytes change because of the formatter fix.
 
+DATA-010 extends the closed contract with signed join receipts and private
+Participant connection/history records. The Host proof's subject digest includes
+the invitation digest, exact membership and machine credential; local identity,
+Room and grant/acceptance history invariants are checked by the owning store.
+The added Node-signed fixture is verified by actual Go storage tests. All 129
+Node contract checks, generation/types and Go fixtures pass. Static schema
+imports also pass isolated Node bundling with an empty PATH.
+
 ## Multi-Authority foundation
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's
