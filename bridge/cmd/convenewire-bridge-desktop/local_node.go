@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"convenewire.dev/bridge/internal/autostart"
+	"convenewire.dev/bridge/internal/browserlaunch"
 	"convenewire.dev/bridge/internal/localnode"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
@@ -103,6 +104,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 		shell.Handler().ServeHTTP(response, request)
 	}))
 	window := app.Window.NewWithOptions(application.WebviewWindowOptions{Name: "ConveneWire Local Node", Title: "ConveneWire · 本地空间", URL: entryURL,
+		AllowSimpleEventEmit: true, JS: localSpaceNavigationScript,
 		Width: 1280, Height: 850, MinWidth: 850, MinHeight: 620, BackgroundColour: application.NewRGB(12, 17, 13)})
 	agentWindow := app.Window.NewWithOptions(application.WebviewWindowOptions{Name: "ConveneWire Local Agents", Title: "ConveneWire · 本机 Agent", URL: "/",
 		Width: 980, Height: 780, MinWidth: 760, MinHeight: 620, Hidden: true, BackgroundColour: application.NewRGB(12, 17, 13)})
@@ -172,6 +174,39 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 	menu.Add("退出").OnClick(func(*application.Context) { app.Quit() })
 	tray.SetMenu(menu)
 	tray.OnClick(openHub)
+	registeredSpaces := map[string]bool{}
+	registerSpaces := func() {
+		if hub == nil {
+			return
+		}
+		entries, err := remoteDesktopSpaces(root, hub.Data.Identity.NodeID, hub.Data.Origin())
+		if err != nil {
+			return
+		}
+		for _, entry := range entries {
+			name := spaceNavigationEvent(entry)
+			if registeredSpaces[name] {
+				continue
+			}
+			registeredSpaces[name] = true
+			app.Event.On(name, func(*application.CustomEvent) {
+				current, err := remoteDesktopSpaces(root, hub.Data.Identity.NodeID, hub.Data.Origin())
+				if err != nil {
+					return
+				}
+				for _, candidate := range current {
+					if candidate.AuthorityNodeID == entry.AuthorityNodeID && candidate.TeamID == entry.TeamID {
+						if err := browserlaunch.OpenSpace(candidate.BrowserOrigin, candidate.TeamID); err != nil {
+							application.InvokeAsync(func() {
+								app.Dialog.Error().SetTitle("无法打开空间").SetMessage("请检查系统浏览器后重试。").Show()
+							})
+						}
+						return
+					}
+				}
+			})
+		}
+	}
 	if shell != nil && startErr == nil {
 		go func() {
 			ticker := time.NewTicker(500 * time.Millisecond)
@@ -187,6 +222,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 					})
 					return
 				case <-ticker.C:
+					registerSpaces()
 					requested, err := shell.Poll(ctx)
 					if err != nil {
 						if ctx.Err() != nil {

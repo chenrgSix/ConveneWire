@@ -45,7 +45,7 @@ export function SpaceDirectory({ session, locale }: { session: LocalSession; loc
   if (remote.length === 0) return null;
   return <nav className="space-directory" aria-label={zh ? "空间" : "Spaces"}>
     <strong>{zh ? "本地空间" : "Local workspace"}</strong>
-    {remote.map(space => <a key={`${space.authorityNodeId}:${space.teamId}`} href={space.href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">
+    {remote.map(space => <a key={`${space.authorityNodeId}:${space.teamId}`} href={space.href} data-authority-node={space.authorityNodeId} data-authority-team={space.teamId} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">
       <span>{space.label} ↗</span><small>{new URL(space.browserOrigin).host}</small>
     </a>)}
     <span>{zh ? "其他空间在新窗口打开，需独立登录。" : "Other spaces open separately with their own sign-in."}</span>

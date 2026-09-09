@@ -135,6 +135,11 @@ navigation, draft/outbox and asynchronous request lifecycle. Space switching
 never forwards the local Owner bearer or a Device credential. A remote human
 still authenticates at that Host under its current rights; the directory grants
 no access. No generic credential-bearing cross-origin proxy is introduced.
+Native WebViews translate a Space click into a bare configured-reference event.
+The desktop re-reads the private verified directory and constructs an origin/Team
+URL for the system browser. Page input cannot supply an arbitrary URL, command
+or credential to the native opener. Browser-hosted Web retains ordinary isolated
+links.
 
 ## Verification and consequences
 

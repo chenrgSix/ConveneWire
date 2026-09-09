@@ -12,7 +12,8 @@ replica. A/B native desktop acceptance follows B's implementation checks.
 The shared core refreshes owner-private navigation references only after Host
 proof. The Local Hub checks bounded closed-schema references and local Owner
 access. Web refreshes the local directory with session guards and opens remote
-origins through credential-free, opener-free links. Previous-core observations
+origins through credential-free, opener-free links. Native Wails windows dispatch only a configured Space reference to a bounded
+system-browser opener, which rechecks the private directory. Previous-core observations
 are cleared; directory presence never means current connectivity. See
 [Space implementation evidence](../acceptance/web-084-authority-spaces.md).
 
