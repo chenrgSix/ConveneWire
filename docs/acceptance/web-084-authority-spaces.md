@@ -35,6 +35,8 @@ previous links immediately; late responses cannot replace the current directory.
 - Production Server/Web builds and the packaged Local Node Run/Discussion,
   restart and stopped restore regression pass with zero external model calls.
 
-Native WebView rendering and external-window behavior are recorded by QA-092.
+Native WebView rendering and credential-free external-browser dispatch are
+recorded in [QA-092](qa-092-ab-native-desktop.md), with its remaining interaction
+gates explicitly open.
 No Peer feature, general cross-origin API client, real installation or publication
 is included in this task.
