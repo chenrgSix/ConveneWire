@@ -40,6 +40,20 @@ compatibility (one test); real Central/Go Bridge process scenario (three Runs,
 three approvals, zero standing work authorizations); documentation lint and
 changed local links. No browser review is claimed by this process scenario.
 
-Installed repair and a subsequent owner decision with a real model remain
-pending. The first authorized real model call reproduced the failure; offline
-compatibility coverage is not a claim that live approval has succeeded.
+## Installed repair
+
+The existing macOS Bridge was updated to `v0.5.6-local.ef61656`, exact source
+`ef61656b99d7868588eaac92734952000db95b95`. Native desktop/helper packaging
+passed; all eight installed application files match the candidate. The new
+authenticated connection reports that source and its executable SHA-256.
+Three Agents are ready, with the two Codex Agents still advertising the
+owner-enabled Central approval revision 3.
+
+All 35 existing client JSON files, business row counts, Central installation
+manifest and private CA were preserved. Central remains on the previous version;
+this repair changes only the Bridge adapter. Private application/config backups
+and installation receipts remain in the ignored local upgrade directory.
+
+A subsequent owner decision with a real model remains pending. The first
+authorized real model call reproduced the failure; offline compatibility
+coverage is not a claim that live approval has succeeded.
