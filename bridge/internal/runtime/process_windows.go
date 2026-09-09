@@ -23,6 +23,10 @@ const (
 	createNoWindow uint32 = windows.CREATE_NO_WINDOW
 )
 
+func configureAuthorityRuntimeCommand(ctx context.Context, args []string, tracker GovernedProcessTracker, identity GovernedProcessIdentity) (*exec.Cmd, runtimeCommand, error) {
+	return configureGovernedRuntimeCommand(ctx, args, tracker, identity)
+}
+
 // windowsRuntimeCommand owns a Job Object for one Runtime process tree. The
 // process starts suspended so it cannot create an untracked child between
 // CreateProcess and AssignProcessToJobObject.

@@ -17,6 +17,8 @@ import (
 )
 
 type Config struct {
+	// Multi-Authority transport must not follow redirects with machine credentials.
+	AuthorityBound          bool                    `json:"-"`
 	LocalNodeID             string                  `json:"localNodeId,omitempty"`
 	DeviceExecutionTrust    *DeviceExecutionTrust   `json:"deviceExecutionTrust,omitempty"`
 	SchemaVersion           int                     `json:"schemaVersion"`
@@ -71,6 +73,8 @@ func (c Config) ResolvedAgentProvisioningMode() AgentProvisioningMode {
 }
 
 type AgentConfig struct {
+	// Set by the authenticated connector composition, never accepted from Agent JSON.
+	AuthorityNodeID string `json:"-"`
 	// Derived only from the paired device's local consent; never accepted from Agent JSON.
 	CentralApprovalRevision    int64                      `json:"-"`
 	TrustedExecutionRevision   int64                      `json:"-"`

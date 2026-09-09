@@ -11,6 +11,18 @@ binding; one connector's failure cannot reset another connector's execution.
 Local trust is never copied to a newly configured Authority. Peer transport and
 Participant-local Peer approvals remain separate Milestone C work.
 
+The primary profile keeps its original identities, Inbox bytes and Session
+fingerprints. Additional projections use fresh partitions and Authority-scoped
+native Session fingerprints; their source Agent's owner-private output floor is
+preserved. Full trust, Central approval, standing policies and disclosure consent
+are never copied. Root ownership covers partition stores; alias receipts prevent
+later remapping an old projection to another local Agent.
+
+Before any connector starts, durable process records fence ordinary and governed
+orphans for every persisted Authority, including offline or removed connectors.
+The shared scheduler releases a resource only after local process cleanup.
+See [BRG-080 evidence](../acceptance/brg-080-multi-authority-core.md).
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

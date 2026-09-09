@@ -24,7 +24,8 @@ var ErrGovernedExecutionUnsupported = errors.New("governed execution requires a 
 
 type Handler struct {
 	Inbox              *Inbox
-	Gate               *AgentExecutionGate
+	Gate               ExecutionGate
+	BeforeStart        func(context.Context) error
 	OnNew              NewRunFunc
 	OnDuplicate        NewRunFunc
 	OnQueuedCanceled   NewRunFunc
@@ -188,6 +189,11 @@ func (h Handler) runNew(
 		}
 		if canceled || h.isExplicitCancel(ctx) {
 			return h.cancelAfterAcceptance(ctx, record, send)
+		}
+	}
+	if h.BeforeStart != nil {
+		if err := h.BeforeStart(ctx); err != nil {
+			return err
 		}
 	}
 	return h.OnNew(ctx, record, send)

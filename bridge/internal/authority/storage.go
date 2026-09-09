@@ -19,6 +19,38 @@ import (
 
 const ConfigurationFilename = "authority-connectors.json"
 
+// Multi-Authority mode requires the Owner's existing stable local identity map.
+// A missing or renamed identity is never provisioned as part of startup.
+func ReadLocalIdentities(root string, agents []config.AgentConfig) (map[string]string, error) {
+	raw, err := privatefs.ReadFile(filepath.Join(root, "agent-identities.json"), 1<<20)
+	if err != nil {
+		return nil, ErrPartition
+	}
+	raw, err = executionwire.CanonicalExecutionJSON(raw)
+	if err != nil {
+		return nil, ErrPartition
+	}
+	var ids map[string]string
+	if json.Unmarshal(raw, &ids) != nil || ids == nil {
+		return nil, ErrPartition
+	}
+	validID := regexp.MustCompile(`^agent_[A-Za-z0-9_-]{8,128}$`)
+	for _, id := range ids {
+		if !validID.MatchString(id) {
+			return nil, ErrPartition
+		}
+	}
+	seen := map[string]bool{}
+	for _, agent := range agents {
+		id := ids[agent.Name]
+		if id == "" || seen[id] {
+			return nil, ErrPartition
+		}
+		seen[id] = true
+	}
+	return ids, nil
+}
+
 var ErrPartition = errors.New("Authority partition is missing, ambiguous or bound to a different identity; restore the original owner data")
 
 // Configuration is an explicit private owner file, never discovered in other profiles.
@@ -178,4 +210,100 @@ func readReceipt(path string) (receipt, error) {
 		return r, ErrPartition
 	}
 	return r, nil
+}
+
+// KnownPrimary checks the existing receipt before other connectors start while
+// the primary Host is offline. It grants no execution; each connector still
+// obtains fresh proof before connecting, recovery and Runtime start.
+func (v *Verifier) KnownPrimary(root string, identities map[string]string) (bool, error) {
+	base := filepath.Join(root, "authorities")
+	if _, err := os.Lstat(base); os.IsNotExist(err) {
+		return false, nil
+	}
+	if privatefs.EnsureDirectory(base) != nil {
+		return false, ErrPartition
+	}
+	current, err := readReceipt(filepath.Join(base, "primary.json"))
+	if err != nil || current.Binding != v.binding || current.LocalIdentities == nil {
+		return false, ErrPartition
+	}
+	for name, id := range current.LocalIdentities {
+		if identities[name] != id {
+			return false, ErrPartition
+		}
+	}
+	return true, nil
+}
+
+// BindProjections extends immutable projection-to-local-Agent claims. Removing
+// a configured alias does not permit reassigning its historical identity later.
+func BindProjections(partition string, v Verified, projections map[string]string) error {
+	if requireFresh(v) != nil {
+		return ErrIdentity
+	}
+	current, err := readReceipt(filepath.Join(partition, "receipt.json"))
+	if err != nil || current.Binding != v.binding {
+		return ErrPartition
+	}
+	directory := filepath.Join(partition, "projections")
+	if privatefs.EnsureDirectory(directory) != nil {
+		return ErrPartition
+	}
+	validID := regexp.MustCompile(`^agent_[A-Za-z0-9_-]{8,128}$`)
+	for projection, local := range projections {
+		if !validID.MatchString(projection) || !validID.MatchString(local) {
+			return ErrPartition
+		}
+		path := filepath.Join(directory, projection+".json")
+		expected, _ := json.Marshal(map[string]string{"projectionAgentId": projection, "localAgentId": local})
+		if _, err := os.Lstat(path); os.IsNotExist(err) {
+			if err := privatefs.WriteFile(path, expected); err != nil {
+				return err
+			}
+			continue
+		}
+		actual, err := privatefs.ReadFile(path, 1024)
+		if err != nil || !bytes.Equal(actual, expected) {
+			return ErrPartition
+		}
+	}
+	return nil
+}
+
+type Partition struct {
+	DataDir string
+	Binding Binding
+}
+
+// OwnedPartitions includes removed/offline connectors for local process fencing.
+// A configured live Host is not needed to settle already-owned OS processes.
+func OwnedPartitions(root string) ([]Partition, error) {
+	base := filepath.Join(root, "authorities")
+	primary, err := readReceipt(filepath.Join(base, "primary.json"))
+	if err != nil {
+		return nil, err
+	}
+	result := []Partition{{DataDir: root, Binding: primary.Binding}}
+	entries, err := os.ReadDir(base)
+	if err != nil {
+		return nil, err
+	}
+	for _, entry := range entries {
+		if entry.Name() == "primary.json" {
+			continue
+		}
+		if !entry.IsDir() || !regexp.MustCompile(`^node_[A-Za-z0-9_-]{8,128}$`).MatchString(entry.Name()) {
+			return nil, ErrPartition
+		}
+		directory := filepath.Join(base, entry.Name())
+		if privatefs.EnsureDirectory(directory) != nil {
+			return nil, ErrPartition
+		}
+		r, err := readReceipt(filepath.Join(directory, "receipt.json"))
+		if err != nil || r.Binding.Pin.AuthorityNodeID != entry.Name() {
+			return nil, ErrPartition
+		}
+		result = append(result, Partition{DataDir: directory, Binding: r.Binding})
+	}
+	return result, nil
 }

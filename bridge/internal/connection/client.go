@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -77,6 +78,8 @@ var (
 )
 
 type Client struct {
+	AgentIdentities                   map[string]string
+	BeforeConnect                     func(context.Context) error
 	Config                            config.Config
 	Credential                        pairing.Credential
 	BridgeVersion                     string
@@ -262,6 +265,11 @@ func (c Client) retryBounds() (time.Duration, time.Duration) {
 }
 
 func (c Client) connectOnce(ctx context.Context) (bool, error) {
+	if c.BeforeConnect != nil {
+		if err := c.BeforeConnect(ctx); err != nil {
+			return false, err
+		}
+	}
 	buildObservation := c.BuildObservation
 	if buildObservation == (buildidentity.Observation{}) {
 		buildObservation = buildidentity.Current()
@@ -357,9 +365,12 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 	if err := writer.writeJSON(ctx, hello); err != nil {
 		return false, err
 	}
-	identities, err := identity.LoadOrCreate(c.Config.DataDir, c.Config.Agents)
-	if err != nil {
-		return false, err
+	identities := c.AgentIdentities
+	if identities == nil {
+		identities, err = identity.LoadOrCreate(c.Config.DataDir, c.Config.Agents)
+		if err != nil {
+			return false, err
+		}
 	}
 	publishAgents := func(sendContext context.Context, prepared PreparedRuns) error {
 		if err := validatePreparedRuns(c.Config.Agents, prepared, c.Credential.DeviceID); err != nil {
@@ -397,6 +408,7 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 
 	readError := make(chan error, 1)
 	type activeRun struct {
+		payload []byte
 		agentID string
 		traceID string
 		cancel  context.CancelCauseFunc
@@ -477,12 +489,18 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 				if c.HandleRun == nil {
 					continue
 				}
+				payload, err := json.Marshal(requested.Payload)
+				if err != nil {
+					reportReadError(err)
+					return
+				}
 				runContext, cancel := context.WithCancelCause(connectionContext)
 				token := &struct{}{}
 				activeMu.Lock()
-				_, alreadyActive := active[requested.Payload.RunID]
+				previous, alreadyActive := active[requested.Payload.RunID]
 				if !alreadyActive {
 					active[requested.Payload.RunID] = activeRun{
+						payload: payload,
 						agentID: requested.Payload.TargetAgentID,
 						traceID: requested.Payload.TraceID,
 						cancel:  cancel,
@@ -492,6 +510,10 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 				activeMu.Unlock()
 				if alreadyActive {
 					cancel(nil)
+					if !bytes.Equal(previous.payload, payload) {
+						reportReadError(errors.New("active Run payload conflicts with its original delivery"))
+						return
+					}
 					continue
 				}
 				runWorkers.Add(1)

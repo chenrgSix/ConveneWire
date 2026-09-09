@@ -10,6 +10,7 @@ import (
 
 	"convenewire.dev/bridge/internal/admission"
 	bridgeartifact "convenewire.dev/bridge/internal/artifact"
+	"convenewire.dev/bridge/internal/authority"
 	"convenewire.dev/bridge/internal/config"
 	"convenewire.dev/bridge/internal/connection"
 	"convenewire.dev/bridge/internal/delivery"
@@ -81,7 +82,6 @@ func RunObservedWithProvisioning(
 	observer operations.Observer,
 	handleProvision connection.ProvisionHandler,
 ) error {
-	loaded = loaded.WithDeviceExecutionTrust(credential.ServerURL, credential.DeviceID, credential.OwnerMemberID)
 	ownedContext, releaseOwner, err := ownership.AcquireContext(ctx, loaded.DataDir)
 	if err != nil {
 		return err
@@ -91,11 +91,32 @@ func RunObservedWithProvisioning(
 	if ctx.Err() != nil {
 		return nil
 	}
-	inbox, err := delivery.Open(filepath.Join(loaded.DataDir, "inbox"))
+	connections, err := authority.ReadConfiguration(loaded.DataDir)
 	if err != nil {
 		return err
 	}
-	identities, err := identity.LoadOrCreate(loaded.DataDir, loaded.Agents)
+	var identities map[string]string
+	if connections != nil {
+		identities, err = authority.ReadLocalIdentities(loaded.DataDir, loaded.Agents)
+	} else {
+		identities, err = identity.LoadOrCreate(loaded.DataDir, loaded.Agents)
+	}
+	if err != nil {
+		return err
+	}
+	if connections != nil {
+		return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections)
+	}
+	return runConnector(ctx, loaded, credential, bridgeVersion, observer, handleProvision, identities, delivery.NewAgentExecutionGate(), nil, nil, "")
+}
+
+// Connector composition borrows one core owner and scheduler. It only owns its
+// authenticated transport and partitioned delivery, Session and policy state.
+func runConnector(ctx context.Context, loaded config.Config, credential pairing.Credential, bridgeVersion string,
+	observer operations.Observer, handleProvision connection.ProvisionHandler, identities map[string]string,
+	gate delivery.ExecutionGate, proof func(context.Context) error, processes bridgeruntime.GovernedProcessTracker, authorityID string) error {
+	loaded = loaded.WithDeviceExecutionTrust(credential.ServerURL, credential.DeviceID, credential.OwnerMemberID)
+	inbox, err := delivery.Open(filepath.Join(loaded.DataDir, "inbox"))
 	if err != nil {
 		return err
 	}
@@ -124,6 +145,9 @@ func RunObservedWithProvisioning(
 			}
 		}
 		if adapters[agentID] != nil {
+			if processes != nil {
+				adapters[agentID] = bridgeruntime.AuthorityProcessAdapter{Adapter: adapters[agentID], Tracker: processes, AuthorityNodeID: authorityID}
+			}
 			if configured.OwnerPrivateOutput {
 				adapters[agentID] = bridgeruntime.PrivateOutputAdapter{Inner: adapters[agentID], DataDir: loaded.DataDir}
 			}
@@ -148,7 +172,7 @@ func RunObservedWithProvisioning(
 		IsPrepareRetryable:      bridgeartifact.IsRetryableMaterialization,
 	}
 	runHandler := delivery.Handler{
-		Inbox: inbox, Gate: delivery.NewAgentExecutionGate(),
+		Inbox: inbox, Gate: gate, BeforeStart: proof,
 		OnNew: executor.Execute, OnDuplicate: executor.Replay,
 		OnQueuedCanceled:   executor.CancelQueued,
 		Prepare:            materializer.Materialize,
@@ -188,7 +212,7 @@ func RunObservedWithProvisioning(
 				return runnerErr
 			}
 		}
-		runHandler.Governed = &delivery.GovernedHandler{Inbox: inbox, Gate: runHandler.Gate,
+		runHandler.Governed = &delivery.GovernedHandler{Inbox: inbox, Gate: runHandler.Gate, BeforeStart: proof,
 			Admission: coordinator, Runner: runner, Executor: executor, AllowsAgent: readiness.allows,
 			IsExplicitCancel: runHandler.IsExplicitCancel}
 	}
@@ -220,6 +244,7 @@ func RunObservedWithProvisioning(
 	}
 	return (connection.Client{
 		Config: loaded, Credential: credential, BridgeVersion: bridgeVersion, Observer: observer,
+		AgentIdentities: identities, BeforeConnect: proof,
 		HandleWorkAuthorization: func(ctx context.Context, request execution.WorkAuthorization) (execution.WorkAuthorizationReceipt, connection.PreparedRuns, error) {
 			receipt, err := governedResources.AuthorizeWork(ctx, request, time.Now().UTC())
 			if err != nil {

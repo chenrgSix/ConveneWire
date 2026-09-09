@@ -71,6 +71,10 @@ resources may execute concurrently. Conflicting waiters are admitted fairly;
 queue cancellation releases only that waiter's claim. Configuration replacement
 continues to drain the owning core before changing resources. Local process
 completion, rather than a Host's terminal projection, releases resource ownership.
+The core durably records ordinary child-process ownership as lifecycle evidence
+without granting governed execution. Startup fences all persisted ordinary and
+governed orphans before any connector starts, including removed or offline
+Authorities. A failed process cleanup retains ownership and blocks admission.
 
 ## Durable partitions and recovery
 

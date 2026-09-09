@@ -58,6 +58,51 @@ func TestGovernedUnixRuntimeCannotExecuteBeforeDurableObservation(t *testing.T) 
 	}
 }
 
+func TestAuthorityProcessRetainsExitStatusAndCannotMaskDurableCleanupFailure(t *testing.T) {
+	for _, variant := range []string{"0", "7", "cleanup"} {
+		t.Run(variant, func(t *testing.T) {
+			exitCode := variant
+			if variant == "cleanup" {
+				exitCode = "0"
+			}
+			file, err := os.CreateTemp(t.TempDir(), "lock")
+			if err != nil {
+				t.Fatal(err)
+			}
+			lease := &governedProcessLeaseStub{lockFile: file}
+			if variant == "cleanup" {
+				lease.finishedErr = errors.New("durable completion unavailable")
+			}
+			tracker := &governedProcessTrackerStub{lease: lease}
+			command, managed, err := configureAuthorityRuntimeCommand(context.Background(), []string{"/bin/sh", "-c", "printf result; exit " + exitCode}, tracker, governedProcessIdentityFixture())
+			if err != nil {
+				t.Fatal(err)
+			}
+			output, err := command.StdoutPipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := managed.Start(); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := io.ReadAll(output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			waitErr := managed.Wait()
+			if string(raw) != "result" || (waitErr == nil) != (variant == "0") {
+				t.Fatalf("output=%q exit=%s err=%v", raw, exitCode, waitErr)
+			}
+			if variant == "cleanup" && !errors.Is(waitErr, lease.finishedErr) {
+				t.Fatal("masked durable completion failure")
+			}
+			if lease.started != 1 || lease.finished != 1 {
+				t.Fatal("process lifecycle was not persisted")
+			}
+		})
+	}
+}
+
 func TestGovernedUnixRuntimeStartFailureNeverReleasesConfiguredRuntime(t *testing.T) {
 	directory := t.TempDir()
 	marker := filepath.Join(directory, "runtime-started")

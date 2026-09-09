@@ -259,7 +259,11 @@ func HTTPClient(cfg config.Config) *http.Client {
 			},
 		}
 	}
-	return &http.Client{Transport: transport}
+	client := &http.Client{Transport: transport}
+	if cfg.AuthorityBound {
+		client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+	}
+	return client
 }
 
 func HTTPClientForCredential(cfg config.Config, credential Credential) *http.Client {
@@ -269,6 +273,9 @@ func HTTPClientForCredential(cfg config.Config, credential Credential) *http.Cli
 	client, err := newScopedHTTPClient(cfg.ServerURL, *credential.ScopedPrivateTrust, time.Now())
 	if err != nil {
 		return &http.Client{Transport: errorTransport{err: err}}
+	}
+	if cfg.AuthorityBound {
+		client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 	}
 	return client
 }

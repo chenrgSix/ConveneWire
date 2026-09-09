@@ -28,8 +28,10 @@ func (g GenericAdapter) executeStructured(ctx context.Context, request Request, 
 	processContext, cancelProcess := context.WithCancel(runContext)
 	defer cancelProcess()
 
-	command := exec.CommandContext(processContext, g.Config.Command[0], g.Config.Command[1:]...)
-	managedCommand := configureRuntimeCommand(command)
+	command, managedCommand, commandErr := newRuntimeCommand(processContext, g.Config.Command, nil, GovernedProcessIdentity{})
+	if commandErr != nil {
+		return commandErr
+	}
 	command.Dir = g.Config.Workspace
 	command.Env = allowedEnvironment(g.Config.EnvAllowlist)
 	command.Stdin = strings.NewReader(runtimePromptWithArtifacts(

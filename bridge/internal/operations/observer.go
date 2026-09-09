@@ -20,23 +20,26 @@ const (
 )
 
 type ConnectionEvent struct {
-	At            time.Time
-	State         ConnectionState
-	Attempt       int
-	NextRetryAt   *time.Time
-	Error         string
-	ConnectedOnce bool
+	AuthorityNodeID  string
+	PrimaryAuthority bool
+	At               time.Time
+	State            ConnectionState
+	Attempt          int
+	NextRetryAt      *time.Time
+	Error            string
+	ConnectedOnce    bool
 }
 
 type RuntimeEvent struct {
-	At          time.Time
-	AgentID     string
-	AgentName   string
-	RunID       string
-	State       RuntimeState
-	ActiveDelta int
-	LastStatus  string
-	ErrorCode   string
+	AuthorityNodeID string
+	At              time.Time
+	AgentID         string
+	AgentName       string
+	RunID           string
+	State           RuntimeState
+	ActiveDelta     int
+	LastStatus      string
+	ErrorCode       string
 }
 
 // Observer is optional. Callers that do not need a local operational

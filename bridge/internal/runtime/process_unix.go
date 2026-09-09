@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -17,12 +18,16 @@ import (
 const runtimeProcessWaitDelay = 250 * time.Millisecond
 
 const runtimeGateArgument = "__convenewire_runtime_gate_v1__"
+const authorityRuntimeGateArgument = "__convenewire_authority_runtime_gate_v1__"
 
 var runtimeGateToken = []byte("convenewire-runtime-start-v1\n")
 
 func init() {
 	if len(os.Args) >= 3 && os.Args[1] == runtimeGateArgument {
-		runUnixRuntimeGate(os.Args[2:])
+		runUnixRuntimeGate(os.Args[2:], false)
+	}
+	if len(os.Args) >= 3 && os.Args[1] == authorityRuntimeGateArgument {
+		runUnixRuntimeGate(os.Args[2:], true)
 	}
 }
 
@@ -46,12 +51,35 @@ func configureRuntimeCommand(command *exec.Cmd) runtimeCommand {
 }
 
 type governedUnixRuntimeCommand struct {
-	command   *exec.Cmd
-	managed   runtimeCommand
-	lease     GovernedProcessLease
-	gateRead  *os.File
-	gateWrite *os.File
-	observed  GovernedProcessObservation
+	outcomeRead  *os.File
+	outcomeWrite *os.File
+	command      *exec.Cmd
+	managed      runtimeCommand
+	lease        GovernedProcessLease
+	gateRead     *os.File
+	gateWrite    *os.File
+	observed     GovernedProcessObservation
+}
+
+// The ordinary adapter needs the configured child's exit status, while the
+// helper still kills its entire owned group before releasing its inherited lock.
+func configureAuthorityRuntimeCommand(ctx context.Context, args []string, tracker GovernedProcessTracker, identity GovernedProcessIdentity) (*exec.Cmd, runtimeCommand, error) {
+	command, managed, err := configureGovernedRuntimeCommand(ctx, args, tracker, identity)
+	if err != nil {
+		return nil, nil, err
+	}
+	c := managed.(*governedUnixRuntimeCommand)
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		_ = c.gateRead.Close()
+		_ = c.gateWrite.Close()
+		_ = c.lease.Abandon()
+		return nil, nil, err
+	}
+	c.outcomeRead, c.outcomeWrite = reader, writer
+	command.Args[1] = authorityRuntimeGateArgument
+	command.ExtraFiles = append(command.ExtraFiles, writer)
+	return command, c, nil
 }
 
 func configureGovernedRuntimeCommand(ctx context.Context, args []string, tracker GovernedProcessTracker,
@@ -81,7 +109,13 @@ func configureGovernedRuntimeCommand(ctx context.Context, args []string, tracker
 }
 
 func (c *governedUnixRuntimeCommand) Start() error {
+	if c.outcomeWrite != nil {
+		defer c.outcomeWrite.Close()
+	}
 	if err := c.managed.Start(); err != nil {
+		if c.outcomeRead != nil {
+			_ = c.outcomeRead.Close()
+		}
 		_ = c.gateRead.Close()
 		_ = c.gateWrite.Close()
 		return errors.Join(err, c.lease.Abandon())
@@ -104,6 +138,16 @@ func (c *governedUnixRuntimeCommand) Start() error {
 
 func (c *governedUnixRuntimeCommand) Wait() error {
 	waitErr := c.managed.Wait()
+	if c.outcomeRead != nil {
+		raw, err := io.ReadAll(io.LimitReader(c.outcomeRead, 16))
+		_ = c.outcomeRead.Close()
+		var exited *exec.ExitError
+		if err == nil && string(raw) == "0" && errors.As(waitErr, &exited) {
+			if status, ok := exited.Sys().(syscall.WaitStatus); ok && status.Signaled() && status.Signal() == syscall.SIGKILL {
+				waitErr = nil
+			}
+		}
+	}
 	killErr := syscall.Kill(-c.observed.PID, syscall.SIGKILL)
 	if errors.Is(killErr, syscall.ESRCH) {
 		killErr = nil
@@ -119,6 +163,9 @@ func (c *governedUnixRuntimeCommand) Run() error {
 }
 
 func (c *governedUnixRuntimeCommand) terminateAfterStart(cause error) error {
+	if c.outcomeRead != nil {
+		_ = c.outcomeRead.Close()
+	}
 	_ = c.gateRead.Close()
 	_ = c.gateWrite.Close()
 	if c.command.Cancel != nil {
@@ -128,7 +175,7 @@ func (c *governedUnixRuntimeCommand) terminateAfterStart(cause error) error {
 	return errors.Join(cause, waitErr, c.lease.Finished(c.observed))
 }
 
-func runUnixRuntimeGate(args []string) {
+func runUnixRuntimeGate(args []string, captureOutcome bool) {
 	if syscall.Getpgrp() != os.Getpid() {
 		os.Exit(125)
 	}
@@ -148,6 +195,17 @@ func runUnixRuntimeGate(args []string) {
 	command := exec.Command(args[0], args[1:]...)
 	command.Stdin, command.Stdout, command.Stderr = os.Stdin, os.Stdout, os.Stderr
 	_ = command.Run()
+	if captureOutcome {
+		outcome := os.NewFile(5, "convenewire-runtime-outcome")
+		if outcome != nil {
+			code := -1
+			if command.ProcessState != nil {
+				code = command.ProcessState.ExitCode()
+			}
+			_, _ = outcome.WriteString(strconv.Itoa(code))
+			_ = outcome.Close()
+		}
+	}
 	// The helper deliberately terminates its own process group after the direct
 	// Runtime exits. This prevents daemonized descendants from outliving the
 	// durable lock even if the Bridge itself disappeared while the Runtime ran.

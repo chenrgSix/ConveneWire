@@ -24,6 +24,7 @@ type governedProcessLeaseStub struct {
 	finished       int
 	abandoned      int
 	startErr       error
+	finishedErr    error
 	startedCheck   func() error
 	observation    GovernedProcessObservation
 	finishedRecord GovernedProcessObservation
@@ -57,7 +58,7 @@ func (s *governedProcessLeaseStub) Finished(observation GovernedProcessObservati
 	if s.lockFile != nil {
 		_ = s.lockFile.Close()
 	}
-	return nil
+	return s.finishedErr
 }
 
 func (s *governedProcessLeaseStub) Abandon() error {

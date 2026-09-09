@@ -75,6 +75,9 @@ func newRuntimeCommand(ctx context.Context, args []string, tracker GovernedProce
 		if identity != (GovernedProcessIdentity{}) {
 			return nil, nil, ErrGovernedProcessInvalid
 		}
+		if tracked, ok := ctx.Value(authorityProcessContextKey{}).(*authorityProcessContext); ok {
+			return configureAuthorityRuntimeCommand(ctx, args, tracked.tracker, tracked.identity())
+		}
 		command := exec.CommandContext(ctx, args[0], args[1:]...)
 		return command, configureRuntimeCommand(command), nil
 	}

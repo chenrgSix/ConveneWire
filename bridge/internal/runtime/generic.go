@@ -51,8 +51,10 @@ func (g GenericAdapter) Execute(ctx context.Context, request Request, emit EmitF
 		runContext, cancel = context.WithDeadline(ctx, request.Run.Deadline)
 	}
 	defer cancel()
-	command := exec.CommandContext(runContext, g.Config.Command[0], g.Config.Command[1:]...)
-	managedCommand := configureRuntimeCommand(command)
+	command, managedCommand, commandErr := newRuntimeCommand(runContext, g.Config.Command, nil, GovernedProcessIdentity{})
+	if commandErr != nil {
+		return commandErr
+	}
 	command.Dir = g.Config.Workspace
 	command.Env = allowedEnvironment(g.Config.EnvAllowlist)
 	command.Stdin = strings.NewReader(runtimePromptWithArtifacts(

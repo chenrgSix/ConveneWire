@@ -27,7 +27,8 @@ type GovernedRunner interface {
 // admission runner's sole invoke=true decision.
 type GovernedHandler struct {
 	Inbox                *Inbox
-	Gate                 *AgentExecutionGate
+	Gate                 ExecutionGate
+	BeforeStart          func(context.Context) error
 	Admission            GovernedAdmission
 	Runner               GovernedRunner
 	Executor             *RuntimeExecutor
@@ -115,6 +116,11 @@ func (h *GovernedHandler) Handle(ctx context.Context, message contracts.RunReque
 		}
 		if canceled || h.isExplicitCancel(ctx) {
 			return base.cancelAfterAcceptance(ctx, record, send)
+		}
+	}
+	if h.BeforeStart != nil {
+		if err := h.BeforeStart(ctx); err != nil {
+			return err
 		}
 	}
 	decision, startErr := h.Admission.Start(ctx, ticket)

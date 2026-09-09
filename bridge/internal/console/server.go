@@ -166,6 +166,7 @@ type State struct {
 	DetectedPi              string                      `json:"detectedPi,omitempty"`
 	RuntimeDiscovery        map[string]RuntimeDiscovery `json:"runtimeDiscovery"`
 	Connection              ConnectionView              `json:"connection"`
+	AuthorityConnections    map[string]ConnectionView   `json:"authorityConnections,omitempty"`
 	AgentProvisioning       AgentProvisioningView       `json:"agentProvisioning"`
 	LoginStartup            autostart.State             `json:"loginStartup"`
 	Enrollment              EnrollmentView              `json:"enrollment"`
@@ -729,6 +730,7 @@ func (s *Service) stopBridgeLocked() (State, <-chan struct{}) {
 	s.bridgeRestartPending = false
 	s.state.BridgeRunning = false
 	s.state.Connection = ConnectionView{State: operations.ConnectionStopped}
+	s.state.AuthorityConnections = nil
 	s.recordEventLocked("bridge.stopped", "", string(operations.ConnectionStopped))
 	s.state.Phase = phaseFor(s.state.Configured, false)
 	return cloneState(s.state), s.bridgeDone
@@ -1393,6 +1395,7 @@ func (s *Service) applyReplacedConfigurationLocked(configuration config.Config) 
 	s.bridgeCancel = nil
 	s.state.BridgeRunning = false
 	s.state.Connection = ConnectionView{State: operations.ConnectionStopped}
+	s.state.AuthorityConnections = nil
 	s.configuration = &configuration
 	if err := s.applyConfigView(configuration); err != nil {
 		s.state.Phase = PhaseError
@@ -1835,6 +1838,27 @@ func (s *Service) operationalObserver(epoch uint64) operations.Observer {
 			if s.bridgeEpoch != epoch {
 				return
 			}
+			if event.AuthorityNodeID != "" {
+				if s.state.AuthorityConnections == nil {
+					s.state.AuthorityConnections = map[string]ConnectionView{}
+				}
+				view := s.state.AuthorityConnections[event.AuthorityNodeID]
+				view.State = event.State
+				view.Attempt = event.Attempt
+				view.NextRetryAt = formatTime(event.NextRetryAt)
+				view.LastError = redactOperationalText(event.Error)
+				if event.State == operations.ConnectionOnline {
+					view.LastConnectedAt = event.At.Format(time.RFC3339Nano)
+					view.LastError = ""
+				}
+				if event.State == operations.ConnectionRetrying {
+					view.LastDisconnectedAt = event.At.Format(time.RFC3339Nano)
+				}
+				s.state.AuthorityConnections[event.AuthorityNodeID] = view
+				if !event.PrimaryAuthority {
+					return
+				}
+			}
 			s.state.Connection.State = event.State
 			s.state.Connection.Attempt = event.Attempt
 			s.state.Connection.NextRetryAt = formatTime(event.NextRetryAt)
@@ -1944,6 +1968,13 @@ func (s *Service) diagnosticInputLocked() diagnostics.Input {
 }
 
 func cloneState(state State) State {
+	if state.AuthorityConnections != nil {
+		connections := make(map[string]ConnectionView, len(state.AuthorityConnections))
+		for id, value := range state.AuthorityConnections {
+			connections[id] = value
+		}
+		state.AuthorityConnections = connections
+	}
 	state.Agents = append([]AgentView{}, state.Agents...)
 	discovered := make(map[string]RuntimeDiscovery, len(state.RuntimeDiscovery))
 	for kind, value := range state.RuntimeDiscovery {

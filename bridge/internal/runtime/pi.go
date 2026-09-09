@@ -119,8 +119,10 @@ func (p PiAdapter) Execute(ctx context.Context, request Request, emit EmitFunc) 
 			"--name", piSessionName(request.Run),
 		)
 	}
-	command := exec.CommandContext(processContext, p.Config.Command[0], commandArguments...)
-	managedCommand := configureRuntimeCommand(command)
+	command, managedCommand, commandErr := newRuntimeCommand(processContext, append([]string{p.Config.Command[0]}, commandArguments...), nil, GovernedProcessIdentity{})
+	if commandErr != nil {
+		return emitPiStartFailure(ctx, emit)
+	}
 	command.Dir = p.Config.Workspace
 	command.Env = allowedEnvironment(p.Config.EnvAllowlist)
 	command.Stdin = strings.NewReader(runtimePromptWithArtifacts(

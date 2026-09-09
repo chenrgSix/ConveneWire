@@ -34,6 +34,7 @@ func Acquire(dataDir string) (*Lock, error) {
 	if err != nil {
 		return nil, fmt.Errorf("resolve Bridge data directory links: %w", err)
 	}
+	directory = authorityOwnerDirectory(directory)
 	path := filepath.Join(directory, lockFilename)
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o600)
 	if err != nil {
@@ -99,9 +100,24 @@ func (l *Lock) owns(dataDir string) bool {
 	if err != nil {
 		return false
 	}
+	directory = authorityOwnerDirectory(directory)
 	ownedInfo, ownedErr := os.Stat(l.directory)
 	candidateInfo, candidateErr := os.Stat(directory)
 	return ownedErr == nil && candidateErr == nil && os.SameFile(ownedInfo, candidateInfo)
+}
+
+// Authority partitions borrow the core root's OS lease. Starting a standalone
+// owner at such a partition cannot bypass the already running core.
+func authorityOwnerDirectory(directory string) string {
+	parent := filepath.Dir(directory)
+	if filepath.Base(parent) != "authorities" {
+		return directory
+	}
+	info, err := os.Lstat(filepath.Join(parent, "primary.json"))
+	if err == nil && info.Mode().IsRegular() {
+		return filepath.Dir(parent)
+	}
+	return directory
 }
 
 func (l *Lock) Release() error {
