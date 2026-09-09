@@ -1209,3 +1209,102 @@ export interface MagentaPayload {
   subjectDigest:   string;
 }
 
+export interface PeerHumanEntryRequest {
+  bindingCredentialId: string;
+  bindingToken:        string;
+  nonce:               string;
+  operationId:         string;
+  proof:               PeerHumanEntryRequestProof;
+  schemaVersion:       number;
+  scope:               PeerHumanEntryRequestScope;
+}
+
+export interface PeerHumanEntryRequestProof {
+  payload:   FriskyPayload;
+  signature: string;
+}
+
+export interface FriskyPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerHumanEntryRequestScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerHumanEntry {
+  credential:        Credential;
+  exchangeExpiresAt: string;
+  hostOrigin:        string;
+  proof:             PeerHumanEntryProof;
+  schemaVersion:     number;
+}
+
+export interface Credential {
+  audience:      PeerHumanCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         CredentialScope;
+  token:         string;
+}
+
+export interface CredentialScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerHumanEntryProof {
+  payload:   MischievousPayload;
+  signature: string;
+}
+
+export interface MischievousPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerBrowserEntryRequest {
+  credentialId:  string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface PeerHumanEntryIdentity {
+  displayName:   string;
+  memberId:      string;
+  membershipId:  string;
+  roomLabel:     null | string;
+  schemaVersion: number;
+  scope:         PeerHumanEntryIdentityScope;
+  teamLabel:     string;
+  userId:        string;
+}
+
+export interface PeerHumanEntryIdentityScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+

@@ -23,6 +23,9 @@ export function peerHumanAuthority(database: Database.Database, userId: string, 
     JOIN teams t ON t.team_id = p.team_id AND t.archived_at IS NULL
     JOIN peer_credentials c ON c.membership_id = p.membership_id AND c.audience = 'peer.human'
       AND c.revoked_at IS NULL AND c.consumed_at IS NOT NULL AND c.expires_at > @now AND c.expires_at <= p.expires_at
+    JOIN peer_human_entries he ON he.credential_id = c.credential_id
+    JOIN peer_human_bindings hb ON hb.credential_id = he.binding_credential_id AND hb.membership_id = p.membership_id
+      AND hb.revoked_at IS NULL AND hb.expires_at > @now AND c.expires_at <= hb.expires_at
     JOIN peer_web_sessions ps ON ps.credential_id = c.credential_id AND ps.session_id = @sessionId
     JOIN web_sessions s ON s.session_id = ps.session_id AND s.user_id = p.user_id
       AND s.peer_access_required = 1 AND s.revoked_at IS NULL AND s.expires_at > @now AND s.expires_at <= c.expires_at

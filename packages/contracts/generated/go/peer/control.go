@@ -1185,6 +1185,105 @@ type MagentaPayload struct {
 	SubjectDigest   string  `json:"subjectDigest"`
 }
 
+type PeerHumanEntryRequest struct {
+	BindingCredentialID string                     `json:"bindingCredentialId"`
+	BindingToken        string                     `json:"bindingToken"`
+	Nonce               string                     `json:"nonce"`
+	OperationID         string                     `json:"operationId"`
+	Proof               PeerHumanEntryRequestProof `json:"proof"`
+	SchemaVersion       int64                      `json:"schemaVersion"`
+	Scope               PeerHumanEntryRequestScope `json:"scope"`
+}
+
+type PeerHumanEntryRequestProof struct {
+	Payload   FriskyPayload `json:"payload"`
+	Signature string        `json:"signature"`
+}
+
+type FriskyPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerHumanEntryRequestScope struct {
+	Kind   Kind    `json:"kind"`
+	RoomID *string `json:"roomId"`
+	TeamID string  `json:"teamId"`
+}
+
+type PeerHumanEntry struct {
+	Credential        Credential          `json:"credential"`
+	ExchangeExpiresAt string              `json:"exchangeExpiresAt"`
+	HostOrigin        string              `json:"hostOrigin"`
+	Proof             PeerHumanEntryProof `json:"proof"`
+	SchemaVersion     int64               `json:"schemaVersion"`
+}
+
+type Credential struct {
+	Audience      PeerHumanCredentialAudience `json:"audience"`
+	CredentialID  string                      `json:"credentialId"`
+	ExpiresAt     string                      `json:"expiresAt"`
+	MembershipID  string                      `json:"membershipId"`
+	SchemaVersion int64                       `json:"schemaVersion"`
+	Scope         CredentialScope             `json:"scope"`
+	Token         string                      `json:"token"`
+}
+
+type CredentialScope struct {
+	Kind   Kind    `json:"kind"`
+	RoomID *string `json:"roomId"`
+	TeamID string  `json:"teamId"`
+}
+
+type PeerHumanEntryProof struct {
+	Payload   MischievousPayload `json:"payload"`
+	Signature string             `json:"signature"`
+}
+
+type MischievousPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerBrowserEntryRequest struct {
+	CredentialID  string `json:"credentialId"`
+	SchemaVersion int64  `json:"schemaVersion"`
+	Token         string `json:"token"`
+}
+
+type PeerHumanEntryIdentity struct {
+	DisplayName   string                      `json:"displayName"`
+	MemberID      string                      `json:"memberId"`
+	MembershipID  string                      `json:"membershipId"`
+	RoomLabel     *string                     `json:"roomLabel"`
+	SchemaVersion int64                       `json:"schemaVersion"`
+	Scope         PeerHumanEntryIdentityScope `json:"scope"`
+	TeamLabel     string                      `json:"teamLabel"`
+	UserID        string                      `json:"userId"`
+}
+
+type PeerHumanEntryIdentityScope struct {
+	Kind   Kind    `json:"kind"`
+	RoomID *string `json:"roomId"`
+	TeamID string  `json:"teamId"`
+}
+
 type Kind string
 
 const (

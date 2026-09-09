@@ -17,6 +17,10 @@ async function human(t: TestContext, teamMembership = false, roomCredential = tr
   const credential = { credentialId: "peerhuman_session001", tokenHash: peerSecretHash(secret()), expiresAt: expiry };
   f.store.issueCredential(membership.membershipId, "peer.human", credential,
     roomCredential ? { kind: "room", teamId, roomId } : membership.scope, now);
+  f.database.prepare(`INSERT INTO peer_human_bindings (credential_id, membership_id, token_hash, created_at, expires_at)
+    VALUES (?, ?, ?, ?, ?)`).run("peeraccess_fixture001", membership.membershipId, peerSecretHash(secret()), now, expiry);
+  f.database.prepare(`INSERT INTO peer_human_entries (credential_id, binding_credential_id, operation_id, intent_digest, created_at, exchange_expires_at)
+    VALUES (?, ?, ?, ?, ?, ?)`).run(credential.credentialId, "peeraccess_fixture001", "op_humanfixture001", "a".repeat(64), now, "2026-09-10T02:01:00.000Z");
   const session = auth.issueWebSession(membership.userId, now, expiry);
   f.database.transaction(() => {
     f.database.prepare("UPDATE peer_credentials SET consumed_at = ? WHERE credential_id = ?").run(now, credential.credentialId);

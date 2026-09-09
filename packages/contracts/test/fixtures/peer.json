@@ -7664,6 +7664,733 @@
       "valid": false
     },
     {
+      "description": "PeerHumanEntryRequest valid",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerHumanEntryRequest rejects Device fallback",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires schemaVersion",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires operationId",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires bindingCredentialId",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires bindingToken",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires scope",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires nonce",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryRequest requires proof",
+      "kind": "PeerHumanEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "bindingCredentialId": "peeraccess_peerfixture0001",
+        "bindingToken": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry valid",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "hostOrigin": "https://host.example.test",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerHumanEntry rejects Device fallback",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "hostOrigin": "https://host.example.test",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry requires schemaVersion",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "hostOrigin": "https://host.example.test",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry requires credential",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "hostOrigin": "https://host.example.test",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry requires exchangeExpiresAt",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "hostOrigin": "https://host.example.test",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry requires hostOrigin",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "proof": {
+          "payload": {
+            "schemaVersion": 1,
+            "purpose": "invitation.preview",
+            "signerNodeId": "node_peerfixture0001",
+            "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "audienceNodeId": "node_peerfixture0001",
+            "operationId": "op_peerfixture0001",
+            "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "subjectDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntry requires proof",
+      "kind": "PeerHumanEntry",
+      "value": {
+        "schemaVersion": 1,
+        "credential": {
+          "schemaVersion": 1,
+          "audience": "peer.human",
+          "credentialId": "peerhuman_peerfixture0001",
+          "membershipId": "peermember_peerfixture0001",
+          "scope": {
+            "kind": "team",
+            "teamId": "team_peerfixture0001",
+            "roomId": null
+          },
+          "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+          "expiresAt": "2026-09-10T02:00:30.000Z"
+        },
+        "exchangeExpiresAt": "2026-09-10T02:00:30.000Z",
+        "hostOrigin": "https://host.example.test"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerBrowserEntryRequest valid",
+      "kind": "PeerBrowserEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "credentialId": "peerhuman_peerfixture0001",
+        "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerBrowserEntryRequest rejects Device fallback",
+      "kind": "PeerBrowserEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "credentialId": "peerhuman_peerfixture0001",
+        "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerBrowserEntryRequest requires schemaVersion",
+      "kind": "PeerBrowserEntryRequest",
+      "value": {
+        "credentialId": "peerhuman_peerfixture0001",
+        "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerBrowserEntryRequest requires credentialId",
+      "kind": "PeerBrowserEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerBrowserEntryRequest requires token",
+      "kind": "PeerBrowserEntryRequest",
+      "value": {
+        "schemaVersion": 1,
+        "credentialId": "peerhuman_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity valid",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerHumanEntryIdentity rejects Device fallback",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null,
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires schemaVersion",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires membershipId",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires scope",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires memberId",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires userId",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires displayName",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "teamLabel": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires teamLabel",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "roomLabel": null
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerHumanEntryIdentity requires roomLabel",
+      "kind": "PeerHumanEntryIdentity",
+      "value": {
+        "schemaVersion": 1,
+        "membershipId": "peermember_peerfixture0001",
+        "scope": {
+          "kind": "team",
+          "teamId": "team_peerfixture0001",
+          "roomId": null
+        },
+        "memberId": "member_peerfixture0001",
+        "userId": "user_peerfixture0001",
+        "displayName": "Peer fixture",
+        "teamLabel": "Peer fixture"
+      },
+      "valid": false
+    },
+    {
       "kind": "PeerScope",
       "description": "Room ceiling requires exact Room",
       "value": {

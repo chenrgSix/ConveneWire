@@ -1757,6 +1757,164 @@
           "$ref": "#/$defs/PeerHumanBindingReceipt"
         }
       }
+    },
+    "PeerHumanEntryRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "bindingCredentialId",
+        "bindingToken",
+        "scope",
+        "nonce",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "bindingCredentialId": {
+          "type": "string",
+          "pattern": "^peeraccess_[A-Za-z0-9_-]{8,128}$"
+        },
+        "bindingToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerHumanEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "credential",
+        "exchangeExpiresAt",
+        "hostOrigin",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "credential": {
+          "$ref": "#/$defs/PeerHumanCredential"
+        },
+        "exchangeExpiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "hostOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerBrowserEntryRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "credentialId",
+        "token"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "credentialId": {
+          "type": "string",
+          "pattern": "^peerhuman_[A-Za-z0-9_-]{8,128}$"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      }
+    },
+    "PeerHumanEntryIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "membershipId",
+        "scope",
+        "memberId",
+        "userId",
+        "displayName",
+        "teamLabel",
+        "roomLabel"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "membershipId": {
+          "type": "string",
+          "pattern": "^peermember_[A-Za-z0-9_-]{8,128}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "memberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "userId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "teamLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "roomLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 140
+        }
+      }
     }
   }
 }

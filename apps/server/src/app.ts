@@ -1,3 +1,4 @@
+import { PeerHumanEntryService } from "./security/peer-human-entry-service.js";
 import { PeerAdmissionService } from "./security/peer-admission-service.js";
 import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { AuthorityService } from "./security/authority-service.js";
@@ -1231,6 +1232,7 @@ export async function createServerApp(
 
   const routeContext: ServerRouteContext = {
     peerAdmission: new PeerAdmissionService(database, auth, authority),
+    peerHumanEntry: new PeerHumanEntryService(database, auth, authority),
     authority,
     ...(localNode ? { localNode } : {}),
     app,

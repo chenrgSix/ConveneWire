@@ -21,8 +21,8 @@ require a fresh explicit association.
 The Runtime receipt carries only `peer.runtime` authority. A separately signed
 receipt carries `peer.human-binding`, independently derived from the Host private
 key and original intent; only hashes are stored. Neither secret authenticates a
-Web session or legacy Device. The human binding will be kept outside the Runtime
-connector and exchanged for short-lived browser entry by the following increment.
+Web session or legacy Device. The human binding is exchanged by the human-entry service below; Participant
+integration must keep it outside the Runtime connector.
 Node key possession or a machine bearer alone cannot mint human access.
 
 Peer HTTP requests use a closed raw JSON decoder that rejects duplicate keys and
@@ -34,7 +34,42 @@ Verification: 26 focused Server admission, HTTP, authority and migration checks;
 129 Node contract checks including real Go decoding/transcripts, deterministic
 generation, TypeScript types and Go fixtures; Server build and documentation
 checks pass. This is automatic fixture evidence; Participant connector integration
-and independent human browser entry are still pending.
+and Participant credential persistence are still pending.
+
+## Peer independent browser entry
+
+The [human-entry service](../../apps/server/src/security/peer-human-entry-service.ts)
+requires the independent `peer.human-binding` secret and a fresh proof from the
+exact Participant key. The signed intent pins the binding ID, operation and
+requested scope; a Room ceiling can narrow a Team membership. Current membership,
+Room ACL and the original Host origin are rechecked before issuance. Runtime
+bearers, Web cookies and Node key possession alone cannot request human entry.
+
+Migration 0098 retains each issuance operation and its independent exchange
+expiry. The entry token is valid for one exchange within 60 seconds. Its human
+credential and eventual session expire at the earlier of eight hours, binding
+expiry and membership expiry. Exact operation retries return the original token
+and deadlines; consumed/expired operations cannot renew them with a fresh proof.
+Exchange creates and binds the Web session atomically, with no token consumption
+if persistence fails.
+
+`/api/peer/browser-entry/preview` and `/claim` require the exact browser Origin;
+trusted HTTPS mode returns a scoped HttpOnly/Secure/SameSite cookie, never its
+session bearer in JSON. Local mode returns its bounded session to the independent
+local browser entry. The later UI transfers entry tokens in a URL fragment,
+clears them before other navigation and exposes only the invited identity/scope.
+Owner credentials are not forwarded between Nodes.
+
+Every authenticated Peer session now also requires its durable issuance record
+and active independent human binding. Human-only revocation invalidates pending
+entry tickets and existing/captured browser principals while leaving Runtime
+credentials independent. Membership revocation fences both audiences.
+
+Verification passes 32 focused Server tests, including real HTTP cookie/Origin
+checks, narrower Room scope, replay/expiry, revoke, rollback and reopen; the full
+129-test Node/Go contract command and Server build also pass. Participant signing,
+Host receipt verification and the separate private human vault are still the
+remaining SEC-019 integration work; manual browser acceptance remains at the end.
 
 ## Peer human credential ceilings
 
@@ -56,8 +91,8 @@ for the later Web UI and never reports installation Owner recovery permission.
 Captured principals recheck current authority at Room/Team service boundaries.
 The Server's injected clock also drives those checks. Team change waits re-read
 authentication before returning any hints after a wait; revoked Peer membership
-cannot receive the queued result. Invitation proof, separate machine admission
-and human entry issuance are described in the following increments. Browser-session scope
+cannot receive the queued result. Invitation proof and human entry issuance
+are described above. Browser-session scope
 does not supply Participant execution or disclosure consent.
 
 The initial increment passes 21 focused authority/Room/migration checks and 18

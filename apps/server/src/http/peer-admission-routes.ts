@@ -1,8 +1,8 @@
 import type { FastifyRequest } from "fastify";
-import type { PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest } from "@convene-wire/contracts/peer";
+import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerStoreError } from "../data/peer-membership-repository.js";
-import { noStore } from "./http-helpers.js";
+import { noStore, sessionCookie } from "./http-helpers.js";
 import type { ServerRouteContext } from "./route-context.js";
 
 function body<T>(request: FastifyRequest, kind: string): T {
@@ -10,7 +10,7 @@ function body<T>(request: FastifyRequest, kind: string): T {
   catch { throw new PeerStoreError("INVALID_MESSAGE"); }
 }
 
-export function registerPeerAdmissionRoutes({ app, peerAdmission, principal, clock, limitAnonymous }: ServerRouteContext): void {
+export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry, principal, clock, limitAnonymous, webAuth }: ServerRouteContext): void {
   void app.register(async peer => {
     peer.removeContentTypeParser("application/json");
     peer.addContentTypeParser("application/json", { parseAs: "buffer", bodyLimit: 16 * 1024 }, (_request, bytes, done) => done(null, bytes));
@@ -38,6 +38,23 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, principal, clo
       limitAnonymous(request, "peer-admission");
       if (request.headers.origin || request.headers.cookie || request.headers.authorization) throw new PeerStoreError("SCOPE_DENIED");
     };
+    peer.post("/api/peer/human-entry", async request => {
+      machineRequest(request);
+      return peerHumanEntry.issue(body<PeerHumanEntryRequest>(request, "PeerHumanEntryRequest"), clock());
+    });
+    for (const action of ["preview", "claim"] as const) {
+      peer.post(`/api/peer/browser-entry/${action}`, async (request, reply) => {
+        limitAnonymous(request, "peer-human-browser-entry");
+        if (!peerHumanEntry.browserOrigin || request.headers.origin !== peerHumanEntry.browserOrigin || request.headers.authorization) throw new PeerStoreError("SCOPE_DENIED");
+        const input = body<PeerBrowserEntryRequest>(request, "PeerBrowserEntryRequest");
+        if (action === "preview") return peerHumanEntry.preview(input, clock());
+        const result = peerHumanEntry.consume(input, clock());
+        if (webAuth.mode === "trusted-team") void reply.header("set-cookie", sessionCookie(result.session, true));
+        return { identity: result.identity, user: { ...result.user, peerAccess: result.peerAccess, canManageOwnerRecovery: false },
+          mode: webAuth.mode, session: { expiresAt: result.session.expiresAt,
+            ...(webAuth.mode === "local" ? { token: result.session.secret } : {}) } };
+      });
+    }
     peer.post("/api/peer/invitations/preview", async request => {
       machineRequest(request);
       return peerAdmission.preview(body<PeerInvitationPreviewRequest>(request, "PeerInvitationPreviewRequest"), clock());

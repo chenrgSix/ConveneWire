@@ -49,6 +49,12 @@ receipt digest and separate human binding. Shared positive/negative Go/Node
 fixtures cover every added field. Claim display names follow the Host member
 80-code-point limit. The full 129-test Node/Go contract command passes.
 
+Independent human entry adds closed signed requests, human credentials with a
+separate exchange deadline, browser exchange requests and bounded identity
+previews. Proofs bind the exact operation/scope and returned entry/origin. An
+exchange deadline never substitutes for the session authority expiry. Shared
+positive/negative Go/Node fixtures, generated output and strict types pass.
+
 ## Multi-Authority foundation
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's
