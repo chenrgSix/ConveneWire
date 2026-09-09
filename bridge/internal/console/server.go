@@ -217,6 +217,7 @@ type Options struct {
 	Token          string
 	Version        string
 	DiagnosticsDir string
+	NativePeers    NativePeers
 }
 
 type Service struct {
@@ -349,6 +350,7 @@ func New(options Options, dependencies Dependencies) (*Service, error) {
 	}
 	service := &Service{
 		options: Options{
+			NativePeers:    options.NativePeers,
 			ConfigPath:     resolvedConfig,
 			DataDir:        resolvedData,
 			Workspace:      workspace,
@@ -452,6 +454,9 @@ func (s *Service) Handler() http.Handler {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/state", s.authorize(s.getState))
+	mux.HandleFunc("GET /api/peers/status", s.authorizePeer(s.getPeerStatus))
+	mux.HandleFunc("GET /api/peers/approvals", s.authorizePeer(s.getPeerApprovals))
+	mux.HandleFunc("POST /api/peers/approvals/{requestId}", s.authorizePeer(s.decidePeerApproval))
 	mux.HandleFunc("GET /api/client-access", s.authorize(s.clientEntryRooms))
 	mux.HandleFunc("POST /api/client-access/open", s.authorize(s.openClientEntry))
 	mux.HandleFunc("GET /api/runtime-discovery", s.authorize(s.refreshRuntimeDiscovery))

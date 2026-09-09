@@ -109,6 +109,20 @@ receiving HTTP responses, and on Runtime handshake/heartbeat membership checks.
 A TLS regression changes local identity while the Host proof is in flight and
 confirms that no machine WebSocket upgrade can follow the stale proof.
 
+The native shell supplies a private Peer-owner capability to Console. Its
+`/api/peers/status` and `/api/peers/approvals` endpoints require the existing
+local Console bearer and loopback/same-origin request boundaries. Legacy Device
+profiles have no fallback Peer owner. Approval decisions carry the exact live
+request, process, binding digest and local consent revision, with an explicit
+allow/deny value. Unknown/duplicate/missing fields, foreign origins, consumed
+requests and changed execution scope are rejected. Runtime decisions stay in
+the current native core and disappear when its process/connection closes.
+Focused HTTP tests exercise the actual local approval kernel; Console/core/
+Local Node race tests and vet pass. The bundled native fixture verifies the
+capability reaches the real Console and rejects a foreign-origin decision.
+Invitation, export/withdrawal and independent human-entry owner operations,
+plus Peer session/execution composition, remain under BRG-081/RUN-020/WEB-085.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

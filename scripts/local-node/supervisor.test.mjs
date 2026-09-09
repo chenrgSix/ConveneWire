@@ -104,6 +104,19 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   };
   const initial = await consoleRequest("/api/state");
   assert.equal(initial.body.localNodeId, ready.nodeId); assert.equal(initial.body.paired, true); assert.equal(initial.body.agents.length, 0);
+  await until(async () => {
+    const peers = await consoleRequest("/api/peers/status");
+    assert.equal(peers.status, 200, JSON.stringify(peers.body));
+    assert.deepEqual(peers.body.connections, []);
+    return peers.body.state === "running";
+  }, "native Peer owner capability reaches the actual Console");
+  assert.deepEqual((await consoleRequest("/api/peers/approvals")).body, { approvals: [] });
+  const foreignPeerDecision = await fetch(`${consoleURL.origin}/api/peers/approvals/approval_foreign001`, {
+    method: "POST", headers: { authorization: `Bearer ${consoleURL.searchParams.get("token")}`, origin: "https://foreign-peer.example", "content-type": "application/json" },
+    body: JSON.stringify({ allow: true })
+  });
+  assert.equal(foreignPeerDecision.status, 403);
+  await foreignPeerDecision.body?.cancel();
   assert.equal((await consoleRequest("/api/enrollment/restart", {})).status, 409);
   const added = await consoleRequest("/api/agents", { kind: "pi", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root });
   assert.equal(added.status, 201, JSON.stringify(added.body));

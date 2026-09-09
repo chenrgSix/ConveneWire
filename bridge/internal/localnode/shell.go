@@ -121,7 +121,7 @@ func (shell *Shell) attach(binding contracts.Binding) error {
 			return run(bridgecore.WithNativeNode(ctx, native), cfg, credential, observer, handler)
 		}
 	}
-	service, err := console.New(console.Options{ConfigPath: configPath, DataDir: dataDir, Workspace: shell.workspace, Version: shell.version}, dependencies)
+	service, err := console.New(console.Options{ConfigPath: configPath, DataDir: dataDir, Workspace: shell.workspace, Version: shell.version, NativePeers: native}, dependencies)
 	if err != nil {
 		return err
 	}

@@ -27,6 +27,30 @@ func (n *NativeNode) PeerStatus() peer.ConnectorSnapshot {
 	return peer.ConnectorSnapshot{State: state, ErrorCode: n.peerError, Connections: []peer.ConnectorStatus{}}
 }
 
+func (n *NativeNode) PeerApprovals() ([]peer.ApprovalView, error) {
+	if err := n.checkIdentity(); err != nil {
+		return nil, err
+	}
+	n.peerMu.Lock()
+	defer n.peerMu.Unlock()
+	if n.peers == nil {
+		return []peer.ApprovalView{}, nil
+	}
+	return n.peers.Approvals().Pending(), nil
+}
+
+func (n *NativeNode) DecidePeerApproval(decision peer.ApprovalDecision) error {
+	if err := n.checkIdentity(); err != nil {
+		return err
+	}
+	n.peerMu.Lock()
+	defer n.peerMu.Unlock()
+	if n.peers == nil {
+		return peer.ErrApproval
+	}
+	return n.peers.Approvals().Decide(decision)
+}
+
 func (n *NativeNode) newPeerConnectors(cfg config.Config, identities map[string]string) (*peer.Connectors, error) {
 	store, err := n.peerStore()
 	if err != nil {
