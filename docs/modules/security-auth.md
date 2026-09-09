@@ -67,9 +67,30 @@ credentials independent. Membership revocation fences both audiences.
 
 Verification passes 32 focused Server tests, including real HTTP cookie/Origin
 checks, narrower Room scope, replay/expiry, revoke, rollback and reopen; the full
-129-test Node/Go contract command and Server build also pass. Participant signing,
-Host receipt verification and the separate private human vault are still the
-remaining SEC-019 integration work; manual browser acceptance remains at the end.
+129-test Node/Go contract command and Server build also pass. Participant signing and Host receipt checks are implemented below. The separate
+private human vault and local join integration remain SEC-019 work; manual browser acceptance remains at the end.
+
+## Participant proof and receipt checks
+
+The [Participant signer](../../bridge/internal/peer/proof.go) derives the same
+Ed25519 key as its installation's native Hub. It exposes no key/seed and signs
+closed canonical proof transcripts with exact millisecond timestamps. The
+[receipt verifier](../../bridge/internal/peer/receipts.go) checks the trusted
+invitation link's Node/key/origin and the exact Owner-approved invitation,
+Participant/user identity, operation, nonce, scope and credential deadlines.
+
+Runtime and human receipt signatures are verified independently and their
+semantic digests must agree. Human entry also pins the requested scope, original
+Host origin, independent token, exchange deadline and bounded session expiry.
+Historical receipts verify their original signature without treating an expired
+proof as fresh permission for a new operation. TLS trust remains an independent
+transport requirement.
+
+Node-generated signed preview/join/human-entry fixtures verify in Go. The local
+signer reproduces the native Hub's public key and signature bytes. Tests reject
+identity, key, Room, credential, operation, nonce, origin and deadline changes;
+the Peer Go suite passes with race detection and vet, and all five focused Node
+Peer contract checks pass. These helpers are not yet a running Peer connector.
 
 ## Peer human credential ceilings
 

@@ -71,3 +71,19 @@ test("Peer private state binds the Host receipt to invitation, membership and ma
     assert.notEqual(digest(changed), receipt.proof.payload.subjectDigest);
   }
 });
+
+test("Participant admission fixtures retain separately signed human receipts and exchange deadlines", async () => {
+  const f = JSON.parse(await readFile(new URL("./fixtures/peer-admission.json", import.meta.url)));
+  for (const [kind, value] of [["PeerInvitationPreview", f.preview], ["PeerJoined", f.joined], ["PeerHumanEntry", f.entry]]) assert.equal(validatePeer(kind, value), true, kind);
+  const h = f.joined.human;
+  const expected = peerDigest({ host: h.host, participant: h.participant, localUserId: h.localUserId,
+    joinReceiptDigest: h.joinReceiptDigest, humanCredential: h.humanCredential });
+  assert.equal(h.proof.payload.subjectDigest, expected);
+  assert.equal(f.entry.proof.payload.subjectDigest, peerDigest({ credential: f.entry.credential,
+    exchangeExpiresAt: f.entry.exchangeExpiresAt, hostOrigin: f.entry.hostOrigin }));
+  assert.notEqual(h.humanCredential.token, f.joined.runtime.machineCredential.token);
+  for (const proof of [f.preview.proof, f.joined.runtime.proof, h.proof, f.entry.proof, f.localProof]) {
+    const key = createPublicKey({ key: Buffer.concat([Buffer.from("302a300506032b6570032100", "hex"), Buffer.from(proof.payload.signerPublicKey, "base64url")]), format: "der", type: "spki" });
+    assert.ok(verify(null, peerProofTranscript(proof.payload), key, Buffer.from(proof.signature, "base64url")));
+  }
+});
