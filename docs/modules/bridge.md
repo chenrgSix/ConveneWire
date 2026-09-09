@@ -61,6 +61,20 @@ Owner decision. Focused actual-process tests cover allow/deny/disconnect/exit;
 Peer/Runtime/core/Local Node race tests and vet pass. Transport and authenticated
 Console handlers still need to connect this kernel to real Peer Runs.
 
+The independent `/ws/peer/runtime` transport now proves both pinned Nodes,
+origin, membership and Runtime credential before activating a connection.
+Only a freshly proven replacement closes an existing connection. Ordered
+heartbeats recheck current membership and credentials; stale/duplicate frames,
+wrong bindings, binary/Device messages and browser credentials are rejected.
+Connections have bounded handshake/heartbeat lifetimes and capacity; shutdown
+drains upgraded sockets. The Go client verifies HTTPS and Host identity before
+sending its machine bearer, continuously observes socket closure and cancels
+its connection context immediately. Its channel grants no Run or human rights.
+Actual Go/Host TLS tests cover reconnect, revocation and local leave, and the
+actual native HTTPS ingress covers the separate machine upgrade and shutdown.
+Core connector/Agent composition and authenticated Console handlers are the
+remaining BRG-081 integration work.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

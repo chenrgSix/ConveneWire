@@ -14,7 +14,7 @@ import { peerDigest } from "@convene-wire/contracts/peer-proof";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
-let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, previewRequests = 0;
+let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, previewRequests = 0, runtimeUpgrades = 0;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
   try {
@@ -46,6 +46,11 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
     response.writeHead(result.statusCode, result.headers as Record<string, string>);
     response.end(result.rawPayload);
   } catch { response.writeHead(500).end(); }
+});
+listener.on("upgrade", (request, socket, head) => {
+  if (!app) { socket.destroy(); return; }
+  runtimeUpgrades++;
+  app.server.emit("upgrade", request, socket, head);
 });
 await new Promise<void>((resolve, reject) => { listener.once("error", reject); listener.listen(0, "127.0.0.1", resolve); });
 const address = listener.address();
@@ -92,11 +97,11 @@ try {
     const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;
     const acceptances = (database.prepare("SELECT count(*) AS n FROM peer_acceptance_revisions").get() as { n: number }).n;
     const enabledPeers = (database.prepare("SELECT count(*) AS n FROM agents WHERE integration_mode = 'peer' AND enabled = 1").get() as { n: number }).n;
-    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, offers, acceptances, enabledPeers }) + "\n");
+    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, runtimeUpgrades, offers, acceptances, enabledPeers }) + "\n");
   }
 } finally {
+  await app.close();
   listener.closeIdleConnections();
   await new Promise<void>(resolve => listener.close(() => resolve()));
-  await app.close();
   database.close();
 }

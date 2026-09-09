@@ -94,5 +94,5 @@ export async function nativePeerIngressFixture(t: TestContext) {
     const browser = { schemaVersion: 1, credentialId: credential.credentialId, token: credential.token };
     return { joined, browser, scope, invitation };
   };
-  return { app, ingress, launch, databasePath, origin, localOrigin, localPort, peerPort, cert, key, request, owner, ownerHeaders, team, room, otherRoom, now, join };
+  return { app, ingress, launch, databasePath, origin, localOrigin, localPort, peerPort, cert, key, request, owner, ownerHeaders, team, room, otherRoom, now, join, proof };
 }

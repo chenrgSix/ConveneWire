@@ -156,13 +156,17 @@ export class PeerAdmissionService {
     }).immediate();
   }
 
+  public get hostOrigin(): string { return this.origin; }
+
   /** A bearer establishes only the Peer runtime audience; a connection also needs its fresh Node proof. */
   public authenticateMachine(token: string, now: string): PeerPrincipal {
     if (!/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/u.test(token)) throw new PeerStoreError("UNAUTHENTICATED");
     const row = this.database.prepare(`SELECT c.credential_id, c.membership_id, b.participant_public_key FROM peer_credentials c
       JOIN peer_memberships p ON p.membership_id = c.membership_id JOIN peer_bindings b ON b.peer_id = p.peer_id
-      WHERE c.token_hash = ? AND c.audience = 'peer.runtime' AND c.revoked_at IS NULL AND c.expires_at > ?`)
-      .get(peerSecretHash(token), now) as { credential_id: string; membership_id: string; participant_public_key: string } | undefined;
+      JOIN peer_invitations i ON i.claimed_membership_id = p.membership_id
+      WHERE c.token_hash = ? AND c.audience = 'peer.runtime' AND c.revoked_at IS NULL AND c.expires_at > ?
+      AND i.state = 'claimed' AND json_extract(i.invitation_json, '$.hostOrigin') = ?`)
+      .get(peerSecretHash(token), now, this.origin) as { credential_id: string; membership_id: string; participant_public_key: string } | undefined;
     if (!row) throw new PeerStoreError("UNAUTHENTICATED");
     const m = this.memberships.requireActiveMembership(row.membership_id, now);
     return { audience: "peer.runtime", credentialId: row.credential_id, membershipId: m.membershipId, peerId: m.peerId,
