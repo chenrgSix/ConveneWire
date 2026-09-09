@@ -288,6 +288,33 @@ test("Room deep link keeps the requested non-default Task after the initial Room
   f.assertNoCommands();
 });
 
+test("folder task navigation crosses Rooms, preserves drafts and restores selection on history and remount", async (t) => {
+  const f = await fixture(t);
+  f.setUrl(f.navigation({ roomId: f.firstRoom.roomId, view: "room" }));
+  const mounted = f.render(<App />);
+  await f.page.findByRole("combobox", { name: "Current Task" });
+  const before = f.dom.window.location.href;
+  f.fireEvent.click(f.page.getByRole("button", { name: f.targetRoom.name, exact: true }));
+  const target = await f.page.findByRole("button", { name: f.secondTask.title, exact: true });
+  assert.equal(f.dom.window.location.href, before, "expanding a folder must not navigate");
+  f.fireEvent.click(target);
+  await f.waitFor(() => assert.equal((f.page.getByRole("combobox", { name: "Current Task" }) as HTMLSelectElement).value, f.secondTask.taskId));
+  assert.equal(f.query().get("room"), f.targetRoom.roomId);
+  assert.equal(f.query().get("task"), f.secondTask.taskId);
+  const message = f.page.getByRole("textbox", { name: "Message", exact: true });
+  f.fireEvent.change(message, { target: { value: "Unsent folder navigation draft" } });
+  f.fireEvent.click(f.page.getByRole("button", { name: f.firstTask.title, exact: true }));
+  await f.waitFor(() => assert.equal((f.page.getByRole("combobox", { name: "Current Task" }) as HTMLSelectElement).value, f.firstTask.taskId));
+  assert.equal((f.page.getByRole("textbox", { name: "Message", exact: true }) as HTMLTextAreaElement).value, "");
+  await f.traverse("back");
+  await f.waitFor(() => assert.equal((f.page.getByRole("combobox", { name: "Current Task" }) as HTMLSelectElement).value, f.secondTask.taskId));
+  assert.equal((f.page.getByRole("textbox", { name: "Message", exact: true }) as HTMLTextAreaElement).value, "Unsent folder navigation draft");
+  mounted.unmount(); f.render(<App />);
+  await f.waitFor(() => assert.equal((f.page.getByRole("combobox", { name: "Current Task" }) as HTMLSelectElement).value, f.secondTask.taskId));
+  assert.equal(f.page.getByRole("button", { name: f.secondTask.title, exact: true }).getAttribute("aria-current"), "page");
+  f.assertNoCommands();
+});
+
 test("management returns to the exact Work Task, tab and filters without a domain command", async (t) => {
   const f = await fixture(t);
   f.setUrl(f.navigation({ workTaskId: f.firstTask.taskId, tab: "results", scope: "team", search: "Navigation" }));

@@ -121,7 +121,7 @@ export function TaskCreateDialog({
       >
         <div className="modal-heading">
           <div>
-            <p className="eyebrow">#{roomName}</p>
+            <p className="eyebrow">{roomName}</p>
             <h3 id="new-task-dialog-title">
               {locale === "zh-CN" ? "创建长期任务" : "Create long-lived Task"}
             </h3>

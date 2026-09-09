@@ -1605,6 +1605,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
           if (target?.view === "room") openTaskInRoom(target.roomId, target.taskId);
           else navigate({ view: "work", roomId: item.roomId, workTaskId: item.taskId, taskId: undefined, tab: target?.tab ?? "overview", runId: target?.runId });
         }} activeView={activeView} locale={locale} teams={teams} teamId={selectedTeamId} rooms={rooms} roomId={selectedRoomId}
+        session={session} tasks={tasks} taskId={selectedTaskId} onTask={openTaskInRoom}
         onTeam={(teamId) => navigate({ teamId, roomId: undefined, taskId: undefined, workTaskId: undefined,
           tab: undefined, runId: undefined, lifecycleState: undefined, ownerMemberId: undefined, search: undefined, attention: undefined, filterRoomId: undefined, filterAgentId: undefined, priority: undefined, view: managing ? activeView : "work" })}
         canCreateTeam={!session?.clientTeamId} onNewTeam={() => setTeamDialogOpen(true)} onNewRoom={() => setRoomCreateOpen(true)}
@@ -1615,7 +1616,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             <summary>{t("roomParticipants")} <span>{roomMembers.length + roomAgents.length}</span></summary>
           <section className="participant-panel" aria-label={t("roomParticipants")}>
             <div className="participant-heading">
-              <div><strong>{t("roomParticipants")}</strong><small>#{selectedRoom.name}</small></div>
+              <div><strong>{t("roomParticipants")}</strong><small>{selectedRoom.name}</small></div>
               <div className="participant-heading-actions">
                 <span>{roomMembers.length + roomAgents.length}</span>
                 {currentMember?.role === "owner" && (
@@ -1679,7 +1680,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                     ? (locale === "zh-CN" ? "账户与安全" : "Account & security")
                   : activeView === "members" && selectedTeam
                     ? (locale === "zh-CN" ? "团队与成员" : "Team & members")
-                  : selectedRoom ? `# ${selectedRoom.name}` : t("chooseRoom")}
+                  : selectedRoom ? selectedRoom.name : t("chooseRoom")}
               </h2>
             </div>
             {activeView === "room" && selectedRoom && currentMember?.role === "owner" && (
@@ -1955,7 +1956,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             <h3>
               {readyRoomAgents.length === 0
                 ? t("addAgentOrStart")
-                : `${t("startConversation")} #${selectedRoom.name}`}
+                : `${t("startConversation")} ${selectedRoom.name}`}
             </h3>
             <p>{t("timelineHelp")}</p>
             {readyRoomAgents.length === 0 && (

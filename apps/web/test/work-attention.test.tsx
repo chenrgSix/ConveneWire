@@ -71,7 +71,8 @@ test("the accessible sidebar indicator remains visible in management and navigat
   const opened: WorkbenchItem[] = [];
   const props = { activeView: "agents" as const, locale: "en" as const, teams: [], teamId: "team_attention01", rooms: [], roomId: null,
     onTeam: () => undefined, onNewTeam: () => undefined, onNewRoom: () => undefined, onRoom: () => undefined, onView: () => undefined,
-    onCollaboration: () => undefined, attentionItem: item, onOpenAttention: (value: WorkbenchItem) => opened.push(value) };
+    onCollaboration: () => undefined, attentionItem: item, onOpenAttention: (value: WorkbenchItem) => opened.push(value),
+    session, tasks: [], taskId: null, onTask: () => undefined };
   try {
     const view = render(<WorkspaceSidebar {...props} />);
     fireEvent.click(view.getByRole("button", { name: /My work needs attention/u }));

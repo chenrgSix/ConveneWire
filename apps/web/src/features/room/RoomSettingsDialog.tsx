@@ -88,7 +88,7 @@ export function RoomSettingsDialog({
       <section aria-labelledby="room-settings-dialog-title" aria-modal="true" className="modal-card participant-modal" role="dialog">
         <div className="modal-heading">
           <div>
-            <p className="eyebrow">#{room.name}</p>
+            <p className="eyebrow">{room.name}</p>
             <h3 id="room-settings-dialog-title">{t("roomSettings")}</h3>
           </div>
           <button aria-label={t("cancel")} onClick={onClose} type="button">×</button>

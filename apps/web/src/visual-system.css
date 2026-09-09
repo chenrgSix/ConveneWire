@@ -157,11 +157,16 @@ summary:focus-visible {
 }
 
 :root[data-theme] .product-area-switch [aria-current],
-:root[data-theme] .product-destinations button[aria-current],
-:root[data-theme] .product-room-list button[aria-current] {
+:root[data-theme] .product-destinations button[aria-current] {
   background: var(--cw-accent-soft);
   box-shadow: inset 3px 0 0 var(--cw-accent);
   color: var(--cw-accent-hover);
+}
+
+:root[data-theme] .product-room-list button[aria-current] {
+  background: var(--cw-surface-hover);
+  color: var(--cw-text);
+  box-shadow: none;
 }
 
 :root[data-theme] .product-area-switch [aria-current] {

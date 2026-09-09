@@ -581,7 +581,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
 
     fireEvent.change(roomInput, { target: { value: "general" } });
     fireEvent.click(screen.getByRole("button", { name: "创建房间" }));
-    await screen.findByRole("heading", { name: "在房间中开始对话 #general" });
+    await screen.findByRole("heading", { name: "在房间中开始对话 general" });
     fireEvent.click(screen.getByRole("button", { name: "新建 Team" }));
     const teamDialog = screen.getByRole("dialog", { name: "新建 Team" });
     fireEvent.change(within(teamDialog).getByLabelText("新 Team 名称"), {
@@ -593,7 +593,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     assert.equal((screen.getByRole("combobox", { name: "选择团队" }) as HTMLSelectElement).value, secondTeam.teamId);
     fireEvent.change(screen.getByRole("combobox", { name: "选择团队" }), { target: { value: team.teamId } });
     fireEvent.click((await screen.findAllByRole("button", { name: "对话" }))[0]!);
-    await screen.findByRole("heading", { name: "在房间中开始对话 #general" });
+    await screen.findByRole("heading", { name: "在房间中开始对话 general" });
     assert.equal(screen.queryByLabelText("新建假智能体名称"), null);
     assert.equal(screen.queryByLabelText("新 Team 名称"), null);
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
@@ -635,7 +635,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
       null
     ));
     fireEvent.click(screen.getByRole("button", { name: "协作", exact: true }));
-    await screen.findByRole("heading", { name: "# delivery" });
+    await screen.findByRole("heading", { name: "delivery" });
 
     fireEvent.click(screen.getByRole("button", { name: "房间操作" }));
     let roomActions = screen.getByRole("menu", { name: "房间操作" });
@@ -684,7 +684,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     fireEvent.click(screen.getByRole("button", { name: "工作", exact: true }));
     await screen.findByRole("region", { name: "工作台" });
     fireEvent.click(screen.getAllByRole("button", { name: "对话" })[0]!);
-    await screen.findByRole("heading", { name: "在房间中开始对话 #delivery" });
+    await screen.findByRole("heading", { name: "在房间中开始对话 delivery" });
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
     await within(screen.getByRole("region", { name: "房间成员" })).findByText("Review Bot");
 

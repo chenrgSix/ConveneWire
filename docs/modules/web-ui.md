@@ -21,6 +21,16 @@ above the full-width Markdown, with the existing reply copy action below.
 Member bubbles, code blocks and execution evidence retain their own surfaces.
 See [reply presentation evidence](../acceptance/web-080-unboxed-replies.md).
 
+WEB-081 presents Rooms as expandable folders with their authorized Tasks indented
+underneath. Folder disclosure does not navigate; a Task uses the existing Room
+and Task URL navigation and draft scope. The current Room reuses its live task
+snapshot; other folders load on expansion, with retry and Team/session/abort
+fences. Lists initially show five tasks while keeping the selection visible.
+Both desktop and narrow layouts expose folders, and narrow navigation scrolls
+within half the viewport. Decorative hashes are removed from Room navigation,
+conversation headings and Room/Task settings headings; stored names are unchanged.
+See [folder navigation evidence](../acceptance/web-081-room-folders.md).
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

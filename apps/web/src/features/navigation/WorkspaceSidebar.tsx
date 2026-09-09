@@ -1,8 +1,9 @@
 import type { WorkbenchItem } from "../work/WorkWorkspace.js";
 import type { ReactNode } from "react";
 import { type Locale, translate } from "../../i18n.js";
-import type { Room, Team, WorkspaceView } from "../../models.js";
+import type { AgentTask, LocalSession, Room, Team, WorkspaceView } from "../../models.js";
 import { isManagementView } from "./workspace-navigation.js";
+import { RoomFolder } from "./RoomFolder.js";
 
 interface Props {
   pendingPermissions?: number;
@@ -19,6 +20,10 @@ interface Props {
   teamId: string | null;
   rooms: Room[];
   roomId: string | null;
+  session: LocalSession | null;
+  tasks: AgentTask[];
+  taskId: string | null;
+  onTask: (roomId: string, taskId: string) => void;
   children?: ReactNode;
   onTeam: (teamId: string) => void;
   onNewTeam: () => void;
@@ -78,10 +83,15 @@ export function WorkspaceSidebar(props: Props) {
             <div className="product-section-heading"><span>{zh ? "房间" : "ROOMS"}</span><button aria-label={zh ? "新建房间" : "New Room"} onClick={props.onNewRoom} type="button">＋</button></div>
             <select className="product-room-picker" aria-label={translate(locale, "selectRoom")} value={roomId ?? ""} onChange={(event) => props.onRoom(event.target.value)}>
               {!roomId && <option value="">{translate(locale, "chooseRoom")}</option>}
-              {rooms.map((room) => <option key={room.roomId} value={room.roomId}># {room.name}</option>)}
+              {rooms.map((room) => <option key={room.roomId} value={room.roomId}>{room.name}</option>)}
             </select>
             <nav className="product-room-list" aria-label={zh ? "房间列表" : "Room list"}>
-              {rooms.map((room) => <button key={room.roomId} aria-current={activeView === "room" && roomId === room.roomId ? "page" : undefined} onClick={() => props.onRoom(room.roomId)} type="button"><span aria-hidden="true">#</span>{room.name}</button>)}
+              {rooms.filter((room) => room.teamId === teamId).map((room) => <RoomFolder
+                key={JSON.stringify([teamId, props.session?.userId, props.session?.token, room.roomId])}
+                room={room} locale={locale} session={props.session} selected={roomId === room.roomId}
+                selectedTaskId={activeView === "room" && roomId === room.roomId ? props.taskId : null}
+                currentTasks={roomId === room.roomId ? props.tasks : undefined}
+                onRoom={props.onRoom} onTask={props.onTask} />)}
               {rooms.length === 0 && <p>{zh ? "还没有房间" : "No Rooms yet"}</p>}
             </nav>
           </div>}
