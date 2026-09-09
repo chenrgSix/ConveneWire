@@ -4,6 +4,7 @@ import test from "node:test";
 import type { PeerInvitationClaim, PeerProofPayload } from "@convene-wire/contracts/peer";
 import { peerDigest, peerProofTranscript } from "@convene-wire/contracts/peer-proof";
 import { createServerApp } from "../src/app.js";
+import { verifyPeerProof } from "../src/security/peer-proof-verifier.js";
 import { AuthService } from "../src/security/auth-service.js";
 import { peerClaimDigest } from "../src/data/peer-membership-repository.js";
 import { fixture, now, expiry, ownerId, teamId, roomId, secret } from "./helpers/peer-fixture.js";
@@ -37,6 +38,14 @@ test("Peer HTTP admission isolates strict wire decoding, cookies, Device tokens 
   const issued = created.json();
   const key = createPrivateKey({ key: Buffer.concat([Buffer.from("302e020100300506032b657004220420", "hex"), Buffer.alloc(32, 11)]), format: "der", type: "pkcs8" });
   const participant = { nodeId: "node_httpclient001", publicKey: createPublicKey(key).export({ format: "der", type: "spki" }).subarray(-32).toString("base64url") };
+  const identityNonce = secret();
+  const identityResponse = await post("/api/peer/identity", { schemaVersion: 1, participant, operationId: "op_identity0001", nonce: identityNonce });
+  assert.equal(identityResponse.statusCode, 200, identityResponse.body);
+  const identity = identityResponse.json();
+  verifyPeerProof(identity.proof, issued.invitation.host, { purpose: "node.identity", audienceNodeId: participant.nodeId,
+    operationId: "op_identity0001", nonce: identityNonce, subjectDigest: peerDigest({ host: identity.host, hostOrigin: identity.hostOrigin }) }, now);
+  assert.equal(identityResponse.body.includes(teamId), false);
+  assert.equal(identityResponse.body.includes(ownerId), false);
   const preview = { schemaVersion: 1, invitationId: issued.invitation.invitationId, secret: issued.secret, participant,
     operationId: "op_httpclaim0001", nonce: secret() };
   for (const headers of [{ origin }, { authorization: `Bearer ${owner.secret}` }, { cookie: ownerHeaders.cookie }, { "x-forwarded-proto": "http" }]) {

@@ -144,7 +144,8 @@
             "agent.export",
             "agent.acceptance",
             "run.admission",
-            "run.settlement"
+            "run.settlement",
+            "node.identity"
           ]
         },
         "signerNodeId": {
@@ -1913,6 +1914,177 @@
             "null"
           ],
           "maxLength": 140
+        }
+      }
+    },
+    "PeerIdentityRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "participant",
+        "operationId",
+        "nonce"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      }
+    },
+    "PeerIdentityProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "host",
+        "hostOrigin",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "host": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "hostOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerLocalHumanBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt",
+        "state"
+      ],
+      "properties": {
+        "receipt": {
+          "$ref": "#/$defs/PeerHumanBindingReceipt"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        }
+      }
+    },
+    "PeerHumanVaultState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "participant",
+        "localUserId",
+        "revision",
+        "bindings"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "bindings": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/PeerLocalHumanBinding"
+          }
+        }
+      }
+    },
+    "PeerPendingJoin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "participant",
+        "localUserId",
+        "invitation",
+        "secret",
+        "operationId",
+        "displayName",
+        "previewProof",
+        "createdAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "invitation": {
+          "$ref": "#/$defs/PeerInvitation"
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "previewProof": {
+          "$ref": "#/$defs/PeerProof"
+        },
+        "createdAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
         }
       }
     }

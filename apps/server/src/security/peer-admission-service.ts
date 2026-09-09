@@ -3,7 +3,8 @@ import type Database from "better-sqlite3";
 import type {
   PeerChallenge, PeerClaimChallengeRequest, PeerHumanBindingCredential, PeerHumanBindingReceipt,
   PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationIssued, PeerInvitationPreview,
-  PeerInvitationPreviewRequest, PeerJoined, PeerJoinReceipt, PeerMachineCredential, PeerMembership, PeerScope
+  PeerInvitationPreviewRequest, PeerJoined, PeerJoinReceipt, PeerMachineCredential, PeerMembership, PeerScope,
+  PeerIdentityRequest, PeerIdentityProof
 } from "@convene-wire/contracts/peer";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { validatePeer } from "@convene-wire/contracts/peer-validation";
@@ -84,6 +85,17 @@ export class PeerAdmissionService {
     return { schemaVersion: 1, invitation, proof: this.authority.signPeerProof({
       purpose: "invitation.preview", audienceNodeId: input.participant.nodeId,
       operationId: input.operationId, nonce: input.nonce, subjectDigest: digest
+    }, now) };
+  }
+
+  /** Prove the pinned endpoint before a Participant transmits an invitation secret. */
+  public identity(input: PeerIdentityRequest, now: string): PeerIdentityProof {
+    this.assert("PeerIdentityRequest", input);
+    assertPeerOrigin(this.origin);
+    const content = { host: { nodeId: this.authority.nodeId, publicKey: this.authority.publicKey }, hostOrigin: this.origin };
+    return { schemaVersion: 1, ...content, proof: this.authority.signPeerProof({
+      purpose: "node.identity", audienceNodeId: input.participant.nodeId,
+      operationId: input.operationId, nonce: input.nonce, subjectDigest: peerDigest(content)
     }, now) };
   }
 

@@ -55,6 +55,11 @@ previews. Proofs bind the exact operation/scope and returned entry/origin. An
 exchange deadline never substitutes for the session authority expiry. Shared
 positive/negative Go/Node fixtures, generated output and strict types pass.
 
+The separate `node.identity` proof signs only Host identity/origin before secret
+transmission. Closed local schemas also cover the Owner-only human vault and
+frozen pending join intent; neither becomes Runtime execution permission. All
+130 Node contract tests, actual Go interop, generation/types and Go fixtures pass.
+
 ## Multi-Authority foundation
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's

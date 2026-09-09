@@ -34,7 +34,7 @@ Verification: 26 focused Server admission, HTTP, authority and migration checks;
 129 Node contract checks including real Go decoding/transcripts, deterministic
 generation, TypeScript types and Go fixtures; Server build and documentation
 checks pass. This is automatic fixture evidence; Participant connector integration
-and Participant credential persistence are still pending.
+and the native Owner controller are still pending.
 
 ## Peer independent browser entry
 
@@ -68,7 +68,8 @@ credentials independent. Membership revocation fences both audiences.
 Verification passes 32 focused Server tests, including real HTTP cookie/Origin
 checks, narrower Room scope, replay/expiry, revoke, rollback and reopen; the full
 129-test Node/Go contract command and Server build also pass. Participant signing and Host receipt checks are implemented below. The separate
-private human vault and local join integration remain SEC-019 work; manual browser acceptance remains at the end.
+private human vault is described below. HTTP client/native join integration
+remains pending; manual browser acceptance remains at the end.
 
 ## Participant proof and receipt checks
 
@@ -90,7 +91,33 @@ Node-generated signed preview/join/human-entry fixtures verify in Go. The local
 signer reproduces the native Hub's public key and signature bytes. Tests reject
 identity, key, Room, credential, operation, nonce, origin and deadline changes;
 the Peer Go suite passes with race detection and vet, and all five focused Node
-Peer contract checks pass. These helpers are not yet a running Peer connector.
+Peer contract checks pass. These helpers are not yet a running Peer connector. The separate `node.identity`
+proof returns only Host key/origin for verification before any secret-bearing
+request; it supplies no invitation, Member or execution authority.
+
+## Participant private join recovery
+
+The [human vault](../../bridge/internal/peer/human_vault.go) is opened only by
+explicit local Owner join/entry actions. It stores signed human receipts in the
+private `peer-human` directory; Runtime's `peer-state` contains no human token.
+Reads cross-check the exact signed Runtime membership/receipt, local identity,
+current local connection state, human expiry and revocation. A missing established
+file, invalid signature, public file permissions or observed rollback fails closed.
+
+The [join journal](../../bridge/internal/peer/join_journal.go) freezes the verified
+Owner-approved invitation, local recipient, display name, secret and operation ID
+before claim. It retains pending intent across restart. Completion validates a
+fresh response for that operation, writes the Runtime receipt, then the separate
+human receipt, and only then removes the pending record. If the human write fails,
+the Runtime receipt remains unchanged and retry must obtain a fresh Host response;
+old receipts or a new operation cannot silently replace the original binding.
+
+Closed schemas bound both private stores. Tests cover failure between the stores,
+reopen with the same frozen intent, stale-response denial, fresh retry retaining
+the original Runtime receipt, concurrent binding, local withdrawal, tamper, missing
+history and stopped copy. Peer Go race/vet pass; 12 focused Server tests and all
+130 Node/Go contract checks, generated/types and Server build pass. Native join UI
+and the Peer HTTP client still need integration; no manual acceptance is implied.
 
 ## Peer human credential ceilings
 

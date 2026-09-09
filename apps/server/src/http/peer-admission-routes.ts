@@ -1,5 +1,5 @@
 import type { FastifyRequest } from "fastify";
-import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest } from "@convene-wire/contracts/peer";
+import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest, PeerIdentityRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerStoreError } from "../data/peer-membership-repository.js";
 import { noStore, sessionCookie } from "./http-helpers.js";
@@ -38,6 +38,10 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
       limitAnonymous(request, "peer-admission");
       if (request.headers.origin || request.headers.cookie || request.headers.authorization) throw new PeerStoreError("SCOPE_DENIED");
     };
+    peer.post("/api/peer/identity", async request => {
+      machineRequest(request);
+      return peerAdmission.identity(body<PeerIdentityRequest>(request, "PeerIdentityRequest"), clock());
+    });
     peer.post("/api/peer/human-entry", async request => {
       machineRequest(request);
       return peerHumanEntry.issue(body<PeerHumanEntryRequest>(request, "PeerHumanEntryRequest"), clock());

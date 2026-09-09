@@ -1,5 +1,28 @@
 {
   "now": "2026-09-10T02:00:00.000Z",
+  "identity": {
+    "schemaVersion": 1,
+    "host": {
+      "nodeId": "node_hostfixture001",
+      "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+    },
+    "hostOrigin": "https://host.example.test",
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "node.identity",
+        "signerNodeId": "node_hostfixture001",
+        "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "audienceNodeId": "node_participant001",
+        "operationId": "op_peerfixture0001",
+        "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "subjectDigest": "2337f71503373f1d5469e08807ed89e21ac86b4f247c7119e0f712442ea3056b",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "TRMbnVJ5UyE_bFM791181qFIZCCPCB8GZLImA7OUQNzAnAaKsZjbnD8TJQVMPBIL2dbLWVRuE_wJxRJB8KHvBQ"
+    }
+  },
   "preview": {
     "schemaVersion": 1,
     "invitation": {

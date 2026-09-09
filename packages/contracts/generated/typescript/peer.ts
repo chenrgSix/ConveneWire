@@ -35,7 +35,7 @@ export interface PeerProofPayload {
   subjectDigest:   string;
 }
 
-export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement";
+export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement" | "node.identity";
 
 export interface PeerProof {
   payload:   PeerProofPayloadClass;
@@ -1306,5 +1306,236 @@ export interface PeerHumanEntryIdentityScope {
   kind:   Kind;
   roomId: null | string;
   teamId: string;
+}
+
+export interface PeerIdentityRequest {
+  nonce:         string;
+  operationId:   string;
+  participant:   PeerIdentityRequestParticipant;
+  schemaVersion: number;
+}
+
+export interface PeerIdentityRequestParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerIdentityProof {
+  host:          PeerIdentityProofHost;
+  hostOrigin:    string;
+  proof:         PeerIdentityProofProof;
+  schemaVersion: number;
+}
+
+export interface PeerIdentityProofHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerIdentityProofProof {
+  payload:   BraggadociousPayload;
+  signature: string;
+}
+
+export interface BraggadociousPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerLocalHumanBinding {
+  receipt: PeerLocalHumanBindingReceipt;
+  state:   PeerMembershipState;
+}
+
+export interface PeerLocalHumanBindingReceipt {
+  host:              HilariousHost;
+  humanCredential:   PurpleHumanCredential;
+  joinReceiptDigest: string;
+  localUserId:       string;
+  participant:       PurpleParticipant;
+  proof:             TentacledProof;
+  schemaVersion:     number;
+}
+
+export interface HilariousHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PurpleHumanCredential {
+  audience:      PeerHumanBindingCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         BraggadociousScope;
+  token:         string;
+}
+
+export interface BraggadociousScope {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PurpleParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface TentacledProof {
+  payload:   Payload1;
+  signature: string;
+}
+
+export interface Payload1 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerHumanVaultState {
+  bindings:      BindingElement[];
+  localUserId:   string;
+  participant:   PeerHumanVaultStateParticipant;
+  revision:      number;
+  schemaVersion: number;
+}
+
+export interface BindingElement {
+  receipt: BindingReceipt;
+  state:   PeerMembershipState;
+}
+
+export interface BindingReceipt {
+  host:              AmbitiousHost;
+  humanCredential:   FluffyHumanCredential;
+  joinReceiptDigest: string;
+  localUserId:       string;
+  participant:       FluffyParticipant;
+  proof:             StickyProof;
+  schemaVersion:     number;
+}
+
+export interface AmbitiousHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FluffyHumanCredential {
+  audience:      PeerHumanBindingCredentialAudience;
+  credentialId:  string;
+  expiresAt:     string;
+  membershipId:  string;
+  schemaVersion: number;
+  scope:         Scope1;
+  token:         string;
+}
+
+export interface Scope1 {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface FluffyParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface StickyProof {
+  payload:   Payload2;
+  signature: string;
+}
+
+export interface Payload2 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerHumanVaultStateParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerPendingJoin {
+  createdAt:     string;
+  displayName:   string;
+  invitation:    PeerPendingJoinInvitation;
+  localUserId:   string;
+  operationId:   string;
+  participant:   PeerPendingJoinParticipant;
+  previewProof:  PreviewProof;
+  schemaVersion: number;
+  secret:        string;
+}
+
+export interface PeerPendingJoinInvitation {
+  expiresAt:           string;
+  host:                CunningHost;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               Scope2;
+  teamLabel:           string;
+}
+
+export interface CunningHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface Scope2 {
+  kind:   Kind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export interface PeerPendingJoinParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PreviewProof {
+  payload:   PreviewProofPayload;
+  signature: string;
+}
+
+export interface PreviewProofPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
 }
 

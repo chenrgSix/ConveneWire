@@ -34,6 +34,25 @@ type HumanEntry struct {
 	Proof             wire.PeerProof           `json:"proof"`
 }
 
+type IdentityProof struct {
+	SchemaVersion int64                 `json:"schemaVersion"`
+	Host          wire.PeerNodeIdentity `json:"host"`
+	HostOrigin    string                `json:"hostOrigin"`
+	Proof         wire.PeerProof        `json:"proof"`
+}
+
+// VerifyIdentityProof precedes all secret-bearing requests to an endpoint.
+func VerifyIdentityProof(identity IdentityProof, host, participant wire.PeerNodeIdentity, origin, operationID, nonce string, now time.Time) error {
+	if !closed("PeerIdentityProof", identity) || ValidateOrigin(origin) != nil || identity.HostOrigin != origin || identity.Host != host || host.NodeID == participant.NodeID {
+		return ErrProof
+	}
+	digest, err := semanticDigest(map[string]any{"host": identity.Host, "hostOrigin": identity.HostOrigin})
+	if err != nil {
+		return ErrProof
+	}
+	return VerifyProof(identity.Proof, host, ProofContext{Purpose: "node.identity", AudienceNodeID: participant.NodeID, OperationID: operationID, Nonce: nonce, SubjectDigest: digest}, now)
+}
+
 func HumanReceiptDigest(receipt HumanReceipt) (string, error) {
 	return semanticDigest(map[string]any{"host": receipt.Host, "participant": receipt.Participant, "localUserId": receipt.LocalUserID,
 		"joinReceiptDigest": receipt.JoinReceiptDigest, "humanCredential": receipt.HumanCredential})

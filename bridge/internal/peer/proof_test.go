@@ -11,6 +11,7 @@ import (
 )
 
 type admissionFixture struct {
+	Identity      IdentityProof               `json:"identity"`
 	Preview       InvitationPreview           `json:"preview"`
 	Now           string                      `json:"now"`
 	Joined        Joined                      `json:"joined"`
@@ -184,5 +185,21 @@ func TestInvitationPreviewRequiresExactLinkPinsAndFreshOwnerReview(t *testing.T)
 	host = f.Joined.Human.Host
 	if verify(f.Preview, now.Add(30*time.Second)) == nil {
 		t.Fatal("expired preview accepted")
+	}
+}
+
+func TestAnonymousIdentityProofMatchesPinnedHostBeforeSecrets(t *testing.T) {
+	f, now := readAdmissionFixture(t)
+	p := f.Identity.Proof.Payload
+	host := f.Joined.Human.Host
+	if err := VerifyIdentityProof(f.Identity, host, f.Joined.Human.Participant, f.Identity.HostOrigin, p.OperationID, p.Nonce, now); err != nil {
+		t.Fatal(err)
+	}
+	host.NodeID = "node_wronghost001"
+	if VerifyIdentityProof(f.Identity, host, f.Joined.Human.Participant, f.Identity.HostOrigin, p.OperationID, p.Nonce, now) == nil {
+		t.Fatal("unexpected Host accepted")
+	}
+	if VerifyIdentityProof(f.Identity, f.Joined.Human.Host, f.Joined.Human.Participant, "https://moved.example.test", p.OperationID, p.Nonce, now) == nil {
+		t.Fatal("unexpected origin accepted")
 	}
 }
