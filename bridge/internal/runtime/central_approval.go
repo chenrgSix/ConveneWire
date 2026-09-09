@@ -49,8 +49,11 @@ func (p *codexAppServerParser) answerApproval(message codexAppServerMessage) ([]
 	var details string
 	switch message.Method {
 	case "item/commandExecution/requestApproval":
+		// Codex identifies local execution explicitly; absent/null is the older
+		// local-only shape. Unknown environments must not inherit local approval.
 		if strings.TrimSpace(value.Command) == "" || value.Cwd == "" ||
-			(value.Kind != "" && value.Kind != "command") || value.EnvironmentID != nil ||
+			(value.Kind != "" && value.Kind != "command") ||
+			(value.EnvironmentID != nil && *value.EnvironmentID != "local") ||
 			(len(value.Network) > 0 && string(value.Network) != "null") {
 			return nil, errors.New("Unsupported command approval scope")
 		}

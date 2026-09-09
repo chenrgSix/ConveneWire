@@ -49,6 +49,7 @@ The contracts Go module pins the selected Go toolchain.
 - `npm run test:compose` — verify the default/custom central HTTPS ports and validate the Caddy configuration.
 - `npm run test:e2e` — run deterministic cross-process acceptance tests.
 - `node scripts/test/run-with-temp-root.mjs -- tsx --test --test-name-pattern 'central approval resumes' tests/e2e/governed-two-bridge-integration.test.ts` — SEC-017 real Central/Bridge process approval with a deterministic Codex protocol fixture, after building Web. No model or installed owner settings are used. Optional `CONVENE_WIRE_APPROVAL_PREVIEW=1` waits for client opt-in and three browser decisions; `CONVENE_WIRE_WORK_EVIDENCE_DIR` retains the sanitized summary. On an offline Go dependency cache, seed the wrapper's task-local `GOMODCACHE` from the existing module download cache before invoking the test.
+- `CONVENE_WIRE_CODEX_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --timeout-ms 60000 -- node --test tests/e2e/codex-approval-protocol.test.mjs` — SEC-018 opt-in installed CLI compatibility check. An isolated `CODEX_HOME` and loopback Responses fixture supply one fixed command; its approval is denied and the target must remain absent. It uses no model service, owner credentials or installed owner configuration. Without the explicit binary variable this test is skipped.
 
 ## Discussion maintenance tests
 

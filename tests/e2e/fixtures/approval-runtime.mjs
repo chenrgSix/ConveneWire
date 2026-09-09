@@ -24,7 +24,7 @@ for await (const line of createInterface({ input: process.stdin })) {
       item: { id: "operation-1", type: "fileChange", status: "inProgress", changes: [{ path: target, kind: { type: "add" }, diff: "+approved\n" }] } } });
     send({ id: 8, method: files ? "item/fileChange/requestApproval" : "item/commandExecution/requestApproval",
       params: { threadId: thread, turnId: "turn-approval", itemId: "operation-1", startedAtMs: Date.now(),
-        ...(files ? {} : { command: `printf approved > permission-${process.pid}.txt`, cwd }), reason: "验证在中心审批后继续当前任务" } });
+        ...(files ? {} : { environmentId: "local", command: `printf approved > permission-${process.pid}.txt`, cwd }), reason: "验证在中心审批后继续当前任务" } });
   }
   if (message.id === 8) {
     if (message.result.decision === "accept") await writeFile(target, "approved\n");

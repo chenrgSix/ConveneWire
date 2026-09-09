@@ -348,7 +348,10 @@ current subprocess while the injected approval port awaits the exact owner's
 decision. Command and file-change requests use a separate owner-only channel;
 they never become assistant text or ordinary activity. Private/governed Runs and
 unsupported interactive methods retain fail-closed behavior. Delivery status is
-SEC-017 in `docs/TASKS.md`.
+SEC-017 in `docs/TASKS.md`. SEC-018 adds compatibility for Codex's explicit
+`environmentId: "local"` on command approvals; absent/null retains compatibility,
+while unknown or remote environment IDs remain outside this authority.
+See [installed Codex evidence](../acceptance/sec-018-installed-codex-approval.md).
 
 Contracts and the invocation boundary. Bridge adapters depend on Bridge; the
 Hosted adapter additionally depends on Security for credential resolution and

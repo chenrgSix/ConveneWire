@@ -774,6 +774,7 @@ or a registration receipt alone.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | SEC-017 | DONE | Forward exact Runtime permission requests to the Device owner in Central | SEC-016, WEB-079 | [Acceptance evidence](acceptance/sec-017-central-runtime-approval.md): generated Node/Go contracts, owner/session/digest/revision/restart negatives, cancellation/race checks, full Web/client UI suites and actual Central/Go Bridge plus browser-reviewed command allow/deny and file allow prove same-process continuation; exact-source local Bridge/Central v0.5.5-local.6f8d633 installed with preserved owner state and three ready Agents; no model calls or automatic owner opt-in |
+| SEC-018 | IN_PROGRESS | Verify installed Codex permission requests through Central | SEC-017 | [Compatibility evidence](acceptance/sec-018-installed-codex-approval.md): a real owner-approved test exposed rejection of Codex 0.153.4 environmentId local; parser compatibility and installed-CLI/Bridge regressions added; installed repair and live owner decision still pending |
 
 ## Compact conversation workspace
 

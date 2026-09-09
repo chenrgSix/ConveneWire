@@ -86,8 +86,40 @@ func TestCentralApprovalContinuesSameProcessOnlyAfterDecision(t *testing.T) {
 	}
 }
 
+func TestCentralApprovalAcceptsLocalCommandEnvironment(t *testing.T) {
+	for _, shape := range []string{"absent", "null", "local"} {
+		t.Run(shape, func(t *testing.T) {
+			p := newCodexAppServerParser(config.AgentConfig{CentralApprovalRevision: 1}, "")
+			p.threadID, p.turnID = "thread-test", "turn-test"
+			called := false
+			p.approve = func(context.Context, contracts.RuntimeApprovalRequestedPayload) (bool, error) {
+				called = true
+				return true, nil
+			}
+			p.approvalContext = context.Background()
+			params := map[string]any{"threadId": p.threadID, "turnId": p.turnID, "itemId": "call_fixture",
+				"kind": "command", "command": "pwd", "cwd": "/tmp/test"}
+			if shape == "local" {
+				params["environmentId"] = "local"
+			} else if shape == "null" {
+				params["environmentId"] = nil
+			}
+			// The installed Runtime starts its callback IDs at zero.
+			raw, _ := json.Marshal(map[string]any{"id": 0, "method": "item/commandExecution/requestApproval", "params": params})
+			_, messages, err := p.consume(raw)
+			if err != nil || !called || len(messages) != 1 {
+				t.Fatalf("local approval was not forwarded: called=%v messages=%v err=%v", called, messages, err)
+			}
+			response, _ := json.Marshal(messages[0])
+			if string(response) != `{"id":0,"result":{"decision":"accept"}}` {
+				t.Fatalf("wrong callback response: %s", response)
+			}
+		})
+	}
+}
+
 func TestCentralApprovalRejectsUnsupportedOrSensitiveCallbacks(t *testing.T) {
-	for _, change := range []string{"secret", "wrong_thread", "session_root", "unsupported", "stdin"} {
+	for _, change := range []string{"secret", "wrong_thread", "session_root", "unsupported", "stdin", "remote_environment", "empty_environment", "network"} {
 		t.Run(change, func(t *testing.T) {
 			called := false
 			p := newCodexAppServerParser(config.AgentConfig{CentralApprovalRevision: 1}, "")
@@ -111,6 +143,13 @@ func TestCentralApprovalRejectsUnsupportedOrSensitiveCallbacks(t *testing.T) {
 				method = "item/permissions/requestApproval"
 			case "stdin":
 				params["kind"] = "writeStdin"
+			case "remote_environment":
+				params["environmentId"] = "remote-1"
+			case "empty_environment":
+				params["environmentId"] = ""
+			case "network":
+				params["environmentId"] = "local"
+				params["networkApprovalContext"] = map[string]string{"host": "example.invalid"}
 			}
 			raw, _ := json.Marshal(map[string]any{"id": 5, "method": method, "params": params})
 			if _, _, err := p.consume(raw); err == nil || called {
@@ -170,7 +209,7 @@ func TestCentralApprovalProcessFixture(t *testing.T) {
 			_ = encoder.Encode(map[string]any{"id": 3, "result": map[string]any{"turn": map[string]string{"id": "turn-test"}}})
 			cwd, _ := os.Getwd()
 			_ = encoder.Encode(map[string]any{"id": 8, "method": "item/commandExecution/requestApproval", "params": map[string]any{
-				"threadId": "thread-test", "turnId": "turn-test", "itemId": "command-test", "command": "printf approved > permission-test.txt", "cwd": cwd}})
+				"threadId": "thread-test", "turnId": "turn-test", "itemId": "command-test", "environmentId": "local", "command": "printf approved > permission-test.txt", "cwd": cwd}})
 		case 8:
 			if message.Result["decision"] == "accept" {
 				_ = os.WriteFile("permission-test.txt", []byte("approved"), 0600)

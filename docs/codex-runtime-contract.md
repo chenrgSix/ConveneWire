@@ -67,7 +67,11 @@ command/cwd and `item/fileChange/requestApproval` for exact changes previously
 observed in the same thread/turn/item. Bridge waits for the Device owner's
 single-operation `accept` or `decline`, then answers the original JSON-RPC
 callback in the same process. It never returns a session or policy amendment.
-Unsupported network-only requests, write-stdin approvals, environment IDs,
+Command requests may omit `environmentId`, use `null`, or explicitly identify
+the local environment as `"local"` (installed Codex 0.153.4). Other environment
+IDs, including an empty string, fail closed. See the installed-CLI regression
+in [SEC-018 evidence](acceptance/sec-018-installed-codex-approval.md).
+Unsupported network-only requests, write-stdin approvals,
 file `grantRoot` grants and other interactive methods fail closed. Recognized
 secrets and oversized details are rejected before transport.
 
