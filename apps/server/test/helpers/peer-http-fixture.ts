@@ -9,10 +9,12 @@ import { CoreRepository } from "../../src/data/core-repository.js";
 import { AuthService } from "../../src/security/auth-service.js";
 import { AuthorityService } from "../../src/security/authority-service.js";
 import { PeerAdmissionService } from "../../src/security/peer-admission-service.js";
+import { PeerAgentService } from "../../src/registry/peer-agent-service.js";
+import { peerDigest } from "@convene-wire/contracts/peer-proof";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
-let now = initialNow, dropNextClaim = true, previewRequests = 0;
+let now = initialNow, dropNextClaim = true, dropNextOffer = true, previewRequests = 0;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
   try {
@@ -30,6 +32,11 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
       request.socket.destroy(); // Commit succeeded; the Participant receives no receipt.
       return;
     }
+    if (request.url === "/api/peer/agents/offers" && result.statusCode === 200 && dropNextOffer) {
+      dropNextOffer = false;
+      request.socket.destroy();
+      return;
+    }
     response.writeHead(result.statusCode, result.headers as Record<string, string>);
     response.end(result.rawPayload);
   } catch { response.writeHead(500).end(); }
@@ -45,6 +52,7 @@ await app.ready();
 const database = openDatabase(databasePath);
 const core = new CoreRepository(database), auth = new AuthService(database, () => now);
 const authority = new AuthorityService(database, origin), peers = new PeerAdmissionService(database, auth, authority);
+const agents = new PeerAgentService(database, auth, authority, peers);
 const ownerId = "user_tlsowner001", memberId = "member_tlsowner001", teamId = "team_tlsfixture001", roomId = "room_tlsinvited001";
 core.createUser({ userId: ownerId, displayName: "Fixture Owner", createdAt: now });
 core.createTeamWithOwner({ teamId, name: "TLS Host Team", createdAt: now }, { memberId, userId: ownerId, teamId, displayName: "Fixture Owner", role: "owner", createdAt: now });
@@ -60,8 +68,18 @@ try {
     if (command.action === "stop") break;
     if (command.action === "clock") now = command.now!;
     else if (command.action === "revoke") peers.revokeMembership(owner, command.membershipId!, now);
+    else if (command.action === "accept-agent") {
+      const offered = agents.listOffers(owner, teamId)[0]!;
+      const grant = offered.offer.grant;
+      agents.accept(owner, { schemaVersion: 1, operationId: "op_tlsacceptagent001", peerId: grant.peerId,
+        localAgentId: grant.localAgentId, exportId: grant.exportId, grantRevision: grant.revision, grantDigest: peerDigest(grant),
+        offerDigest: offered.offerDigest, roomIds: grant.roomIds, capabilities: grant.capabilities, expiresAt: grant.expiresAt,
+        expectedAcceptanceId: offered.acceptance?.acceptanceId ?? null, expectedAcceptanceRevision: offered.acceptance?.revision ?? null }, now);
+    }
     const counts = database.prepare("SELECT count(*) AS memberships FROM peer_memberships").get();
-    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests }) + "\n");
+    const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;
+    const acceptances = (database.prepare("SELECT count(*) AS n FROM peer_acceptance_revisions").get() as { n: number }).n;
+    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, offers, acceptances }) + "\n");
   }
 } finally {
   listener.closeIdleConnections();

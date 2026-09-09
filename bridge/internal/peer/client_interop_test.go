@@ -11,6 +11,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"io"
 	"math/big"
 	"net"
@@ -231,6 +232,46 @@ func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *test
 	}
 	if count := f.control(t, map[string]any{"action": "stats"}); count["memberships"] != 1 {
 		t.Fatal("duplicate Member on retry", count)
+	}
+	source := fixtureExportSource()
+	exporter, err := NewExporter(restored, func(string) (ExportSource, error) { return source, nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, err := restored.Read()
+	if err != nil {
+		t.Fatal(err)
+	}
+	exportRequest := fixtureExportRequest(state, source)
+	prepared, err := exporter.Prepare(state.Revision, exportRequest, now)
+	if err != nil {
+		t.Fatal("prepare export", err)
+	}
+	if _, err := client.PublishExport(context.Background(), exporter, exportRequest.MembershipID, source.AgentID); !errors.Is(err, ErrTransport) {
+		t.Fatal("lost offer response was treated as a receipt", err)
+	}
+	if count := f.control(t, map[string]any{"action": "stats"}); count["offers"] != 1 || count["acceptances"] != 0 {
+		t.Fatal("offer authority", count)
+	}
+	reopened, err := OpenStore(root, signer.Identity(), signer.LocalUserID())
+	if err != nil {
+		t.Fatal(err)
+	}
+	exporter, _ = NewExporter(reopened, func(string) (ExportSource, error) { return source, nil })
+	offerReceipt, err := client.PublishExport(context.Background(), exporter, exportRequest.MembershipID, source.AgentID)
+	if err != nil {
+		t.Fatal("retry durable offer", err)
+	}
+	if offerReceipt.ExportID != prepared.Offer.Grant.ExportID || offerReceipt.GrantRevision != 1 {
+		t.Fatal("offer retry changed authorization")
+	}
+	tampered := prepared.Offer
+	tampered.DisplayName = "Unreviewed rename"
+	if VerifyOfferReceipt(offerReceipt, tampered, f.Host, signer.Identity(), prepared.OperationID, offerReceipt.Proof.Payload.Nonce, now) == nil {
+		t.Fatal("offer receipt metadata substituted")
+	}
+	if count := f.control(t, map[string]any{"action": "accept-agent"}); count["offers"] != 1 || count["acceptances"] != 1 {
+		t.Fatal("explicit Host acceptance", count)
 	}
 	entry, err := client.HumanEntry(context.Background(), human, receipt.Membership.MembershipID, wire.PeerScope(receipt.Membership.Scope), "op_tlsbrowser001")
 	if err != nil {

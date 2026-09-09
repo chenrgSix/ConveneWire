@@ -1398,6 +1398,9 @@
         },
         {
           "$ref": "#/$defs/PeerAgentAcceptanceReceipt"
+        },
+        {
+          "$ref": "#/$defs/PeerLocalExport"
         }
       ]
     },
@@ -1466,6 +1469,13 @@
             "$ref": "#/$defs/RemoteAgentAcceptance"
           },
           "maxItems": 2048
+        },
+        "localExports": {
+          "type": "array",
+          "maxItems": 2048,
+          "items": {
+            "$ref": "#/$defs/PeerLocalExport"
+          }
         }
       }
     },
@@ -2357,6 +2367,40 @@
         },
         "proof": {
           "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerLocalExport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "intentDigest",
+        "configurationDigest",
+        "offer"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "intentDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configurationDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "offer": {
+          "$ref": "#/$defs/PeerAgentOffer"
         }
       }
     }

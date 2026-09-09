@@ -200,6 +200,38 @@ the Peer Go race suite (including real TLS Go/Server admission) and vet pass.
 Server build, documentation, links and whitespace checks pass. Manual A/B/C
 acceptance remains consolidated in QA-092 after the complete implementation.
 
+### Participant export persistence
+
+The Go `Exporter` consumes a resolver owned by the shared core's stable local
+Agent map. Explicit Owner review atomically appends the grant and its immutable
+operation, display metadata and configuration digest to the private Peer store.
+Commands, paths and local configuration are not included in network offers.
+Optional `localExports` history preserves compatibility with existing join-only
+stores; grants without a matching reviewed entry cannot pass the Exporter check.
+
+Changes to the resolved Agent identity, command, workspace or capabilities fence
+the previous grant. Owner-private output and inherited Device trust/central
+approval are rejected. Withdrawal needs neither an available Runtime nor a Host
+response and remains possible after leaving or expiry. A revoked lineage cannot
+be reused; explicit replacement gets a new Export ID and requires new Host
+acceptance. Local review reserves history capacity for later withdrawal.
+
+`Client.PublishExport` sends only a durable, current offer after checking the
+Host's TLS and pinned Node identity. It rechecks local authority around network
+waits and verifies the returned proof over exact grant and metadata digests.
+The receipt confirms offer persistence, not acceptance. Actual Go/Server TLS
+coverage drops the first offer response after commit, reopens the Participant
+store, retries the same offer, verifies no duplicate or automatic acceptance,
+then performs an explicit Host acceptance through the fixture's Owner action.
+
+All Peer Go race tests and vet pass, including concurrent local review,
+configuration/private/trust negatives, immutable history, clock rollback,
+withdrawal without a Runtime and explicit replacement. All 130 Contracts Node
+checks, Go fixtures, generation/types, Server build and docs/link checks pass.
+Registry materialization, native callers and multi-revision synchronization
+remain in the active delivery chain; this transport helper does not yet run a
+background connector or execute work.
+
 ## Registry verification
 
 - Reconnect converges publication without duplicate Agents.

@@ -4701,6 +4701,43 @@
             "issuedAt": "2026-09-10T02:00:00.000Z",
             "expiresAt": "2026-09-10T02:00:30.000Z"
           }
+        ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
+          }
         ]
       },
       "valid": true
@@ -4828,6 +4865,43 @@
             "expiresAt": "2026-09-10T02:00:30.000Z"
           }
         ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
+          }
+        ],
         "deviceId": "device_peerfixture0001"
       },
       "valid": false
@@ -4890,6 +4964,43 @@
             "state": "active",
             "issuedAt": "2026-09-10T02:00:00.000Z",
             "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
           }
         ]
       },
@@ -5016,6 +5127,43 @@
             "issuedAt": "2026-09-10T02:00:00.000Z",
             "expiresAt": "2026-09-10T02:00:30.000Z"
           }
+        ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
+          }
         ]
       },
       "valid": false
@@ -5116,6 +5264,43 @@
             "issuedAt": "2026-09-10T02:00:00.000Z",
             "expiresAt": "2026-09-10T02:00:30.000Z"
           }
+        ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
+          }
         ]
       },
       "valid": false
@@ -5212,6 +5397,43 @@
             "state": "active",
             "issuedAt": "2026-09-10T02:00:00.000Z",
             "expiresAt": "2026-09-10T02:00:30.000Z"
+          }
+        ],
+        "localExports": [
+          {
+            "schemaVersion": 1,
+            "operationId": "op_peerfixture0001",
+            "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "offer": {
+              "schemaVersion": 1,
+              "grant": {
+                "schemaVersion": 1,
+                "exportId": "export_peerfixture0001",
+                "peerId": "peer_peerfixture0001",
+                "participantNodeId": "node_peerfixture0001",
+                "authorityNodeId": "node_peerfixture0001",
+                "teamId": "team_peerfixture0001",
+                "localAgentId": "agent_peerfixture0001",
+                "roomIds": [
+                  "room_peerfixture0001"
+                ],
+                "capabilities": {
+                  "supportsStart": true,
+                  "supportsInterrupt": true,
+                  "supportsResume": true,
+                  "supportsStreaming": true,
+                  "supportsTaskContextIsolation": true,
+                  "supportsOwnerPrivateOutput": true
+                },
+                "revision": 1,
+                "state": "active",
+                "issuedAt": "2026-09-10T02:00:00.000Z",
+                "expiresAt": "2026-09-10T02:00:30.000Z"
+              },
+              "displayName": "Peer fixture",
+              "role": "Peer fixture"
+            }
           }
         ]
       },
@@ -5347,6 +5569,43 @@
                 "state": "active",
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
               }
             ]
           }
@@ -5485,6 +5744,43 @@
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
               }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
+              }
             ]
           }
         ],
@@ -5622,6 +5918,43 @@
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
               }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
+              }
             ]
           }
         ]
@@ -5754,6 +6087,43 @@
                 "state": "active",
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
               }
             ]
           }
@@ -5891,6 +6261,43 @@
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
               }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
+              }
             ]
           }
         ]
@@ -6026,6 +6433,43 @@
                 "state": "active",
                 "issuedAt": "2026-09-10T02:00:00.000Z",
                 "expiresAt": "2026-09-10T02:00:30.000Z"
+              }
+            ],
+            "localExports": [
+              {
+                "schemaVersion": 1,
+                "operationId": "op_peerfixture0001",
+                "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "offer": {
+                  "schemaVersion": 1,
+                  "grant": {
+                    "schemaVersion": 1,
+                    "exportId": "export_peerfixture0001",
+                    "peerId": "peer_peerfixture0001",
+                    "participantNodeId": "node_peerfixture0001",
+                    "authorityNodeId": "node_peerfixture0001",
+                    "teamId": "team_peerfixture0001",
+                    "localAgentId": "agent_peerfixture0001",
+                    "roomIds": [
+                      "room_peerfixture0001"
+                    ],
+                    "capabilities": {
+                      "supportsStart": true,
+                      "supportsInterrupt": true,
+                      "supportsResume": true,
+                      "supportsStreaming": true,
+                      "supportsTaskContextIsolation": true,
+                      "supportsOwnerPrivateOutput": true
+                    },
+                    "revision": 1,
+                    "state": "active",
+                    "issuedAt": "2026-09-10T02:00:00.000Z",
+                    "expiresAt": "2026-09-10T02:00:30.000Z"
+                  },
+                  "displayName": "Peer fixture",
+                  "role": "Peer fixture"
+                }
               }
             ]
           }
@@ -11152,6 +11596,254 @@
           }
         },
         "offerDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport valid",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerLocalExport rejects Device fallback",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        },
+        "deviceId": "device_peerfixture0001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport requires schemaVersion",
+      "kind": "PeerLocalExport",
+      "value": {
+        "operationId": "op_peerfixture0001",
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport requires operationId",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport requires intentDigest",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport requires configurationDigest",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "offer": {
+          "schemaVersion": 1,
+          "grant": {
+            "schemaVersion": 1,
+            "exportId": "export_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "participantNodeId": "node_peerfixture0001",
+            "authorityNodeId": "node_peerfixture0001",
+            "teamId": "team_peerfixture0001",
+            "localAgentId": "agent_peerfixture0001",
+            "roomIds": [
+              "room_peerfixture0001"
+            ],
+            "capabilities": {
+              "supportsStart": true,
+              "supportsInterrupt": true,
+              "supportsResume": true,
+              "supportsStreaming": true,
+              "supportsTaskContextIsolation": true,
+              "supportsOwnerPrivateOutput": true
+            },
+            "revision": 1,
+            "state": "active",
+            "issuedAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-09-10T02:00:30.000Z"
+          },
+          "displayName": "Peer fixture",
+          "role": "Peer fixture"
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalExport requires offer",
+      "kind": "PeerLocalExport",
+      "value": {
+        "schemaVersion": 1,
+        "operationId": "op_peerfixture0001",
+        "intentDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "configurationDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       },
       "valid": false
     },

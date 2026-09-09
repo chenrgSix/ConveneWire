@@ -190,6 +190,9 @@ func (c *Client) HumanEntry(ctx context.Context, vault *HumanVault, membershipID
 	return entry, nil
 }
 func (c *Client) post(ctx context.Context, path, requestKind string, value any, responseKind string, result any) error {
+	return c.postMachine(ctx, path, requestKind, value, responseKind, result, "")
+}
+func (c *Client) postMachine(ctx context.Context, path, requestKind string, value any, responseKind string, result any, token string) error {
 	if !closed(requestKind, value) {
 		return ErrProof
 	}
@@ -202,6 +205,9 @@ func (c *Client) post(ctx context.Context, path, requestKind string, value any, 
 		return ErrTransport
 	}
 	request.Header.Set("content-type", "application/json")
+	if token != "" {
+		request.Header.Set("authorization", "Bearer "+token)
+	}
 	response, err := c.http.Do(request)
 	if err != nil {
 		return ErrTransport

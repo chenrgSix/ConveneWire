@@ -27,6 +27,13 @@ projection and offer digest. Cross-language fixtures cover every new field,
 unknown-field denial and strict raw decoding; label whitespace/control cleanup
 is an additional service-level check.
 
+The optional private `PeerLocalConnection.localExports` array retains closed
+`PeerLocalExport` entries binding the Owner operation and configuration digest
+to each public offer. Existing join-only state remains readable. The Go store
+requires exact grant correspondence and immutable history prefixes, while the
+Exporter requires current configuration correspondence before publication.
+Configuration values and the private history are never part of an offer.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

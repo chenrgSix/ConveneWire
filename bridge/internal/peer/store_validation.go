@@ -61,6 +61,7 @@ func validateState(state State, participant wire.PeerNodeIdentity, localUserID s
 	}
 	peers := map[string]bool{}
 	activePins := map[string]string{}
+	operations := map[string]bool{}
 	for _, connection := range state.Connections {
 		receipt := connection.Receipt
 		m := receipt.Membership
@@ -101,7 +102,7 @@ func validateState(state State, participant wire.PeerNodeIdentity, localUserID s
 		if err != nil || !ed25519.Verify(key, transcript, signature) {
 			return ErrStore
 		}
-		if validateHistory(connection) != nil {
+		if validateHistory(connection) != nil || validateLocalExports(connection, operations) != nil {
 			return ErrStore
 		}
 	}
