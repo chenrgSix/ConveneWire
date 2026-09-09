@@ -1,5 +1,14 @@
 # Contracts Module
 
+## Multi-Authority foundation
+
+[ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines CON-027's
+closed Authority references, explicit Device connector configuration and bounded
+Host identity proof. JSON Schema owns TypeScript/Go interoperability. The proof
+pins nonce, identity/key, existing Team/Device/Owner and expiry; it creates no
+Peer or human permission. Existing Device envelopes and Inbox payload digests
+remain compatible. Peer admission is a separate future contract.
+
 ## Local Node private control
 
 DATA-008 adds [the Local Node control schema](../../packages/contracts/schemas/local-node/control.schema.json)

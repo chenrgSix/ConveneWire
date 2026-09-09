@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-09-09
-- Task: GOV-044; Milestone A implementation authorized on 2026-09-09
+- Task: GOV-044; Milestones A/B implementation authorized on 2026-09-09
 - Owners: Contracts, Security, Registry, Bridge, Persistence, Run, Discussion,
   Team/Room, Web and Operations
 - Source baseline: local `main` at `9175e404e3fce0011e6a355297d752f0d750c0a5`
@@ -14,8 +14,9 @@
 The Owner accepted the Node-first direction and the review's P1 findings, then
 authorized defining the goal and starting Milestone A on 2026-09-09. This record
 is now Accepted. [ADR-0066](0066-local-node-delivery.md) freezes the Local Node
-implementation boundary. Multi-Authority and Peer implementation remain deferred;
-their unresolved decisions must be settled before those milestones start.
+implementation boundary. The Owner subsequently authorized Milestone B under
+[ADR-0067](0067-multi-authority-runtime-foundation.md), with A/B native desktop
+acceptance combined after B. Peer implementation remains deferred.
 GOV-044 records the design delivery and acceptance, never runtime completion.
 Delivery status belongs only in [TASKS.md](../TASKS.md).
 
@@ -507,8 +508,8 @@ The future migration must follow these rules:
 ## Milestone boundaries
 
 These are architectural sequence and exit requirements, not delivery status.
-Milestone A is authorized and registered in [TASKS.md](../TASKS.md). Milestones
-B and C remain reserved planning names and require separate authorization.
+Milestones A and B are authorized and registered in [TASKS.md](../TASKS.md).
+Milestone C remains a reserved planning name and requires separate authorization.
 
 | Milestone | Reserved task scope | Exit boundary |
 | --- | --- | --- |

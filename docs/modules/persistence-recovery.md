@@ -1,5 +1,15 @@
 # Persistence and Recovery
 
+## Authority partition ownership
+
+[ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) assigns DATA-009 the
+stable Host identity and explicit Runtime namespace receipt. Authenticated
+primary adoption preserves original Inbox/Session records and Run digests.
+Additional Authorities use private partitions; endpoint, epoch or consent changes
+cannot reset deduplication. Ambiguous external history is preserved and refused,
+never silently relabeled. This stores execution evidence and remote references,
+not replicated collaboration state.
+
 ## Local Node identity and stopped recovery
 
 [ADR-0066](../adr/0066-local-node-delivery.md) and

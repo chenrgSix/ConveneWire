@@ -1,5 +1,14 @@
 # Web UI
 
+## Authority-bound Spaces
+
+[ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines WEB-084's
+reference-only local Space directory and separate origin-bound views. Opening a
+remote Space never forwards Local Owner or Device credentials. Each Host keeps
+its own human authentication, navigation, drafts and pending request lifecycle.
+Directory presence is not membership and cannot create a writable remote Room
+replica. A/B native desktop acceptance follows B's implementation checks.
+
 ## Local Node entry
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a desktop-issued one-use entry

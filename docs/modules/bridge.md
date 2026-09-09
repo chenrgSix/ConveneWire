@@ -1,5 +1,16 @@
 # Local Bridge
 
+## Shared Runtime core
+
+[ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines BRG-080:
+one root owner and shared local Agent/physical Workspace scheduler, with
+independently authenticated Device connectors and explicit projection mappings.
+Namespace and current proof are checked before Runtime admission. Sessions,
+approval callbacks, cancellation and report recovery retain the exact Authority
+binding; one connector's failure cannot reset another connector's execution.
+Local trust is never copied to a newly configured Authority. Peer transport and
+Participant-local Peer approvals remain separate Milestone C work.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child
