@@ -9,11 +9,26 @@ invalid Unicode/UTF-8, non-finite numbers, excess depth and excess bytes.
 Serialization follows [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785.html),
 including UTF-16 property order and ECMAScript IEEE754 number spelling.
 
-The first increment passes 125 Contracts Node tests, generated/type checks and
-Go fixtures/vet, including actual Go/Node comparison over 2,000-plus deterministic
-IEEE754/Unicode inputs. The generator bounds each gofmt invocation to 30 seconds
-so an unresponsive formatter cannot hold generation indefinitely. Closed Peer
-control/execution schemas and signatures remain the next CON-028 increment.
+CON-028 also supplies [closed Peer schemas](../../packages/contracts/schemas/peer/control.schema.json)
+and generated TypeScript/Go types for invitation and claim, Team/Room membership,
+separate human/machine credentials, Export/Acceptance/Projection, immutable
+execution admission, content-free settlement and versioned control messages.
+The strict control decoder checks original numeric spellings before binary64
+rounding can change an authorization counter. Schemas do not themselves prove
+that a caller holds the referenced grant; current identity/authority checks
+belong to SEC-019, REG-007 and RUN-020.
+
+The domain-separated Ed25519 transcript binds every proof field, including the
+semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
+is at most 30 seconds with five seconds of future clock skew; this does not
+extend grant or membership expiry. Callers must verify the established pinned
+key and expected binding as well as the signature.
+
+Verification passes 128 Contracts Node tests, deterministic generation, strict
+types and Go shared fixtures/vet. Actual Go/Node processes compare both valid
+and invalid control messages, a signed proof and 2,000-plus deterministic
+IEEE754/Unicode canonicalization inputs. The generator bounds each gofmt
+invocation to 30 seconds so an unresponsive formatter cannot hold it indefinitely.
 
 ## Multi-Authority foundation
 
@@ -22,7 +37,7 @@ closed Authority references, explicit Device connector configuration and bounded
 Host identity proof. JSON Schema owns TypeScript/Go interoperability. The proof
 pins nonce, identity/key, existing Team/Device/Owner and expiry; it creates no
 Peer or human permission. Existing Device envelopes and Inbox payload digests
-remain compatible. Peer admission is a separate future contract.
+remain compatible. Peer admission uses the separate CON-028 contract.
 
 CON-027 supplies the [closed foundation schema](../../packages/contracts/schemas/authority/foundation.schema.json),
 generated language types, reference/configuration fixtures and one shared

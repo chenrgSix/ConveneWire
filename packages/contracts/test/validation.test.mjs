@@ -16,7 +16,7 @@ test("the checked-in contract package is internally consistent", async () => {
 
   assert.deepEqual(result, {
     catalogVersion: "0.1.0",
-    schemaCount: 16
+    schemaCount: 17
   });
 });
 
@@ -39,7 +39,8 @@ test("every wire integer is bounded to the interoperable safe range", async () =
     "../schemas/work/task-result.schema.json",
     "../schemas/work/execution-plan.schema.json",
     "../schemas/work/execution-runtime.schema.json",
-    "../schemas/work/evidence-adoption.schema.json"
+    "../schemas/work/evidence-adoption.schema.json",
+    "../schemas/peer/control.schema.json"
   ];
   const integerLocations = [];
   const inspect = (value, location) => {

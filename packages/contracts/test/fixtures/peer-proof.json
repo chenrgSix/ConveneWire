@@ -1,0 +1,37 @@
+{
+  "proof": {
+    "payload": {
+      "schemaVersion": 1,
+      "purpose": "run.admission",
+      "signerNodeId": "node_hostfixture001",
+      "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+      "audienceNodeId": "node_participant001",
+      "operationId": "op_peerfixture0001",
+      "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+      "subjectDigest": "a04a14010c7a691a355d4b687d490279c2a337685ee7689f7c3da3090df1a9fd",
+      "issuedAt": "2026-09-10T02:00:00.000Z",
+      "expiresAt": "2026-09-10T02:00:30.000Z"
+    },
+    "signature": "b9zJgZ-efeV6peihv5Z2LQgm8UXhsaVsC_msSHRHjMGXfMwyAhTfnNluC2HI4vbj6DHx8yUHJ8ZLVcRJ4_vJBQ"
+  },
+  "transcript": "{\"domain\":\"convenewire.peer.proof.v1\",\"payload\":{\"audienceNodeId\":\"node_participant001\",\"expiresAt\":\"2026-09-10T02:00:30.000Z\",\"issuedAt\":\"2026-09-10T02:00:00.000Z\",\"nonce\":\"6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw\",\"operationId\":\"op_peerfixture0001\",\"purpose\":\"run.admission\",\"schemaVersion\":1,\"signerNodeId\":\"node_hostfixture001\",\"signerPublicKey\":\"6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw\",\"subjectDigest\":\"a04a14010c7a691a355d4b687d490279c2a337685ee7689f7c3da3090df1a9fd\"}}",
+  "now": "2026-09-10T02:00:00.000Z",
+  "binding": {
+    "schemaVersion": 1,
+    "authorityNodeId": "node_peerfixture0001",
+    "participantNodeId": "node_peerfixture0001",
+    "peerId": "peer_peerfixture0001",
+    "teamId": "team_peerfixture0001",
+    "roomId": "room_peerfixture0001",
+    "runId": "run_peerfixture0001",
+    "projectionAgentId": "agent_peerfixture0001",
+    "localAgentId": "agent_peerfixture0001",
+    "exportId": "export_peerfixture0001",
+    "grantRevision": 1,
+    "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "acceptanceId": "acceptance_peerfixture0001",
+    "acceptanceRevision": 1,
+    "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "requestDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

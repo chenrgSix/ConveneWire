@@ -15,7 +15,7 @@ function unicode(value) {
 }
 
 /** Strict raw decoding preserves JSON types and rejects duplicate decoded keys. */
-export function parsePeerJson(input) {
+export function parsePeerJson(input, { integerOnly = false } = {}) {
   if (typeof input !== "string" && !(input instanceof Uint8Array)) throw invalid();
   if (input.length > peerJsonMaximumBytes) throw invalid();
   const source = typeof input === "string" ? input : new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(input);
@@ -60,7 +60,7 @@ export function parsePeerJson(input) {
     if (!primitive) throw invalid();
     position += primitive[0].length;
     const value = JSON.parse(primitive[0]);
-    if (typeof value === "number" && !Number.isFinite(value)) throw invalid();
+    if (typeof value === "number" && (!Number.isFinite(value) || (integerOnly && !exactInteger(primitive[0], value)))) throw invalid();
     return value;
   };
   const value = read(0); space();
@@ -105,4 +105,24 @@ export function canonicalPeerJson(value) {
   };
   write(value, 0);
   return encoder.encode(chunks.join(""));
+}
+
+// Avoid accepting fractional/unsafe revision literals after binary64 rounding.
+function exactInteger(raw, value) {
+  if (!Number.isSafeInteger(value)) return false;
+  const [mantissa, exponent = "0"] = raw.replace(/^-/, "").toLowerCase().split("e");
+  const [whole, fraction = ""] = mantissa.split(".");
+  let digits = (whole + fraction).replace(/^0+/, "");
+  if (!digits) return true;
+  const shift = Number(exponent) - fraction.length;
+  if (!Number.isSafeInteger(shift)) return false;
+  if (shift < 0) {
+    const cut = digits.length + shift;
+    if (cut < 1 || /[1-9]/u.test(digits.slice(cut))) return false;
+    digits = digits.slice(0, cut);
+  } else {
+    if (digits.length + shift > 16) return false;
+    digits += "0".repeat(shift);
+  }
+  return digits === String(Math.abs(value));
 }

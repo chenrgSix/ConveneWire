@@ -21,6 +21,12 @@ await Promise.all([
 ]);
 await Promise.all([
   writeFile(path.join(generatedRoot, "go", "peer", "json.go"), output.peerJson),
+  writeFile(path.join(generatedRoot, "go", "peer", "control.go"), output.peerGo),
+  writeFile(path.join(generatedRoot, "go", "peer", "control-schema.json"), output.peerSchema),
+  writeFile(path.join(generatedRoot, "go", "peer", "validation.go"), output.peerValidator),
+  writeFile(path.join(generatedRoot, "go", "peer", "proof.go"), output.peerProof),
+  writeFile(path.join(generatedRoot, "typescript", "peer.ts"), output.peerTypescript),
+  writeFile(path.join(generatedRoot, "runtime", "peer-schema.json"), output.peerSchema),
   writeFile(path.join(generatedRoot, "go", "authority", "validation.go"), output.authorityValidator),
   writeFile(path.join(generatedRoot, "go", "authority", "proof.go"), output.authorityProof),
   writeFile(path.join(generatedRoot, "typescript", "authority.ts"), output.authorityTypescript),

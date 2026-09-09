@@ -1,0 +1,1386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentroom.dev/schemas/peer/control.schema.json",
+  "title": "Peer collaboration control and execution bindings",
+  "$ref": "#/$defs/PeerControlMessage",
+  "$defs": {
+    "PeerScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "teamId",
+            "roomId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "team"
+            },
+            "teamId": {
+              "type": "string",
+              "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomId": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "teamId",
+            "roomId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "room"
+            },
+            "teamId": {
+              "type": "string",
+              "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        }
+      ]
+    },
+    "PeerNodeIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nodeId",
+        "publicKey"
+      ],
+      "properties": {
+        "nodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "publicKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        }
+      }
+    },
+    "PeerChallenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "challengeId",
+        "hostNodeId",
+        "participantNodeId",
+        "nonce",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "challengeId": {
+          "type": "string",
+          "pattern": "^peerchallenge_[A-Za-z0-9_-]{8,128}$"
+        },
+        "hostNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "participantNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerProofPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "purpose",
+        "signerNodeId",
+        "signerPublicKey",
+        "audienceNodeId",
+        "operationId",
+        "nonce",
+        "subjectDigest",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "invitation.preview",
+            "invitation.claim",
+            "peer.connect",
+            "human.entry",
+            "agent.export",
+            "agent.acceptance",
+            "run.admission",
+            "run.settlement"
+          ]
+        },
+        "signerNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "signerPublicKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "audienceNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "subjectDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "issuedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload",
+        "signature"
+      ],
+      "properties": {
+        "payload": {
+          "$ref": "#/$defs/PeerProofPayload"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{85}[AQgw]$"
+        }
+      }
+    },
+    "PeerInvitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitationId",
+        "host",
+        "hostOrigin",
+        "scope",
+        "teamLabel",
+        "roomLabel",
+        "expiresAt",
+        "membershipExpiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^peerinvite_[A-Za-z0-9_-]{8,128}$"
+        },
+        "host": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "teamLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "roomLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 140
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "hostOrigin": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512,
+          "pattern": "^https?://(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?$"
+        },
+        "membershipExpiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerInvitationClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "invitationId",
+        "operationId",
+        "challengeId",
+        "invitationDigest",
+        "secret",
+        "participant",
+        "localUserId",
+        "displayName",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "invitationId": {
+          "type": "string",
+          "pattern": "^peerinvite_[A-Za-z0-9_-]{8,128}$"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "challengeId": {
+          "type": "string",
+          "pattern": "^peerchallenge_[A-Za-z0-9_-]{8,128}$"
+        },
+        "invitationDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "secret": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "participant": {
+          "$ref": "#/$defs/PeerNodeIdentity"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "membershipId",
+        "peerId",
+        "hostNodeId",
+        "participantNodeId",
+        "localUserId",
+        "memberId",
+        "userId",
+        "scope",
+        "revision",
+        "state",
+        "createdAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "membershipId": {
+          "type": "string",
+          "pattern": "^peermember_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "hostNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "participantNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "localUserId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "memberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "userId": {
+          "type": "string",
+          "pattern": "^user_[A-Za-z0-9_-]{8,128}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerMachineCredential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "audience",
+        "credentialId",
+        "peerId",
+        "token",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "audience": {
+          "type": "string",
+          "const": "peer.runtime"
+        },
+        "credentialId": {
+          "type": "string",
+          "pattern": "^peercredential_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerHumanCredential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "audience",
+        "credentialId",
+        "membershipId",
+        "scope",
+        "token",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "audience": {
+          "type": "string",
+          "const": "peer.human"
+        },
+        "credentialId": {
+          "type": "string",
+          "pattern": "^peerhuman_[A-Za-z0-9_-]{8,128}$"
+        },
+        "membershipId": {
+          "type": "string",
+          "pattern": "^peermember_[A-Za-z0-9_-]{8,128}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/PeerScope"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supportsStart",
+        "supportsInterrupt",
+        "supportsResume",
+        "supportsStreaming",
+        "supportsTaskContextIsolation",
+        "supportsOwnerPrivateOutput"
+      ],
+      "properties": {
+        "supportsStart": {
+          "type": "boolean"
+        },
+        "supportsInterrupt": {
+          "type": "boolean"
+        },
+        "supportsResume": {
+          "type": "boolean"
+        },
+        "supportsStreaming": {
+          "type": "boolean"
+        },
+        "supportsTaskContextIsolation": {
+          "type": "boolean"
+        },
+        "supportsOwnerPrivateOutput": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AgentExportGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "exportId",
+        "peerId",
+        "participantNodeId",
+        "authorityNodeId",
+        "teamId",
+        "localAgentId",
+        "roomIds",
+        "capabilities",
+        "revision",
+        "state",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "participantNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "localAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "$ref": "#/$defs/PeerCapabilities"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "issuedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "RemoteAgentAcceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "acceptanceId",
+        "peerId",
+        "authorityNodeId",
+        "participantNodeId",
+        "teamId",
+        "memberId",
+        "exportId",
+        "grantRevision",
+        "grantDigest",
+        "roomIds",
+        "capabilities",
+        "revision",
+        "state",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "acceptanceId": {
+          "type": "string",
+          "pattern": "^acceptance_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "participantNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "memberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "grantRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "roomIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "$ref": "#/$defs/PeerCapabilities"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        },
+        "issuedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "RemoteAgentProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "projectionAgentId",
+        "authorityNodeId",
+        "peerId",
+        "teamId",
+        "localAgentId",
+        "exportId",
+        "acceptanceId",
+        "acceptanceRevision",
+        "displayName",
+        "role",
+        "capabilities"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "projectionAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "localAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "acceptanceId": {
+          "type": "string",
+          "pattern": "^acceptance_[A-Za-z0-9_-]{8,128}$"
+        },
+        "acceptanceRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "capabilities": {
+          "$ref": "#/$defs/PeerCapabilities"
+        }
+      }
+    },
+    "PeerExecutionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "authorityNodeId",
+        "participantNodeId",
+        "peerId",
+        "teamId",
+        "roomId",
+        "runId",
+        "projectionAgentId",
+        "localAgentId",
+        "exportId",
+        "grantRevision",
+        "grantDigest",
+        "acceptanceId",
+        "acceptanceRevision",
+        "acceptanceDigest",
+        "requestDigest"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "authorityNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "participantNodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "peerId": {
+          "type": "string",
+          "pattern": "^peer_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomId": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "projectionAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "localAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "exportId": {
+          "type": "string",
+          "pattern": "^export_[A-Za-z0-9_-]{8,128}$"
+        },
+        "grantRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "acceptanceId": {
+          "type": "string",
+          "pattern": "^acceptance_[A-Za-z0-9_-]{8,128}$"
+        },
+        "acceptanceRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "acceptanceDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "PeerAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "binding",
+        "proof"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/PeerExecutionBinding"
+        },
+        "proof": {
+          "$ref": "#/$defs/PeerProof"
+        }
+      }
+    },
+    "PeerSettlementCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "audience",
+        "capabilityId",
+        "binding",
+        "token",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "audience": {
+          "type": "string",
+          "const": "peer.settlement"
+        },
+        "capabilityId": {
+          "type": "string",
+          "pattern": "^peersettle_[A-Za-z0-9_-]{8,128}$"
+        },
+        "binding": {
+          "$ref": "#/$defs/PeerExecutionBinding"
+        },
+        "token": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$"
+        },
+        "issuedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "PeerSettlement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "capabilityId",
+        "operationId",
+        "bindingDigest",
+        "sequence",
+        "state",
+        "receiptDigest"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "capabilityId": {
+          "type": "string",
+          "pattern": "^peersettle_[A-Za-z0-9_-]{8,128}$"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+        },
+        "bindingDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed",
+            "canceled",
+            "expired",
+            "outcome_unknown",
+            "delivery_denied"
+          ]
+        },
+        "receiptDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "PeerError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "UNAUTHENTICATED",
+            "SCOPE_DENIED",
+            "EXPIRED",
+            "REVOKED",
+            "STALE_AUTHORIZATION",
+            "PAYLOAD_CONFLICT",
+            "UNSUPPORTED_VERSION",
+            "UNSUPPORTED_CAPABILITY",
+            "INVALID_MESSAGE"
+          ]
+        }
+      }
+    },
+    "PeerControlMessage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.challenge"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerChallenge"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.proof"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerProof"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.invitation"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerInvitation"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.invitation.claim"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerInvitationClaim"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.membership"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerMembership"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.agent.export"
+            },
+            "payload": {
+              "$ref": "#/$defs/AgentExportGrant"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.agent.acceptance"
+            },
+            "payload": {
+              "$ref": "#/$defs/RemoteAgentAcceptance"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.agent.projection"
+            },
+            "payload": {
+              "$ref": "#/$defs/RemoteAgentProjection"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.run.admission"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerAdmission"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.run.settlement"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerSettlement"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "protocolVersion",
+            "messageId",
+            "timestamp",
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "protocolVersion": {
+              "type": "string",
+              "const": "peer.v1"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+              "format": "date-time"
+            },
+            "type": {
+              "type": "string",
+              "const": "peer.error"
+            },
+            "payload": {
+              "$ref": "#/$defs/PeerError"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -40,9 +40,13 @@ Host-authorized invitation, never display-name matching.
 
 Invitation secrets are 32 random bytes encoded without padding, hashed at rest,
 excluded from logs and query strings, and expire within at most 24 hours (one
-hour by default). Claim commits consumption, membership and binding atomically.
-The claim operation ID and signed recipient transcript identify an exact retry;
-a lost response returns the original binding without another Member. A different
+hour by default). The signed invitation preview includes the exact Host origin
+and the separate membership expiry; consuming the invitation cannot substitute
+a longer membership. Claim commits consumption, membership and binding atomically.
+The claim operation ID and signed semantic recipient intent identify an exact retry;
+a lost response returns the original binding without another Member. Retries use
+a fresh challenge/proof over the same frozen intent; stale proof nonces do not
+authorize credential retrieval. A different
 recipient/operation cannot replay a consumed invitation. Replaying a claim after
 revocation never restores access. Machine credentials and human sessions are
 issued separately with different audiences; neither implies the other.

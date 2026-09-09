@@ -80,6 +80,11 @@
       "id": "https://agentroom.dev/schemas/authority/foundation.schema.json",
       "kind": "common",
       "path": "schemas/authority/foundation.schema.json"
+    },
+    {
+      "id": "https://agentroom.dev/schemas/peer/control.schema.json",
+      "kind": "common",
+      "path": "schemas/peer/control.schema.json"
     }
   ]
 }

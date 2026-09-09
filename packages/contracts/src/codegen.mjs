@@ -1455,6 +1455,16 @@ func mustDecodeCanonicalPropertyTrees() map[string]canonicalPropertyTree {
 
 export async function generateContractTypes(packageRoot) {
   const schemas = await loadSchemas(packageRoot);
+  const peerSchema = schemas.get("https://agentroom.dev/schemas/peer/control.schema.json");
+  const peerTypes = Object.entries(peerSchema.$defs).map(([name, schema]) => ({
+    name, schema: preserveTypeScriptWireStrings(dereference(schema, peerSchema, schemas))
+  }));
+  const peerTypescript = "// Code generated from JSON Schema; DO NOT EDIT.\n\n" + formatTypeScript(await render(peerTypes, "typescript", {
+    "just-types": "true", "prefer-unions": "true"
+  }));
+  const peerGo = formatGo("// Code generated from JSON Schema; DO NOT EDIT.\n\n" + await render(peerTypes, "go", {
+    "just-types-and-package": "true", package: "peercontracts"
+  }));
   const authoritySchema = schemas.get("https://agentroom.dev/schemas/authority/foundation.schema.json");
   const authorityTypes = Object.entries(authoritySchema.$defs).map(([name, schema]) => ({
     name, schema: dereference(schema, authoritySchema, schemas)
@@ -1792,6 +1802,9 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
+    peerTypescript, peerGo, peerSchema: `${JSON.stringify(peerSchema, null, 2)}\n`,
+    peerValidator: formatGo(await readFile(path.join(packageRoot, "src/go-peer-validator.template"), "utf8")),
+    peerProof: formatGo(await readFile(path.join(packageRoot, "src/go-peer-proof.template"), "utf8")),
     peerJson: formatGo(await readFile(path.join(packageRoot, "src/go-peer-json.template"), "utf8")),
     authorityValidator: formatGo(await readFile(path.join(packageRoot, "src/go-authority-validator.template"), "utf8")),
     authorityProof: formatGo(await readFile(path.join(packageRoot, "src/go-authority-proof.template"), "utf8")),

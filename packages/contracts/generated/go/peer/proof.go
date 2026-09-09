@@ -1,0 +1,59 @@
+// Code generated from the Peer proof template; DO NOT EDIT.
+package peercontracts
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"time"
+)
+
+const ProofLifetimeSeconds = 30
+const ProofClockSkewSeconds = 5
+const InvitationMaximumSeconds = 86400
+const SettlementMaximumSeconds = 604800
+
+func Digest(data []byte) (string, error) {
+	canonical, err := CanonicalJSON(data)
+	if err != nil {
+		return "", err
+	}
+	sum := sha256.Sum256(canonical)
+	return hex.EncodeToString(sum[:]), nil
+}
+
+func ProofTranscript(payload PeerProofPayload) ([]byte, error) {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	var validated PeerProofPayload
+	if err = Decode("PeerProofPayload", data, &validated); err != nil {
+		return nil, err
+	}
+	envelope, err := json.Marshal(map[string]any{"domain": "convenewire.peer.proof.v1", "payload": payload})
+	if err != nil {
+		return nil, err
+	}
+	return CanonicalJSON(envelope)
+}
+
+func ProofTimeValid(payload PeerProofPayload, now time.Time) bool {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return false
+	}
+	var validated PeerProofPayload
+	if Decode("PeerProofPayload", data, &validated) != nil {
+		return false
+	}
+	issued, err := time.Parse(time.RFC3339Nano, payload.IssuedAt)
+	if err != nil {
+		return false
+	}
+	expires, err := time.Parse(time.RFC3339Nano, payload.ExpiresAt)
+	if err != nil {
+		return false
+	}
+	return expires.After(issued) && expires.Sub(issued) <= ProofLifetimeSeconds*time.Second && !issued.After(now.Add(ProofClockSkewSeconds*time.Second)) && expires.After(now)
+}

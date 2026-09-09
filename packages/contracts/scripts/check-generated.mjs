@@ -8,6 +8,11 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  peerTypescript: await readFile(path.join(generatedRoot, "typescript", "peer.ts"), "utf8"),
+  peerGo: await readFile(path.join(generatedRoot, "go", "peer", "control.go"), "utf8"),
+  peerValidator: await readFile(path.join(generatedRoot, "go", "peer", "validation.go"), "utf8"),
+  peerProof: await readFile(path.join(generatedRoot, "go", "peer", "proof.go"), "utf8"),
+  peerSchema: await readFile(path.join(generatedRoot, "go", "peer", "control-schema.json"), "utf8"),
   peerJson: await readFile(path.join(generatedRoot, "go", "peer", "json.go"), "utf8"),
   authorityValidator: await readFile(path.join(generatedRoot, "go", "authority", "validation.go"), "utf8"),
   authorityProof: await readFile(path.join(generatedRoot, "go", "authority", "proof.go"), "utf8"),
@@ -81,7 +86,10 @@ if (await readFile(path.join(generatedRoot, "runtime", "local-node-schema.json")
 
 if (await readFile(path.join(generatedRoot, "runtime", "authority-schema.json"), "utf8") !== expected.authoritySchema) throw new Error("Authority runtime schema is stale");
 
+if (await readFile(path.join(generatedRoot, "runtime", "peer-schema.json"), "utf8") !== expected.peerSchema) throw new Error("Peer runtime schema is stale");
+
 for (const output of [
+  "peerTypescript", "peerGo", "peerValidator", "peerProof", "peerSchema",
   "peerJson",
   "authorityValidator", "authorityProof", "authorityTypescript", "authorityGo", "authoritySchema",
   "localNodeValidator", "localNodeTypescript", "localNodeGo", "localNodeSchema",
