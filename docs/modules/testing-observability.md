@@ -872,3 +872,13 @@ admission, bounded owner waiting, immutable inputs, consumer authority and recov
 including two actual Go Bridge processes on one disposable host. No model quality
 or physical multi-owner inference follows. [QA-084](../acceptance/qa-084-physical-disclosure-discussion.md)
 prepares separately authorized physical acceptance without running it.
+
+## Node-first V1 completion gates
+
+Under [ADR-0068](../adr/0068-peer-collaboration-delivery.md), QA-091 owns the
+automated full Peer product loop and QA-092 consolidates A/B/C manual interaction
+and physical acceptance after implementation. Retain previous partial evidence;
+absence of a manual result does not block implementation tasks or waive their
+own focused regression/security/interop checks. Fixtures use offline runtimes
+and process-owned temporary roots. Actual installations, physical owner/platform
+results, external models, CI execution and publication remain separate evidence.

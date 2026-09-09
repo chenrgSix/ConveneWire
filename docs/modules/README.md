@@ -22,7 +22,9 @@ document and the task list in the same commit.
 [ADR-0065](../adr/0065-node-first-authority-model.md), tracked by GOV-044, is
 Accepted. [ADR-0066](../adr/0066-local-node-delivery.md) defines the authorized
 Local Node increment. [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md)
-starts the authorized Multi-Authority foundation; Peer remains deferred.
+defines the Multi-Authority foundation.
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) starts the authorized Peer
+collaboration and V1 product/delivery work.
 
 The deployment boundary composes the existing Hub, Web, Go Runtime and
 SQLite. Team Authority owns collaboration writes; the Participant owns local
@@ -39,7 +41,7 @@ identity, with separately scoped contexts, credentials, grants and trust.
 
 The ADR holds the invariants, permission/ownership matrices, recovery states,
 compatibility relationships and open decisions. [TASKS.md](../TASKS.md) remains
-the only delivery checklist. A/B native desktop acceptance is combined after B;
+the only delivery checklist. A/B/C manual acceptance is consolidated at the end under QA-092;
 implementation checks remain required within each task.
 
 ## Module Map

@@ -509,7 +509,9 @@ The future migration must follow these rules:
 
 These are architectural sequence and exit requirements, not delivery status.
 Milestones A and B are authorized and registered in [TASKS.md](../TASKS.md).
-Milestone C remains a reserved planning name and requires separate authorization.
+Milestone C was subsequently authorized on 2026-09-10 under
+[ADR-0068](0068-peer-collaboration-delivery.md), which resolves its implementation
+contracts and consolidates manual A/B/C acceptance at the end.
 
 | Milestone | Reserved task scope | Exit boundary |
 | --- | --- | --- |

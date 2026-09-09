@@ -832,7 +832,8 @@ or a registration receipt alone.
 
 Authorized by the Owner on 2026-09-09 under
 [ADR-0067](adr/0067-multi-authority-runtime-foundation.md). A/B native desktop
-acceptance is combined after B; local implementation checks are not postponed.
+acceptance is consolidated with C at the end under ADR-0068; local
+implementation checks are not postponed.
 
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
@@ -840,4 +841,26 @@ acceptance is combined after B; local implementation checks are not postponed.
 | DATA-009 | DONE | Bind durable Runtime partitions to authenticated Authorities | CON-027, DATA-008 | [Identity and partition evidence](modules/persistence-recovery.md#authority-partition-ownership): migration 0094, immutable Host identity, signed Device proof and exact private primary adoption preserve original Inbox bytes/digests; additional partitions never import history. Two Server identity/real Go interop checks, two Local Node and seven migration regressions, Go authority race/vet, build/docs pass; multi-connector delivery remains BRG-080 |
 | BRG-080 | DONE | Share one Runtime core across authenticated Authority connectors | DATA-009, BRG-079 | [Shared core evidence](acceptance/brg-080-multi-authority-core.md): immutable local projections, shared resource scheduler, separate Session/state/credentials, current proof and durable orphan fencing; three real Hosts with colliding IDs, cancel/revoke/duplicates/offline/crash recovery, affected Go race/vet and A/legacy regressions pass; all Bridge packages pass, with the longer repository suite verified separately |
 | WEB-084 | DONE | Isolate local and remote Space presentation | BRG-080 | [Space evidence](acceptance/web-084-authority-spaces.md): private verified references, local Owner endpoint, isolated external-origin links and session guards; four Server and four Web checks, Go race/vet, three actual Hosts with signed browser references, production builds and Local Node Run/Discussion/recovery pass |
-| QA-092 | ACTIVE | Jointly accept A/B native desktop behavior | WEB-084, QA-090 | [Partial native evidence](acceptance/qa-092-ab-native-desktop.md): exact-source macOS package, native local/remote Runs and Discussion, Agent window, close/reopen, legacy entry, credential-free browser request and native Hub SIGKILL recovery pass; byte-identical identity and completed records survive without replay, then a new Run completes. Tray menu and independent browser login inspection remain. Fixture/tool limitations are recorded; no installation, Windows physical, live model, CI or publication claim |
+| QA-092 | PLANNED | Jointly accept A/B/C native desktop and physical behavior | QA-091 | [Partial native evidence](acceptance/qa-092-ab-native-desktop.md): exact-source macOS package, native local/remote Runs and Discussion, Agent window, close/reopen, legacy entry, credential-free browser request and native Hub SIGKILL recovery pass; byte-identical identity and completed records survive without replay, then a new Run completes. Owner deferred manual acceptance until C implementation completes; retained A/B tray/browser and C physical cases remain. Fixture/tool limitations are recorded; no installation, Windows physical, live model, CI or publication claim |
+
+## Node-first Milestone C: Peer Collaboration and V1 delivery
+
+Authorized by the Owner on 2026-09-10 in
+[ADR-0068](adr/0068-peer-collaboration-delivery.md). Automatic checks accompany
+implementation; manual A/B/C acceptance is consolidated under QA-092 at the end.
+Existing implementation dependencies do not require the deferred manual gate.
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| GOV-045 | DONE | Freeze Peer delivery contracts and V1 completion scope | GOV-044, CON-027, DATA-009, BRG-080, WEB-084 | ADR-0068 freezes identity/invitation/Room ceiling/bilateral freshness/digest/settlement and V1 scope; 13 new task chains resolve to completed prerequisites; docs lint, local links and whitespace checks pass |
+| CON-028 | ACTIVE | Define closed Peer control and execution contracts | GOV-045 | Separate Peer principal, invitations, scoped binding, bilateral grants, freshness, immutable execution and content-free settlement; generated TS/Go, canonical/signature golden vectors and negative interop |
+| DATA-010 | PLANNED | Persist scoped Peer identity, membership and bilateral authorization | CON-028, DATA-009 | Additive migration; atomic invite replay/revoke, durable ceilings, retained grant/acceptance lineage and private Participant storage; reopen/rollback/backup checks |
+| SEC-019 | PLANNED | Admit Peer invitations with independent human and machine rights | DATA-010 | Verified recipient/Host proof, one-use claim, expiry/revoke, reconnect, durable Room ceilings across APIs/events/search and negative identity/audience tests |
+| REG-007 | PLANNED | Export and accept remote Agents through bilateral authority | SEC-019, BRG-080 | Explicit local Export and Host Acceptance, scoped Projection, monotonic revisions, revoke/new-ID/republication denial and stable local identity mapping |
+| OPS-019 | PLANNED | Expose explicitly configured authenticated Peer connectivity | SEC-019 | HTTPS/LAN/private-network configuration, exact origin/CA/Node validation and isolated local Owner/control entry; loopback/TLS fixtures and deployment guidance |
+| BRG-081 | PLANNED | Connect Peers to one core with Participant-local approval | REG-007, OPS-019 | Peer adapter/configuration/credential isolation, scoped local trust and live approval invalidation; focused Go tests/vet/race and real transport interop |
+| RUN-020 | PLANNED | Deliver and reconcile bilateral Peer execution without replay | BRG-081, CON-028 | Current admission after wait, immutable digest, receipt-scoped settlement, revoke/offline/retry/cancel/out-of-order/crash tests; existing Device behavior retained |
+| DISC-022 | PLANNED | Orchestrate mixed-node Discussion under one Authority | RUN-020, DISC-021 | Eligibility/provenance/disclosure integration, partial Wave/revoke/deadline/restart, frozen Finalizer inputs and one finalization through actual Peer Runs |
+| WEB-085 | PLANNED | Complete human invitation, Space and Agent sharing interfaces | SEC-019, REG-007, BRG-081, DISC-022 | Scoped invite review/join/leave, independent human entry, export/accept/revoke, local approval and denied/expired states; App/Server and narrow-view regressions |
+| OPS-020 | PLANNED | Wire Node-first bundles into native CI and release pipelines | OPS-018, OPS-019, WEB-085 | Native Hub/desktop exact-source checks, legacy upgrade/data ownership, macOS/Windows pipeline coverage and packaging regressions; actual CI/publication remain separately reported |
+| QA-091 | PLANNED | Automatically verify the complete Node-first V1 collaboration loop | DISC-022, WEB-085, OPS-020 | N1-N8 using actual Hosts/shared Go core and offline fixtures, security boundaries, recovery, compatibility, package verification and retained sanitized evidence; zero unapproved model calls |
