@@ -803,6 +803,9 @@
         "supportsDiscussionSupplementalEvidence": {
           "type": "boolean",
           "description": "Whether this managed Runtime can replay the content-free late Discussion evidence operation offered in run.requested. Omission means unsupported."
+        },
+        "supportsTaskContextIsolation": {
+          "type": "boolean"
         }
       },
       "allOf": [
@@ -1397,6 +1400,9 @@
         },
         "runtimeScopeId": {
           "$ref": "#/$defs/runtimeScopeId"
+        },
+        "contextPolicy": {
+          "const": "task_isolated_v1"
         }
       }
     },

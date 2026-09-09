@@ -42,7 +42,8 @@ export interface DeliveryPayload {
   taskId: string;
   session: {
     scope: "task";
-    resumePolicy: "resume_or_start";
+    resumePolicy: "resume_or_start" | "start_new";
+    contextPolicy?: "task_isolated_v1";
     contextCursor: number;
     runtimeScopeId?: string;
   };
@@ -434,11 +435,12 @@ export class DeliveryService {
     }
     const deliveryAttemptId = createOpaqueId("delivery");
     const idempotencyKey = createOpaqueId("idem");
-    const evidenceAfterRevision = agent.runtimeScopeId
+    const evidenceAfterRevision = agent.runtimeScopeId && agent.capabilities.supportsTaskContextIsolation
       ? this.evidenceConsumption.get(
           run.taskId,
           agent.agentId,
-          agent.runtimeScopeId
+          agent.runtimeScopeId,
+          "task_isolated_v1"
       )
       : undefined;
     const contextFence = this.runs.getContextFence(run.runId);
@@ -501,7 +503,8 @@ export class DeliveryService {
       taskId: run.taskId,
       session: {
         scope: "task",
-        resumePolicy: "resume_or_start",
+        resumePolicy: agent.capabilities.supportsTaskContextIsolation ? "resume_or_start" : "start_new",
+        ...(agent.capabilities.supportsTaskContextIsolation ? { contextPolicy: "task_isolated_v1" as const } : {}),
         contextCursor: trigger.sequence,
         ...(agent.runtimeScopeId ? { runtimeScopeId: agent.runtimeScopeId } : {})
       },

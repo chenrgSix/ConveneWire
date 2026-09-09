@@ -3736,6 +3736,458 @@
         ]
       },
       "valid": false
+    },
+    {
+      "name": "valid isolated Task context policy",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WA",
+        "timestamp": "2026-08-22T10:00:04Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "traceId": "trace_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "session": {
+            "scope": "task",
+            "resumePolicy": "resume_or_start",
+            "contextCursor": 42,
+            "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "contextPolicy": "task_isolated_v1"
+          },
+          "triggerMessageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB",
+          "requesterMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "targetAgentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "targetAgentName": "Builder",
+          "deliveryAttemptId": "delivery_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "idempotencyKey": "idem_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "instruction": "Review the Room request and reply with a plan.",
+          "roomContextBundle": {
+            "targetThroughSequence": 42,
+            "priorContextThroughSequence": 41,
+            "requestMessageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB",
+            "checkpoint": {
+              "checkpointId": "checkpoint_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "fromSequenceExclusive": 0,
+              "throughSequence": 40,
+              "summary": "The Room agreed to keep the wire protocol compatible.",
+              "sourceMessageCount": 40,
+              "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "promptVersion": "room-memory-v1",
+              "modelFingerprint": "configured-reducer-v1",
+              "buildKind": "incremental",
+              "provenanceMessageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8"
+              ]
+            },
+            "rawTail": {
+              "fromSequenceExclusive": 40,
+              "throughSequenceInclusive": 41,
+              "messageCount": 1,
+              "utf8Bytes": 24,
+              "messages": [
+                {
+                  "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9",
+                  "sequence": 41,
+                  "senderId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "senderName": "Alice",
+                  "content": "Keep wire compatibility."
+                }
+              ]
+            }
+          },
+          "contextPlan": {
+            "roomMemory": {
+              "summary": "Room: engineering\nEarlier Room evidence:\n- [sequence 12; Alice] Keep compatibility.",
+              "sourceCursor": 12,
+              "revision": 3,
+              "projectionKind": "historical",
+              "sourceMessageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9"
+              ]
+            },
+            "taskMemory": {
+              "summary": "Task: Review API boundary\nGoal: Preserve compatibility\nState: working",
+              "sourceCursor": 12,
+              "revision": 2,
+              "sourceMessageIds": []
+            },
+            "resultEvidence": {
+              "revision": 1,
+              "deliveryKind": "delta",
+              "fromRevision": 0,
+              "throughRevision": 1,
+              "hasMore": false,
+              "artifactRefs": [
+                {
+                  "artifactId": "artifact_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "artifactRevision": 1,
+                  "type": "commit",
+                  "workspaceRef": "workspace_oauth",
+                  "repository": "convene-wire/network",
+                  "commitSha": "21f9e8c",
+                  "title": "OAuth migration",
+                  "summary": "Eight files changed and focused tests passed.",
+                  "sourceRunId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "createdByAgentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "createdAt": "2026-08-22T10:00:03Z"
+                }
+              ]
+            },
+            "longTermMemory": {
+              "room": {
+                "revision": 3,
+                "activeComplete": true,
+                "entries": [
+                  {
+                    "memoryId": "memory_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                    "type": "constraint",
+                    "content": "Keep wire compatibility during the migration.",
+                    "state": "active",
+                    "revision": 3,
+                    "sourceMessageIds": [
+                      "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9"
+                    ],
+                    "sourceArtifactIds": [],
+                    "sourceRunIds": [],
+                    "sourceDiscussionIds": []
+                  }
+                ]
+              }
+            }
+          },
+          "contextManifest": {
+            "manifestVersion": "1.0",
+            "runId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "taskRevision": 4,
+            "definitionRevision": 2,
+            "criteriaRevision": 2,
+            "goal": "Preserve compatibility while reviewing the API boundary.",
+            "criteria": [
+              {
+                "criterionKey": "criterion_compat0001",
+                "description": "The wire contract remains backward compatible.",
+                "required": true,
+                "ordinal": 1
+              }
+            ],
+            "target": {
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "runtimeKind": "generic",
+              "workspaceAlias": "convenewire-main"
+            },
+            "included": {
+              "messageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB"
+              ],
+              "artifactIds": [
+                "artifact_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+              ],
+              "memoryIds": [
+                "memory_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+              ],
+              "parentRunIds": [],
+              "roomContextRevision": 3,
+              "taskMemoryRevision": 2,
+              "artifactRevision": 1
+            },
+            "permissions": {
+              "filesystemAccess": "workspace-write",
+              "networkAccess": "not_recorded",
+              "interrupt": "supported",
+              "handoff": "supported",
+              "maxDurationSeconds": 1200
+            },
+            "omittedCategories": [
+              "local_paths",
+              "environment_values",
+              "provider_credentials",
+              "provider_session_ids",
+              "hidden_reasoning",
+              "tool_payloads",
+              "other_workspaces"
+            ],
+            "recordedAt": "2026-08-22T10:00:04Z"
+          },
+          "contextMessages": [],
+          "routingAgents": [
+            {
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W7",
+              "name": "Reviewer"
+            }
+          ],
+          "deadline": "2026-08-22T10:20:04Z"
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "invalid future Task context policy",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WA",
+        "timestamp": "2026-08-22T10:00:04Z",
+        "type": "run.requested",
+        "payload": {
+          "runId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "traceId": "trace_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "roomId": "room_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "session": {
+            "scope": "task",
+            "resumePolicy": "resume_or_start",
+            "contextCursor": 42,
+            "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "contextPolicy": "task_isolated_v2"
+          },
+          "triggerMessageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB",
+          "requesterMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "targetAgentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "targetAgentName": "Builder",
+          "deliveryAttemptId": "delivery_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "idempotencyKey": "idem_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "instruction": "Review the Room request and reply with a plan.",
+          "roomContextBundle": {
+            "targetThroughSequence": 42,
+            "priorContextThroughSequence": 41,
+            "requestMessageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB",
+            "checkpoint": {
+              "checkpointId": "checkpoint_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "fromSequenceExclusive": 0,
+              "throughSequence": 40,
+              "summary": "The Room agreed to keep the wire protocol compatible.",
+              "sourceMessageCount": 40,
+              "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "promptVersion": "room-memory-v1",
+              "modelFingerprint": "configured-reducer-v1",
+              "buildKind": "incremental",
+              "provenanceMessageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8"
+              ]
+            },
+            "rawTail": {
+              "fromSequenceExclusive": 40,
+              "throughSequenceInclusive": 41,
+              "messageCount": 1,
+              "utf8Bytes": 24,
+              "messages": [
+                {
+                  "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9",
+                  "sequence": 41,
+                  "senderId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "senderName": "Alice",
+                  "content": "Keep wire compatibility."
+                }
+              ]
+            }
+          },
+          "contextPlan": {
+            "roomMemory": {
+              "summary": "Room: engineering\nEarlier Room evidence:\n- [sequence 12; Alice] Keep compatibility.",
+              "sourceCursor": 12,
+              "revision": 3,
+              "projectionKind": "historical",
+              "sourceMessageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9"
+              ]
+            },
+            "taskMemory": {
+              "summary": "Task: Review API boundary\nGoal: Preserve compatibility\nState: working",
+              "sourceCursor": 12,
+              "revision": 2,
+              "sourceMessageIds": []
+            },
+            "resultEvidence": {
+              "revision": 1,
+              "deliveryKind": "delta",
+              "fromRevision": 0,
+              "throughRevision": 1,
+              "hasMore": false,
+              "artifactRefs": [
+                {
+                  "artifactId": "artifact_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "artifactRevision": 1,
+                  "type": "commit",
+                  "workspaceRef": "workspace_oauth",
+                  "repository": "convene-wire/network",
+                  "commitSha": "21f9e8c",
+                  "title": "OAuth migration",
+                  "summary": "Eight files changed and focused tests passed.",
+                  "sourceRunId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "createdByAgentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                  "createdAt": "2026-08-22T10:00:03Z"
+                }
+              ]
+            },
+            "longTermMemory": {
+              "room": {
+                "revision": 3,
+                "activeComplete": true,
+                "entries": [
+                  {
+                    "memoryId": "memory_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+                    "type": "constraint",
+                    "content": "Keep wire compatibility during the migration.",
+                    "state": "active",
+                    "revision": 3,
+                    "sourceMessageIds": [
+                      "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W9"
+                    ],
+                    "sourceArtifactIds": [],
+                    "sourceRunIds": [],
+                    "sourceDiscussionIds": []
+                  }
+                ]
+              }
+            }
+          },
+          "contextManifest": {
+            "manifestVersion": "1.0",
+            "runId": "run_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "taskId": "task_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+            "taskRevision": 4,
+            "definitionRevision": 2,
+            "criteriaRevision": 2,
+            "goal": "Preserve compatibility while reviewing the API boundary.",
+            "criteria": [
+              {
+                "criterionKey": "criterion_compat0001",
+                "description": "The wire contract remains backward compatible.",
+                "required": true,
+                "ordinal": 1
+              }
+            ],
+            "target": {
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+              "runtimeKind": "generic",
+              "workspaceAlias": "convenewire-main"
+            },
+            "included": {
+              "messageIds": [
+                "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5WB"
+              ],
+              "artifactIds": [
+                "artifact_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+              ],
+              "memoryIds": [
+                "memory_01K4Z6J7Y8N9P0Q1R2S3T4V5W6"
+              ],
+              "parentRunIds": [],
+              "roomContextRevision": 3,
+              "taskMemoryRevision": 2,
+              "artifactRevision": 1
+            },
+            "permissions": {
+              "filesystemAccess": "workspace-write",
+              "networkAccess": "not_recorded",
+              "interrupt": "supported",
+              "handoff": "supported",
+              "maxDurationSeconds": 1200
+            },
+            "omittedCategories": [
+              "local_paths",
+              "environment_values",
+              "provider_credentials",
+              "provider_session_ids",
+              "hidden_reasoning",
+              "tool_payloads",
+              "other_workspaces"
+            ],
+            "recordedAt": "2026-08-22T10:00:04Z"
+          },
+          "contextMessages": [],
+          "routingAgents": [
+            {
+              "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W7",
+              "name": "Reviewer"
+            }
+          ],
+          "deadline": "2026-08-22T10:20:04Z"
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "Task isolation capability True",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8",
+        "timestamp": "2026-08-22T10:00:02Z",
+        "type": "agent.publish",
+        "payload": {
+          "teamId": "team_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "ownerMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "name": "Bob",
+          "role": "Backend",
+          "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspaceAlias": "Payments API",
+          "workspaceRef": "workspace_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "workspaceGeneration": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "runtimePolicy": {
+            "filesystemAccess": "workspace-write"
+          },
+          "capabilities": {
+            "invocationMode": "managed",
+            "supportsStart": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsInterrupt": true,
+            "supportsHandoff": true,
+            "supportsWorkspaceLeases": true,
+            "supportsArtifactPublication": true,
+            "supportsArtifactMaterialization": true,
+            "supportsTaskContextIsolation": true
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "Task isolation capability False",
+      "schemaId": "https://agentroom.dev/schemas/bridge/messages.schema.json",
+      "instance": {
+        "protocolVersion": "1.0",
+        "messageId": "msg_01K4Z6J7Y8N9P0Q1R2S3T4V5W8",
+        "timestamp": "2026-08-22T10:00:02Z",
+        "type": "agent.publish",
+        "payload": {
+          "teamId": "team_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "agentId": "agent_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "ownerMemberId": "member_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "deviceId": "device_01K4Z6J7Y8N9P0Q1R2S3T4V5W6",
+          "name": "Bob",
+          "role": "Backend",
+          "runtimeScopeId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspaceAlias": "Payments API",
+          "workspaceRef": "workspace_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "workspaceGeneration": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "runtimePolicy": {
+            "filesystemAccess": "workspace-write"
+          },
+          "capabilities": {
+            "invocationMode": "managed",
+            "supportsStart": true,
+            "supportsResume": true,
+            "supportsStreaming": true,
+            "supportsInterrupt": true,
+            "supportsHandoff": true,
+            "supportsWorkspaceLeases": true,
+            "supportsArtifactPublication": true,
+            "supportsArtifactMaterialization": true,
+            "supportsTaskContextIsolation": "yes"
+          }
+        }
+      },
+      "valid": false
     }
   ]
 }

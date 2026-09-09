@@ -1,4 +1,9 @@
+import { createHash } from "node:crypto";
 import type Database from "better-sqlite3";
+
+function evidenceScope(runtimeScopeId: string, policy?: string): string {
+  return policy ? createHash("sha256").update(JSON.stringify([runtimeScopeId, policy])).digest("hex") : runtimeScopeId;
+}
 
 interface DeliveryEvidencePage {
   throughRevision?: number;
@@ -10,13 +15,14 @@ export class ResultEvidenceConsumptionRepository {
   public get(
     taskId: string,
     agentId: string,
-    runtimeScopeId: string
+    runtimeScopeId: string,
+    contextPolicy?: string
   ): number | undefined {
     const row = this.database.prepare(`
       SELECT through_revision
       FROM task_result_evidence_consumption
       WHERE task_id = ? AND agent_id = ? AND runtime_scope_id = ?
-    `).get(taskId, agentId, runtimeScopeId) as
+    `).get(taskId, agentId, evidenceScope(runtimeScopeId, contextPolicy)) as
       | { through_revision: number }
       | undefined;
     return row?.through_revision;
@@ -30,7 +36,8 @@ export class ResultEvidenceConsumptionRepository {
     throughRevision: number;
     now: string;
   }): void {
-    const current = this.get(input.taskId, input.agentId, input.runtimeScopeId) ?? 0;
+    const policy = this.deliveryPolicy(input.runId);
+    const current = this.get(input.taskId, input.agentId, input.runtimeScopeId, policy) ?? 0;
     if (input.throughRevision <= current) return;
     this.validateAcknowledgement(input);
     this.database.prepare(`
@@ -45,7 +52,12 @@ export class ResultEvidenceConsumptionRepository {
           excluded.through_revision
         ),
         updated_at = excluded.updated_at
-    `).run(input);
+    `).run({ ...input, runtimeScopeId: evidenceScope(input.runtimeScopeId, policy) });
+  }
+
+  private deliveryPolicy(runId: string): string | undefined {
+    const row = this.database.prepare("SELECT payload_json FROM run_deliveries WHERE run_id = ?").get(runId) as { payload_json: string } | undefined;
+    return row ? (JSON.parse(row.payload_json) as { session?: { contextPolicy?: string } }).session?.contextPolicy : undefined;
   }
 
   public validateAcknowledgement(input: {
@@ -55,7 +67,8 @@ export class ResultEvidenceConsumptionRepository {
     runtimeScopeId: string;
     throughRevision: number;
   }): void {
-    const current = this.get(input.taskId, input.agentId, input.runtimeScopeId) ?? 0;
+    const policy = this.deliveryPolicy(input.runId);
+    const current = this.get(input.taskId, input.agentId, input.runtimeScopeId, policy) ?? 0;
     if (input.throughRevision <= current) return;
     const delivery = this.database.prepare(`
       SELECT payload_json FROM run_deliveries WHERE run_id = ?

@@ -170,6 +170,15 @@ async function verifyManagedBridge(t: TestContext, shareReasoningSummaries: bool
         candidate.name === "Echo Builder" && candidate.presence === "ready"
       );
     });
+    const unrelated = await app.inject({ method: "POST", url: `/api/rooms/${roomId}/tasks`, headers: authorization,
+      payload: { title: "Private attempt", goal: "Keep this Task separate" } });
+    assert.equal(unrelated.statusCode, 200);
+    const unrelatedMessage = await app.inject({ method: "POST", url: `/api/rooms/${roomId}/messages`, headers: authorization,
+      payload: { taskId: unrelated.json().taskId, content: "FOREIGN_TASK_RAW_SENTINEL" } });
+    assert.equal(unrelatedMessage.statusCode, 200);
+    const publicKnowledge = await app.inject({ method: "POST", url: `/api/rooms/${roomId}/memory-entries`, headers: authorization,
+      payload: { type: "convention", content: "PUBLIC_PROJECT_CONVENTION", sourceMessageIds: [unrelatedMessage.json().message.messageId] } });
+    assert.equal(publicKnowledge.statusCode, 200);
     const sent = await app.inject({
       method: "POST", url: `/api/rooms/${roomId}/messages`, headers: authorization,
       payload: { content: "Run through real Bridge", mentionAgentId: agent.agentId }
@@ -199,6 +208,9 @@ async function verifyManagedBridge(t: TestContext, shareReasoningSummaries: bool
     assert.equal(echoReply.content.includes("@PI BUILDER"), false);
     assert.equal(echoReply.content.includes("@ALL"), false);
     assert.equal(echoReply.traceId, traceId);
+    assert.equal(echoReply.content.includes("FOREIGN_TASK_RAW_SENTINEL"), false);
+    assert.match(echoReply.content, /PUBLIC_PROJECT_CONVENTION/);
+    assert.match(echoReply.content, /THIS CONVERSATION BELONGS TO THE CURRENT TASK/);
     const traceResponse = await app.inject({
       method: "GET", url: `/api/traces/${traceId}`, headers: authorization
     });

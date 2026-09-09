@@ -2438,6 +2438,9 @@
                       "supportsDiscussionSupplementalEvidence": {
                         "type": "boolean",
                         "description": "Whether this managed Runtime can replay the content-free late Discussion evidence operation offered in run.requested. Omission means unsupported."
+                      },
+                      "supportsTaskContextIsolation": {
+                        "type": "boolean"
                       }
                     },
                     "allOf": [
@@ -2877,6 +2880,9 @@
                       "runtimeScopeId": {
                         "type": "string",
                         "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "contextPolicy": {
+                        "const": "task_isolated_v1"
                       }
                     }
                   },
@@ -8165,6 +8171,9 @@
         "supportsDiscussionSupplementalEvidence": {
           "type": "boolean",
           "description": "Whether this managed Runtime can replay the content-free late Discussion evidence operation offered in run.requested. Omission means unsupported."
+        },
+        "supportsTaskContextIsolation": {
+          "type": "boolean"
         }
       },
       "allOf": [
@@ -9296,6 +9305,9 @@
             "supportsDiscussionSupplementalEvidence": {
               "type": "boolean",
               "description": "Whether this managed Runtime can replay the content-free late Discussion evidence operation offered in run.requested. Omission means unsupported."
+            },
+            "supportsTaskContextIsolation": {
+              "type": "boolean"
             }
           },
           "allOf": [
@@ -10317,6 +10329,9 @@
         "runtimeScopeId": {
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
+        },
+        "contextPolicy": {
+          "const": "task_isolated_v1"
         }
       }
     },
@@ -12753,6 +12768,9 @@
             "runtimeScopeId": {
               "type": "string",
               "pattern": "^[0-9a-f]{64}$"
+            },
+            "contextPolicy": {
+              "const": "task_isolated_v1"
             }
           }
         },

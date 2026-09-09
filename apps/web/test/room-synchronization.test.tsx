@@ -507,3 +507,24 @@ test("Web session authority catches immediate expiry, invalidates once, and remo
   assert.equal(afterUnmount(), true);
   assert.equal(invalidated.length, 2);
 });
+
+test("Task synchronization requests history and streaming output only for its selected Task", async (t) => {
+  const env = await environment(t);
+  const own = roomRun("working");
+  const other = { ...own, runId: "run_other_task_0001", taskId: "task_other_0001" };
+  const paths: string[] = []; const outputs: string[][] = [];
+  globalThis.fetch = async (input, init) => {
+    const url = String(input); paths.push(url);
+    if (url.includes("/changes?")) return pending(init?.signal);
+    if (url.includes("/messages?")) return json({ items: [], nextCursor: null, syncCursor: "task-only" });
+    if (url.endsWith("/runs")) return json([own, other]);
+    if (url.endsWith("/settings")) return json({ room: {}, participants: { memberIds: [], agentIds: [] } });
+    return json([]);
+  };
+  const controller = env.create({ taskId: own.taskId, loadOutputs: async (runs) => { outputs.push(runs.map(run => run.runId)); return new Map(); } });
+  await controller.start(); await controller.refreshAfterAction();
+  await env.visibility(true); await env.settle();
+  assert.ok(paths.filter(url => url.includes("/messages?")).every(url => url.endsWith(`&taskId=${own.taskId}`)));
+  assert.ok(outputs.length >= 2);
+  assert.ok(outputs.every(ids => ids.length === 1 && ids[0] === own.runId));
+});

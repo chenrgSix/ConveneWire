@@ -8,11 +8,14 @@ interface Options extends Omit<RoomSynchronizationOptions, "teamId" | "roomId" |
   roomId: string | null;
   session: LocalSession | null;
   onReset: () => void;
+  onTaskReset?: () => void;
 }
 
 export function useRoomSynchronization(options: Options) {
-  const { teamId, roomId, session } = options;
-  const context = JSON.stringify([teamId, roomId, session?.userId, session?.token]);
+  const { teamId, roomId, taskId, session } = options;
+  const roomContext = JSON.stringify([teamId, roomId, session?.userId, session?.token]);
+  const context = JSON.stringify([roomContext, taskId]);
+  const previousRoom = useRef<string | null>(null);
   const lifetime = useMemo(() => ({
     controller: null as RoomSynchronization | null,
     isCurrentSession: captureWebSessionScope()
@@ -20,10 +23,13 @@ export function useRoomSynchronization(options: Options) {
   const current = useRef({ lifetime, options });
   current.current = { lifetime, options };
   useEffect(() => {
-    options.onReset();
+    if (previousRoom.current !== roomContext) {
+      previousRoom.current = roomContext;
+      options.onReset();
+    } else options.onTaskReset?.();
     if (!teamId || !roomId || !session || !lifetime.isCurrentSession()) return;
     const active = new RoomSynchronization({
-      teamId, roomId, session,
+      teamId, roomId, taskId, session,
       isCurrentContext: () => current.current.lifetime === lifetime && lifetime.isCurrentSession(),
       onMessages: (messages) => current.current.options.onMessages(messages),
       onHistory: (history) => current.current.options.onHistory(history),

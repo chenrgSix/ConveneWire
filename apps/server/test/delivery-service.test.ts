@@ -83,7 +83,8 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
         supportsResume: false,
         supportsStart: true,
         supportsStreaming: true,
-        supportsRoomContextCoverage: true
+        supportsRoomContextCoverage: true,
+        supportsTaskContextIsolation: true
       },
       now
     });
@@ -142,6 +143,7 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
       connections,
       () => currentTime
     );
+    database.prepare("INSERT INTO task_result_evidence_consumption (task_id, agent_id, runtime_scope_id, through_revision, updated_at) VALUES (?, ?, ?, 25, ?)").run(run.taskId, agent.agentId, runtimeScopeId, now);
     const offline = delivery.dispatch(run.runId);
     assert.equal(offline?.sendCount, 0);
     assert.equal(socket.messages.length, 0);
@@ -183,6 +185,7 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
     assert.deepEqual(requested.payload?.session, {
       scope: "task",
       resumePolicy: "resume_or_start",
+      contextPolicy: "task_isolated_v1",
       contextCursor: message.sequence,
       runtimeScopeId
     });
@@ -297,62 +300,14 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
     assert.ok(deltaRun);
     const firstDeltaDelivery = delivery.dispatch(deltaRun.runId)?.payload;
     const firstDelta = firstDeltaDelivery?.contextPlan.resultEvidence;
-    assert.deepEqual({
-      legacyContextCount: firstDeltaDelivery?.contextMessages.length,
-      target: firstDeltaDelivery?.roomContextBundle?.targetThroughSequence,
-      prior: firstDeltaDelivery?.roomContextBundle?.priorContextThroughSequence,
-      requestMessageId: firstDeltaDelivery?.roomContextBundle?.requestMessageId,
-      checkpointThrough:
-        firstDeltaDelivery?.roomContextBundle?.checkpoint.throughSequence,
-      rawCount: firstDeltaDelivery?.roomContextBundle?.rawTail.messageCount,
-      rawThrough:
-        firstDeltaDelivery?.roomContextBundle?.rawTail.throughSequenceInclusive
-    }, {
-      legacyContextCount: 0,
-      target: deltaMessage.sequence,
-      prior: message.sequence,
-      requestMessageId: deltaMessage.messageId,
-      checkpointThrough: message.sequence,
-      rawCount: 0,
-      rawThrough: message.sequence
-    });
-    delivery.validateRoomContextConsumption(
-      deltaRun.runId,
-      "resumed",
-      deltaMessage.sequence,
-      {
-        baseContextCursor: message.sequence,
-        rawFromSequenceExclusive: message.sequence,
-        rawThroughSequenceInclusive: message.sequence,
-        rawMessageCount: 0,
-        coverageThroughSequence: deltaMessage.sequence
-      }
-    );
+    assert.equal(firstDeltaDelivery?.roomContextBundle, undefined);
+    assert.ok((firstDeltaDelivery?.contextMessages.length ?? 0) > 0);
     assert.throws(() => delivery.validateRoomContextConsumption(
-      deltaRun.runId,
-      "resumed",
-      deltaMessage.sequence,
-      {
-        baseContextCursor: message.sequence,
-        checkpointId: "checkpoint_delivery_context_0001",
-        rawFromSequenceExclusive: message.sequence,
-        rawThroughSequenceInclusive: message.sequence,
-        rawMessageCount: 0,
-        coverageThroughSequence: deltaMessage.sequence
-      }
-    ), /checkpoint receipt/u);
-    assert.throws(() => delivery.validateRoomContextConsumption(
-      deltaRun.runId,
-      "resumed",
-      deltaMessage.sequence,
-      {
-        baseContextCursor: message.sequence,
-        rawFromSequenceExclusive: 0,
-        rawThroughSequenceInclusive: message.sequence,
-        rawMessageCount: 0,
-        coverageThroughSequence: deltaMessage.sequence
-      }
-    ), /delivered interval/u);
+      deltaRun.runId, "resumed", deltaMessage.sequence,
+      { baseContextCursor: message.sequence, rawFromSequenceExclusive: message.sequence,
+        rawThroughSequenceInclusive: message.sequence, rawMessageCount: 0,
+        coverageThroughSequence: deltaMessage.sequence }
+    ), /not delivered with Room context coverage/u);
     assert.deepEqual({
       deliveryKind: firstDelta?.deliveryKind,
       fromRevision: firstDelta?.fromRevision,
@@ -390,7 +345,10 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
       now
     )[0];
     assert.ok(finalRun);
-    const finalDelta = delivery.dispatch(finalRun.runId)?.payload.contextPlan.resultEvidence;
+    const finalDelivery = delivery.dispatch(finalRun.runId);
+    assert.equal(finalDelivery?.payload.session.contextPolicy, "task_isolated_v1");
+    assert.equal(finalDelivery?.payload.session.resumePolicy, "resume_or_start");
+    const finalDelta = finalDelivery?.payload.contextPlan.resultEvidence;
     assert.deepEqual({
       fromRevision: finalDelta?.fromRevision,
       throughRevision: finalDelta?.throughRevision,
@@ -455,7 +413,11 @@ test("ACK loss resends one durable Delivery identity and converges once", async 
       principal, isolatedMessage.messageId, now
     )[0];
     assert.ok(isolatedRun);
-    delivery.dispatch(isolatedRun.runId);
+    database.prepare("UPDATE agents SET capabilities_json = json_remove(capabilities_json, '$.supportsTaskContextIsolation') WHERE agent_id = ?").run(agent.agentId);
+    const legacyDelivery = delivery.dispatch(isolatedRun.runId);
+    assert.equal(legacyDelivery?.payload.session.resumePolicy, "start_new");
+    assert.equal(legacyDelivery?.payload.session.contextPolicy, undefined);
+    assert.equal(legacyDelivery?.payload.contextPlan.resultEvidence?.deliveryKind, "bootstrap");
     const isolatedRequest = JSON.parse(socket.messages.at(-1) ?? "{}") as {
       payload?: { routingAgents?: Array<{ agentId: string; name: string }> };
     };

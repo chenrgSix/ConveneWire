@@ -51,6 +51,7 @@ function assertHostedAgentBoundary(agent: AgentRecord): void {
     !agent.capabilities.supportsInterrupt ||
     agent.capabilities.supportsResume ||
     agent.capabilities.supportsRoomContextCoverage === true ||
+    agent.capabilities.supportsTaskContextIsolation === true ||
     agent.capabilities.supportsWorkspaceLeases === true ||
     agent.capabilities.supportsArtifactPublication === true ||
     agent.capabilities.supportsArtifactMaterialization === true ||

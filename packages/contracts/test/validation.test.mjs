@@ -76,10 +76,10 @@ test("positive and negative golden fixtures match their schemas", async () => {
   const result = await validateContractFixtures(packageRoot);
 
   assert.deepEqual(result, {
-    fixtureCount: 273,
+    fixtureCount: 277,
     fixtureVersion: "1.0",
-    invalidCount: 154,
-    validCount: 119
+    invalidCount: 156,
+    validCount: 121
   });
 });
 

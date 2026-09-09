@@ -1,5 +1,14 @@
 # Contracts Module
 
+`TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), adds optional
+`supportsTaskContextIsolation: boolean` to Bridge Runtime capabilities and
+`contextPolicy: "task_isolated_v1"` to logical Task session requests. Central sends
+the policy only to advertised clients; legacy clients receive existing
+`resumePolicy: "start_new"`. Omitted fields remain valid. Shared TypeScript/Go
+positive and negative fixtures cover the new fields. Local session-key and
+Artifact-consumption namespaces change without altering Device/Runtime identity,
+existing grants or historical delivery bytes.
+
 SEC-017 adds optional `centralApproval: {revision}` to authenticated runtime
 policy and ordinary Run delivery, plus `centralApprovalRevision` in its frozen
 permission manifest. These fields cannot coexist with full trust or govern

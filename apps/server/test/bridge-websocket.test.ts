@@ -1654,7 +1654,7 @@ test("Bridge Task clarification resumes through one authorized same-Task Run", a
     assert.equal(requested.payload.taskId, taskId);
     assert.deepEqual(requested.payload.session, {
       scope: "task",
-      resumePolicy: "resume_or_start",
+      resumePolicy: "start_new",
       contextCursor: 3
     });
   } finally {

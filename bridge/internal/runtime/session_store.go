@@ -20,6 +20,7 @@ type RuntimeSessionKey struct {
 	RuntimeKind          string `json:"runtimeKind"`
 	RoomID               string `json:"roomId"`
 	TaskID               string `json:"taskId"`
+	ContextPolicy        string `json:"contextPolicy,omitempty"`
 	AgentID              string `json:"agentId"`
 	WorkspaceFingerprint string `json:"workspaceFingerprint"`
 	ConfigFingerprint    string `json:"configFingerprint"`

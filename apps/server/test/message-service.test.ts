@@ -277,3 +277,47 @@ test("a client Message ID makes ambiguous member retries idempotent", async () =
     database.close();
   }
 });
+
+test("Task history pages across sparse Room sequences and rejects scope-changing cursors", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "convene-wire-task-history-"));
+  const databasePath = path.join(directory, "server.sqlite");
+  await migrateDatabase(databasePath);
+  let database = openDatabase(databasePath);
+  try {
+    let core = new CoreRepository(database);
+    let auth = new AuthService(database);
+    const teams = new TeamRoomService(core, auth);
+    const created = teams.createTeamForUser({ userId: "user_task_history", userDisplayName: "Alice", teamName: "History", now });
+    const session = auth.issueWebSession(created.owner.userId!, now, "2026-08-22T11:00:00.000Z");
+    const principal = auth.authenticateWebSession(session.secret, now);
+    const room = teams.createRoom(principal, created.team.teamId, "history", now);
+    const { AgentTaskService } = await import("../src/task/agent-task-service.js");
+    const { AgentTaskRepository } = await import("../src/task/task-repository.js");
+    const tasks = new AgentTaskService(new AgentTaskRepository(database), core, auth);
+    const a = tasks.create(principal, { roomId: room.roomId, title: "Alpha", goal: "Alpha" }, now);
+    const b = tasks.create(principal, { roomId: room.roomId, title: "Beta", goal: "Beta" }, now);
+    let service = new MessageService(core, auth);
+    const expected = [];
+    for (let i = 0; i < 7; i++) {
+      expected.push(service.createMemberMessage(principal, { roomId: room.roomId, taskId: a.taskId, content: `Alpha ${i}`, now }));
+      for (let j = 0; j < 20; j++) service.createMemberMessage(principal, { roomId: room.roomId, taskId: b.taskId, content: `Beta ${i}:${j}`, now });
+    }
+    const scope = { roomId: room.roomId, taskId: a.taskId };
+    const tail = service.listMessages(principal, { ...scope, tail: true, limit: 3 });
+    assert.deepEqual(tail.items, expected.slice(-3));
+    assert.ok(tail.olderCursor);
+    database.close(); database = openDatabase(databasePath);
+    core = new CoreRepository(database); auth = new AuthService(database); service = new MessageService(core, auth);
+    const older = service.listMessages(principal, { ...scope, beforeCursor: tail.olderCursor, limit: 3 });
+    assert.deepEqual(older.items, expected.slice(1, 4));
+    assert.deepEqual(service.listMessages(principal, { ...scope, beforeCursor: older.olderCursor!, limit: 3 }).items, expected.slice(0, 1));
+    const latest = service.createMemberMessage(principal, { ...scope, content: "Alpha newest", now });
+    assert.deepEqual(service.listMessages(principal, { ...scope, cursor: tail.syncCursor! }).items, [latest]);
+    for (const taskId of [b.taskId, undefined]) {
+      assert.throws(() => service.listMessages(principal, { roomId: room.roomId, taskId, cursor: tail.syncCursor! }), /cursor/u);
+      assert.throws(() => service.listMessages(principal, { roomId: room.roomId, taskId, beforeCursor: tail.olderCursor! }), /cursor/u);
+    }
+    assert.throws(() => service.listMessages(principal, { roomId: room.roomId, taskId: "task_missing" }), /Task/u);
+    assert.equal(service.listMessages(principal, { roomId: room.roomId, limit: 100 }).items.length, 100);
+  } finally { database.close(); }
+});

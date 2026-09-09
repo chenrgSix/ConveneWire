@@ -333,3 +333,53 @@ func testRuntimeSessionKey(
 	}
 	return plan.Key
 }
+
+func TestIsolatedTaskSessionPolicyPartitionsLegacyBindings(t *testing.T) {
+	configuration := config.AgentConfig{RuntimeKind: "codex", Adapter: "codex", Workspace: t.TempDir(), Command: []string{"codex", "app-server"}, Sandbox: "workspace-write"}
+	store := NewFileRuntimeSessionStore(t.TempDir())
+	taskID := "task_alpha"
+	legacy := testRuntimeSessionKey(t, configuration, taskID)
+	if err := store.Save(RuntimeSessionBinding{RuntimeSessionKey: legacy, SessionID: "legacy-mixed"}); err != nil {
+		t.Fatal(err)
+	}
+	policy := contracts.TaskIsolatedV1
+	run := contracts.RunRequestedPayload{RoomID: "room_alpha", TargetAgentID: "agent_builder", TaskID: &taskID,
+		Session: &contracts.LogicalSessionRequest{Scope: contracts.Task, ResumePolicy: contracts.ResumeOrStart, ContextPolicy: &policy}}
+	plan, eligible, err := planRuntimeSession("codex", configuration, run)
+	if err != nil || !eligible || plan.Key.ContextPolicy != "task_isolated_v1" {
+		t.Fatalf("invalid plan: %#v %v", plan, err)
+	}
+	if _, found, err := store.Load(plan.Key); err != nil || found {
+		t.Fatalf("legacy context reused: %v %v", found, err)
+	}
+	if err := store.Save(RuntimeSessionBinding{RuntimeSessionKey: plan.Key, SessionID: "clean-task"}); err != nil {
+		t.Fatal(err)
+	}
+	if binding, found, err := store.Load(plan.Key); err != nil || !found || binding.SessionID != "clean-task" {
+		t.Fatalf("clean continuation lost: %#v %v", binding, err)
+	}
+	if binding, found, err := store.Load(legacy); err != nil || !found || binding.SessionID != "legacy-mixed" {
+		t.Fatalf("old data changed: %#v %v", binding, err)
+	}
+	other := plan.Key
+	other.TaskID = "task_beta"
+	if _, found, err := store.Load(other); err != nil || found {
+		t.Fatalf("cross-task native reuse: %v %v", found, err)
+	}
+	for _, mutate := range []func(*contracts.RunRequestedPayload){
+		func(r *contracts.RunRequestedPayload) { r.TaskID = nil },
+		func(r *contracts.RunRequestedPayload) {
+			invalid := contracts.ContextPolicy("unknown")
+			r.Session.ContextPolicy = &invalid
+		},
+		func(r *contracts.RunRequestedPayload) { r.RoomContextBundle = roomContextFixture().RoomContextBundle },
+	} {
+		candidate := run
+		session := *run.Session
+		candidate.Session = &session
+		mutate(&candidate)
+		if _, _, err := planRuntimeSession("codex", configuration, candidate); err == nil {
+			t.Fatal("invalid isolated policy accepted")
+		}
+	}
+}

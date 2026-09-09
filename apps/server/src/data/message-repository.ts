@@ -222,17 +222,22 @@ export class MessageRepository {
     return row && this.map(row);
   }
 
+  public hasRoomTask(roomId: string, taskId: string): boolean {
+    return Boolean(this.database.prepare("SELECT 1 FROM agent_tasks WHERE task_id = ? AND room_id = ?").get(taskId, roomId));
+  }
+
   public listAfter(
     roomId: string,
     sequence: number,
-    limit: number
+    limit: number,
+    taskId?: string
   ): MessageRecord[] {
     const rows = this.database.prepare(`
       SELECT * FROM messages
-      WHERE room_id = ? AND sequence > ?
+      WHERE room_id = ? AND sequence > ? AND (? IS NULL OR task_id = ?)
       ORDER BY sequence
       LIMIT ?
-    `).all(roomId, sequence, limit) as MessageRow[];
+    `).all(roomId, sequence, taskId ?? null, taskId ?? null, limit) as MessageRow[];
     return rows.map((row) => this.map(row));
   }
 

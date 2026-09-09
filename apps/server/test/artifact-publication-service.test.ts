@@ -220,7 +220,7 @@ test("capture lease migration preserves populated legacy publications, blobs and
     database.close();
     const migrated = await migrateDatabase(f.databasePath);
     assert.deepEqual(migrated.appliedVersions,
-      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);
+      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -286,7 +286,7 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     database.close();
     const result = await migrateDatabase(f.databasePath);
     assert.deepEqual(result.appliedVersions,
-      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91]);
+      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -295,6 +295,9 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     }));
     assert.deepEqual(snapshot(), expected);
     const admissionObjects = new Set([
+      "runtime_approvals",
+      "runtime_approvals_owner_state",
+      "runtime_approvals_run",
       "execution_run_admissions",
       "execution_run_admissions_immutable_delete",
       "execution_run_admissions_require_exact_scope_insert",

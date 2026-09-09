@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import type { EventEmitter } from "node:events";
 import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
@@ -200,7 +201,7 @@ async function fixture(t: TestContext) {
       });
       return socket;
     },
-    async request(socket: TestSocket): Promise<RequestedRun> {
+    async request(socket: TestSocket, historical = false): Promise<RequestedRun> {
       const requested = receive(socket);
       const response = await server().inject({
         method: "POST", url: `/api/rooms/${roomId}/messages`, headers,
@@ -209,6 +210,26 @@ async function fixture(t: TestContext) {
       assert.equal(response.statusCode, 200, response.body);
       const message = await requested;
       assert.equal(message.type, "run.requested");
+      if (historical) {
+        // Seed the immutable delivery captured by a pre-TASK-015 Central. New
+        // planning must never create this Room-wide bundle, but replay remains valid.
+        const payload = message.payload;
+        payload.session.resumePolicy = "resume_or_start";
+        const raw = tail.json().message;
+        const context = { messageId: raw.messageId, sequence: raw.sequence, senderId: raw.senderId, content: raw.content };
+        payload.roomContextBundle = {
+          targetThroughSequence: payload.session.contextCursor,
+          priorContextThroughSequence: raw.sequence,
+          requestMessageId: response.json().message.messageId,
+          checkpoint: { checkpointId, fromSequenceExclusive: 0, throughSequence: 1, summary: "Synthetic checkpoint", sourceMessageCount: 1,
+            sourceDigest: "b".repeat(64), promptVersion: "1", modelFingerprint: "test-reducer-v1", buildKind: "incremental", provenanceMessageIds: [prior.messageId] },
+          rawTail: { fromSequenceExclusive: 1, throughSequenceInclusive: 2, messageCount: 1, utf8Bytes: Buffer.byteLength(context.content), messages: [context] }
+        };
+        const encoded = JSON.stringify(payload);
+        const db = openDatabase(options.databasePath);
+        try { db.prepare("UPDATE run_deliveries SET payload_json = ?, payload_hash = ? WHERE run_id = ?").run(encoded, createHash("sha256").update(encoded).digest("hex"), payload.runId); }
+        finally { db.close(); }
+      }
       return message.payload;
     },
     async state(runId: string): Promise<string> {
@@ -234,7 +255,7 @@ for (const coverage of [false, undefined]) {
     test(`Room context replay: ${outcome} terminal with capability ${coverage === false ? "disabled" : "omitted"}`, async (t) => {
       const f = await fixture(t);
       let socket = await f.connect(1, true);
-      const original = await f.request(socket);
+      const original = await f.request(socket, true);
       const receipt = consumption(original);
       assert.equal(receipt.rawMessageCount, 1);
       const persisted = f.snapshot(original.runId);
@@ -271,7 +292,7 @@ for (const forgery of ["checkpoint", "raw-interval", "coverage", "missing-bundle
   test(`Room context replay still rejects ${forgery} forgery after republication`, async (t) => {
     const f = await fixture(t);
     let socket = await f.connect(1, forgery !== "missing-bundle");
-    const original = await f.request(socket);
+    const original = await f.request(socket, forgery !== "missing-bundle");
     const receipt: RoomContextConsumptionReceipt = forgery === "missing-bundle"
       ? {
           baseContextCursor: 0, checkpointId, rawFromSequenceExclusive: 1,

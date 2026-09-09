@@ -34,10 +34,22 @@ func planRuntimeSession(
 	taskScope := legacyRoomTaskScope
 	logicalTask := run.TaskID != nil && strings.TrimSpace(*run.TaskID) != "" &&
 		run.Session != nil && run.Session.Scope == contracts.Task
+	if run.Session != nil && run.Session.ContextPolicy != nil {
+		if !logicalTask || *run.Session.ContextPolicy != contracts.TaskIsolatedV1 {
+			return runtimeSessionPlan{}, false, fmt.Errorf("unsupported Task context policy or missing Task scope")
+		}
+		if run.RoomContextBundle != nil {
+			return runtimeSessionPlan{}, false, fmt.Errorf("isolated Task context cannot include a Room checkpoint")
+		}
+	}
 	resumePolicy := contracts.ResumeOrStart
 	contextCursor := int64(0)
+	contextPolicy := ""
 	if logicalTask {
 		taskScope = strings.TrimSpace(*run.TaskID)
+		if run.Session.ContextPolicy != nil {
+			contextPolicy = string(*run.Session.ContextPolicy)
+		}
 		resumePolicy = run.Session.ResumePolicy
 		contextCursor = run.Session.ContextCursor
 		if contextCursor < 0 {
@@ -65,6 +77,7 @@ func planRuntimeSession(
 			RuntimeKind:          runtimeKind,
 			RoomID:               run.RoomID,
 			TaskID:               taskScope,
+			ContextPolicy:        contextPolicy,
 			AgentID:              run.TargetAgentID,
 			WorkspaceFingerprint: workspaceFingerprint,
 			ConfigFingerprint:    configFingerprint,

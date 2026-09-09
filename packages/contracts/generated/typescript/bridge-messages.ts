@@ -514,6 +514,7 @@ export interface Capabilities {
   supportsRoomContextCoverage?:            boolean;
   supportsStart:                           boolean;
   supportsStreaming:                       boolean;
+  supportsTaskContextIsolation?:           boolean;
   supportsWorkspaceLeases?:                boolean;
   /**
    * Owner-local standing policy offers. Omission means unsupported. An offer is not an exact
@@ -1283,10 +1284,13 @@ export interface RoutingAgent {
 
 export interface LogicalSessionRequest {
   contextCursor:   number;
+  contextPolicy?:  ContextPolicy;
   resumePolicy:    ResumePolicy;
   runtimeScopeId?: string;
   scope:           ScopeEnum;
 }
+
+export type ContextPolicy = "task_isolated_v1";
 
 export type ResumePolicy = "resume_or_start" | "start_new";
 

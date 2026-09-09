@@ -17,6 +17,7 @@ import { containsExactAllMention } from "./exact-agent-mentions.js";
 
 interface MessageCursor {
   roomId: string;
+  taskId?: string;
   sequence: number;
 }
 
@@ -41,19 +42,19 @@ function encodeCursor(cursor: MessageCursor): string {
   return Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
 }
 
-function decodeCursor(cursor: string, roomId: string): MessageCursor {
+function decodeCursor(cursor: string, roomId: string, taskId?: string): MessageCursor {
   try {
     const value = JSON.parse(
       Buffer.from(cursor, "base64url").toString("utf8")
     ) as Partial<MessageCursor>;
     if (
-      value.roomId !== roomId ||
+      value.roomId !== roomId || value.taskId !== taskId ||
       !Number.isSafeInteger(value.sequence) ||
       (value.sequence ?? -1) < 0
     ) {
       throw new Error("cursor fields do not match the Room");
     }
-    return { roomId, sequence: value.sequence ?? 0 };
+    return { roomId, ...(taskId ? { taskId } : {}), sequence: value.sequence ?? 0 };
   } catch (error) {
     throw new Error("Invalid Room message cursor", { cause: error });
   }
@@ -197,6 +198,7 @@ export class MessageService {
     principal: WebPrincipal,
     input: {
       roomId: string;
+      taskId?: string;
       cursor?: string;
       beforeCursor?: string;
       limit?: number;
@@ -204,6 +206,10 @@ export class MessageService {
     }
   ): MessagePage {
     this.auth.requireRoomMember(principal, input.roomId);
+    if (input.taskId !== undefined && !this.repository.hasRoomTask(input.roomId, input.taskId)) {
+      throw new Error("Message Task must belong to the Room");
+    }
+    const scope = { roomId: input.roomId, ...(input.taskId ? { taskId: input.taskId } : {}) };
     const limit = input.limit ?? 50;
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) {
       throw new Error("Message page limit must be between 1 and 100");
@@ -216,10 +222,11 @@ export class MessageService {
     }
     if (input.tail || input.beforeCursor) {
       const through = input.beforeCursor
-        ? decodeCursor(input.beforeCursor, input.roomId).sequence - 1
+        ? decodeCursor(input.beforeCursor, input.roomId, input.taskId).sequence - 1
         : this.repository.latestMessageSequence(input.roomId);
       const rows = through <= 0
         ? []
+        : input.taskId ? this.repository.listTaskMessagesThrough(input.taskId, through, limit + 1)
         : this.repository.listMessagesThrough(input.roomId, through, limit + 1);
       const items = rows.slice(-limit);
       const first = items[0];
@@ -227,26 +234,26 @@ export class MessageService {
         items,
         nextCursor: null,
         olderCursor: rows.length > limit && first
-          ? encodeCursor({ roomId: input.roomId, sequence: first.sequence })
+          ? encodeCursor({ ...scope, sequence: first.sequence })
           : null,
-        syncCursor: encodeCursor({ roomId: input.roomId, sequence: Math.max(0, through) })
+        syncCursor: encodeCursor({ ...scope, sequence: Math.max(0, through) })
       };
     }
     const after = input.cursor
-      ? decodeCursor(input.cursor, input.roomId).sequence
+      ? decodeCursor(input.cursor, input.roomId, input.taskId).sequence
       : 0;
-    const rows = this.repository.listMessagesAfter(input.roomId, after, limit + 1);
+    const rows = this.repository.listMessagesAfter(input.roomId, after, limit + 1, input.taskId);
     const hasMore = rows.length > limit;
     const items = hasMore ? rows.slice(0, limit) : rows;
     const last = items.at(-1);
     return {
       items,
       nextCursor: hasMore && last
-        ? encodeCursor({ roomId: input.roomId, sequence: last.sequence })
+        ? encodeCursor({ ...scope, sequence: last.sequence })
         : null,
       olderCursor: null,
       syncCursor: encodeCursor({
-        roomId: input.roomId,
+        ...scope,
         sequence: last?.sequence ?? after
       })
     };

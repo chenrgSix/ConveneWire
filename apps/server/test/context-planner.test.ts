@@ -133,38 +133,15 @@ test("Context Planner builds stable provenance projections and bounded relevant 
     assert.ok(first.contextPlan.taskMemory.sourceMessageIds.every((messageId) =>
       core.getMessage(messageId)?.taskId === task.taskId
     ));
-    assert.ok(first.contextMessages.length <= 30);
+    assert.ok(first.contextMessages.length <= 18);
     assert.equal(first.contextMessages.at(-1)?.messageId, trigger.messageId);
-    assert.ok(first.contextMessages.some((message) =>
-      message.taskId === otherTask.taskId
-    ));
+    assert.ok(first.contextMessages.every((message) => message.taskId === task.taskId));
+    assert.doesNotMatch(JSON.stringify(first), /CI evidence|OAuth work and CI repair/u);
     assert.ok(first.contextMessages.some((message) =>
       message.taskId === task.taskId && message.messageId !== trigger.messageId
     ));
-    assert.deepEqual({
-      target: first.roomContextBundle?.targetThroughSequence,
-      prior: first.roomContextBundle?.priorContextThroughSequence,
-      requestMessageId: first.roomContextBundle?.requestMessageId,
-      checkpointThrough: first.roomContextBundle?.checkpoint.throughSequence,
-      rawFrom: first.roomContextBundle?.rawTail.fromSequenceExclusive,
-      rawThrough: first.roomContextBundle?.rawTail.throughSequenceInclusive,
-      rawCount: first.roomContextBundle?.rawTail.messageCount,
-      rawSequences: first.roomContextBundle?.rawTail.messages.map(
-        ({ sequence }) => sequence
-      )
-    }, {
-      target: trigger.sequence,
-      prior: trigger.sequence - 1,
-      requestMessageId: trigger.messageId,
-      checkpointThrough: 30,
-      rawFrom: 30,
-      rawThrough: 40,
-      rawCount: 10,
-      rawSequences: Array.from({ length: 10 }, (_, index) => index + 31)
-    });
-    assert.ok(first.roomContextBundle?.rawTail.messages.every(
-      ({ messageId }) => messageId !== trigger.messageId
-    ));
+    assert.equal(first.roomContextBundle, undefined, "automatic Room checkpoints must not cross Tasks");
+    assert.deepEqual(first.contextPlan.roomMemory.sourceMessageIds, []);
 
     const sourceArtifact = artifacts.create(principal, task.taskId, {
       type: "commit",
@@ -320,7 +297,7 @@ test("Context Planner builds stable provenance projections and bounded relevant 
       throughSequence: nextTrigger.sequence,
       triggerMessageId: nextTrigger.messageId
     }, now);
-    assert.equal(advanced.contextPlan.roomMemory.revision, 2);
+    assert.equal(advanced.contextPlan.roomMemory.revision, 1);
     assert.equal(advanced.contextPlan.taskMemory.revision, 2);
     const persistedTask = taskRepository.get(task.taskId);
     assert.equal(persistedTask?.summaryRevision, 2);
@@ -335,24 +312,12 @@ test("Context Planner builds stable provenance projections and bounded relevant 
       throughSequence: trigger.sequence,
       triggerMessageId: trigger.messageId
     }, now);
-    assert.equal(historical.contextPlan.roomMemory.projectionKind, "historical");
+    assert.deepEqual(historical.contextPlan.roomMemory, advanced.contextPlan.roomMemory);
     assert.equal(historical.contextPlan.taskMemory.projectionKind, "historical");
-    assert.ok(
-      historical.contextPlan.roomMemory.sourceCursor <
-        advanced.contextPlan.roomMemory.sourceCursor
-    );
     assert.ok(
       historical.contextPlan.taskMemory.sourceCursor <
         advanced.contextPlan.taskMemory.sourceCursor
     );
-    const canonicalRoom = database.prepare(`
-      SELECT source_sequence, revision FROM room_memory_projections
-      WHERE room_id = ?
-    `).get(room.roomId) as { source_sequence: number; revision: number };
-    assert.deepEqual(canonicalRoom, {
-      source_sequence: advanced.contextPlan.roomMemory.sourceCursor,
-      revision: advanced.contextPlan.roomMemory.revision
-    });
     const canonicalTask = taskRepository.get(task.taskId);
     assert.equal(
       canonicalTask?.summarySourceSequence,
@@ -427,17 +392,77 @@ test("Context Planner builds stable provenance projections and bounded relevant 
       ),
       [1]
     );
-    assert.equal(
-      fenced.roomContextBundle?.checkpoint.checkpointId,
-      "checkpoint_context_planner_0001"
-    );
-    assert.throws(() => database.prepare(`
-      UPDATE room_memory_projections SET source_sequence = 0 WHERE room_id = ?
-    `).run(room.roomId), /cannot regress/u);
+    assert.equal(fenced.roomContextBundle, undefined);
     assert.throws(() => database.prepare(`
       UPDATE agent_tasks SET summary_source_sequence = 0 WHERE task_id = ?
     `).run(task.taskId), /cannot regress/u);
   } finally {
     database.close();
   }
+});
+
+test("Task context reuses only requested accepted Results and explicit public knowledge", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "convene-wire-context-sources-"));
+  const databasePath = path.join(directory, "server.sqlite");
+  await migrateDatabase(databasePath);
+  const database = openDatabase(databasePath);
+  try {
+    const core = new CoreRepository(database); const auth = new AuthService(database);
+    const teams = new TeamRoomService(core, auth); const messages = new MessageService(core, auth);
+    const taskRepository = new AgentTaskRepository(database);
+    const tasks = new AgentTaskService(taskRepository, core, auth);
+    const created = teams.createTeamForUser({ userId: "user_context_sources", userDisplayName: "Alice", teamName: "Sources", now });
+    const session = auth.issueWebSession(created.owner.userId!, now, "2026-08-25T13:00:00.000Z");
+    const principal = auth.authenticateWebSession(session.secret, now);
+    const room = teams.createRoom(principal, created.team.teamId, "project", now);
+    const otherRoom = teams.createRoom(principal, created.team.teamId, "elsewhere", now);
+    const current = tasks.create(principal, { roomId: room.roomId, title: "Current", goal: "Current goal" }, now);
+    const { ResultRepository } = await import("../src/task/result-repository.js");
+    const results = new ResultRepository(database);
+    function source(title: string, sourceRoom = room.roomId, accepted = true, at = now) {
+      const task = tasks.create(principal, { roomId: sourceRoom, title, goal: title }, now);
+      database.prepare("UPDATE agent_tasks SET lifecycle_state = 'active', state = 'working' WHERE task_id = ?").run(task.taskId);
+      messages.createMemberMessage(principal, { roomId: sourceRoom, taskId: task.taskId, content: `RAW_${title}`, now });
+      const result = results.create({ roomId: sourceRoom, actor: { kind: "member", memberId: created.owner.memberId }, now,
+        proposal: { operationId: `op_${task.taskId}`, taskId: task.taskId, definitionRevision: task.definitionRevision, criteriaRevision: task.criteriaRevision,
+          proposedAtTaskRevision: task.taskRevision, supersedesResultId: null, outcome: "satisfied", summary: `ACCEPTED_${title}`,
+          risks: [], openQuestions: [], sources: [], criterionClaims: [], nextActions: [{ nextActionKey: "next_followup_0001", description: "Follow the accepted result" }] } });
+      if (accepted) results.review({ resultId: result.resultId, memberId: created.owner.memberId, now: at,
+        command: { operationId: `op_review_${task.taskId}`, expectedReviewRevision: 0, expectedTaskRevision: task.taskRevision + 1,
+          decision: "accepted", reason: "Verified", completeTask: false } });
+      return { task, result };
+    }
+    const approved = source("approved"); const unrelated = source("unrequested");
+    const unaccepted = source("proposed", room.roomId, false);
+    const foreign = source("foreign", otherRoom.roomId);
+    const future = source("future", room.roomId, true, "2026-08-25T12:10:00.000Z");
+    const planner = new ContextPlanner(database, core, taskRepository);
+    function plan(content: string, task = current) {
+      const message = messages.createMemberMessage(principal, { roomId: room.roomId, taskId: task.taskId, content, now });
+      return planner.plan({ roomId: room.roomId, taskId: task.taskId, throughSequence: message.sequence, triggerMessageId: message.messageId }, now);
+    }
+    const ordinary = JSON.stringify(plan("Continue this Task"));
+    assert.equal(ordinary.includes("ACCEPTED_"), false);
+    assert.equal(ordinary.includes("RAW_"), false);
+    const cited = plan(`Use TASK-${approved.task.taskDisplayNumber}; compare TASK-${unaccepted.task.taskDisplayNumber}, TASK-${foreign.task.taskDisplayNumber}, TASK-${future.task.taskDisplayNumber}.`);
+    const text = JSON.stringify(cited);
+    assert.ok(text.includes("ACCEPTED_approved"));
+    assert.ok(text.includes(approved.result.resultId));
+    assert.ok(text.includes(`workTask=${approved.task.taskId}`));
+    for (const excluded of ["RAW_", "ACCEPTED_unrequested", "ACCEPTED_proposed", "ACCEPTED_foreign", "ACCEPTED_future"]) assert.equal(text.includes(excluded), false, excluded);
+    assert.ok(cited.contextMessages.every(message => message.taskId === current.taskId));
+    const childId = results.createChildSource({ resultId: unrelated.result.resultId, nextActionKey: "next_followup_0001", operationId: "op_child_sources_0001", memberId: created.owner.memberId, now,
+      createChild: (description) => tasks.create(principal, { roomId: room.roomId, title: "Child", goal: description }, now).taskId });
+    assert.ok(JSON.stringify(plan("Continue", taskRepository.get(childId)!)).includes("ACCEPTED_unrequested"));
+    const { MemoryEntryRepository } = await import("../src/task/memory-entry-repository.js");
+    const { LongTermMemoryService } = await import("../src/task/long-term-memory-service.js");
+    const memory = new LongTermMemoryService(database, new MemoryEntryRepository(database), new ArtifactRepository(database), taskRepository, core, new RunRepository(database), auth);
+    const sourceMessage = core.listTaskMessagesThrough(approved.task.taskId, Number.MAX_SAFE_INTEGER, 1)[0]!;
+    memory.createRoom(principal, room.roomId, { type: "convention", content: "PUBLIC_CONVENTION", sourceMessageIds: [sourceMessage.messageId] }, now);
+    memory.createTask(principal, approved.task.taskId, { type: "plan", content: "FOREIGN_PRIVATE_PLAN", sourceMessageIds: [sourceMessage.messageId] }, now);
+    const shared = JSON.stringify(plan("Continue without other Task references"));
+    assert.ok(shared.includes("PUBLIC_CONVENTION"));
+    assert.equal(shared.includes("FOREIGN_PRIVATE_PLAN"), false);
+    assert.equal(shared.includes("RAW_approved"), false);
+  } finally { database.close(); }
 });

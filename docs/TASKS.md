@@ -784,6 +784,12 @@ or a registration receipt alone.
 | WEB-080 | DONE | Present Agent replies as unboxed conversation text | WEB-079 | [Reply presentation evidence](acceptance/web-080-unboxed-replies.md): completed/streaming responses separated from cards; four Markdown/clipboard checks and build passed; browser verified both themes, hover copy and 390-pixel component rendering; c132242 Central installed, original-CA served assets and doctor passed, three Agents ready with client/approval configuration preserved |
 | WEB-081 | DONE | Navigate Rooms as expandable folders with nested Tasks | WEB-079, WEB-080 | [Folder navigation evidence](acceptance/web-081-room-folders.md): 27 focused checks and production build passed; actual browser Room/Task creation, disclosure, both themes and 390-pixel App rendering verified; 4de7fb3 Central installed, original-CA assets/doctor and three ready Agents verified, data/client/approval configuration preserved |
 
+## Task conversation isolation
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| TASK-015 | IN_PROGRESS | Isolate Task conversations and share explicit project knowledge and cited Results | TASK-006, TASK-013, WEB-081 | [Task isolation evidence](acceptance/task-015-context-isolation.md): ADR-0064 implemented; 690 Server tests, 32 Web cases, contracts, Go Runtime/connection test-vet-race and two real-Bridge deterministic scenarios pass; browser Task A/B isolation and reload verified; installed Central/Bridge update pending |
+
 ## Deferred Beyond MVP
 
 | ID | State | Task | Trigger |

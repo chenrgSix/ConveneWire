@@ -209,7 +209,7 @@ test("Task clarification resumes the same Task session in a new bounded Run", as
     assert.equal(delivery?.payload.taskId, run.taskId);
     assert.deepEqual(delivery?.payload.session, {
       scope: "task",
-      resumePolicy: "resume_or_start",
+      resumePolicy: "start_new",
       contextCursor: resumed.message.sequence
     });
     assert.ok(delivery?.payload.contextMessages.some((message) =>

@@ -379,6 +379,7 @@ export function registerBridgeSocketRoutes({
                 supportsRoomContextCoverage:
                   capabilities.supportsRoomContextCoverage === true,
                 supportsConversationWork: capabilities.supportsConversationWork === true,
+                supportsTaskContextIsolation: capabilities.supportsTaskContextIsolation === true,
                 supportsWorkspaceLeases:
                   capabilities.supportsWorkspaceLeases === true,
                 supportsArtifactPublication:

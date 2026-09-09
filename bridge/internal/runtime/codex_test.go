@@ -622,6 +622,9 @@ func TestCodexHelperProcess(t *testing.T) {
 	case "success":
 		runCodexAppServerFixture(t, true, "thread/start", true)
 		return
+	case "isolated-start":
+		runCodexAppServerFixture(t, true, "thread/start", false)
+		return
 	case "resume":
 		runCodexAppServerFixture(t, true, "thread/resume", false)
 		return
@@ -843,5 +846,36 @@ func runCodexAppServerFixture(t *testing.T, complete bool, expectedOpen string, 
 				"threadId": "019d-thread", "turn": map[string]any{"id": "turn-1", "status": "completed", "items": []any{}},
 			}})
 		}
+	}
+}
+
+func TestCodexIsolationStartsCleanThenResumesWithinTask(t *testing.T) {
+	t.Setenv("AGENTROOM_CODEX_REQUIRED_CONTEXT", "This conversation belongs to the current Task")
+	configuration := config.AgentConfig{
+		Command:   []string{os.Args[0], "-test.run=TestCodexHelperProcess", "--", "app-server", "--listen", "stdio://"},
+		Workspace: t.TempDir(), Sandbox: "workspace-write", RuntimeKind: "codex", Adapter: "codex",
+		EnvAllowlist: []string{"AGENTROOM_CODEX_HELPER", "AGENTROOM_CODEX_REQUIRED_CONTEXT"},
+	}
+	store := NewFileRuntimeSessionStore(t.TempDir())
+	taskID := "task_alpha"
+	legacy := testRuntimeSessionKey(t, configuration, taskID)
+	if err := store.Save(RuntimeSessionBinding{RuntimeSessionKey: legacy, SessionID: "legacy-mixed"}); err != nil {
+		t.Fatal(err)
+	}
+	policy := contracts.TaskIsolatedV1
+	run := contracts.RunRequestedPayload{RunID: "run_isolated", RoomID: "room_alpha", TargetAgentID: "agent_builder", TaskID: &taskID, Instruction: "implement it",
+		Session: &contracts.LogicalSessionRequest{Scope: contracts.Task, ResumePolicy: contracts.ResumeOrStart, ContextPolicy: &policy, ContextCursor: 1}}
+	adapter := CodexAdapter{Config: configuration, Sessions: store}
+	for _, mode := range []string{"isolated-start", "resume"} {
+		t.Setenv("AGENTROOM_CODEX_HELPER", mode)
+		var terminal Event
+		if err := adapter.Execute(context.Background(), Request{Run: run}, func(_ context.Context, event Event) error { terminal = event; return nil }); err != nil {
+			t.Fatal(err)
+		}
+		if terminal.Status == nil || *terminal.Status != contracts.Completed {
+			t.Fatalf("%s failed: %#v", mode, terminal)
+		}
+		run.RunID += "_next"
+		run.Session.ContextCursor++
 	}
 }

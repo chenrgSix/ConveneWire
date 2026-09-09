@@ -360,7 +360,10 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
   };
 
   const { refresh: refreshRoomState, loadOlder: loadOlderMessages } = useRoomSynchronization({
-    teamId: selectedTeamId, roomId: selectedRoomId, session,
+    teamId: selectedTeamId, roomId: selectedRoomId, taskId: selectedTaskId, session,
+    onTaskReset: () => {
+      setMessages([]); setOlderMessageCursor(null); setHistoryLoading(false); setHistoryError(null);
+    },
     onReset: () => {
       setMessages([]); setRuns([]); setDiscussions([]); setTasks([]);
       setRunOutputs({}); setRunActivities({});
@@ -1407,6 +1410,12 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     navigate({ workTaskId: undefined, taskId: undefined, tab: undefined, runId: undefined, view: "work" });
   }
 
+  const taskMessages = messages.filter((message) => message.taskId === selectedTaskId);
+  const taskPendingMessages = pendingRoomMessages.filter((message) =>
+    (message.taskId ?? tasks.find((task) => task.isDefault)?.taskId) === selectedTaskId);
+  const taskRuns = runs.filter((run) => run.taskId === selectedTaskId);
+  const taskRunsById = new Map(taskRuns.map((run) => [run.runId, run]));
+
   function openTaskInRoom(roomId: string, taskId: string) {
     navigate({ roomId, taskId, workTaskId: undefined, tab: undefined, runId: undefined, view: "room" });
   }
@@ -1949,8 +1958,13 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
               <small>{t("addMoreRooms")}</small>
             </form>
           </section>
-        ) : messages.length === 0 && pendingRoomMessages.length === 0 ? (
+        ) : taskMessages.length === 0 && taskPendingMessages.length === 0 ? (
           <section className="empty-stage room-onboarding">
+            {selectedTask && !selectedTask.isDefault ? <>
+              <p className="eyebrow">{locale === "zh-CN" ? "任务对话" : "Task conversation"}</p>
+              <h3>{selectedTask.title}</h3>
+              <p>{locale === "zh-CN" ? "直接在下方说需求。这个任务的对话会独立保存。" : "Describe what you need below. This Task keeps its own conversation."}</p>
+            </> : <>
             <div className="orb"><span>✦</span></div>
             <p className="eyebrow">{locale === "zh-CN" ? "第 3 步 · 收到第一条真实回复" : "STEP 3 · Get your first real reply"}</p>
             <h3>
@@ -1965,10 +1979,11 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
                 <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} locale={locale} onSelect={chooseAgentSetup} />
               </>
             )}
+            </>}
           </section>
         ) : (
           <RoomTimeline
-            key={selectedRoom.roomId}
+            key={`${selectedRoom.roomId}:${selectedTaskId}`}
             agentsById={agentsById}
             composerBusy={composerBusy}
             locale={locale}
@@ -1977,16 +1992,16 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             historyError={historyError}
             onLoadOlderMessages={loadOlderMessages}
             membersById={membersById}
-            messages={messages}
+            messages={taskMessages}
             onCancelRun={cancelRun}
             onOpenWorkTask={openWorkbenchTask}
             onRetryPendingMessage={deliverPendingMessage}
-            pendingMessages={pendingRoomMessages}
+            pendingMessages={taskPendingMessages}
             runActivities={runActivities}
             runDiagnostics={runDiagnostics}
             runOutputs={runOutputs}
-            runs={runs}
-            runsById={runsById}
+            runs={taskRuns}
+            runsById={taskRunsById}
             session={session}
           />
         )}
@@ -2033,7 +2048,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             )}
             <MemoryCandidateReview
               busyId={memoryCandidateBusyId}
-              candidates={memoryCandidates}
+              candidates={memoryCandidates.filter((candidate) => candidate.scopeKind === "room" || candidate.scopeId === selectedTaskId)}
               locale={locale}
               onAccept={(candidate) => reviewMemoryCandidate(candidate, "accept")}
               onReject={(candidate) => reviewMemoryCandidate(candidate, "reject")}

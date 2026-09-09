@@ -336,14 +336,14 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
         runs: []
       });
     }
-    if (path === `/api/rooms/${room.roomId}/messages?limit=100&tail=true`) {
+    if (path === `/api/rooms/${room.roomId}/messages?limit=100&tail=true&taskId=${roomTask.taskId}`) {
       return jsonResponse({
         items: messageWasSent ? [memberMessage, agentMessage] : [],
         nextCursor: null,
         syncCursor: "cursor-latest"
       });
     }
-    if (path === `/api/rooms/${room.roomId}/messages?limit=100&cursor=cursor-latest`) {
+    if (path === `/api/rooms/${room.roomId}/messages?limit=100&cursor=cursor-latest&taskId=${roomTask.taskId}`) {
       return jsonResponse({
         items: streamFinal ? [streamAgentMessage] : [],
         nextCursor: null,
@@ -818,8 +818,8 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     fireEvent.change(roomMessageInput, { target: { value: "请回答" } });
     fireEvent.click(screen.getByRole("button", { name: "发送" }));
     const timeline = await screen.findByRole("region", { name: "房间消息" });
-    within(timeline).getByText("Review Bot");
-    within(timeline).getByText("已经完成");
+    await within(timeline).findByText("Review Bot");
+    await within(timeline).findByText("已经完成");
     const plainMessageBody = JSON.parse(requests.find((candidate) =>
       candidate.path === `/api/rooms/${room.roomId}/messages` &&
       candidate.method === "POST"

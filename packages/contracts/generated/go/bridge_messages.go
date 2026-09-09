@@ -408,6 +408,7 @@ type Capabilities struct {
 	SupportsRoomContextCoverage            *bool `json:"supportsRoomContextCoverage,omitempty"`
 	SupportsStart                          bool  `json:"supportsStart"`
 	SupportsStreaming                      bool  `json:"supportsStreaming"`
+	SupportsTaskContextIsolation           *bool `json:"supportsTaskContextIsolation,omitempty"`
 	SupportsWorkspaceLeases                *bool `json:"supportsWorkspaceLeases,omitempty"`
 	// Owner-local standing policy offers. Omission means unsupported. An offer is not an exact
 	// Task grant or Runtime admission.
@@ -1043,10 +1044,11 @@ type RoutingAgent struct {
 }
 
 type LogicalSessionRequest struct {
-	ContextCursor  int64        `json:"contextCursor"`
-	ResumePolicy   ResumePolicy `json:"resumePolicy"`
-	RuntimeScopeID *string      `json:"runtimeScopeId,omitempty"`
-	Scope          ScopeEnum    `json:"scope"`
+	ContextCursor  int64          `json:"contextCursor"`
+	ContextPolicy  *ContextPolicy `json:"contextPolicy,omitempty"`
+	ResumePolicy   ResumePolicy   `json:"resumePolicy"`
+	RuntimeScopeID *string        `json:"runtimeScopeId,omitempty"`
+	Scope          ScopeEnum      `json:"scope"`
 }
 
 // Fields shared by versioned cross-process messages.
@@ -1661,6 +1663,12 @@ type BuildKind string
 const (
 	Incremental BuildKind = "incremental"
 	Rebase      BuildKind = "rebase"
+)
+
+type ContextPolicy string
+
+const (
+	TaskIsolatedV1 ContextPolicy = "task_isolated_v1"
 )
 
 type ResumePolicy string

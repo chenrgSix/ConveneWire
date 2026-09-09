@@ -1,5 +1,16 @@
 # Local Bridge
 
+`TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), advertises
+`supportsTaskContextIsolation` and accepts optional `session.contextPolicy` equal
+to `task_isolated_v1`. The policy joins the native binding key without changing
+published Runtime/workspace identity or device consent. It starts a clean session
+once; later requests for the same Task resume it. Missing Task scope, unknown
+policy and a mixed Room checkpoint with isolated policy fail before Runtime
+invocation. Old bindings are retained. Central also separates Artifact-consumption
+cursors by policy and sends old clients `start_new` with bootstrap evidence.
+This context boundary does not isolate shared filesystem changes or revoke
+existing explicit Room/MCP access.
+
 [ADR-0063](../adr/0063-forward-runtime-approvals-to-device-owner.md) adds the
 separate local **Central approval** mode. It retains the configured sandbox,
 pins the exact pairing/revision and forces Codex's user reviewer. The owner can

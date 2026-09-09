@@ -67,6 +67,7 @@ export interface AgentCapabilities {
   supportsStart: boolean;
   supportsStreaming: boolean;
   supportsRoomContextCoverage?: boolean;
+  supportsTaskContextIsolation?: boolean;
   supportsConversationWork?: boolean;
   supportsWorkspaceLeases?: boolean;
   supportsArtifactPublication?: boolean;
@@ -399,12 +400,17 @@ export class CoreRepository {
     return this.messages.findAgentReply(parentMessageId, agentId);
   }
 
+  public hasRoomTask(roomId: string, taskId: string): boolean {
+    return this.messages.hasRoomTask(roomId, taskId);
+  }
+
   public listMessagesAfter(
     roomId: string,
     sequence: number,
-    limit: number
+    limit: number,
+    taskId?: string
   ): MessageRecord[] {
-    return this.messages.listAfter(roomId, sequence, limit);
+    return this.messages.listAfter(roomId, sequence, limit, taskId);
   }
 
   public listMessagesRange(

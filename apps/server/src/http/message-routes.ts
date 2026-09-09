@@ -19,7 +19,7 @@ export function registerMessageRoutes({
 }: ServerRouteContext): void {
   app.get<{
     Params: { roomId: string };
-    Querystring: { cursor?: string; beforeCursor?: string; limit?: string; tail?: string };
+    Querystring: { taskId?: string; cursor?: string; beforeCursor?: string; limit?: string; tail?: string };
   }>("/api/rooms/:roomId/messages", async (request) => {
     const parsedLimit = request.query.limit === undefined
       ? 100
@@ -34,6 +34,7 @@ export function registerMessageRoutes({
     return messages.listMessages(principal(request), {
       roomId: request.params.roomId,
       limit: parsedLimit,
+      ...(request.query.taskId === undefined ? {} : { taskId: requiredString(request.query.taskId, "taskId", 140) }),
       ...(request.query.cursor ? { cursor: request.query.cursor } : {}),
       ...(request.query.beforeCursor ? { beforeCursor: request.query.beforeCursor } : {}),
       ...(request.query.tail === "true" ? { tail: true } : {})

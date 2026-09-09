@@ -165,7 +165,8 @@ async function fixture(t: TestContext) {
     assert.deepEqual(requests.filter(({ method, url }) => method !== "GET" && url !== "/api/bootstrap"), []);
   }
   return { ...testing, dom: currentDom, page, firstTask, secondTask, team, otherTeam, firstRoom, targetRoom,
-    thirdRoom, otherTeamRoom, requests, navigation, setUrl, holdNext, traverse, expectTab, query, assertNoCommands };
+    thirdRoom, otherTeamRoom, requests, navigation, setUrl, holdNext, traverse, expectTab, query, assertNoCommands,
+    seed: (method: "GET" | "POST", url: string, payload?: object) => seed(method, url, payload, authorization) };
 }
 
 test("App authorizes a non-default Room Work deep link, keeps its tab and restores it on remount", async (t) => {
@@ -411,3 +412,26 @@ for (const destination of ["Team", "Room"] as const) {
     f.assertNoCommands();
   });
 }
+
+test("Task switching isolates real history, late responses and restored conversation", async (t) => {
+  const f = await fixture(t);
+  await f.seed("POST", `/api/rooms/${f.targetRoom.roomId}/messages`, { taskId: f.firstTask.taskId, content: "ALPHA TASK ONLY" });
+  await f.seed("POST", `/api/rooms/${f.targetRoom.roomId}/messages`, { taskId: f.secondTask.taskId, content: "BETA TASK ONLY" });
+  f.setUrl(f.navigation({ view: "room", taskId: f.firstTask.taskId }));
+  const late = f.holdNext(`/api/rooms/${f.targetRoom.roomId}/messages?limit=100&tail=true&taskId=${f.firstTask.taskId}`);
+  const mounted = f.render(<App />);
+  await f.waitFor(() => assert.ok(late.captured));
+  const select = await f.page.findByRole("combobox", { name: "Current Task" });
+  f.fireEvent.change(select, { target: { value: f.secondTask.taskId } });
+  await f.page.findByText("BETA TASK ONLY");
+  assert.equal(f.page.queryByText("ALPHA TASK ONLY"), null);
+  await f.act(async () => { late.release(); await late.delivered; });
+  assert.equal(f.page.queryByText("ALPHA TASK ONLY"), null);
+  f.fireEvent.change(f.page.getByRole("combobox", { name: "Current Task" }), { target: { value: f.firstTask.taskId } });
+  await f.page.findByText("ALPHA TASK ONLY");
+  assert.equal(f.page.queryByText("BETA TASK ONLY"), null);
+  mounted.unmount(); f.render(<App />);
+  await f.page.findByText("ALPHA TASK ONLY");
+  assert.equal(f.page.queryByText("BETA TASK ONLY"), null);
+  f.assertNoCommands();
+});

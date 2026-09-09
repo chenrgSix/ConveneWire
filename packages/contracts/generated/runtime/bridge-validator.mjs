@@ -659,7 +659,8 @@ const canonicalPropertyTrees = {
               "supportsWorkspaceLeases": {},
               "supportsArtifactPublication": {},
               "supportsArtifactMaterialization": {},
-              "supportsDiscussionSupplementalEvidence": {}
+              "supportsDiscussionSupplementalEvidence": {},
+              "supportsTaskContextIsolation": {}
             }
           },
           "runtimePolicy": {
@@ -786,7 +787,8 @@ const canonicalPropertyTrees = {
                 "l": "0",
                 "u": "9007199254740991"
               },
-              "runtimeScopeId": {}
+              "runtimeScopeId": {},
+              "contextPolicy": {}
             }
           },
           "triggerMessageId": {},

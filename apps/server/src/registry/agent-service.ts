@@ -124,6 +124,7 @@ function validateCapabilities(input: PublishAgentInput): void {
     if (
       input.capabilities.supportsResume ||
       input.capabilities.supportsRoomContextCoverage === true ||
+      input.capabilities.supportsTaskContextIsolation === true ||
       input.capabilities.supportsConversationWork === true ||
       input.capabilities.supportsWorkspaceLeases === true ||
       input.capabilities.supportsArtifactPublication === true ||

@@ -37,6 +37,9 @@ func runtimePromptWithArtifacts(
 			"<agentroom-clarification>{\"kind\":\"task\",\"question\":\"...\",\"choices\":[\"...\",\"...\"]}</agentroom-clarification>. " +
 			"Omit choices for an open answer. Never use this for filesystem, shell, network, tool, Runtime, or permission approval; " + approvalGuidance,
 	}
+	if run.Session != nil && run.Session.ContextPolicy != nil && *run.Session.ContextPolicy == contracts.TaskIsolatedV1 {
+		sections = append(sections, "This conversation belongs to the current Task. Use its messages and Task evidence, explicitly published project knowledge, and cited accepted Results. Other Tasks' conversations are not implicit context. Cite the source Task and Result when reusing an accepted Result. Shared context does not grant additional execution authority.")
+	}
 	if run.CentralApproval != nil {
 		sections = append(sections, "The device owner enabled Central approval. Work on the current request with the configured sandbox. If an operation needs permission, request it through the Runtime permission protocol and wait for the owner decision. Do not ask the user to watch the local client or resend the task. Respect a denied operation and the original task scope.")
 	}

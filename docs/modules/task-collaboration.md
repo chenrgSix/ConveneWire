@@ -292,26 +292,28 @@ Room history and Task events are authoritative. Room and Task summaries are
 bounded, rebuildable projections with a source cursor and revision; they never
 replace Messages, Runs, decisions, or ArtifactRefs as evidence.
 
-The `TASK-002` Context Planner builds an extractive baseline rather than
-claiming inferred facts: each projection names its source cursor and up to 16
-authoritative Message IDs, while the Task projection also carries the explicit
-title, goal, and state. It selects at most 12 recent Room Messages and 18 recent
-Task Messages, de-duplicates them in Room order, and keeps the current request
-as the separate Run instruction. Identical inputs retain the same revision;
-changed source or Task state advances it.
+Under [ADR-0064](../adr/0064-isolate-task-conversations.md), `TASK-015` makes
+Task the default conversation and execution-context boundary. The planner
+selects at most 18 recent Task Messages and a bounded extractive Task projection
+with title, goal, state, cursor and source Message IDs. It no longer injects
+other Tasks' Room history, automatic Room summaries or rolling checkpoints.
+Identical inputs retain a revision; changed Task evidence advances it. Delayed
+Runs use their captured Task/Memory/Artifact fences and historical projections
+without replacing newer canonical projections.
 
-Canonical Room and Task projections advance only when their source cursor is
-monotonic. Planning an older delayed Run produces an explicitly historical,
-Run-local projection: it is delivered as quoted context but neither replaces
-the canonical row nor advances the Bridge's consumed canonical revision.
+Explicit Room `MemoryEntry` assertions remain shared project knowledge. Other
+Task plans and conversations remain excluded. An explicit `TASK-N` reference in
+the current request or Task goal, or an existing Result-to-child source edge,
+selects at most five accepted Results in the same Room. Each quoted excerpt
+includes Task number, Result ID/version and a Work/results link. Proposed,
+foreign-Room, unrequested and not-yet-reviewed Results are excluded. Reuse does
+not grant execution or filesystem authority. Existing accepted-candidate and
+Memory HTTP operations publish shared knowledge; ordinary replies do not.
 
-`ADR-0014` adds a separate rolling layer without changing that extractive
-contract. Immutable checkpoints prove only that contiguous Message input was
-processed from sequence 1 through their cursor. A mutable per-Room scheduler row
-owns enablement, backfill, latest and desired cursors, and an expiring worker
-lease. Old Rooms remain disabled or backfilling until the checkpoint chain is
-continuous; the existing extractive projection remains the fallback and never
-masquerades as rolling coverage.
+Rolling Room reduction and its immutable checkpoint ledger remain available
+for historical inspection and candidate review. They are no longer implicit
+Runtime context. Old frozen Deliveries and their receipt validation remain
+compatible; new Deliveries omit the Room checkpoint bundle.
 
 Reduction stays disabled unless the deployment supplies a
 `MemoryReducerRunner`. `CONVENE_WIRE_MEMORY_REDUCER=extractive-v1` opts into the
@@ -321,17 +323,9 @@ runner, and commits only contiguous validated output. The extractive baseline
 is operational evidence for recovery and coverage, not a semantic-quality
 claim; richer runners use the same port and must pass separate quality gates.
 
-For a trigger at Room sequence `S`, the Server builds a session-independent
-bundle from one checkpoint through `K`, raw context Messages `K+1..S-1`, and
-the separate current request at `S`. The Bridge, which alone knows the local
-native Session cursor and disposition, derives the actual consumption interval.
-It either projects that interval completely or rejects the Run before Runtime
-invocation. A successful local receipt advances only to the coverage accepted
-by the provider, not blindly to the trigger sequence.
-
 A Run captures Room/Task Memory, Artifact, Task-state, and Room-sequence fences
-when its routing intent is created. Delayed planning selects only checkpoint and
-revisioned context available at that fence. Evidence records remain
+when its routing intent is created. Delayed planning selects only Task evidence and
+explicit revisioned Memory available at that fence. Evidence records remain
 authoritative records of claims and events; an active Member-approved
 `MemoryEntry` is the canonical shared assertion, while a rolling checkpoint is
 always lossy non-authoritative context.
@@ -372,10 +366,12 @@ that explicitly. This is a bounded retrieval/compaction contract, not a free
 text summary: users compact by superseding or retracting evidence, and the full
 revisioned ledger remains available through the API.
 
-A new native Session receives bounded Room memory, Task memory, relevant recent
-events, result evidence, and the current request. A resumed Session receives
-only Room events after its last consumed cursor, Task-memory/result revisions
-it has not consumed, and the current request. The Bridge prompt labels every
+A new native Session receives Task messages, Task memory, explicit public Room
+Memory, cited Results, Task Artifact evidence and the current request. A resumed
+Session receives only unconsumed Task messages and changed memory/evidence.
+The `task_isolated_v1` policy partitions native session bindings and Server
+Artifact-consumption cursors from old mixed-context sessions. Old Bridge clients
+receive `start_new` and bootstrap evidence until they advertise policy support. The Bridge prompt labels every
 projection and Message as quoted, untrusted collaboration context.
 The Bridge independently tracks Room and Task long-term Memory scope revisions.
 It projects changed snapshots with lifecycle and source IDs, labels them as

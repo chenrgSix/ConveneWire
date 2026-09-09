@@ -1,5 +1,14 @@
 # Web UI
 
+`TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
+conversation history, backward/forward pagination, pending sends and live replies
+to the selected Task, including the default conversation. Switching Tasks retires
+all old reads before starting the new history cursor; Room registry, membership
+and work navigation stay shared. The additive `taskId` history filter validates
+Room ownership and binds both Room and Task into cursors. Unfiltered Room API
+history remains available for explicit legacy readers. Existing Task drafts and
+browser history preserve the selected conversation.
+
 SEC-017 shows pending Runtime permissions only to the Device owner's full Web
 session in the selected Team and Room membership. A new request opens a dialog
 with the exact operation and **Allow once / Deny** controls; closing is not a

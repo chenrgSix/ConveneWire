@@ -16,6 +16,7 @@ export interface RoomSnapshot {
 export interface RoomSynchronizationOptions {
   teamId: string;
   roomId: string;
+  taskId?: string | null | undefined;
   session: LocalSession;
   isCurrentContext: () => boolean;
   onMessages: (messages: Message[]) => void;
@@ -72,6 +73,12 @@ export class RoomSynchronization {
 
   private roomPath(suffix: string): string { return `/api/rooms/${this.options.roomId}/${suffix}`; }
 
+  private readMessages(suffix: string): Promise<RoomMessagePage> {
+    // Initial Room metadata resolves the default Task before any conversation is loaded.
+    if (this.options.taskId === null) return Promise.resolve({ items: [], nextCursor: null, olderCursor: null });
+    return this.read(this.roomPath(suffix) + (this.options.taskId ? `&taskId=${encodeURIComponent(this.options.taskId)}` : ""));
+  }
+
   private async candidates(): Promise<MemoryCandidate[]> {
     try { return await this.read(this.roomPath("memory-candidates")); }
     catch (reason) { this.requireCurrent(); return []; }
@@ -89,7 +96,9 @@ export class RoomSynchronization {
   private async outputs(runs: Run[], version: number): Promise<Map<string, RunEventRecord[]> | undefined> {
     this.requireCurrent();
     if (version < this.runsVersion) return undefined;
-    const result = await this.options.loadOutputs(runs);
+    const selectedRuns = this.options.taskId === undefined ? runs
+      : runs.filter((run) => run.taskId === this.options.taskId);
+    const result = await this.options.loadOutputs(selectedRuns);
     this.requireCurrent();
     return result;
   }
@@ -157,7 +166,7 @@ export class RoomSynchronization {
     const version = ++this.requestVersion;
     try {
       const [page, snapshot, settings] = await Promise.all([
-        this.read<RoomMessagePage>(this.roomPath("messages?limit=100&tail=true")),
+        this.readMessages("messages?limit=100&tail=true"),
         this.readRoom(), this.read<RoomSettings>(this.roomPath("settings"))
       ]);
       const outputs = await this.outputs(snapshot.runs, version);
@@ -178,7 +187,7 @@ export class RoomSynchronization {
     this.requireCurrent();
     const version = ++this.requestVersion;
     const [page, snapshot] = await Promise.all([
-      this.read<RoomMessagePage>(this.roomPath("messages?limit=100&tail=true")), this.readRoom()
+      this.readMessages("messages?limit=100&tail=true"), this.readRoom()
     ]);
     this.commitMessages(page.items, page.syncCursor ?? null, page.items.at(-1)?.sequence ?? 0, page);
     this.commitSnapshot(version, snapshot);
@@ -190,7 +199,7 @@ export class RoomSynchronization {
     this.publishHistory(true, null);
     let error: string | null = null;
     try {
-      const page = await this.read<RoomMessagePage>(this.roomPath(`messages?limit=100&beforeCursor=${encodeURIComponent(this.olderCursor)}`));
+      const page = await this.readMessages(`messages?limit=100&beforeCursor=${encodeURIComponent(this.olderCursor)}`);
       this.options.onMessages(page.items);
       this.olderCursor = page.olderCursor ?? null;
     } catch (reason) {
@@ -215,8 +224,8 @@ export class RoomSynchronization {
       let tail: RoomMessagePage | undefined;
       const messages: Message[] = [];
       for (let index = 0; index < 10; index += 1) {
-        const page = await this.read<RoomMessagePage>(this.roomPath(cursor
-          ? `messages?limit=100&cursor=${encodeURIComponent(cursor)}` : "messages?limit=100&tail=true"));
+        const page = await this.readMessages(cursor
+          ? `messages?limit=100&cursor=${encodeURIComponent(cursor)}` : "messages?limit=100&tail=true");
         if (index === 0 && !cursor) tail = page;
         messages.push(...page.items);
         sequence = Math.max(sequence, page.items.at(-1)?.sequence ?? 0);
