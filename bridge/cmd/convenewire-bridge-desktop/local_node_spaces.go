@@ -13,10 +13,11 @@ import (
 // credential, command or arbitrary payload is accepted from page JavaScript.
 const localSpaceNavigationScript = `document.addEventListener('click',function(event){
  const link=event.target.closest&&event.target.closest('a[data-authority-node][data-authority-team]');
- if(!link||!window._wails||typeof window._wails.invoke!=='function')return;
+ const port=window.chrome?.webview||window.webkit?.messageHandlers?.external;
+ if(!link||!port||typeof port.postMessage!=='function')return;
  const node=link.dataset.authorityNode,team=link.dataset.authorityTeam;
  if(!/^node_[A-Za-z0-9_-]{8,128}$/.test(node)||!/^team_[A-Za-z0-9_-]{8,128}$/.test(team))return;
- event.preventDefault();window._wails.invoke('wails:event:emit:convenewire.space.open.'+node+'.'+team);
+ event.preventDefault();port.postMessage('wails:event:emit:convenewire.space.open.'+node+'.'+team);
 });`
 
 func remoteDesktopSpaces(root, localID, localOrigin string) ([]wire.Space, error) {
