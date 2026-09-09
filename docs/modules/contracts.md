@@ -27,8 +27,11 @@ key and expected binding as well as the signature.
 Verification passes 128 Contracts Node tests, deterministic generation, strict
 types and Go shared fixtures/vet. Actual Go/Node processes compare both valid
 and invalid control messages, a signed proof and 2,000-plus deterministic
-IEEE754/Unicode canonicalization inputs. The generator bounds each gofmt
-invocation to 30 seconds so an unresponsive formatter cannot hold it indefinitely.
+IEEE754/Unicode canonicalization inputs. After repeated synchronous-pipe gofmt
+timeouts, the generator formats private invocation-owned temporary files,
+removes them in a finally block and retains the 30-second bound. The existing
+two-pass deterministic-generation test and current-output check pass with this
+invocation path; no generated wire bytes change because of the formatter fix.
 
 ## Multi-Authority foundation
 

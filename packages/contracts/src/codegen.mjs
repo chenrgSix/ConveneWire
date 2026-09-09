@@ -1,4 +1,6 @@
 import { readFile } from "node:fs/promises";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 
@@ -210,25 +212,30 @@ async function render(sources, language, rendererOptions) {
 }
 
 function formatGo(source) {
-  const result = spawnSync("gofmt", {
-    timeout: 30000,
-    encoding: "utf8",
-    input: source
-  });
-
-  if (result.error) {
-    throw new Error(`Cannot run gofmt: ${result.error.message}`, {
-      cause: result.error
+  // Avoid feeding and collecting large generated files through synchronous pipes.
+  // This root belongs only to this invocation, including when generation fails.
+  const directory = mkdtempSync(path.join(tmpdir(), "convenewire-gofmt-"));
+  const filename = path.join(directory, "source.go");
+  try {
+    writeFileSync(filename, source, { mode: 0o600 });
+    const result = spawnSync("gofmt", ["-w", filename], {
+      timeout: 30000,
+      encoding: "utf8"
     });
+    if (result.error) {
+      throw new Error(`Cannot run gofmt: ${result.error.message}`, { cause: result.error });
+    }
+    if (result.status !== 0) {
+      const errorLine = Number(result.stderr.match(/:(\d+):\d+:/u)?.[1]);
+      const context = Number.isInteger(errorLine)
+        ? source.split("\n").slice(Math.max(0, errorLine - 3), errorLine + 3).join("\n")
+        : "";
+      throw new Error(`gofmt failed: ${result.stderr.trim()}\n${context}`);
+    }
+    return readFileSync(filename, "utf8");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
   }
-  if (result.status !== 0) {
-    const errorLine = Number(result.stderr.match(/:(\d+):\d+:/u)?.[1]);
-    const context = Number.isInteger(errorLine)
-      ? source.split("\n").slice(Math.max(0, errorLine - 3), errorLine + 3).join("\n")
-      : "";
-    throw new Error(`gofmt failed: ${result.stderr.trim()}\n${context}`);
-  }
-  return result.stdout;
 }
 
 function formatTypeScript(source) {
