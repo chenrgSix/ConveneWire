@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"convenewire.dev/bridge/internal/admission"
 	"convenewire.dev/bridge/internal/authority"
@@ -23,10 +24,12 @@ var errNativeNode = errors.New("native Runtime ownership no longer matches this 
 // lease. The Console owns the separate Bridge lease; neither a Device profile
 // nor an HTTP request can provide this native signing identity.
 type NativeNode struct {
-	root     string
-	identity localwire.LocalNodeIdentity
-	signer   *peer.Signer
-	store    *peer.Store
+	root      string
+	identity  localwire.LocalNodeIdentity
+	signer    *peer.Signer
+	store     *peer.Store
+	storeOnce sync.Once
+	storeErr  error
 }
 
 func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNode, error) {
@@ -39,10 +42,6 @@ func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNo
 	}
 	node := &NativeNode{root: root, identity: identity, signer: signer}
 	if err := node.checkIdentity(); err != nil {
-		return nil, err
-	}
-	node.store, err = peer.OpenStore(root, signer.Identity(), signer.LocalUserID())
-	if err != nil {
 		return nil, err
 	}
 	return node, nil
@@ -61,11 +60,26 @@ func (n *NativeNode) checkIdentity() error {
 }
 
 func (n *NativeNode) check() error {
+	return n.checkIdentity()
+}
+
+// Peer storage belongs to the Peer subsystem. Its failure must not stop an
+// otherwise valid Device connector. Keep one store handle for the shell's
+// lifetime so reopening a core cannot forget observed history or rollback.
+func (n *NativeNode) peerStore() (*peer.Store, error) {
 	if err := n.checkIdentity(); err != nil {
-		return err
+		return nil, err
 	}
-	_, err := n.store.Read()
-	return err
+	n.storeOnce.Do(func() {
+		n.store, n.storeErr = peer.OpenStore(n.root, n.signer.Identity(), n.signer.LocalUserID())
+	})
+	if n.storeErr != nil {
+		return nil, n.storeErr
+	}
+	if _, err := n.store.Read(); err != nil {
+		return nil, err
+	}
+	return n.store, nil
 }
 
 type nativeNodeContextKey struct{}

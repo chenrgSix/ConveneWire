@@ -15,6 +15,7 @@ import (
 	"convenewire.dev/bridge/internal/delivery"
 	"convenewire.dev/bridge/internal/ownership"
 	"convenewire.dev/bridge/internal/pairing"
+	"convenewire.dev/bridge/internal/peer"
 	"convenewire.dev/bridge/internal/privatefs"
 	bridgeruntime "convenewire.dev/bridge/internal/runtime"
 	localwire "convenewire.dev/contracts/generated/go/localnode"
@@ -203,5 +204,53 @@ func TestNativeCoreDoesNotInitializeMissingIdentityOrExposeItsSecret(t *testing.
 	}
 	if err := node.check(); err == nil {
 		t.Fatal("running core ignored a missing native identity")
+	}
+}
+
+func TestNativePeerStorageFailureDoesNotBlockDeviceResources(t *testing.T) {
+	ctx, node, cfg, credential, ids := nativeCoreFixture(t)
+	peerRoot := filepath.Join(node.root, "peer-state")
+	if err := privatefs.CreateDirectory(peerRoot); err != nil {
+		t.Fatal(err)
+	}
+	if err := privatefs.WriteFile(filepath.Join(peerRoot, "state.json"), []byte("corrupt")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := node.peerStore(); !errors.Is(err, peer.ErrStore) {
+		t.Fatal("corrupt Peer history accepted", err)
+	}
+	resources, err := openNativeResources(ctx, node, cfg, credential, ids)
+	if err != nil {
+		t.Fatal("Peer storage failure blocked Device core", err)
+	}
+	if err := resources.processes.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.RemoveAll(peerRoot); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := node.peerStore(); !errors.Is(err, peer.ErrStore) {
+		t.Fatal("failed Peer store reopened as a fresh identity", err)
+	}
+	if err := node.check(); err != nil {
+		t.Fatal("Peer failure contaminated native identity", err)
+	}
+}
+
+func TestNativePeerStoreRetainsOneHistoryObserverAcrossCoreEpochs(t *testing.T) {
+	_, node, _, _, _ := nativeCoreFixture(t)
+	first, err := node.peerStore()
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := node.peerStore()
+	if err != nil || first != second {
+		t.Fatal("core restart discarded Peer history observer", err)
+	}
+	if err := os.Remove(filepath.Join(node.root, "identity.json")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := node.peerStore(); err == nil {
+		t.Fatal("Peer operation ignored changed native identity")
 	}
 }

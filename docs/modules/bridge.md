@@ -40,8 +40,8 @@ test cross-compilation passes; this is not Windows execution evidence.
 The native shell now supplies the installation identity to the existing Console
 core. Single- and multiple-Device paths use one Node process owner and shared
 physical Workspace scheduler. Startup fences retained legacy process stores
-before selecting the new namespace. Current identity and Peer-store validity
-are checked again before connection and admission; no network input can supply
+before selecting the new namespace. Current installation identity is checked
+again before connection and admission; no network input can supply
 this native context. The real bundled Local Node fixture completes ordinary
 Run/Discussion work with Node-owned process records, restarts without replay,
 and restores the same identity and process owner from backup. Core/Local Node
@@ -74,6 +74,17 @@ Actual Go/Host TLS tests cover reconnect, revocation and local leave, and the
 actual native HTTPS ingress covers the separate machine upgrade and shutdown.
 Core connector/Agent composition and authenticated Console handlers are the
 remaining BRG-081 integration work.
+
+Peer storage opens independently and retains one history observer throughout
+the native shell lifetime. Corrupt Peer state fails closed for Peer operations
+while valid Device resources remain available; a failed open cannot silently
+become a fresh Peer identity during a later core epoch. Missing or changed
+installation identity still fences both paths. Native Agent sources clone the
+actual stable local configuration and adapter capabilities. Export review and
+execution use the same restricted copy: no Device/Central authority, Codex
+`read-only` or `workspace-write`, and no owner-private downgrade. Changing the
+command, Workspace, capabilities or private floor invalidates a reviewed grant.
+Focused native regressions and owning Peer/core race tests and vet pass.
 
 ## Local Node supervision
 
