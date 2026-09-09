@@ -54,6 +54,35 @@ manifest and private CA were preserved. Central remains on the previous version;
 this repair changes only the Bridge adapter. Private application/config backups
 and installation receipts remain in the ignored local upgrade directory.
 
-A subsequent owner decision with a real model remains pending. The first
-authorized real model call reproduced the failure; offline compatibility
-coverage is not a claim that live approval has succeeded.
+## Live owner approval acceptance
+
+After separate owner authorization for one further real model invocation, the
+same ordinary Room message was sent through the owner's logged-in browser. The
+installed Codex 0.153.4 used `gpt-6-astra` and requested an escalated command to
+write `approval-ok` to the unique test file outside the repository workspace.
+Central displayed the exact command, working directory, reason and **Allow
+once**/**Deny** controls. The owner clicked **Allow once** in Central; the test
+operator did not submit the decision through an API or click it on their behalf.
+
+| Event | Local time (Asia/Shanghai, 2026-09-09) | Evidence |
+| --- | --- | --- |
+| Original Run started | 11:34:36.926 | One ordinary Room Run |
+| Central approval became pending | 11:34:50.888 | Exact owner-bound approval row and visible dialog; target absent |
+| Owner allowed the operation | 11:38:34.128 | Immutable allow decision with deciding Web session |
+| Target file written | 11:38:34.714 | Filesystem timestamp after decision; exact bytes `approval-ok` |
+| Original Run completed | 11:38:57.318 | Completed Run and browser-visible Agent result |
+
+The pending process snapshot and Runtime logs identify the same Codex PID
+through completion. The same native turn started before approval and completed
+after it. There was exactly one new Run and one approval in this retest, with no
+replacement Run. The owner confirmed the browser action, and read-only checks
+verified the resulting file. Private dialog, process, Runtime metadata and
+database receipts are retained alongside the local installation evidence.
+
+This completes the live **client request → Central dialog → owner allow →
+client continuation** acceptance on this installed macOS/Codex combination.
+Across reproduction and retest, two separately authorized real model Runs were
+used. Real model denial and other physical platforms were not exercised here;
+denial/cancellation coverage remains the offline and deterministic regressions
+listed above. No CI, release publication or broader platform acceptance is
+claimed.
