@@ -17,6 +17,17 @@ public trust-bootstrap artifact consumed by those modules. Caddy still owns
 issuance and private keys; Operations cannot authorize a Device or make a Web
 browser trust a private CA.
 
+## Local Node distribution
+
+[ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by
+OPS-018. It contains its own Node executable, native SQLite and production
+Server/Web/Contracts closure, migrations and licenses. A versioned platform and
+file-digest manifest is verified before launch. Bundle generation is native to
+the target platform; local verification does not authorize installation or
+publication. The desktop owns supervision; persistence owns identity and data.
+Legacy Central source packages and Compose operations retain their existing
+behavior. [TASKS.md](../TASKS.md) records delivery status.
+
 ## Controller boundary
 
 `convenewirectl` is a small Go 1.26.7 CLI. New source-build Central archives

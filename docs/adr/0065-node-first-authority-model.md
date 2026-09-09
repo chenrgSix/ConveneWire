@@ -1,24 +1,23 @@
 # ADR-0065: Node-first Authority Model
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-09-09
-- Task: GOV-044, design draft and architecture self-review only
+- Task: GOV-044; Milestone A implementation authorized on 2026-09-09
 - Owners: Contracts, Security, Registry, Bridge, Persistence, Run, Discussion,
   Team/Room, Web and Operations
 - Source baseline: local `main` at `9175e404e3fce0011e6a355297d752f0d750c0a5`
 - Supersedes: none
-- Proposed amendments/extensions: the explicit relationships below; none take
-  effect while this record is Proposed
+- Amendments/extensions: the explicit relationships below, scoped by milestone
 
 ## Context and decision status
 
-The Owner accepted the Node-first direction and the review's P1 findings, and
-requested this draft before implementation. The accepted direction is recorded
-here for review; this document's status remains Proposed. It neither changes
-current behavior nor starts Local Node packaging, Multi-Authority or Peer work.
-Completing GOV-044 means delivering this draft and its self-review, not accepting
-the ADR or completing any runtime milestone. Delivery status belongs only in
-[TASKS.md](../TASKS.md).
+The Owner accepted the Node-first direction and the review's P1 findings, then
+authorized defining the goal and starting Milestone A on 2026-09-09. This record
+is now Accepted. [ADR-0066](0066-local-node-delivery.md) freezes the Local Node
+implementation boundary. Multi-Authority and Peer implementation remain deferred;
+their unresolved decisions must be settled before those milestones start.
+GOV-044 records the design delivery and acceptance, never runtime completion.
+Delivery status belongs only in [TASKS.md](../TASKS.md).
 
 The current Server owns collaboration state; Bridge owns local execution. A
 Node composes these capabilities without merging their authorities. Phase 1
@@ -458,7 +457,7 @@ All relationships in this table are proposed. No existing Accepted ADR is
 superseded or edited by this draft. On acceptance, apply the scoped amendments
 explicitly and update owning modules; until then their current rules prevail.
 
-| Prior decision | Proposed relationship | Conflict resolved / rule retained |
+| Prior decision | Scoped relationship | Conflict resolved / rule retained |
 | --- | --- | --- |
 | [ADR-0035](0035-connect-client-owners-to-team-collaboration.md) | Extend with distinct Peer/Room-ceiling membership and bilateral publication | Its Team-scoped entry and initial-Room Device publication remain legacy behavior, not a Room ceiling or Export grant; separate human proof and Owner ceiling remain |
 | [ADR-0060](0060-preauthorize-local-work-policies.md), [ADR-0062](0062-trust-owner-devices-for-central-execution.md) | Amend only the future multi-Authority policy lookup boundary | Existing exact pairing/Owner/revision permissions are not Agent-global; they map to one explicit Authority binding, never automatically to another Host or Peer |
@@ -481,7 +480,7 @@ The future migration must follow these rules:
 3. Bind old local execution records to exactly one proven legacy Authority.
    If configuration/history cannot establish that mapping, stop migration for
    explicit resolution; do not guess from current URL, display name or first
-available connection. Retain source records and tombstones.
+   available connection. Retain source records and tombstones.
 4. Preserve existing local Agent identities for the original binding where safe.
    Add projection-to-local mapping; upgrading or aliasing cannot manufacture a
    second execution identity. Legacy Central switching does not become automatic
@@ -507,10 +506,9 @@ available connection. Retain source records and tombstones.
 
 ## Milestone boundaries
 
-These are architectural sequence and exit requirements, not delivery status or
-authorization to start tasks. Follow-up IDs below are reserved planning names;
-only GOV-044 is registered by this draft. Create their delivery rows in
-[TASKS.md](../TASKS.md) when the corresponding work is authorized.
+These are architectural sequence and exit requirements, not delivery status.
+Milestone A is authorized and registered in [TASKS.md](../TASKS.md). Milestones
+B and C remain reserved planning names and require separate authorization.
 
 | Milestone | Reserved task scope | Exit boundary |
 | --- | --- | --- |
@@ -631,7 +629,7 @@ substitutes for resolving them.
 The direction is compatible with existing collaboration/execution separation.
 No whole Accepted ADR needs superseding. The scoped changes and the legacy/Peer
 approval distinction above resolve the identified semantic conflicts at design
-level. This is a reviewable Proposed draft, not a claim that key lifecycle,
+level. Acceptance fixes these invariants; it does not claim that key lifecycle,
 revocation freshness or the settlement credential is implementation-ready.
 GOV-044 can finish as a documentation task; further task authorization and the
 relevant contract decisions remain required before any runtime work.
