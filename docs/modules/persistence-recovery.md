@@ -30,8 +30,28 @@ changed recipient/key/operation denial, revoke/reopen/stopped-backup, hash-only
 storage, Room/credential ceilings and the 0094-to-0095 upgrade fixture. The
 historical version-42 Task migration fixture seeds version-42 Room SQL instead
 of invoking current Peer-aware repository queries. Runtime signature/nonce and
-API/event visibility admission remain SEC-019; grant/acceptance lineage and
-Participant storage remain the next DATA-010 increment.
+API/event visibility admission remain SEC-019.
+
+Migration 0096 and the [authorization repository](../../apps/server/src/data/peer-authorization-repository.ts)
+retain append-only Export/Acceptance revisions, exact digests and stable local
+Agent lineage. Revisions cannot skip, overwrite or revive a revoked ID. Replacing
+an Export permanently retires its old lineage and requires fresh Host acceptance;
+replaying an old publication never moves the current pointer back. Updating an
+Export invalidates any acceptance of another grant revision/digest. Host
+acceptance remains an explicit Owner operation and cannot widen rooms,
+capabilities or expiry beyond the current Export and membership.
+
+Stored execution eligibility intersects the exact current heads and the requested
+Room ACL. Removing a different Room does not broaden or erase the requested
+Room's rights. Live signed freshness and the actual execution commit checks
+remain REG-007/RUN-020. History replay may acknowledge an old immutable revision
+but never restores it as current authority. Revocation evidence remains storable
+after business permission expires.
+
+The authorization increment passes 17 focused membership/authorization/migration
+checks and Server build, including injected rollback during head replacement,
+wrong owner/identity/capability/scope, stale revisions, new-ID/replay denial,
+reopen and stopped backup. Participant private storage remains DATA-010 work.
 
 ## Authority partition ownership
 

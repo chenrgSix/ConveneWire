@@ -30,7 +30,7 @@ The contracts Go module pins the selected Go toolchain.
 - `npm run db:migrate` — migrate the configured central SQLite database.
 - `npm run dev:server` — run the Fastify API on port 3000.
 - `npm run dev:web` — run the Vite browser UI with an API proxy.
-- `node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-membership-repository.test.ts test/migration-runner.test.ts` — Peer invitation rollback/replay/revoke, durable Room ceilings, stopped backup and additive migration; no network or models.
+- `node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-membership-repository.test.ts test/peer-authorization-repository.test.ts test/migration-runner.test.ts` — Peer invitation rollback/replay/revoke, bilateral authorization lineage, durable Room ceilings, stopped backup and additive migration; no network or models.
 - `npm run generate --workspace @convene-wire/contracts` — regenerate wire types.
 - `node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- npx tsx --test apps/server/test/authority.test.ts` — authenticated Host identity, stopped backup and real Go proof interoperability, without model calls.
 - `node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- go test -race ./internal/authority` — private Authority partitions, identity/freshness denials and preserved legacy Inbox records; the separately invoked Server fixture supplies live proof interoperability.
