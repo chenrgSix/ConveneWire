@@ -319,7 +319,8 @@ export async function createServerApp(
       teamChanges.notify(teamId, { kind: "room", roomId });
     }
   );
-  const auth = new AuthService(database);
+  const clock = options.clock ?? (() => new Date().toISOString());
+  const auth = new AuthService(database, clock);
   let localNode: LocalNodeService | undefined;
   try {
     if (options.localNode) {
@@ -402,7 +403,6 @@ export async function createServerApp(
     deploymentTrust,
     clientAccess
   );
-  const clock = options.clock ?? (() => new Date().toISOString());
   const runRepository = new RunRepository(
     database,
     transactions,

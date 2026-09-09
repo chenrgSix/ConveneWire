@@ -79,7 +79,8 @@ export class TeamRoomService {
 
   public listTeams(principal: WebPrincipal, includeArchived = false): TeamRecord[] {
     return this.repository.listTeamsForUser(principal.userId, includeArchived)
-      .filter((team) => !principal.clientAccess || team.teamId === principal.clientAccess.teamId);
+      .filter((team) => (!principal.clientAccess || team.teamId === principal.clientAccess.teamId) &&
+        (!principal.peerAccess || team.teamId === principal.peerAccess.teamId));
   }
 
   public createRoom(
@@ -107,12 +108,12 @@ export class TeamRoomService {
     teamId: string,
     includeArchived = false
   ): RoomRecord[] {
-    const member = this.auth.requireTeamMember(principal, teamId, { includeArchived });
+    const member = this.auth.requireTeamMember(principal, teamId, { includeArchived, allowRoomScope: true });
     return this.repository.listRoomsForMember(
       teamId,
       member.memberId,
       includeArchived
-    );
+    ).filter(room => member.peerAccess?.kind !== "room" || room.roomId === member.peerAccess.roomId);
   }
 
   public updateTeam(

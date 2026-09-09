@@ -72,6 +72,39 @@ async function createFixture(t: TestContext, maximumMigration?: number) {
     });
   }
   const auth = new AuthService(database);
+  if (maximumMigration !== undefined && maximumMigration < 95) {
+    // These migration tests exercise historical Artifact graphs, not current login or
+    // roster policy. Use the historical authority/room schema only while seeding it.
+    t.mock.method(auth, "authenticateWebSession", () => ({
+      userId: "user_artifact_12345678", sessionId: "session_historical_artifact"
+    }));
+    t.mock.method(auth, "requireFullWebSession", () => {});
+    t.mock.method(auth, "requireTeamMember", (principal, teamId) => {
+      const row = database.prepare(`SELECT member_id, role FROM team_members
+        WHERE user_id = ? AND team_id = ?`).get(principal.userId, teamId) as
+        { member_id: string; role: "owner" | "member" } | undefined;
+      assert.ok(row);
+      return { ...principal, teamId, memberId: row.member_id, role: row.role };
+    });
+    t.mock.method(auth, "requireRoomMember", (principal, roomId) => {
+      const row = database.prepare(`SELECT r.team_id FROM rooms r
+        JOIN room_human_participants p ON p.room_id = r.room_id
+        JOIN team_members m ON m.member_id = p.member_id
+        WHERE r.room_id = ? AND m.user_id = ?`).get(roomId, principal.userId) as
+        { team_id: string } | undefined;
+      assert.ok(row);
+      return auth.requireTeamMember(principal, row.team_id);
+    });
+    t.mock.method(core, "createRoom", (room) => {
+      database.prepare(`INSERT INTO rooms (room_id, team_id, name, collaboration_policy_json, created_at)
+        VALUES (@roomId, @teamId, @name, @policy, @createdAt)`)
+        .run({ ...room, policy: JSON.stringify(room.collaborationPolicy) });
+      database.prepare(`INSERT INTO room_human_participants (room_id, member_id, added_at)
+        SELECT @roomId, member_id, @createdAt FROM team_members WHERE team_id = @teamId`).run(room);
+      database.prepare(`INSERT INTO room_agent_participants (room_id, agent_id, added_at)
+        SELECT @roomId, agent_id, @createdAt FROM agents WHERE team_id = @teamId AND enabled = 1`).run(room);
+    });
+  }
   const teams = new TeamRoomService(core, auth);
   const registry = new MemberDeviceService(core, auth);
   const agents = new AgentService(core, auth);
@@ -220,7 +253,7 @@ test("capture lease migration preserves populated legacy publications, blobs and
     database.close();
     const migrated = await migrateDatabase(f.databasePath);
     assert.deepEqual(migrated.appliedVersions,
-      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]);
+      [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -286,7 +319,7 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     database.close();
     const result = await migrateDatabase(f.databasePath);
     assert.deepEqual(result.appliedVersions,
-      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]);
+      [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]);
     database = openDatabase(f.databasePath);
     const expected = structuredClone(before);
     expected[0] = expected[0]!.map((row) => ({
@@ -295,6 +328,58 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     }));
     assert.deepEqual(snapshot(), expected);
     const admissionObjects = new Set([
+      "local_node_installation",
+      "local_node_binding",
+      "authority_identity",
+      "authority_identity_no_delete",
+      "authority_identity_immutable",
+      "peer_bindings",
+      "peer_memberships",
+      "peer_memberships_team_idx",
+      "peer_invitations",
+      "peer_credentials",
+      "peer_credentials_membership_idx",
+      "peer_web_sessions",
+      "peer_binding_immutable",
+      "peer_binding_no_delete",
+      "peer_membership_insert",
+      "peer_membership_transition",
+      "peer_membership_no_delete",
+      "peer_member_no_promotion",
+      "peer_user_no_implicit_membership",
+      "peer_room_ceiling_insert",
+      "peer_room_ceiling_update",
+      "peer_invitation_transition",
+      "peer_invitation_no_delete",
+      "peer_credential_insert",
+      "peer_credential_transition",
+      "peer_credential_no_delete",
+      "peer_web_session_insert",
+      "peer_web_session_immutable",
+      "peer_web_session_mark",
+      "peer_web_session_marker_immutable",
+      "peer_export_lineages",
+      "peer_acceptance_lineages",
+      "peer_export_revisions",
+      "peer_export_heads",
+      "peer_export_revision_order",
+      "peer_export_revision_immutable",
+      "peer_export_revision_no_delete",
+      "peer_export_lineage_immutable",
+      "peer_export_lineage_no_delete",
+      "peer_export_head_insert",
+      "peer_export_head_update",
+      "peer_export_head_no_delete",
+      "peer_acceptance_revisions",
+      "peer_acceptance_heads",
+      "peer_acceptance_revision_order",
+      "peer_acceptance_revision_immutable",
+      "peer_acceptance_revision_no_delete",
+      "peer_acceptance_lineage_immutable",
+      "peer_acceptance_lineage_no_delete",
+      "peer_acceptance_head_insert",
+      "peer_acceptance_head_update",
+      "peer_acceptance_head_no_delete",
       "runtime_approvals",
       "runtime_approvals_owner_state",
       "runtime_approvals_run",

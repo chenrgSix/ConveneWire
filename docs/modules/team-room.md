@@ -16,6 +16,16 @@ Task binding, Mention validation, and history queries. Existing services consume
 the stable `CoreRepository` facade, whose delegates share one explicit SQLite
 transaction boundary with Agent/Device persistence.
 
+## Peer Room ceilings
+
+SEC-019 applies [current human authority](security-auth.md#peer-human-credential-ceilings)
+to existing Team/Room APIs. Room sessions can enumerate only their exact Room;
+general Team rosters, Agent/Device lists, search and change counters are denied.
+A Team membership with a narrower human credential retains that credential's
+ceiling. Existing Room ACLs remain an additional constraint, and current
+membership/session revocation is rechecked before returning a waited change.
+The later WEB-085 interface uses the explicit scope in session metadata.
+
 ## Responsibilities
 
 - Create and read Teams and Rooms.

@@ -2,6 +2,8 @@ import { createHash, randomBytes } from "node:crypto";
 
 import type Database from "better-sqlite3";
 
+import { peerHumanAuthority, type PeerAccessScope } from "./peer-human-authority.js";
+
 import { clientAccessAuthority, type ClientAccessScope } from "./client-access-authority.js";
 
 import { createOpaqueId } from "../domain/identifiers.js";
@@ -20,6 +22,7 @@ export class AuthorizationError extends Error {
 
 export interface WebPrincipal {
   clientAccess?: ClientAccessScope;
+  peerAccess?: PeerAccessScope;
   userId: string;
   sessionId: string;
 }
@@ -53,6 +56,7 @@ export interface IssuedCredential {
 interface WebSessionRow {
   grant_id: string | null;
   client_access_required: 0 | 1;
+  peer_access_required: 0 | 1;
   session_id: string;
   user_id: string;
   expires_at: string;
@@ -98,7 +102,10 @@ function activityWriteCutoff(now: string): string {
 }
 
 export class AuthService {
-  public constructor(private readonly database: Database.Database) {}
+  public constructor(
+    private readonly database: Database.Database,
+    private readonly clock: () => string = () => new Date().toISOString()
+  ) {}
 
   public issueWebSession(
     userId: string,
@@ -120,7 +127,7 @@ export class AuthService {
 
   public authenticateWebSession(secret: string, now: string): WebPrincipal {
     const row = this.database.prepare(`
-      SELECT s.session_id, s.user_id, s.expires_at, s.client_access_required, c.grant_id
+      SELECT s.session_id, s.user_id, s.expires_at, s.client_access_required, s.peer_access_required, c.grant_id
       FROM web_sessions s LEFT JOIN web_session_client_access c ON c.session_id = s.session_id
       WHERE s.token_hash = ? AND s.revoked_at IS NULL
     `).get(hashSecret(secret)) as WebSessionRow | undefined;
@@ -131,11 +138,15 @@ export class AuthService {
     if ((row.client_access_required === 1 || row.grant_id) && (!client || client.user_id !== row.user_id)) {
       throw new AuthorizationError("UNAUTHENTICATED", "Client session access was revoked");
     }
+    const peer = this.currentPeerAccess({ userId: row.user_id, sessionId: row.session_id }, now);
+    if ((row.peer_access_required === 1 && !peer) || (peer && client)) {
+      throw new AuthorizationError("UNAUTHENTICATED", "Peer session lineage is unavailable");
+    }
     this.database.prepare(`
       UPDATE web_sessions SET last_seen_at = ?
       WHERE session_id = ? AND last_seen_at < ?
     `).run(now, row.session_id, activityWriteCutoff(now));
-    return { userId: row.user_id, sessionId: row.session_id, ...(client ? { clientAccess: {
+    return { userId: row.user_id, sessionId: row.session_id, ...(peer ? { peerAccess: peer } : {}), ...(client ? { clientAccess: {
       grantId: client.grant_id, memberId: client.member_id, teamId: client.team_id
     } } : {}) };
   }
@@ -143,8 +154,12 @@ export class AuthService {
   public requireTeamMember(
     principal: WebPrincipal,
     teamId: string,
-    options: { includeArchived?: boolean } = {}
+    options: { includeArchived?: boolean; allowRoomScope?: boolean } = {}
   ): MemberPrincipal {
+    const peer = this.currentPeerAccess(principal);
+    if (peer && (peer.teamId !== teamId || (peer.kind === "room" && !options.allowRoomScope))) {
+      throw new AuthorizationError("FORBIDDEN", "Team access denied");
+    }
     const row = this.database.prepare(`
       SELECT tm.member_id, tm.role
       FROM team_members tm
@@ -159,9 +174,10 @@ export class AuthService {
     }
     return {
       ...principal,
+      ...(peer ? { peerAccess: peer } : {}),
       memberId: row.member_id,
       teamId,
-      role: principal.clientAccess ? "member" : row.role
+      role: principal.clientAccess || peer ? "member" : row.role
     };
   }
 
@@ -169,6 +185,8 @@ export class AuthService {
     principal: WebPrincipal,
     roomId: string
   ): MemberPrincipal {
+    const peer = this.currentPeerAccess(principal);
+    if (peer?.kind === "room" && peer.roomId !== roomId) throw new AuthorizationError("FORBIDDEN", "Room access denied");
     const row = this.database.prepare(`
       SELECT r.team_id, tm.member_id, tm.role
       FROM rooms r
@@ -184,19 +202,28 @@ export class AuthService {
           role: MemberPrincipal["role"];
         }
       | undefined;
-    if (!row || (principal.clientAccess && (principal.clientAccess.teamId !== row.team_id || principal.clientAccess.memberId !== row.member_id))) {
+    if (!row || (peer && (peer.teamId !== row.team_id || peer.memberId !== row.member_id)) || (principal.clientAccess && (principal.clientAccess.teamId !== row.team_id || principal.clientAccess.memberId !== row.member_id))) {
       throw new AuthorizationError("FORBIDDEN", "Room access denied");
     }
     return {
       ...principal,
+      ...(peer ? { peerAccess: peer } : {}),
       memberId: row.member_id,
       teamId: row.team_id,
-      role: principal.clientAccess ? "member" : row.role
+      role: principal.clientAccess || peer ? "member" : row.role
     };
   }
 
   public requireFullWebSession(principal: WebPrincipal): void {
-    if (principal.clientAccess) throw new AuthorizationError("FORBIDDEN", "This action requires a full Web login");
+    if (principal.clientAccess || principal.peerAccess || this.database.prepare("SELECT 1 FROM peer_memberships WHERE user_id = ?").get(principal.userId)) throw new AuthorizationError("FORBIDDEN", "This action requires a full Web login");
+  }
+
+  private currentPeerAccess(principal: WebPrincipal, now = this.clock()): PeerAccessScope | undefined {
+    const peer = peerHumanAuthority(this.database, principal.userId, principal.sessionId, now);
+    if ((peer.recognized && !peer.scope) || (principal.peerAccess && !peer.scope)) {
+      throw new AuthorizationError("UNAUTHENTICATED", "Peer membership or human session is unavailable");
+    }
+    return peer.scope;
   }
 
   public revokeWebSession(sessionId: string, now: string): boolean {

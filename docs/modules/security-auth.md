@@ -1,5 +1,37 @@
 # Security and Authorization
 
+## Peer human credential ceilings
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) assigns independent Peer
+admission to SEC-019. The [human authority reader](../../apps/server/src/security/peer-human-authority.ts)
+rechecks membership, immutable Host user/member mapping, Team state, the consumed
+human credential, exact session lineage and both expiries. Missing lineage or a
+new ordinary full login for the same Peer-bound Host user fails closed. Device
+credentials and Web session tokens remain separate audiences.
+
+A Room-scoped credential limits a Team-scoped membership as well as a Room guest.
+Generic Team authority denies Room sessions, including roster/Agent/Device lists,
+workbench search and aggregate change cursors. Room enumeration opts into the
+narrow scope and filters to its exact Room. Direct Room reads still require the
+current Room ACL. Full-login operations, including new Team creation, cannot be
+reached through a Peer human session. Session metadata exposes the bounded scope
+for the later Web UI and never reports installation Owner recovery permission.
+
+Captured principals recheck current authority at Room/Team service boundaries.
+The Server's injected clock also drives those checks. Team change waits re-read
+authentication before returning any hints after a wait; revoked Peer membership
+cannot receive the queued result. Invitation proof, separate machine admission
+and human entry issuance remain later SEC-019 increments. Browser-session scope
+does not supply Participant execution or disclosure consent.
+
+The initial increment passes 21 focused authority/Room/migration checks and 18
+legacy client-owner/trusted-Web checks, including actual HTTP visibility denials
+and a revoked in-flight change wait. No Peer enrollment endpoint is exposed by
+this increment. A full Server run passed 707 of 710 tests; the three failures
+were historical migration fixtures. Their version-specific seed and expected
+schema additions were corrected, and all 11 Artifact/Hosted migration checks
+then passed. Server build, documentation lint and local links also pass.
+
 ## Local Node Owner and supervisor authority
 
 [ADR-0066](../adr/0066-local-node-delivery.md) separates a fixed installation
