@@ -28,6 +28,7 @@ type RunRecord struct {
 	ReceivedAt string
 	StartedAt  string
 	Outcome    *RunOutcome
+	Settlement *RunSettlementCapability
 }
 
 type RunOutcome struct {
@@ -36,10 +37,11 @@ type RunOutcome struct {
 }
 
 type receivedRun struct {
-	SchemaVersion int             `json:"schemaVersion"`
-	Namespace     string          `json:"namespace"`
-	ReceivedAt    string          `json:"receivedAt"`
-	Request       json.RawMessage `json:"request"`
+	SchemaVersion int                      `json:"schemaVersion"`
+	Namespace     string                   `json:"namespace"`
+	ReceivedAt    string                   `json:"receivedAt"`
+	Request       json.RawMessage          `json:"request"`
+	Settlement    *RunSettlementCapability `json:"settlement,omitempty"`
 }
 
 type startedRun struct {
@@ -61,11 +63,12 @@ type finishedRun struct {
 // No replacement of a request, deletion, grant revision or connection epoch
 // creates another deduplication namespace for an existing qualified Peer Run.
 type RunJournal struct {
-	mu        *sync.Mutex
-	partition *RuntimePartition
-	directory string
-	opened    bool
-	observed  map[string]RunRecord
+	mu                *sync.Mutex
+	partition         *RuntimePartition
+	directory         string
+	opened            bool
+	observed          map[string]RunRecord
+	transportObserved map[string]runTransportState
 }
 
 func (p *RuntimePartition) Runs() *RunJournal {
@@ -179,6 +182,27 @@ func (j *RunJournal) current(record RunRecord, admission ExecutionAdmission, now
 }
 
 func (j *RunJournal) Receive(raw []byte, admission ExecutionAdmission, now time.Time) (RunRecord, error) {
+	return j.receive(raw, nil, &admission, now)
+}
+
+// ReceiveDelivery retains a delivery already authenticated by Client.PollRuns.
+// Receipt retention survives an intervening withdrawal, so denied work can be
+// settled. It grants no start rights: Begin still requires fresh admission.
+func (j *RunJournal) ReceiveDelivery(delivery RunDelivery, now time.Time) (RunRecord, error) {
+	if _, err := delivery.ReceiptDigest(); err != nil {
+		return RunRecord{}, ErrProof
+	}
+	return j.receive(delivery.Request, &delivery.Settlement, nil, now)
+}
+
+func (r RunRecord) Delivery() (RunDelivery, error) {
+	if r.Settlement == nil {
+		return RunDelivery{}, ErrStore
+	}
+	return RunDelivery{SchemaVersion: 1, Request: append(json.RawMessage(nil), r.Request...), Settlement: *r.Settlement}, nil
+}
+
+func (j *RunJournal) receive(raw []byte, settlement *RunSettlementCapability, admission *ExecutionAdmission, now time.Time) (RunRecord, error) {
 	j.mu.Lock()
 	defer j.mu.Unlock()
 	binding, err := j.request(raw)
@@ -189,18 +213,26 @@ func (j *RunJournal) Receive(raw []byte, admission ExecutionAdmission, now time.
 		return RunRecord{}, err
 	}
 	if prior, err := j.load(binding.RunID); err == nil {
-		if !equalJSON(prior.Binding, binding) || !equalJSON(prior.Request, json.RawMessage(raw)) {
+		if !equalJSON(prior.Binding, binding) || !equalJSON(prior.Request, json.RawMessage(raw)) || settlement != nil && !equalJSON(prior.Settlement, settlement) {
 			return RunRecord{}, ErrConflict
 		}
 		return prior, nil
 	} else if !os.IsNotExist(err) {
 		return RunRecord{}, err
 	}
-	record := RunRecord{Request: append(json.RawMessage(nil), raw...), Binding: binding, ReceivedAt: now.UTC().Format("2006-01-02T15:04:05.000Z")}
-	if err := j.current(record, admission, now); err != nil {
-		return RunRecord{}, err
+	record := RunRecord{Request: append(json.RawMessage(nil), raw...), Binding: binding, ReceivedAt: now.UTC().Format("2006-01-02T15:04:05.000Z"), Settlement: settlement}
+	if settlement != nil {
+		issued, err := time.Parse(time.RFC3339Nano, settlement.IssuedAt)
+		if err != nil || issued.After(now.Add(wire.ProofClockSkewSeconds*time.Second)) || !after(settlement.ExpiresAt, now) {
+			return RunRecord{}, ErrProof
+		}
 	}
-	value := receivedRun{1, j.partition.namespace, record.ReceivedAt, record.Request}
+	if admission != nil {
+		if err := j.current(record, *admission, now); err != nil {
+			return RunRecord{}, err
+		}
+	}
+	value := receivedRun{1, j.partition.namespace, record.ReceivedAt, record.Request, settlement}
 	bytes, err := json.Marshal(value)
 	if err != nil {
 		return RunRecord{}, err
@@ -280,7 +312,14 @@ func (j *RunJournal) load(runID string) (RunRecord, error) {
 	if err != nil || !valid || b.RunID != runID {
 		return RunRecord{}, ErrStore
 	}
-	record := RunRecord{Request: received.Request, Binding: b, ReceivedAt: received.ReceivedAt}
+	record := RunRecord{Request: received.Request, Binding: b, ReceivedAt: received.ReceivedAt, Settlement: received.Settlement}
+	if record.Settlement != nil {
+		delivery, _ := record.Delivery()
+		issued, err := time.Parse(time.RFC3339Nano, delivery.Settlement.IssuedAt)
+		if _, digestErr := delivery.ReceiptDigest(); digestErr != nil || err != nil || issued.After(receivedAt.Add(wire.ProofClockSkewSeconds*time.Second)) || !after(delivery.Settlement.ExpiresAt, receivedAt) {
+			return RunRecord{}, ErrStore
+		}
+	}
 	raw, err = readOptionalRun(filepath.Join(directory, "started.json"), 8192)
 	if err == nil {
 		var started startedRun
@@ -311,12 +350,16 @@ func (j *RunJournal) load(runID string) (RunRecord, error) {
 		return RunRecord{}, ErrStore
 	}
 	if prior, seen := j.observed[runID]; seen && (!equalJSON(prior.Request, record.Request) || prior.ReceivedAt != record.ReceivedAt ||
-		prior.StartedAt != "" && prior.StartedAt != record.StartedAt || prior.Outcome != nil && !equalJSON(prior.Outcome, record.Outcome)) {
+		!equalJSON(prior.Settlement, record.Settlement) || prior.StartedAt != "" && prior.StartedAt != record.StartedAt || prior.Outcome != nil && !equalJSON(prior.Outcome, record.Outcome)) {
 		return RunRecord{}, ErrStore
 	}
 	// Returned callers may mutate their copy; the observer must remain independent.
 	copy := record
 	copy.Request = append(json.RawMessage(nil), record.Request...)
+	if record.Settlement != nil {
+		settlement := *record.Settlement
+		copy.Settlement = &settlement
+	}
 	if record.Outcome != nil {
 		outcome := *record.Outcome
 		copy.Outcome = &outcome

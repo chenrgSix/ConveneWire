@@ -51,13 +51,17 @@ admission and negative browser/control checks. Fourteen owning HTTP/authority
 tests, seven native-ingress tests, full Peer race/vet and Hub build/bundle pass.
 Native polling and Run/approval lifecycle wiring remain RUN-020.
 
-The Participant now retains the exact validated request in its immutable Peer
+The Participant retains the exact validated request in its immutable Peer
 Runtime partition. Separate private receive, possible-start and outcome files
 keep one namespace for the qualified Run across retries, revisions and restart.
-A new receive and the one-time start claim require a fresh Host admission and
-current local membership; historical reads and exact receive retries grant no
-execution rights. Local Export/Acceptance checks remain the native factory's
-responsibility immediately before execution and after waits.
+Request-only SDK receipt requires a fresh Host admission and current local
+membership. An authenticated network delivery instead atomically retains its
+request and settlement capability, including when permission was withdrawn after
+the poll. This permits denied-delivery settlement without granting execution.
+The one-time start claim always requires fresh Host admission and current local
+membership. Historical reads and exact receipt retries grant no execution rights.
+Local Export/Acceptance checks remain the native factory's responsibility
+immediately before execution and after waits.
 
 The start claim rejects a second caller, including after cold reopen with no
 known outcome. Reconciliation lists that retained ambiguity without resetting it
@@ -70,7 +74,23 @@ The native partition retains the journal observer across core replacements.
 Observed rollback/deletion, changed ownership, malformed JSON, copied Peer pins
 and linked paths fail closed. OS process fencing remains independently required;
 the journal does not prove that a child has stopped. The native worker still
-must compose this journal with delivery, lifecycle callbacks and remote receipts.
+must compose these records with actual process and approval lifecycles.
+
+Each delivered Run now also has a private atomic transport checkpoint. Events
+retain their closed payload and original sequence before transmission; retries
+cannot replace an event or skip a sequence. Host signatures authenticate ordered
+acknowledgment progress. A content-free settlement derives only from an immutable
+local outcome, with one durable operation ID surviving loss and restart. Its Host
+receipt is validated against that exact operation. Historical signature checks
+preserve evidence after proof expiry; they never supply fresh admission.
+
+The checkpoint is limited to 4,096 events and 1 MiB, with 8 KiB reserved for final
+receipts. Overflow preserves previous evidence and still permits settlement.
+Private-file, ownership, closed-shape and observed append-only history checks
+reject corruption, missing/linked files and rollback. Actual TLS regression
+reopens the Participant after lost event and settlement acknowledgments and
+verifies one Host reply/settlement without a new start. Native adapters are not
+invoked by these transport-journal tests; worker composition remains required.
 
 The Host `PeerRunDeliveryService` uses migration 0104 and the shared SQLite
 transaction boundary. `POST /api/peer/runs/poll` requires the exact active,
