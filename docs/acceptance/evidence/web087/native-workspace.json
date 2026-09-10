@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "beb0f148d12378075761e68f963f5d399fab2562",
+  "installedAt": "2026-09-10T21:19:27.159162+08:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "archive": "dist/local-node-web087-beb0f148/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+  "archiveSHA256": "d6d66ee51ddd07b387231466491764382a8e3dacf5d9f5f7a662f71f5090b7f8",
+  "hubManifestSHA256": "24a90b29776877a6cb588a7eae504fafde4c1773ed54e1aee1057f6de8499d89",
+  "hubFiles": 6215,
+  "desktopSHA256": "00f7d1642ed03b8597fa5b930f047aed137a860783e0aff74987e5a2fd3cc415",
+  "desktopVersion": "v0.0.0-local",
+  "process": {
+    "desktopProcesses": 1,
+    "ownedHubProcesses": 1,
+    "defaultLaunchWithoutModeFlags": true
+  },
+  "observations": {
+    "normalLaunchEnteredLocalWorkspace": true,
+    "existingLegacyProfileDidNotSelectBridge": true,
+    "agentActionOpenedSettingsInMainWindow": true,
+    "agentListWasInitialSettingsPage": true,
+    "returnActionOpenedOriginalLocalTeam": true,
+    "darkAndLightAppearanceInherited": true,
+    "originalDarkThemeRestored": true,
+    "settingsAddressContainsNoToken": true,
+    "settingsRemainedVisibleAfterRefreshGesture": true,
+    "legacyProfileBytesPreserved": true,
+    "nodeIdentityBytesPreserved": true,
+    "agentConfigurationBytesPreserved": true,
+    "completedRunReferencesAndStatesPreserved": true,
+    "stoppedNodeSnapshotAndOldApplicationRetained": true,
+    "applicationLeftRunning": true
+  },
+  "verification": {
+    "consoleUI": {
+      "pass": 92,
+      "fail": 0
+    },
+    "focusedWeb": {
+      "pass": 12,
+      "fail": 0
+    },
+    "nativeNavigationScripts": {
+      "pass": 4,
+      "fail": 0
+    },
+    "desktopRaceAndVet": "pass; final focused race repeat also passed",
+    "webBuild": "pass",
+    "docsAndLocalLinks": "pass",
+    "actualPrivateConsoleFixture": "Agent list and editor opened; no save or Runtime probe"
+  },
+  "automationModelInvocations": 0,
+  "ownerActivity": "Owner configured an Agent and completed a Run independently; installation waited for its completion and preserved it. It is not an automated model test.",
+  "notRun": [
+    "physical Windows",
+    "minimum OS hardware",
+    "independent owners",
+    "remote CI",
+    "publication"
+  ]
+}

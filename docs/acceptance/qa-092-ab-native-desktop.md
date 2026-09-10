@@ -5,6 +5,11 @@ are complete. QA-092 is now **ACTIVE** in [the task register](../TASKS.md), afte
 the deferred implementation boundary. This record preserves historical A/B
 observations separately from current V1 interaction and remaining physical gates.
 
+The later [WEB-087 installed acceptance](web-087-unified-native-workspace.md)
+supersedes the two-window presentation and retained-profile startup behavior
+described below. Its final source is `beb0f148`; earlier evidence stays attributed
+to its original binary. Broader physical and independent-owner gates remain.
+
 ## Current V1 interaction
 
 The clean `41cd563f` package identified by QA-091 was extracted into a new private

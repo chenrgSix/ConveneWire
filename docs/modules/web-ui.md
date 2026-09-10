@@ -247,8 +247,9 @@ WEB-087, under [ADR-0069](../adr/0069-unify-native-workspace-navigation.md),
 replaces the separate native Console window with a main-window settings surface.
 The workspace calls it `Local Agents`; it opens directly on the Agent list,
 retains the established native editor and permission controls, and offers a
-credential-free return to the local workspace. The native settings theme follows
-the workspace's light/dark appearance. Native API authorization and framing
+credential-free return to the local workspace. The native settings colors match `visual-system.css`, and its theme follows
+the workspace's light/dark appearance. [Installed acceptance](../acceptance/web-087-unified-native-workspace.md)
+records the final macOS source and actual navigation/appearance observations. Native API authorization and framing
 restrictions remain unchanged; no Console capability is proxied through the Hub.
 
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
