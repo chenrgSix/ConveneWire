@@ -7,7 +7,7 @@ import { parsePeerIngressConfiguration, validatePeerIngressCertificate } from ".
 export type PeerIngressRequestKind = "machine" | "browser-entry" | "browser" | "public";
 const machinePaths = new Set([
   "/api/peer/identity", "/api/peer/invitations/preview", "/api/peer/invitations/challenge", "/api/peer/invitations/claim",
-  "/api/peer/human-entry", "/api/peer/agents/offers", "/api/peer/agents/sync", "/api/peer/memberships/leave"
+  "/api/peer/human-entry", "/api/peer/agents/offers", "/api/peer/agents/sync", "/api/peer/memberships/leave", "/api/peer/runs/admit"
 ]);
 const browserFamilies = /^\/api\/(?:teams|rooms|messages|agents|runs|tasks|discussions|memory-candidates|workbench|execution-plans|results|artifacts)(?:\/|$)/u;
 const publicFiles = /^(?:\/|\/index\.html|\/favicon\.(?:ico|svg)|\/assets\/[A-Za-z0-9_./-]+)$/u;

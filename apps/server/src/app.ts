@@ -4,6 +4,7 @@ import { PeerAgentService } from "./registry/peer-agent-service.js";
 import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { registerPeerRuntimeRoutes } from "./http/peer-runtime-routes.js";
 import { PeerRuntimeSessions } from "./peer/runtime-sessions.js";
+import { PeerRunAuthority } from "./peer/run-authority.js";
 import { AuthorityService } from "./security/authority-service.js";
 import { registerAuthorityRoutes } from "./http/authority-routes.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
@@ -1262,6 +1263,7 @@ export async function createServerApp(
   const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
   const routeContext: ServerRouteContext = {
     peerRuntime: new PeerRuntimeSessions(peerAdmission, authority),
+    peerRuns: new PeerRunAuthority(database, peerAdmission, authority),
     peerAdmission,
     peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => teamChanges.notify(teamId)),
     peerHumanEntry: new PeerHumanEntryService(database, auth, authority, options.peerIngress?.configuration.origin),

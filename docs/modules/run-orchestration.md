@@ -25,9 +25,29 @@ participation, current requester membership, cancellation, Run state and deadlin
 Ordinary Task assignment and scheduling remain required. The originating Member
 is read from the persisted Run, including its current Peer ceiling when present;
 no synthetic browser session or Device principal is created. This service does
-not yet provide HTTP delivery, Participant start/receipt journals or settlement.
+not yet provide content delivery, Participant start/receipt journals or settlement.
 Discussion requests are explicitly refused until DISC-022 supplies frozen Wave
 and Finalizer context, preserving its existing exclusion rules.
+
+The separate machine-only `POST /api/peer/runs/admit` now exposes fresh
+authorization for an existing frozen request. Its strict `PeerAdmission` body
+contains only the binding and Participant proof. Browser/Owner credentials,
+cookies, Origin, Device headers, query aliases, changed pins and additional
+content are rejected. The native HTTPS ingress exposes this same handler and
+uses the native installation signer; a central database key cannot stand in for
+that native key.
+
+The Go client proves the pinned Host before sending a machine bearer, rechecks
+local identity/membership after that wait, signs the immutable binding, and
+validates the exact Host response and its <=30 second lifetime. It rechecks local
+state before returning; the native Runtime factory must also recheck current
+local Export/Acceptance. Lost responses can refresh only the same frozen binding.
+Actual Go-to-Host TLS tests cover expiry/refresh, lost response, Host revoke,
+native identity loss before bearer transmission, local leave during the request
+and changed responses. The actual native HTTPS listener passes positive signed
+admission and negative browser/control checks. Fourteen owning HTTP/authority
+tests, seven native-ingress tests, full Peer race/vet and Hub build/bundle pass.
+Automatic content delivery and Run/approval lifecycle wiring remain RUN-020.
 
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned

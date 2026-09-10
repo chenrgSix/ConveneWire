@@ -248,6 +248,15 @@ pass. These close BRG-081's native composition; network Run delivery, immutable
 journals, fresh signed admission and settlement remain RUN-020. No live model,
 physical Windows, manual acceptance or external installation is claimed.
 
+RUN-020 adds the fresh Host-admission client consumed by the upcoming Peer Run
+coordinator. It independently proves the pinned Host before sending the Peer
+machine credential, checks native identity/membership around the network wait,
+and verifies the exact binding, nonce, operation, recipient and proof lifetime.
+A missing response grants nothing; a retry can obtain a fresh proof of only the
+same retained Run. Actual TLS tests cover refresh after expiry, loss/retry,
+revocation and local/native changes during the request. This client supplies the
+Host side of the factory callback; local bilateral checks remain mandatory.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

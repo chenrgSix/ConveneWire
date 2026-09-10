@@ -1,4 +1,5 @@
 import type { FastifyRequest } from "fastify";
+import type { PeerAdmission } from "@convene-wire/contracts/peer";
 import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevokeRequest, PeerAgentSyncRequest, PeerLeaveRequest } from "@convene-wire/contracts/peer";
 import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest, PeerIdentityRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
@@ -11,7 +12,7 @@ function body<T>(request: FastifyRequest, kind: string): T {
   catch { throw new PeerStoreError("INVALID_MESSAGE"); }
 }
 
-export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry, peerAgents, peerIngress, principal, clock, limitAnonymous, webAuth }: ServerRouteContext): void {
+export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peerHumanEntry, peerAgents, peerIngress, principal, clock, limitAnonymous, webAuth }: ServerRouteContext): void {
   void app.register(async peer => {
     peer.removeContentTypeParser("application/json");
     peer.addContentTypeParser("application/json", { parseAs: "buffer", bodyLimit: 16 * 1024 }, (_request, bytes, done) => done(null, bytes));
@@ -31,6 +32,14 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
       void reply.code(status).send({ code });
     });
     peer.post("/api/peer/invitations", async request => peerAdmission.createInvitation(principal(request), body<PeerInvitationCreateRequest>(request, "PeerInvitationCreateRequest"), clock()));
+    peer.post("/api/peer/runs/admit", async request => {
+      limitAnonymous(request, "peer-run-admission");
+      if (request.url.includes("?") || request.headers.origin || request.headers.cookie ||
+          Object.keys(request.headers).some(name => /^x-(?:agentroom|convenewire|convene-wire|agent-room)-/u.test(name))) {
+        throw new PeerStoreError("SCOPE_DENIED");
+      }
+      return peerRuns.authorize(bearerToken(request), body<PeerAdmission>(request, "PeerAdmission"), clock());
+    });
     peer.post("/api/peer/agents/offers", async request => {
       limitAnonymous(request, "peer-agent-offer");
       if (request.headers.origin || request.headers.cookie) throw new PeerStoreError("SCOPE_DENIED");

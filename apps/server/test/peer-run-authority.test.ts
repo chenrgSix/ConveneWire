@@ -4,6 +4,7 @@ import test from "node:test";
 import type { PeerAdmission, PeerExecutionBinding } from "@convene-wire/contracts/peer";
 import { peerDigest, peerProofTranscript, verifyPeerRunRequest } from "@convene-wire/contracts/peer-proof";
 import { PeerRunAuthority } from "../src/peer/run-authority.js";
+import { createServerApp } from "../src/app.js";
 import { RunRepository } from "../src/run/run-repository.js";
 import { RunService } from "../src/run/run-service.js";
 import { AgentTaskRepository } from "../src/task/task-repository.js";
@@ -127,4 +128,37 @@ test("failed freeze rolls back and an accepted retry cannot rewrite the original
   const frozen = f.authority.freeze(f.run.runId, now);
   const mutated = structuredClone(frozen); mutated.payload.instruction = "Caller mutation";
   assert.deepEqual(f.authority.get(f.run.runId), frozen);
+});
+
+test("Peer HTTP Run admission accepts only signed machine requests and never substitutes content", async t => {
+  const f = await executionFixture(t), frozen = f.authority.freeze(f.run.runId, now), origin = f.identity.browserOrigin;
+  const app = await createServerApp({ databasePath: f.databasePath, clock: () => now,
+    webAuth: { mode: "trusted-team", publicOrigin: origin, ownerRecoveryToken: "peer-fixture-owner-recovery-0123456789" } });
+  f.resources.defer(() => app.close());
+  const input = f.request(frozen.binding);
+  const post = (payload: unknown = input, headers: Record<string, string> = {}, url = "/api/peer/runs/admit") =>
+    app.inject({ method: "POST", url, headers: { "content-type": "application/json", authorization: `Bearer ${f.token}`, ...headers },
+      payload: typeof payload === "string" ? payload : JSON.stringify(payload) });
+  const accepted = await post();
+  assert.equal(accepted.statusCode, 200, accepted.body);
+  assert.deepEqual(accepted.json().binding, frozen.binding);
+  assert.match(String(accepted.headers["cache-control"]), /no-store/u);
+  assert.equal(accepted.body.includes(frozen.payload.instruction), false);
+  assert.equal(accepted.body.includes(f.token), false);
+  assert.equal((await post(input, { origin })).statusCode, 403);
+  assert.equal((await post(input, { cookie: `__Host-agentroom_session=${f.ownerSession.secret}` })).statusCode, 403);
+  assert.equal((await post(input, { "x-agentroom-device-id": "device_foreign001" })).statusCode, 403);
+  assert.equal((await post(input, {}, "/api/peer/runs/admit?runId=foreign")).statusCode, 403);
+  assert.equal((await post(input, { authorization: `Bearer ${f.ownerSession.secret}` })).statusCode, 401);
+  assert.equal((await post(input, { authorization: `Bearer ${secret()}` })).statusCode, 401);
+  for (const payload of [{ ...input, payload: frozen.payload }, { ...input, deviceId: "device_foreign001" },
+    JSON.stringify(input).replace('"schemaVersion":1', '"schemaVersion":1,"schemaVersion":1'),
+    JSON.stringify(input).replace('"grantRevision":1', '"grantRevision":1.0000000000000001')]) {
+    assert.equal((await post(payload)).statusCode, 400);
+  }
+  assert.equal((await post(JSON.stringify(input).replace('"grantRevision":1', '"grantRevision":1.0'))).statusCode, 200);
+  const changed = f.request({ ...frozen.binding, requestDigest: "b".repeat(64) });
+  assert.equal((await post(changed)).statusCode, 409);
+  f.admission.revokeMembership(f.actor, f.membership.membershipId, now);
+  assert.equal((await post()).statusCode, 401);
 });

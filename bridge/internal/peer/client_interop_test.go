@@ -128,6 +128,13 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 }
 func (f *peerHTTPFixture) control(t *testing.T, value any) map[string]int {
 	t.Helper()
+	var result map[string]int
+	f.controlResult(t, value, &result)
+	return result
+}
+
+func (f *peerHTTPFixture) controlResult(t *testing.T, value any, result any) {
+	t.Helper()
 	raw, err := json.Marshal(value)
 	if err != nil {
 		t.Fatal(err)
@@ -145,11 +152,9 @@ func (f *peerHTTPFixture) control(t *testing.T, value any) map[string]int {
 	case <-time.After(15 * time.Second):
 		t.Fatal("Peer fixture control timeout")
 	}
-	var result map[string]int
-	if json.Unmarshal(f.lines.Bytes(), &result) != nil {
+	if json.Unmarshal(f.lines.Bytes(), result) != nil {
 		t.Fatal("Peer fixture control output")
 	}
-	return result
 }
 func TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse(t *testing.T) {
 	now := time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC)

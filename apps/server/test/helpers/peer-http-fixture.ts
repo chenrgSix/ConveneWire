@@ -10,6 +10,11 @@ import { AuthService } from "../../src/security/auth-service.js";
 import { AuthorityService } from "../../src/security/authority-service.js";
 import { PeerAdmissionService } from "../../src/security/peer-admission-service.js";
 import { PeerAgentService } from "../../src/registry/peer-agent-service.js";
+import { PeerRunAuthority } from "../../src/peer/run-authority.js";
+import { RunRepository } from "../../src/run/run-repository.js";
+import { RunService } from "../../src/run/run-service.js";
+import { AgentTaskRepository } from "../../src/task/task-repository.js";
+import { MessageService } from "../../src/team-room/message-service.js";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
@@ -97,6 +102,16 @@ try {
       const current = agents.listOffers(owner, teamId)[0]!.acceptance!;
       agents.revoke(owner, { schemaVersion: 1, operationId: "op_tlsrevokeagent001",
         acceptanceId: current.acceptanceId, expectedRevision: current.revision }, now);
+    }
+    else if (command.action === "create-run") {
+      const agent = core.listAgents(teamId).find(agent => agent.integrationMode === "peer" && agent.enabled)!;
+      const message = new MessageService(core, auth).createMemberMessage(owner, { roomId, content: "Offline Peer Run fixture", now,
+        mentions: [{ targetType: "agent", targetAgentId: agent.agentId, displayLabel: agent.name }] });
+      const run = new RunService(core, new RunRepository(database), auth, new AgentTaskRepository(database))
+        .createRunsForMessage(owner, message.messageId, now)[0]!;
+      const request = new PeerRunAuthority(database, peers, authority).freeze(run.runId, now);
+      process.stdout.write(JSON.stringify({ request }) + "\n");
+      continue;
     }
     const counts = database.prepare("SELECT count(*) AS memberships FROM peer_memberships").get();
     const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;
