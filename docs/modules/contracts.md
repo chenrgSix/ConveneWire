@@ -65,6 +65,17 @@ sequence on this connection. These schemas create no execution or human
 authority; Run admission and current credential/membership checks remain
 mandatory. Shared positive/negative Go/Node fixtures include every new field.
 
+`PeerLeaveIntent` pins the Host key/origin, Participant key, Peer, membership and
+Owner operation. `PeerLeaveRequest` signs that exact intent with purpose
+`peer.leave`; it carries no business or human bearer. `PeerLeaveReceipt` signs
+`{ intent, state, recordedAt }` for the Participant audience and request nonce.
+Its only state is `revoked`. A fresh proof can recover the same immutable
+receipt after business expiry/revocation, without issuing credentials, renewing
+membership or admitting execution. This narrowing operation needs no challenge
+that grants a capability: replay can only repeat the exact revocation. Both
+languages enforce closed fields and normal proof freshness. The Host stores at
+most one departure per membership and rejects substituted operations or pins.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

@@ -14,7 +14,7 @@ import { peerDigest } from "@convene-wire/contracts/peer-proof";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
-let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, previewRequests = 0, runtimeUpgrades = 0;
+let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, dropNextLeave = true, previewRequests = 0, runtimeUpgrades = 0;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
   try {
@@ -40,6 +40,11 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
     }
     if (request.url === "/api/peer/agents/sync" && result.statusCode === 200 && dropNextSync) {
       dropNextSync = false;
+      request.socket.destroy();
+      return;
+    }
+    if (request.url === "/api/peer/memberships/leave" && result.statusCode === 200 && dropNextLeave) {
+      dropNextLeave = false;
       request.socket.destroy();
       return;
     }
@@ -97,7 +102,8 @@ try {
     const offers = (database.prepare("SELECT count(*) AS n FROM peer_agent_offers").get() as { n: number }).n;
     const acceptances = (database.prepare("SELECT count(*) AS n FROM peer_acceptance_revisions").get() as { n: number }).n;
     const enabledPeers = (database.prepare("SELECT count(*) AS n FROM agents WHERE integration_mode = 'peer' AND enabled = 1").get() as { n: number }).n;
-    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, runtimeUpgrades, offers, acceptances, enabledPeers }) + "\n");
+    const departures = (database.prepare("SELECT count(*) AS n FROM peer_departures").get() as { n: number }).n;
+    process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, runtimeUpgrades, offers, acceptances, enabledPeers, departures }) + "\n");
   }
 } finally {
   await app.close();

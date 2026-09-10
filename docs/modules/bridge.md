@@ -173,6 +173,16 @@ confirmation, native reopen, offline replay, cleanup interruption and scope
 widening. Authenticated HTTP tests cover all Owner routes and sanitized entry
 responses. Browser navigation and Participant leave remain later increments.
 
+The Peer SDK now transports a frozen Participant departure over normal TLS and
+the pinned Host proof. It sends only a fresh `peer.leave` signature and exact
+intent, without machine/human credentials. The response must match the intent,
+nonce, audience, revoked-only state and signed recording time. An actual Go/Host
+TLS test drops the first committed response, rejects the old Runtime heartbeat,
+then recovers the same receipt after credential expiry. Native TLS tests also
+verify that departure invalidates an existing Room-scoped browser session.
+The native Owner's durable local fence and departure recovery UI are the next
+composition increment; this transport alone does not initiate local withdrawal.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

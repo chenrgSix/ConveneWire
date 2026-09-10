@@ -35,7 +35,7 @@ export interface PeerProofPayload {
   subjectDigest:   string;
 }
 
-export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement" | "node.identity";
+export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement" | "node.identity" | "peer.leave";
 
 export interface PeerProof {
   payload:   PeerProofPayloadClass;
@@ -2731,4 +2731,116 @@ export interface Payload14 {
 }
 
 export type PeerRuntimeMessageType = "peer.runtime.challenge" | "peer.runtime.authenticate" | "peer.runtime.ready" | "peer.runtime.heartbeat" | "peer.runtime.acknowledged" | "peer.runtime.error";
+
+export interface PeerLeaveIntent {
+  host:          PeerLeaveIntentHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   PeerLeaveIntentParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface PeerLeaveIntentHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLeaveIntentParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLeaveRequest {
+  intent:        PeerLeaveRequestIntent;
+  proof:         PeerLeaveRequestProof;
+  schemaVersion: number;
+}
+
+export interface PeerLeaveRequestIntent {
+  host:          MischievousHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   IndigoParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface MischievousHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface IndigoParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLeaveRequestProof {
+  payload:   Payload15;
+  signature: string;
+}
+
+export interface Payload15 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerLeaveReceipt {
+  intent:        PeerLeaveReceiptIntent;
+  proof:         PeerLeaveReceiptProof;
+  recordedAt:    string;
+  schemaVersion: number;
+  state:         PeerLeaveReceiptState;
+}
+
+export interface PeerLeaveReceiptIntent {
+  host:          BraggadociousHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   IndecentParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface BraggadociousHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface IndecentParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLeaveReceiptProof {
+  payload:   Payload16;
+  signature: string;
+}
+
+export interface Payload16 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export type PeerLeaveReceiptState = "revoked";
 

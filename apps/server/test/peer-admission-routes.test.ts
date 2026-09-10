@@ -77,6 +77,19 @@ test("Peer HTTP admission isolates strict wire decoding, cookies, Device tokens 
     assert.equal((await app.inject({ url: "/api/auth/session", headers: { cookie: `__Host-agentroom_session=${token}` } })).statusCode, 401);
     assert.equal((await post("/api/bridge/authority-proof", { nonce: secret() }, { authorization: `Bearer ${token}` })).statusCode, 401);
   }
+  const leaveIntent = { schemaVersion: 1, operationId: "op_httpleave0001", host: issued.invitation.host,
+    hostOrigin: origin, participant, membershipId: joined.runtime.membership.membershipId, peerId: joined.runtime.membership.peerId };
+  const leavePayload: PeerProofPayload = { ...payload, purpose: "peer.leave", operationId: leaveIntent.operationId, nonce: secret(), subjectDigest: peerDigest(leaveIntent) };
+  const leave = { schemaVersion: 1, intent: leaveIntent, proof: { payload: leavePayload, signature: sign(null, peerProofTranscript(leavePayload), key).toString("base64url") } };
+  for (const headers of [{ origin }, { cookie: ownerHeaders.cookie }, { authorization: `Bearer ${joined.runtime.machineCredential.token}` }]) {
+    assert.equal((await post("/api/peer/memberships/leave", leave, headers)).statusCode, 403);
+  }
+  assert.equal((await post("/api/peer/memberships/leave?memberId=foreign", leave)).statusCode, 403);
+  assert.equal((await post("/api/peer/memberships/leave", { ...leave, token: joined.human.humanCredential.token })).statusCode, 400);
+  const departed = await post("/api/peer/memberships/leave", leave);
+  assert.equal(departed.statusCode, 200, departed.body);
+  assert.equal(departed.json().state, "revoked");
+  assert.deepEqual(Object.keys(departed.json()).sort(), ["intent", "proof", "recordedAt", "schemaVersion", "state"]);
   const revoked = await app.inject({ method: "DELETE", url: `/api/peer/memberships/${joined.runtime.membership.membershipId}`, headers: ownerHeaders });
   assert.equal(revoked.statusCode, 200, revoked.body);
   assert.equal((await post("/api/peer/invitations/preview", preview)).statusCode, 410);

@@ -92,6 +92,22 @@ fail closed. Recovery never renews expiry, reverses local withdrawal or creates
 human authority. The native Owner capability keeps one history observer across
 core restarts and drains pending operations before the installation lease ends.
 
+## Participant departure receipts
+
+Migration 0102 adds one immutable, retained `peer_departures` row per membership,
+with unique Participant/operation identity. The Host verifies the established
+Participant key and exact membership/origin before atomically revoking the
+membership, machine credentials, human bindings and Room participation together
+with this receipt. An already-issued browser session subsequently fails its
+current membership check. The receipt retains only the signed intent, revoked
+state and the first departure-recording time; no secret or credential is stored.
+Retries refresh the Host proof while preserving that recording time and never
+increment membership revision again. Missing Room ACL or expired business
+credentials do not prevent self-revocation. Changed operations and cross-member
+pin substitution fail before side effects; an injected receipt-write failure
+rolls back the whole revocation. Local departure fencing and its Owner controls
+remain BRG-081 work.
+
 ## Authority partition ownership
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) assigns DATA-009 the

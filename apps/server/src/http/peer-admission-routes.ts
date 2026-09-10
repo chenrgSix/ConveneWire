@@ -1,5 +1,5 @@
 import type { FastifyRequest } from "fastify";
-import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevokeRequest, PeerAgentSyncRequest } from "@convene-wire/contracts/peer";
+import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevokeRequest, PeerAgentSyncRequest, PeerLeaveRequest } from "@convene-wire/contracts/peer";
 import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest, PeerIdentityRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerStoreError } from "../data/peer-membership-repository.js";
@@ -66,6 +66,11 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerHumanEntry
     peer.post("/api/peer/human-entry", async request => {
       machineRequest(request);
       return peerHumanEntry.issue(body<PeerHumanEntryRequest>(request, "PeerHumanEntryRequest"), clock());
+    });
+    peer.post("/api/peer/memberships/leave", async request => {
+      machineRequest(request);
+      if (request.url.includes("?")) throw new PeerStoreError("SCOPE_DENIED");
+      return peerAdmission.leave(body<PeerLeaveRequest>(request, "PeerLeaveRequest"), clock());
     });
     for (const action of ["preview", "claim"] as const) {
       peer.post(`/api/peer/browser-entry/${action}`, async (request, reply) => {

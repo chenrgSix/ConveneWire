@@ -4,7 +4,7 @@ import type {
   PeerChallenge, PeerClaimChallengeRequest, PeerHumanBindingCredential, PeerHumanBindingReceipt,
   PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationIssued, PeerInvitationPreview,
   PeerInvitationPreviewRequest, PeerJoined, PeerJoinReceipt, PeerMachineCredential, PeerMembership, PeerScope,
-  PeerIdentityRequest, PeerIdentityProof
+  PeerIdentityRequest, PeerIdentityProof, PeerLeaveRequest, PeerLeaveReceipt
 } from "@convene-wire/contracts/peer";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { validatePeer } from "@convene-wire/contracts/peer-validation";
@@ -14,6 +14,7 @@ import { createOpaqueId } from "../domain/identifiers.js";
 import type { AuthService, MemberPrincipal, WebPrincipal } from "./auth-service.js";
 import type { AuthorityService } from "./authority-service.js";
 import { assertPeerOrigin, verifyPeerProof } from "./peer-proof-verifier.js";
+import { PeerDepartureService } from "./peer-departure-service.js";
 
 export interface PeerPrincipal {
   audience: "peer.runtime";
@@ -157,6 +158,10 @@ export class PeerAdmissionService {
   }
 
   public get hostOrigin(): string { return this.origin; }
+
+  public leave(input: PeerLeaveRequest, now: string): PeerLeaveReceipt {
+    return new PeerDepartureService(this.database, this.authority, this.origin).leave(input, now);
+  }
 
   /** A bearer establishes only the Peer runtime audience; a connection also needs its fresh Node proof. */
   public authenticateMachine(token: string, now: string): PeerPrincipal {

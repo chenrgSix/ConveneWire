@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { createPrivateKey, createPublicKey, sign } from "node:crypto";
 import test, { type TestContext } from "node:test";
-import type { PeerInvitationClaim, PeerInvitationCreateRequest, PeerProofPayload } from "@convene-wire/contracts/peer";
+import type { PeerInvitationClaim, PeerInvitationCreateRequest, PeerProofPayload, PeerLeaveIntent, PeerLeaveRequest } from "@convene-wire/contracts/peer";
 import { peerDigest, peerProofTranscript } from "@convene-wire/contracts/peer-proof";
 import { peerClaimDigest } from "../src/data/peer-membership-repository.js";
 import { AuthService, AuthorizationError } from "../src/security/auth-service.js";
 import { AuthorityService } from "../src/security/authority-service.js";
 import { PeerAdmissionService, peerJoinReceiptDigest, peerHumanReceiptDigest } from "../src/security/peer-admission-service.js";
 import { verifyPeerProof } from "../src/security/peer-proof-verifier.js";
+import { peerLeaveReceiptDigest } from "../src/security/peer-departure-service.js";
 import { fixture, now, expiry, ownerId, teamId, roomId, otherRoomId, secret, denied } from "./helpers/peer-fixture.js";
 
 export const participantKey = createPrivateKey({ key: Buffer.concat([Buffer.from("302e020100300506032b657004220420", "hex"), Buffer.alloc(32, 9)]), format: "der", type: "pkcs8" });
@@ -134,4 +135,71 @@ test("Peer invitation cannot survive Host origin change or revoked independent h
   assert.throws(() => f.database.exec("UPDATE peer_human_bindings SET revoked_at = NULL"), /regain/u);
   f.service.revokeInvitation(f.actor, claim.invitationId, now);
   assert.throws(() => f.service.createInvitation(f.actor, create, now), denied("REVOKED"));
+});
+
+function leaveRequest(intent: PeerLeaveIntent, at = now): PeerLeaveRequest {
+  const payload: PeerProofPayload = { schemaVersion: 1, purpose: "peer.leave", signerNodeId: participant.nodeId,
+    signerPublicKey: participant.publicKey, audienceNodeId: intent.host.nodeId, operationId: intent.operationId,
+    nonce: secret(), subjectDigest: peerDigest(intent), issuedAt: at, expiresAt: new Date(Date.parse(at) + 30_000).toISOString() };
+  return { schemaVersion: 1, intent, proof: { payload, signature: sign(null, peerProofTranscript(payload), participantKey).toString("base64url") } };
+}
+
+test("Participant departure revokes exact membership and recovers one immutable receipt after expiry and reopen", async t => {
+  const f = await admission(t), joined = f.service.claim(f.claim(), now), membership = joined.runtime.membership;
+  const intent: PeerLeaveIntent = { schemaVersion: 1, operationId: "op_departure001", host: joined.runtime.invitation.host,
+    hostOrigin: joined.runtime.invitation.hostOrigin, participant, peerId: membership.peerId, membershipId: membership.membershipId };
+  const input = leaveRequest(intent), first = f.service.leave(input, now);
+  assert.equal(first.state, "revoked");
+  assert.equal(f.store.getMembership(membership.membershipId)?.revision, membership.revision + 1);
+  assert.throws(() => f.service.authenticateMachine(joined.runtime.machineCredential.token, now), denied("UNAUTHENTICATED"));
+  assert.equal(f.database.prepare("SELECT member_id FROM room_human_participants WHERE member_id = ?").get(membership.memberId), undefined);
+  assert.ok((f.database.prepare("SELECT revoked_at FROM peer_human_bindings WHERE membership_id = ?").get(membership.membershipId) as { revoked_at: string }).revoked_at);
+  verifyPeerProof(first.proof, intent.host, { purpose: "peer.leave", audienceNodeId: participant.nodeId, operationId: intent.operationId,
+    nonce: input.proof.payload.nonce, subjectDigest: peerLeaveReceiptDigest(first) }, now);
+  const other = f.service.createInvitation(f.actor, { ...create, operationId: "op_otherdepartureinvite001" }, now);
+  const otherJoined = f.service.claim(f.claim(now, { invitationId: other.invitation.invitationId,
+    invitationDigest: peerDigest(other.invitation), secret: other.secret, operationId: "op_otherdepartureclaim001" }), now);
+  assert.throws(() => f.service.leave(leaveRequest({ ...intent, peerId: otherJoined.runtime.membership.peerId,
+    membershipId: otherJoined.runtime.membership.membershipId }), now), denied("PAYLOAD_CONFLICT"));
+  assert.equal(f.store.getMembership(otherJoined.runtime.membership.membershipId)?.state, "active");
+  const later = "2026-10-10T02:00:00.000Z", reopened = f.reopen();
+  const restored = new PeerAdmissionService(reopened.database, new AuthService(reopened.database, () => later), new AuthorityService(reopened.database, intent.hostOrigin));
+  const retry = restored.leave(leaveRequest(intent, later), later);
+  assert.deepEqual(retry.intent, first.intent); assert.equal(retry.recordedAt, first.recordedAt);
+  assert.notEqual(retry.proof.signature, first.proof.signature);
+  assert.equal(reopened.store.getMembership(membership.membershipId)?.revision, membership.revision + 1);
+  assert.throws(() => restored.leave(leaveRequest({ ...intent, operationId: "op_departurechanged001" }, later), later), denied("PAYLOAD_CONFLICT"));
+  const rows = JSON.stringify(reopened.database.prepare("SELECT * FROM peer_departures").all());
+  for (const token of [f.issued.secret, joined.runtime.machineCredential.token, joined.human.humanCredential.token]) assert.equal(rows.includes(token), false);
+  assert.equal((reopened.database.prepare("SELECT count(*) AS n FROM peer_departures").get() as { n: number }).n, 1);
+  assert.throws(() => reopened.database.exec("UPDATE peer_departures SET operation_id = 'op_changed001'"), /immutable/u);
+  assert.throws(() => reopened.database.exec("DELETE FROM peer_departures"), /retained/u);
+  assert.deepEqual(reopened.database.pragma("foreign_key_check"), []);
+});
+
+test("Participant departure rejects swapped pins and stale proofs, and rolls back both revoke and receipt", async t => {
+  const f = await admission(t), joined = f.service.claim(f.claim(), now), membership = joined.runtime.membership;
+  const intent: PeerLeaveIntent = { schemaVersion: 1, operationId: "op_departuredeny001", host: joined.runtime.invitation.host,
+    hostOrigin: joined.runtime.invitation.hostOrigin, participant, peerId: membership.peerId, membershipId: membership.membershipId };
+  for (const change of [{ peerId: "peer_foreign001" }, { membershipId: "peermember_foreign001" },
+    { participant: { ...participant, publicKey: secret() } }, { hostOrigin: "https://different.example.test" },
+    { host: { ...intent.host, publicKey: secret() } }]) {
+    assert.throws(() => f.service.leave(leaveRequest({ ...intent, ...change }), now));
+  }
+  const request = leaveRequest(intent);
+  for (const purpose of ["peer.connect", "human.entry", "run.settlement"] as const) {
+    const payload = { ...request.proof.payload, purpose };
+    assert.throws(() => f.service.leave({ ...request, proof: { payload, signature: sign(null, peerProofTranscript(payload), participantKey).toString("base64url") } }, now), denied("UNAUTHENTICATED"));
+  }
+  assert.throws(() => f.service.leave(request, "2026-09-10T02:00:30.000Z"), denied("STALE_AUTHORIZATION"));
+  assert.equal(f.store.getMembership(membership.membershipId)?.state, "active");
+  f.database.exec("CREATE TRIGGER fail_departure BEFORE INSERT ON peer_departures BEGIN SELECT RAISE(ABORT, 'fixture departure failure'); END");
+  assert.throws(() => f.service.leave(request, now), /fixture departure failure/u);
+  assert.equal(f.store.getMembership(membership.membershipId)?.state, "active");
+  assert.ok(f.service.authenticateMachine(joined.runtime.machineCredential.token, now));
+  assert.ok(f.database.prepare("SELECT member_id FROM room_human_participants WHERE member_id = ?").get(membership.memberId));
+  f.database.exec("DROP TRIGGER fail_departure");
+  f.database.prepare("DELETE FROM room_human_participants WHERE member_id = ?").run(membership.memberId);
+  const later = "2026-10-10T02:00:00.000Z";
+  assert.equal(f.service.leave(leaveRequest(intent, later), later).state, "revoked");
 });

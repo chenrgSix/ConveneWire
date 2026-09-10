@@ -2706,6 +2706,116 @@ type Payload14 struct {
 	SubjectDigest   string  `json:"subjectDigest"`
 }
 
+type PeerLeaveIntent struct {
+	Host          PeerLeaveIntentHost        `json:"host"`
+	HostOrigin    string                     `json:"hostOrigin"`
+	MembershipID  string                     `json:"membershipId"`
+	OperationID   string                     `json:"operationId"`
+	Participant   PeerLeaveIntentParticipant `json:"participant"`
+	PeerID        string                     `json:"peerId"`
+	SchemaVersion int64                      `json:"schemaVersion"`
+}
+
+type PeerLeaveIntentHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLeaveIntentParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLeaveRequest struct {
+	Intent        PeerLeaveRequestIntent `json:"intent"`
+	Proof         PeerLeaveRequestProof  `json:"proof"`
+	SchemaVersion int64                  `json:"schemaVersion"`
+}
+
+type PeerLeaveRequestIntent struct {
+	Host          MischievousHost   `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   IndigoParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+}
+
+type MischievousHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type IndigoParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLeaveRequestProof struct {
+	Payload   Payload15 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload15 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerLeaveReceipt struct {
+	Intent        PeerLeaveReceiptIntent `json:"intent"`
+	Proof         PeerLeaveReceiptProof  `json:"proof"`
+	RecordedAt    string                 `json:"recordedAt"`
+	SchemaVersion int64                  `json:"schemaVersion"`
+	State         PeerLeaveReceiptState  `json:"state"`
+}
+
+type PeerLeaveReceiptIntent struct {
+	Host          BraggadociousHost   `json:"host"`
+	HostOrigin    string              `json:"hostOrigin"`
+	MembershipID  string              `json:"membershipId"`
+	OperationID   string              `json:"operationId"`
+	Participant   IndecentParticipant `json:"participant"`
+	PeerID        string              `json:"peerId"`
+	SchemaVersion int64               `json:"schemaVersion"`
+}
+
+type BraggadociousHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type IndecentParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLeaveReceiptProof struct {
+	Payload   Payload16 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload16 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
 type Kind string
 
 const (
@@ -2723,6 +2833,7 @@ const (
 	InvitationPreview Purpose = "invitation.preview"
 	NodeIdentity      Purpose = "node.identity"
 	PeerConnect       Purpose = "peer.connect"
+	PeerLeave         Purpose = "peer.leave"
 	RunAdmission      Purpose = "run.admission"
 	RunSettlement     Purpose = "run.settlement"
 )
@@ -2835,4 +2946,10 @@ const (
 	TypePeerRuntimeChallenge PeerRuntimeMessageType = "peer.runtime.challenge"
 	TypePeerRuntimeHeartbeat PeerRuntimeMessageType = "peer.runtime.heartbeat"
 	TypePeerRuntimeReady     PeerRuntimeMessageType = "peer.runtime.ready"
+)
+
+type PeerLeaveReceiptState string
+
+const (
+	StickyRevoked PeerLeaveReceiptState = "revoked"
 )

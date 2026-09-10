@@ -3,6 +3,7 @@ import test from "node:test";
 import tls from "node:tls";
 import { once } from "node:events";
 import { freeIngressPort, nativePeerIngressFixture } from "./helpers/native-peer-ingress-fixture.js";
+import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { sessionCookieName } from "../src/http/http-helpers.js";
 import { PeerIngress } from "../src/local-node/peer-ingress.js";
 import { createServerApp } from "../src/app.js";
@@ -54,6 +55,26 @@ test("actual native TLS claim and independent browser entry retain Room scope an
   await f.app.inject({ method: "DELETE", url: `/api/peer/memberships/${joined.runtime.membership.membershipId}`, headers: f.ownerHeaders });
   assert.notEqual((await f.request("/api/auth/session", { headers: { cookie } })).status, 200);
   assert.notEqual((await f.request(`/api/rooms/${f.room.roomId}/messages`, { headers: { cookie } })).status, 200);
+});
+
+test("native TLS Participant departure invalidates an already issued human browser session", async t => {
+  const f = await nativePeerIngressFixture(t), { joined, browser } = await f.join();
+  const claim = await f.request("/api/peer/browser-entry/claim", { method: "POST", payload: browser, headers: { origin: f.origin } });
+  assert.equal(claim.status, 200, claim.body);
+  const cookie = claim.headers["set-cookie"]![0]!.split(";", 1)[0]!;
+  assert.equal((await f.request(`/api/rooms/${f.room.roomId}/messages`, { headers: { cookie } })).status, 200);
+  const intent = { schemaVersion: 1, operationId: "op_nativeleave001", host: joined.runtime.invitation.host,
+    hostOrigin: f.origin, participant: joined.human.participant, membershipId: joined.runtime.membership.membershipId,
+    peerId: joined.runtime.membership.peerId };
+  const payload = { schemaVersion: 1, intent, proof: f.proof("peer.leave", intent.operationId,
+    joined.runtime.proof.payload.nonce, peerDigest(intent)) };
+  assert.equal((await f.request("/api/peer/memberships/leave", { method: "POST", payload, headers: { cookie, origin: f.origin } })).status, 403);
+  const response = await f.request("/api/peer/memberships/leave", { method: "POST", payload });
+  assert.equal(response.status, 200, response.body); assert.equal(response.json().state, "revoked");
+  assert.notEqual((await f.request("/api/auth/session", { headers: { cookie } })).status, 200);
+  assert.notEqual((await f.request(`/api/rooms/${f.room.roomId}/messages`, { headers: { cookie } })).status, 200);
+  const retry = await f.request("/api/peer/memberships/leave", { method: "POST", payload });
+  assert.equal(retry.status, 200, retry.body); assert.deepEqual(retry.json().intent, intent);
 });
 
 test("native ingress rejects browser/Device upgrades and drains incomplete TLS clients on Hub close", async t => {
