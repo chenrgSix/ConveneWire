@@ -108,8 +108,34 @@ not install CA trust, change firewall/DNS rules or provide NAT/Relay routing.
 Set `enabled` to false while retaining the other fields to stop external entry
 on the next launch without changing the pinned origin. Stopped Node backups
 include the private ingress files and restore them with the original identity.
-Native configuration UI belongs to WEB-085; CI, external deployment and final
+WEB-085 adds a local Owner configuration review and a private pending record.
+Saving changes does not alter the running listener. The next native startup,
+under the installation lease, validates the expected current configuration and
+certificate again, writes immutable certificate/key files and switches only the
+configuration pointer. Reopening after an interrupted switch recognizes the
+exact installed configuration instead of applying a second operation. Pending
+changes can be explicitly discarded before restart. Existing origins stay fixed
+in the UI; changing them retains the stopped procedure and association checks
+above. UI reads never return private keys. CI, external deployment and final
 physical acceptance retain their own gates. Delivery state stays in TASKS.md.
+
+The native-only `/api/local-node/network` read and `review`, `save`, `discard`
+actions require the fixed local Owner and exact loopback origin. They reject
+ambiguous JSON and compare current/pending revision digests. Review returns
+certificate fingerprint/expiry and listener scope, never PEM or key material.
+Saving retains the exact reviewed selection across response loss; a different
+concurrent decision cannot overwrite it. Owner authority is rechecked after
+asynchronous reads. An expired staged certificate remains discardable but cannot
+activate. A requested bind failure fails readiness instead of choosing another
+port or silently returning to a prior configuration. Previous certificate files
+remain available for the stopped Owner's repair procedure.
+
+Twenty focused configuration, actual TLS and Local Node tests pass, together
+with Hub/Web builds and the actual bundled native offline Run/Discussion,
+restart and backup/restore loop. The native fixture now stages HTTPS through
+the Owner API, verifies that saving opens no listener, retries the exact save,
+then confirms the requested certificate after native restart and restoration.
+The configuration dialog remains active WEB-085 work.
 
 Listener evidence: all 750 Server tests pass. The final startup-cancellation and
 immutable-configuration refinements pass all 17 affected configuration, actual

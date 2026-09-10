@@ -8,6 +8,7 @@ import { createServerApp } from "./app.js";
 import { parseLocalNodeLaunch } from "./local-node/local-node-service.js";
 import { loadPeerIngressMaterial } from "./local-node/peer-ingress-configuration.js";
 import { PeerIngress } from "./local-node/peer-ingress.js";
+import { applyPendingPeerIngress, PeerIngressSettings } from "./local-node/peer-ingress-settings.js";
 
 // Secrets travel only over the inherited pipe. EOF is a shutdown request and
 // also handles a supervisor crash on platforms without parent-death signals.
@@ -33,10 +34,11 @@ input.on("line", (line) => {
     if (line.length > 4096) throw new Error("Local Node launch message is too large");
     const launch = parseLocalNodeLaunch(JSON.parse(line));
     if (closeRequested) return;
+    await applyPendingPeerIngress(root);
     const ingressMaterial = await loadPeerIngressMaterial(root);
     const peerIngress = ingressMaterial ? new PeerIngress(ingressMaterial) : undefined;
     const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
-    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
+    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, peerIngressSettings: new PeerIngressSettings(root, ingressMaterial), localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
       ...(peerIngress ? { peerIngress } : {}), webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });

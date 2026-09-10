@@ -262,6 +262,7 @@ import { WorkspaceLeaseService } from
 export interface ServerAppOptions {
   localNode?: LocalNodeLaunch;
   localNodeSpaceDirectory?: string;
+  peerIngressSettings?: import("./local-node/peer-ingress-settings.js").PeerIngressSettings;
   peerIngress?: PeerIngress;
   anonymousRateLimit?: {
     maximumAttempts: number;
@@ -334,7 +335,7 @@ export async function createServerApp(
   const auth = new AuthService(database, clock);
   let localNode: LocalNodeService | undefined;
   try {
-    if (options.peerIngress && (!options.localNode || options.trustProxyHops)) throw new Error("Peer HTTPS ingress requires a native Local Node without proxy trust");
+    if ((options.peerIngress || options.peerIngressSettings) && (!options.localNode || options.trustProxyHops)) throw new Error("Peer HTTPS ingress requires a native Local Node without proxy trust");
     if (options.localNode) {
       if (options.webAuth && options.webAuth.mode !== "local") throw new Error("Local Node requires local Web auth");
       localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString(), options.localNodeSpaceDirectory);
@@ -1287,6 +1288,7 @@ export async function createServerApp(
     ...(options.peerIngress ? { peerIngress: options.peerIngress } : {}),
     authority,
     ...(localNode ? { localNode } : {}),
+    ...(options.peerIngressSettings ? { peerIngressSettings: options.peerIngressSettings } : {}),
     app,
     artifactContentBinding,
     artifactDeliveries,

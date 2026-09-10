@@ -25,7 +25,7 @@ export function parsePeerIngressConfiguration(input: unknown): PeerIngressConfig
   return { ...value };
 }
 
-async function privateFile(directory: string, name: string, maximum: number): Promise<Buffer> {
+export async function readPeerPrivateFile(directory: string, name: string, maximum: number): Promise<Buffer> {
   let file: FileHandle | undefined;
   try {
     const target = path.join(directory, name), before = await lstat(target);
@@ -66,11 +66,11 @@ export async function loadPeerIngressMaterial(root: string, now = new Date()): P
   catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined; throw invalid(); }
   if (!metadata.isDirectory() || (process.platform !== "win32" && ((metadata.mode & 0o077) !== 0 || metadata.uid !== process.getuid?.()))) throw invalid();
   let configuration: PeerIngressConfiguration;
-  try { configuration = parsePeerIngressConfiguration(decodePeer("PeerIngressConfiguration", await privateFile(directory, "config.json", 4096))); }
+  try { configuration = parsePeerIngressConfiguration(decodePeer("PeerIngressConfiguration", await readPeerPrivateFile(directory, "config.json", 4096))); }
   catch { throw invalid(); }
   if (!configuration.enabled) return { configuration };
-  const cert = await privateFile(directory, configuration.certificateFile, 64 * 1024);
-  const key = await privateFile(directory, configuration.privateKeyFile, 16 * 1024);
+  const cert = await readPeerPrivateFile(directory, configuration.certificateFile, 64 * 1024);
+  const key = await readPeerPrivateFile(directory, configuration.privateKeyFile, 16 * 1024);
   validatePeerIngressCertificate(configuration, cert, key, now);
   return { configuration, tls: { cert, key } };
 }

@@ -228,23 +228,25 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   const duplicateResult = await duplicate.host.terminal;
   assert.notEqual(duplicateResult.code, 0); assert.equal(duplicate.events.length, 0);
   await duplicate.host.stop();
-  await running.stop();
-  await assert.rejects(fetch(ready.origin + "/api/health/ready"));
-  // Configure only this stopped disposable Node. Its original loopback identity
-  // remains unchanged while the real bundled Hub owns a second HTTPS listener.
+  // Review and stage configuration through the actual local Owner API. Saving
+  // does not bind another port; the native startup is the activation boundary.
   const available = net.createServer(); available.listen(0, "127.0.0.1"); await once(available, "listening");
   const peerPort = available.address().port;
   await new Promise(resolve => available.close(resolve));
   const peerOrigin = `https://127.0.0.1:${peerPort}`;
   const ingressDirectory = path.join(dataRoot, "peer-ingress");
-  await mkdir(ingressDirectory, { mode: 0o700 });
   const cert = await readFile(path.join(repository, "apps/server/test/fixtures/peer-ingress/server-cert.pem"));
   const key = await readFile(path.join(repository, "apps/server/test/fixtures/peer-ingress/server-key.pem"));
-  const ingressConfig = JSON.stringify({ schemaVersion: 1, enabled: true, origin: peerOrigin, listenHost: "127.0.0.1",
-    certificateFile: "server-cert.pem", privateKeyFile: "server-key.pem" });
-  await writeFile(path.join(ingressDirectory, "config.json"), ingressConfig, { mode: 0o600 });
-  await writeFile(path.join(ingressDirectory, "server-cert.pem"), cert, { mode: 0o600 });
-  await writeFile(path.join(ingressDirectory, "server-key.pem"), key, { mode: 0o600 });
+  const networkBefore = await request("/api/local-node/network");
+  assert.equal(networkBefore.running, null); assert.equal(networkBefore.pending, null);
+  const selection = {enabled: true, origin: peerOrigin, listenHost: "127.0.0.1", certificatePem: cert.toString(), privateKeyPem: key.toString()};
+  const review = await request("/api/local-node/network/review", {revisionDigest: networkBefore.revisionDigest, selection});
+  const pendingInput = {revisionDigest: networkBefore.revisionDigest, reviewDigest: review.reviewDigest, selection};
+  const saved = await request("/api/local-node/network/save", pendingInput);
+  assert.deepEqual(await request("/api/local-node/network/save", pendingInput), saved);
+  const staged = await request("/api/local-node/network");
+  assert.equal(staged.running, null); assert.equal(staged.saved, null); assert.equal(staged.pending.origin, peerOrigin);
+  assert.equal(JSON.stringify(staged).includes("PRIVATE KEY"), false);
   const peerRequest = (route, headers = {}) => new Promise((resolve, reject) => {
     const request = https.get(peerOrigin + route, { ca: cert, agent: false, headers }, response => {
       let body = ""; response.on("data", chunk => body += chunk); response.once("error", reject);
@@ -252,6 +254,9 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     });
     request.once("error", reject); request.setTimeout(10_000, () => request.destroy(new Error("Peer fixture timeout")));
   });
+  await assert.rejects(peerRequest("/api/auth/status"));
+  await running.stop();
+  await assert.rejects(fetch(ready.origin + "/api/health/ready"));
   const collision = net.createServer();
   collision.listen(Number(new URL(ready.origin).port), "127.0.0.1"); await once(collision, "listening");
   try {
@@ -274,6 +279,12 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   assert.equal((await peerRequest("/api/local-node/control/state")).status, 403);
   assert.equal((await peerRequest("/api/auth/session", { authorization: `Bearer ${owner.session.token}` })).status, 403);
   owner = await ownerEntry(reopened); assert.equal(owner.user.userId, ownerId);
+  const appliedNetwork = await request("/api/local-node/network");
+  assert.equal(appliedNetwork.pending, null); assert.equal(appliedNetwork.running.origin, peerOrigin);
+  assert.equal(appliedNetwork.running.certificateFingerprint, review.certificateFingerprint);
+  const ingressConfig = await readFile(path.join(ingressDirectory, "config.json"), "utf8");
+  const ingressKeyFile = JSON.parse(ingressConfig).privateKeyFile;
+
   await running.event("console");
   const restored = await until(async () => {
     const list = await request(`/api/teams/${team.teamId}/agents`);
@@ -294,7 +305,7 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   const recovered = await running.event("ready");
   assert.equal(recovered.origin, ready.origin); assert.equal(recovered.nodeId, ready.nodeId);
   assert.equal(await readFile(path.join(ingressDirectory, "config.json"), "utf8"), ingressConfig);
-  assert.deepEqual(await readFile(path.join(ingressDirectory, "server-key.pem")), key);
+  assert.deepEqual(await readFile(path.join(ingressDirectory, ingressKeyFile)), key);
   assert.equal((await peerRequest("/api/auth/status")).status, 200);
   owner = await ownerEntry(recovered); assert.equal(owner.user.userId, ownerId);
   await running.event("console");
