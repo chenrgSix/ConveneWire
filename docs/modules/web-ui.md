@@ -81,7 +81,27 @@ the [1280px Space page](../acceptance/assets/web-085/console-spaces-1280.jpg),
 There is no horizontal overflow; forward/reverse Tab cycles inside the dialog
 and Escape returns focus to its trigger. Browser inspection uses read-only
 pages and form controls; access-changing interactions remain deferred under
-QA-092. Agent sharing and local approval UI remain active in WEB-085.
+QA-092. Local approval and remaining App/network controls remain active in WEB-085.
+
+The native Agent sharing panel reviews local Workspace/sandbox, capability subset,
+explicit Room scope and membership-bounded expiry before saving consent. Room
+memberships cannot widen scope; Team memberships require unique Room links from
+the verified Host and Team, without entry credentials. A changed configuration
+must be displayed and reviewed again. An unsubmitted stale revision cannot be
+confirmed. After a possibly committed write, retry retains the original operation,
+configuration digest and complete selection. Replacing a locally revoked Export
+explicitly creates a new lineage and still requires Host acceptance.
+
+Inventory distinguishes current local consent, retained Host receipts and the
+bilateral Room intersection without claiming fresh execution admission. Withdrawal
+reviews the exact Export revision and survives unavailable Runtime configuration.
+Its ambiguous response also retains the original operation. Navigation, local
+identity changes and expired Console credentials clear private review details;
+polling preserves focus and both dialogs support keyboard containment and Escape.
+All 82 embedded Console UI checks and the real bundled native offline
+Run/Discussion/restart/restore loop pass. The actual
+[390px sharing panel](../acceptance/assets/web-085/console-sharing-390.jpg) has no
+horizontal overflow. Browser sharing/withdrawal submissions remain in QA-092.
 
 An explicit `Enter Space` action now asks the native Owner capability to issue
 and open one short browser exchange. The Console receives only opening status

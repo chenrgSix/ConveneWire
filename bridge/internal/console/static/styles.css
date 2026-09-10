@@ -632,8 +632,13 @@ button:disabled { cursor: not-allowed; opacity: .42; }
 .peer-error { color: var(--danger); }
 .peer-empty { color: var(--muted); }
 .peer-dialog { width: min(600px, calc(100% - 24px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.peer-dialog [hidden] { display: none !important; }
 .peer-dialog::backdrop { background: rgb(0 0 0 / 45%); }
 .peer-dialog label { display: grid; gap: 6px; margin-top: 14px; font-size: 13px; }
+.peer-export-record { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 12px; }
+.peer-export-record h5 { margin: 0; font-size: 14px; }
+.peer-dialog .peer-capability { display: flex; align-items: center; gap: 8px; }
+.peer-dialog .peer-capability input { width: auto; height: auto; margin: 0; }
 .peer-dialog p { font-size: 13px; line-height: 1.7; }
 .peer-dialog textarea { width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--text); background: var(--surface-subtle); resize: vertical; }
 @media (max-width: 680px) {

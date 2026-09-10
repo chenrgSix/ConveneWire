@@ -131,6 +131,29 @@
             </div>
             <p data-peer-result role="status"></p>
             <section class="settings-card"><h3>已加入的空间</h3><div data-peer-spaces class="peer-list"></div></section>
+            <section class="settings-card" id="peer-sharing-panel">
+              <div class="section-heading"><h3>本机 Agent 分享</h3><button type="button" class="secondary" data-sharing-refresh>刷新分享</button></div>
+              <p>本机明确分享、Host 接纳后，才可在双方同意的房间执行。工作区和临时权限仍由本机管理。</p>
+              <p data-sharing-result role="status"></p><div data-sharing-inventory class="peer-list"></div>
+              <dialog class="peer-dialog" data-sharing-dialog aria-labelledby="peer-sharing-heading">
+                <div class="section-heading"><h3 id="peer-sharing-heading">分享本机 Agent</h3><button type="button" class="secondary" data-sharing-close>关闭</button></div>
+                <div data-sharing-scope></div>
+                <div data-sharing-choices>
+                  <label>本机 Agent<select data-sharing-agent aria-label="要分享的本机 Agent"></select></label>
+                  <div data-sharing-source></div>
+                  <label data-sharing-rooms-label>房间链接（每行一个）<textarea rows="3" maxlength="16384" autocomplete="off" spellcheck="false" data-sharing-rooms placeholder="从远端网页复制已授权房间的链接"></textarea></label>
+                  <label>分享时长<select data-sharing-duration><option value="3600000">1 小时</option><option value="86400000" selected>1 天</option><option value="604800000">7 天</option></select></label>
+                  <p>有效期不会超过当前成员关系。这里只分享任务能力，不授予持续的命令或文件操作许可。</p>
+                </div>
+                <div data-sharing-review></div><p role="alert" class="peer-error" data-sharing-error></p>
+                <div class="peer-actions"><button type="button" class="secondary" data-sharing-back hidden>返回重新审阅</button><button type="button" class="primary" data-sharing-review-submit>审阅分享范围</button><button type="button" class="primary" data-sharing-confirm hidden>确认分享</button></div>
+              </dialog>
+              <dialog class="peer-dialog" data-sharing-withdraw-dialog aria-labelledby="peer-withdraw-heading">
+                <h3 id="peer-withdraw-heading">撤回此分享</h3><p>本机将立即阻止该分享的新执行，并停止相关运行。Host 的已保存内容不会删除。</p>
+                <div data-sharing-withdraw-details></div><p role="alert" class="peer-error" data-sharing-withdraw-error></p>
+                <div class="peer-actions"><button type="button" class="secondary" data-sharing-withdraw-cancel>取消</button><button type="button" class="primary" data-sharing-withdraw-confirm>确认撤回</button></div>
+              </dialog>
+            </section>
             <section class="settings-card"><h3>连接状态</h3><div data-peer-status></div></section>
             <section class="settings-card"><h3>待恢复的加入操作</h3><p>请求中断时查询原操作，不会创建另一份成员关系。</p><div data-peer-joins class="peer-list"></div></section>
             <section class="settings-card"><h3>离开记录</h3><p>本机先停止访问和执行，再等待 Host 确认；远端已有内容仍由 Host 管理。</p><div data-peer-departures class="peer-list"></div></section>

@@ -1,5 +1,6 @@
 import { createClientEntryController } from "./client-entry.mjs";
 import { createPeerSpacesController } from "./peer-spaces.mjs";
+import { createPeerSharingController } from "./peer-sharing.mjs";
 import { pairingView } from "./pairing-view.mjs";
 import {
   configuredPairingEntryView,
@@ -157,6 +158,7 @@ function setPage(page, focus = false) {
   if (focus) document.querySelector(`[data-page-panel="${page}"] h2`)?.focus?.();
   if (page === "governed") void refreshGovernedState();
   peerSpacesController.setActive(page === "peers");
+  peerSharingController.setActive(page === "peers");
 }
 
 function governedInventoryGroup(title, entries, renderEntry) {
@@ -278,7 +280,8 @@ async function request(path, options = {}) {
 
 const clientEntryController = createClientEntryController({elements, request});
 const peerSpacesController = createPeerSpacesController({root: document.getElementById("peer-spaces-page"), request});
-window.addEventListener("pagehide", () => peerSpacesController.dispose());
+const peerSharingController = createPeerSharingController({root: document.getElementById("peer-sharing-panel"), request});
+window.addEventListener("pagehide", () => { peerSpacesController.dispose(); peerSharingController.dispose(); });
 const workPolicyForm = createWorkPolicyForm({form: document.getElementById("work-policy-form"), request,
   agents: () => currentState?.agents ?? [], refreshed: async () => { await refresh(); await refreshGovernedState(); }});
 
@@ -627,6 +630,7 @@ function render(state) {
   document.getElementById("device-approval-toggle").disabled = !trust.editable;
   currentState = state;
   peerSpacesController.render(state);
+  peerSharingController.render(state);
   for (const element of document.querySelectorAll("[data-native-only]")) element.classList.toggle("hidden", !state.localNodeId);
   clientEntryController.render(state);
   const waiting = Boolean(state.enrollment?.active);
@@ -811,7 +815,7 @@ async function refresh() {
   try {
     render(await request("/api/state"));
   } catch (error) {
-    if (error.status === 401) peerSpacesController.render(null);
+    if (error.status === 401) { peerSpacesController.render(null); peerSharingController.render(null); }
     showError(error);
   }
 }
