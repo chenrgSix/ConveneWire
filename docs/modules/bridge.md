@@ -237,6 +237,20 @@ pool before continuing an approved operation. Device trust, Central approval,
 owner-private/governed requests and unimplemented artifact transfers are rejected
 before invoking an adapter. The resource remains held until process teardown.
 
+RUN-020 adds a managed invocation boundary for the network coordinator's durable
+start claim. It runs after the physical queue and fresh bilateral checks, before
+the actual adapter. Failure of the claim creates no child and releases the gate.
+The factory observes actual Node-owned process leases independently of adapter
+return values. Only confirmed completion or pre-start abandonment releases the
+resource. An exact duplicate already proven finished remains non-replayable and
+may release the gate; changed or ambiguous process evidence cannot use that
+exception. Unconfirmed preparation/teardown reports `ErrRunProcessUnknown` and
+keeps the Workspace fenced for this core epoch. A replacement native core must
+complete its existing Node process-store fencing before it creates a new gate.
+Actual Generic child tests cover successful and denied claims, queue ordering,
+lost completion evidence and failed preparation. Existing Generic/Codex factory
+regressions plus native-core race tests and owning vet pass.
+
 Actual offline Generic/Codex child regressions cover shared Device/Peer Workspace
 exclusion, post-wait Host failure, local withdrawal, cancellation, durable
 non-replay, exact local approval and private Session persistence. Both Host

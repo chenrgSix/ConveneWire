@@ -3,6 +3,7 @@ package peer
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"convenewire.dev/bridge/internal/delivery"
@@ -83,8 +84,20 @@ func (f *runtimeFactory) local(membershipID string, binding wire.PeerExecutionBi
 
 func (f *runtimeFactory) execute(ctx context.Context, membershipID string, binding wire.PeerExecutionBinding,
 	request bridgeruntime.Request, hostCurrent func(context.Context) error, emit bridgeruntime.EmitFunc) error {
+	_, err := f.executeManaged(ctx, membershipID, binding, request, hostCurrent, emit, nil)
+	return err
+}
+
+// beforeInvoke is the coordinator's one-time durable journal claim, after the
+// physical queue and fresh bilateral checks. It must succeed before any adapter
+// can create a child. An unconfirmed process keeps this core's resource locked;
+// a replacement core fences the Node process store before admitting new work.
+func (f *runtimeFactory) executeManaged(ctx context.Context, membershipID string, binding wire.PeerExecutionBinding,
+	request bridgeruntime.Request, hostCurrent func(context.Context) error, emit bridgeruntime.EmitFunc,
+	beforeInvoke func(context.Context) error) (result runtimeExecution, resultErr error) {
+	result.ProcessesStopped = true
 	if ctx == nil || ctx.Err() != nil || hostCurrent == nil || emit == nil || !closed("PeerExecutionBinding", binding) {
-		return ErrExport
+		return result, ErrExport
 	}
 	// Freeze nested context before any wait. Artifact aliases require their own
 	// Peer-scoped verified transfer path; Device/private/governed inputs cannot
@@ -92,7 +105,7 @@ func (f *runtimeFactory) execute(ctx context.Context, membershipID string, bindi
 	raw, err := json.Marshal(request.Run)
 	var frozen bridgeruntime.Request
 	if err != nil || json.Unmarshal(raw, &frozen.Run) != nil || len(request.Artifacts) != 0 {
-		return ErrExport
+		return result, ErrExport
 	}
 	request = frozen
 	r := request.Run
@@ -100,16 +113,16 @@ func (f *runtimeFactory) execute(ctx context.Context, membershipID string, bindi
 		r.DeviceTrust != nil || r.CentralApproval != nil || r.OwnerPrivateOutput != nil && *r.OwnerPrivateOutput ||
 		r.ConversationWork != nil && *r.ConversationWork || r.ContextManifest != nil && r.ContextManifest.Execution != nil ||
 		r.Deadline.IsZero() || !r.Deadline.After(f.clock()) {
-		return ErrExport
+		return result, ErrExport
 	}
 	ctx, cancel := context.WithDeadline(ctx, r.Deadline)
 	defer cancel()
 	if _, err := f.local(membershipID, binding); err != nil {
-		return err
+		return result, err
 	}
 	partition, err := f.partitions.Open(membershipID)
 	if err != nil {
-		return err
+		return result, err
 	}
 	current := func(ctx context.Context) error {
 		if err := ctx.Err(); err != nil {
@@ -134,19 +147,27 @@ func (f *runtimeFactory) execute(ctx context.Context, membershipID string, bindi
 		return ctx.Err()
 	}
 	if err := current(ctx); err != nil {
-		return err
+		return result, err
 	}
 	release, err := f.gate.Acquire(ctx, binding.LocalAgentID)
 	if err != nil {
-		return err
+		return result, err
 	}
-	defer release()
+	processes := &processEvidence{parent: f.processes}
+	defer func() {
+		result.ProcessesStopped = processes.stopped()
+		if result.ProcessesStopped {
+			release()
+		} else {
+			resultErr = errors.Join(resultErr, ErrRunProcessUnknown)
+		}
+	}()
 	if err := current(ctx); err != nil {
-		return err
+		return result, err
 	}
 	source, err := f.sources.Resolve(binding.LocalAgentID)
 	if err != nil {
-		return err
+		return result, err
 	}
 	cfg := source.Configuration
 	cfg.AuthorityNodeID, cfg.PeerRuntimeNamespace = binding.AuthorityNodeID, partition.Namespace()
@@ -162,7 +183,13 @@ func (f *runtimeFactory) execute(ctx context.Context, membershipID string, bindi
 	case cfg.Adapter == "generic":
 		adapter = bridgeruntime.GenericAdapter{Config: cfg}
 	default:
-		return ErrExport
+		return result, ErrExport
 	}
-	return (bridgeruntime.PeerProcessAdapter{Adapter: adapter, Tracker: f.processes, Binding: binding}).Execute(ctx, request, emit)
+	if beforeInvoke != nil {
+		if err := beforeInvoke(ctx); err != nil {
+			return result, err
+		}
+	}
+	result.Invoked = true
+	return result, (bridgeruntime.PeerProcessAdapter{Adapter: adapter, Tracker: processes, Binding: binding}).Execute(ctx, request, emit)
 }
