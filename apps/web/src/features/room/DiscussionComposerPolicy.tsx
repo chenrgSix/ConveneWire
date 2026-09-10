@@ -1,6 +1,7 @@
 import type { Locale } from "../../i18n.js";
 import type { Agent } from "../../models.js";
 import type { DiscussionComposerOptions } from "./composer-storage.js";
+import { peerDiscussionProblem } from "../discussion/peer-discussion-eligibility.js";
 
 interface DiscussionComposerPolicyProps {
   agents: Agent[];
@@ -28,6 +29,7 @@ export function DiscussionComposerPolicy({
   value
 }: DiscussionComposerPolicyProps) {
   const ineligible = agents.filter((agent) => !quorumCapable(agent));
+  const peerProblem = peerDiscussionProblem(agents, locale);
   const update = <K extends keyof DiscussionComposerOptions>(
     key: K,
     next: DiscussionComposerOptions[K]
@@ -35,6 +37,8 @@ export function DiscussionComposerPolicy({
   return <details className="discussion-composer-policy">
     <summary>{t("高级讨论策略", "Advanced Discussion policy", locale)}</summary>
     <p>{t("这些设置只绑定下一次 Discussion；Server 会重新验证参与者和边界。", "These settings bind only the next Discussion; the Server revalidates participants and limits.", locale)}</p>
+    {agents.some(agent => agent.integrationMode === "peer") && <p>{t("跨节点讨论会等待本轮参与者结束，使用各方允许公开到 Room 的内容；私密输出和只读 Quorum 暂不支持。", "Peer Discussion waits for the Wave's participants and uses content shared into the Room. Private output and read-only quorum are not supported.", locale)}</p>}
+    {peerProblem && <p className="discussion-quorum-warning" role="alert">{peerProblem}</p>}
     <div className="discussion-composer-policy-grid">
       <label>{t("参与者选择", "Participant selection", locale)}
         <select disabled={disabled} onChange={(event) => update("participantSelectionMode", event.target.value as DiscussionComposerOptions["participantSelectionMode"])} value={value.participantSelectionMode}>
@@ -63,6 +67,6 @@ export function DiscussionComposerPolicy({
     <ul className="discussion-quorum-eligibility">{agents.map((agent) => <li className={quorumCapable(agent) ? "eligible" : "ineligible"} key={agent.agentId}><strong>{agent.name}</strong><span>{quorumCapable(agent)
       ? t("managed · 只读 · 支持迟到证据", "managed · read-only · late evidence capable", locale)
       : t("不满足 read-only quorum 条件", "not eligible for read-only quorum", locale)}</span></li>)}</ul>
-    {ineligible.length > 0 && <p className="discussion-quorum-warning">{t("当前选择包含不合格 Agent，因此已禁止 read-only quorum。普通 all-settled 讨论仍可使用。", "The selection contains ineligible Agents, so read-only quorum is disabled. Ordinary all-settled Discussion remains available.", locale)}</p>}
+    {ineligible.length > 0 && !peerProblem && <p className="discussion-quorum-warning">{t("当前选择包含不合格 Agent，因此已禁止 read-only quorum。普通 all-settled 讨论仍可使用。", "The selection contains ineligible Agents, so read-only quorum is disabled. Ordinary all-settled Discussion remains available.", locale)}</p>}
   </details>;
 }

@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { captureWebSessionScope, isStaleWebSessionError, jsonRequest } from "../../api-client.js";
+import { peerDiscussionProblem } from "../discussion/peer-discussion-eligibility.js";
 import type { Locale } from "../../i18n.js";
 import {
   type Agent,
@@ -331,6 +332,8 @@ export function useRoomComposer(input: RoomComposerInput) {
           : "Discussion participant identities are incomplete. Select the Agents again.");
         return;
       }
+      const peerProblem = peerDiscussionProblem(participantAgents, locale);
+      if (peerProblem) { onError(peerProblem); return; }
       if (discussionOptions.waveCompletionMode === "read_only_quorum") {
         if (discussionOptions.quorumMinimumCompleted > participantAgents.length) {
           onError(locale === "zh-CN"

@@ -13,10 +13,21 @@ export function integrationLabel(mode: Agent["integrationMode"], locale: Locale)
   if (mode === "managed") return translate(locale, "managedBridge");
   if (mode === "manual") return translate(locale, "mcpParticipant");
   if (mode === "hosted") return translate(locale, "centralHostedAgent");
+  if (mode === "peer") return locale === "zh-CN" ? "远端节点 Agent" : "Peer Node Agent";
   return translate(locale, "demoRuntime");
 }
 
 export function presenceHelp(agent: Agent, locale: Locale): string {
+  if (agent.integrationMode === "peer") {
+    if (locale === "zh-CN") {
+      if (agent.presence === "ready") return "对方节点已连接，可在双方允许的 Room 中执行任务；启动前会再次检查权限。";
+      if (agent.presence === "busy") return "对方节点正在执行任务，执行进度由对方本机回传。";
+      return "对方节点离线或当前分享不可用。请联系分享者，或由本 Team 所有者查看跨节点协作状态。";
+    }
+    if (agent.presence === "ready") return "The participant Node is connected. Tasks use mutually allowed Rooms and recheck access before starting.";
+    if (agent.presence === "busy") return "The participant Node is running work and reporting its progress.";
+    return "The participant Node is offline or sharing is unavailable. Contact the participant or ask this Team's Owner to review collaboration access.";
+  }
   if (locale === "en") {
     if (agent.integrationMode === "fake") return "Simulation only; does not call a model";
     if (agent.integrationMode === "hosted") {
@@ -171,6 +182,7 @@ interface AgentWorkspaceProps {
   onAgentChanged: (agent: Agent) => void;
   onSetupClosed: () => void;
   onDevices: () => void;
+  onPeerAccess?: () => void;
   onOpenHostedRoom?: (roomId: string) => void;
   onSetAgentEnabled: (agent: Agent, enabled: boolean) => void | Promise<void>;
 }
@@ -220,7 +232,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
         </select>
         <select aria-label={zh ? "接入类型" : "Integration type"} value={kind} onChange={(event) => setKind(event.target.value)}>
           <option value="all">{zh ? "全部类型" : "All types"}</option>
-          {(["hosted", "managed", "manual", "fake"] as const).map((mode) => <option key={mode} value={mode}>{integrationLabel(mode, locale)}</option>)}
+          {(["hosted", "managed", "peer", "manual", "fake"] as const).map((mode) => <option key={mode} value={mode}>{integrationLabel(mode, locale)}</option>)}
         </select>
       </div>
       <p className="inventory-help" role="status">{zh ? `${agents.length} 个智能体 · ${readyAgents} 个就绪 · 显示 ${visible.length} 个` : `${agents.length} Agents · ${readyAgents} ready · ${visible.length} shown`}</p>
@@ -247,12 +259,16 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
           <p>{roleLabel(selectedAgent.role, locale)} · {integrationLabel(selectedAgent.integrationMode, locale)}</p>
           <AgentModelLabel agent={selectedAgent} locale={locale} showUpdatedAt />
           <p>{presenceHelp(selectedAgent, locale)}</p>
-          {selectedAgent.integrationMode !== "hosted" && <AgentPolicySummary locale={locale} policy={selectedAgent.runtimePolicy} />}
+          {selectedAgent.integrationMode !== "hosted" && selectedAgent.integrationMode !== "peer" && <AgentPolicySummary locale={locale} policy={selectedAgent.runtimePolicy} />}
+          {selectedAgent.integrationMode === "peer" && <>
+            <p>{zh ? "此 Agent 运行在对方节点。工作区、模型和临时权限由分享者在本机管理；本 Team 通过跨节点协作接纳或撤销分享。" : "This Agent runs on the participant's Node. The participant manages its Workspace, model and temporary permissions locally; this Team accepts or revokes sharing through Node collaboration."}</p>
+            {currentMemberIsOwner && props.onPeerAccess && <button onClick={() => { close(); props.onPeerAccess?.(); }} type="button">{zh ? "管理跨节点协作" : "Manage Node collaboration"}</button>}
+          </>}
           {selectedAgent.integrationMode === "managed" && <>
             <p>{zh ? "名称、命令、工作区和模型凭据由本机客户端配置，不会在中央服务覆盖。" : "Names, commands, Workspaces and model credentials are configured in the local client, never overwritten here."}</p>
             <button onClick={props.onDevices} type="button">{zh ? "查看设备" : "View Devices"}</button>
           </>}
-          {currentMemberIsOwner && <button disabled={lifecycleBusy} onClick={() => void onSetAgentEnabled(selectedAgent, selectedAgent.enabled === false)} type="button">
+          {currentMemberIsOwner && selectedAgent.integrationMode !== "peer" && <button disabled={lifecycleBusy} onClick={() => void onSetAgentEnabled(selectedAgent, selectedAgent.enabled === false)} type="button">
             {selectedAgent.enabled === false ? (zh ? "重新启用" : "Enable") : (zh ? "停用" : "Disable")}
           </button>}
         </div>}

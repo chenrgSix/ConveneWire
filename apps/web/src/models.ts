@@ -47,9 +47,12 @@ export interface Agent {
   role: string;
   configuredModel?: string | null;
   modelReportedAt?: string | null;
-  integrationMode: "managed" | "manual" | "fake" | "hosted";
+  integrationMode: "managed" | "manual" | "fake" | "hosted" | "peer";
   presence: string;
   capabilities?: {
+    supportsStart?: boolean;
+    supportsTaskContextIsolation?: boolean;
+    ownerPrivateOutput?: boolean;
     supportsDiscussionSupplementalEvidence?: boolean;
   };
   runtimePolicy?: {

@@ -51,6 +51,18 @@ requiring action-time consent. That interaction remains in the final QA-092
 manual gate; component and Server mutation regressions are separate evidence.
 Native Console/Space UI integration remains active in WEB-085.
 
+Peer projections also have a distinct inventory type and presence explanation.
+Their detail view describes Participant-owned execution and routes the Host
+Owner to collaboration management. It shows neither Device trust summaries nor
+generic enable/disable controls that could imply restoring bilateral acceptance.
+Ordinary members have a read-only detail view. Discussion preflight permits
+eligible Peer participants without requiring an online hint, rejects missing
+start/Task-isolation capability and incompatible Device policy or private-output
+combinations, and retains the managed-only quorum boundary. It preserves a
+rejected draft and never substitutes an ordinary message. Current permissions
+are still checked by the Host. The 32 affected inventory, policy, composer and
+Room participant regressions plus production Web build pass.
+
 ## Authority-bound Spaces
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines WEB-084's

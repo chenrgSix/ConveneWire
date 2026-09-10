@@ -150,6 +150,44 @@ test("local Agent detail links to Device management without exposing a Central r
   assert.equal(opened, 1); assert.deepEqual(f.requests, []);
 });
 
+test("Peer Agents have their own inventory type and never expose Device consent or generic re-enable controls", async t => {
+  const f = await fixture(t);
+  const peer: Agent = { ...agents[1]!, agentId: "agent_peer_0001", deviceId: null, name: "Remote Reviewer", integrationMode: "peer",
+    runtimePolicy: { filesystemAccess: "local-policy", deviceTrust: { mode: "full", revision: 9 }, centralApproval: { revision: 4 } } };
+  let opened = 0, changed = 0;
+  const view = f.render(<AgentWorkspace {...f.props} agents={[...agents, peer]} onPeerAccess={() => { opened++; }} onSetAgentEnabled={() => { changed++; }} />);
+  f.fireEvent.change(f.page.getByRole("combobox", { name: "Integration type" }), { target: { value: "peer" } });
+  assert.ok(f.page.getByRole("button", { name: "View Remote Reviewer" }));
+  assert.equal(f.page.queryByRole("button", { name: "View Local Builder" }), null);
+  f.fireEvent.click(f.page.getByRole("button", { name: "View Remote Reviewer" }));
+  const dialog = f.within(f.page.getByRole("dialog"));
+  assert.ok(dialog.getByText(/Peer Node Agent/u));
+  assert.ok(dialog.getByText(/participant Node is offline/u));
+  assert.equal(dialog.queryByText("Device consent"), null);
+  assert.equal(dialog.queryByText("File access"), null);
+  assert.equal(dialog.queryByRole("button", { name: "Disable", exact: true }), null);
+  assert.equal(dialog.queryByRole("button", { name: "View Devices" }), null);
+  f.fireEvent.click(dialog.getByRole("button", { name: "Manage Node collaboration" }));
+  assert.equal(opened, 1);
+  assert.equal(f.page.queryByRole("dialog"), null);
+  view.rerender(<AgentWorkspace {...f.props} agents={[{ ...peer, enabled: false }]} />);
+  f.fireEvent.click(f.page.getByRole("button", { name: "View Remote Reviewer" }));
+  assert.equal(f.page.queryByRole("button", { name: "Enable", exact: true }), null);
+  assert.equal(changed, 0);
+  assert.deepEqual(f.requests, []);
+});
+
+test("a member's Peer Agent view explains remote execution without Owner controls", async t => {
+  const f = await fixture(t);
+  const peer: Agent = { ...agents[1]!, agentId: "agent_peer_0001", deviceId: null, name: "远端审阅", integrationMode: "peer", presence: "ready" };
+  f.render(<AgentWorkspace {...f.props} agents={[peer]} currentMemberIsOwner={false} locale="zh-CN" onPeerAccess={() => assert.fail("member cannot open Owner controls")} />);
+  f.fireEvent.click(f.page.getByRole("button", { name: "查看 远端审阅" }));
+  assert.ok(f.page.getByText(/远端节点 Agent/u, { selector: "p" }));
+  assert.ok(f.page.getByText(/启动前会再次检查权限/u));
+  assert.equal(f.page.queryByRole("button", { name: "管理跨节点协作" }), null);
+  assert.deepEqual(f.requests, []);
+});
+
 test("Device inventory separates authorization from readiness and scopes revoke and pairing controls", async (t) => {
   const f = await fixture(t);
   const props = { agents, devices, locale: "en" as const, currentMemberId: memberId, currentMemberIsOwner: false, sessionToken: undefined, teamId, onRevokeDevice() {} };

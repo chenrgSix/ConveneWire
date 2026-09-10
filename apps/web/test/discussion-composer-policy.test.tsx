@@ -66,3 +66,22 @@ test("advanced Discussion policy exposes eligibility and refuses unsafe quorum s
     dom.window.close();
   }
 });
+
+test("Peer policy explains its all-settled boundary and does not advertise a private-output combination as usable", async () => {
+  const dom = installDom();
+  const { cleanup, fireEvent, render, within } = await import("@testing-library/react");
+  const peer: Agent = { ...capable, agentId: "agent_peer", deviceId: null, integrationMode: "peer", name: "Peer reviewer",
+    capabilities: { supportsStart: true, supportsTaskContextIsolation: true } };
+  const props = { disabled: false, locale: "en" as const, onChange() {}, value: { ...defaultDiscussionComposerOptions } };
+  const view = render(<DiscussionComposerPolicy {...props} agents={[capable, peer]} />);
+  try {
+    const policy = within(view.container);
+    fireEvent.click(policy.getByText("Advanced Discussion policy"));
+    assert.ok(policy.getByText(/Peer Discussion waits/u));
+    assert.equal((policy.getByRole("option", { name: "Read-only quorum + late evidence" }) as HTMLOptionElement).disabled, true);
+    assert.equal(policy.queryByRole("alert"), null);
+    view.rerender(<DiscussionComposerPolicy {...props} agents={[{ ...capable, capabilities: { ...capable.capabilities, ownerPrivateOutput: true } }, peer]} />);
+    assert.match(policy.getByRole("alert").textContent!, /cannot include private-output/u);
+    assert.equal(policy.queryByText(/Ordinary all-settled Discussion remains available/u), null);
+  } finally { cleanup(); dom.window.close(); }
+});

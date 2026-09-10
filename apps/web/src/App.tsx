@@ -1944,6 +1944,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             onManualAgentNameChange={setManualAgentName}
             onSetupClosed={() => { setAgentSetupTarget(null); clearSetupPresentation(); }}
             onDevices={() => selectWorkspaceView("devices")}
+            onPeerAccess={() => selectWorkspaceView("members")}
             onOpenHostedRoom={(roomId) => void openHostedRoom(roomId)}
             onAgentChanged={(updated) => setAgents((current) => {
               const exists = current.some(({ agentId }) => agentId === updated.agentId);

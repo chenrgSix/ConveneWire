@@ -306,6 +306,42 @@ test("scoped composer drafts and explicit message recovery", async (t) => {
       assert.equal(quota.result.current.messageContent, "");
     });
 
+    await t.test("Peer Discussion sends an ordinary all-settled Wave without requiring an online hint, but rejects private/quorum/unsupported combinations", async () => {
+      const peer: Agent = { ...reviewer, integrationMode: "peer", deviceId: null, presence: "offline",
+        capabilities: { supportsStart: true, supportsTaskContextIsolation: true } };
+      const input = { agents: [builder, peer], roomAgents: [builder, peer],
+        roomPolicy: { allowAll: true, allowDiscussion: true, allowAgentMentions: true, maxAgentMentionDepth: 4 } };
+      const h = mount(input);
+      assert.equal(h.result.current.discussionOptions.waveCompletionMode, "all_settled");
+      h.type("@Builder @Reviewer review this together");
+      await h.submit();
+      assert.equal(requests.length, 1);
+      assert.equal(requests[0]!.path, "/api/rooms/room_one/discussions");
+      assert.deepEqual(JSON.parse(requests[0]!.body!).participantAgentIds, [builder.agentId, peer.agentId]);
+      assert.equal(JSON.parse(requests[0]!.body!).policy, undefined, "the default all-settled policy stays compatible with the Server default");
+      for (const deniedPeer of [
+        { ...peer, capabilities: { supportsStart: true } },
+        { ...peer, capabilities: { supportsStart: false, supportsTaskContextIsolation: true } },
+        { ...peer, runtimePolicy: { filesystemAccess: "local-policy" as const, deviceTrust: { mode: "full" as const, revision: 1 } } }
+      ]) {
+        h.rerender({ ...h.input, ...input, agents: [builder, deniedPeer], roomAgents: [builder, deniedPeer] });
+        h.type("@Builder @Reviewer keep invalid discussion draft");
+        await h.submit();
+        assert.equal(requests.length, 1);
+        assert.match(errors.at(-1)!, /cannot participate/u);
+        assert.equal(h.result.current.messageContent, "@Builder @Reviewer keep invalid discussion draft");
+      }
+      const privateBuilder = { ...builder, capabilities: { ownerPrivateOutput: true } };
+      h.rerender({ ...h.input, ...input, agents: [privateBuilder, peer], roomAgents: [privateBuilder, peer] });
+      await h.submit();
+      assert.match(errors.at(-1)!, /cannot include private-output/u);
+      h.rerender({ ...h.input, ...input });
+      act(() => h.result.current.setDiscussionOptions({ ...h.result.current.discussionOptions, waveCompletionMode: "read_only_quorum" }));
+      await h.submit();
+      assert.match(errors.at(-1)!, /requires managed read-only/u);
+      assert.equal(requests.length, 1);
+    });
+
     await t.test("Discussion failure stays a draft and recovery never creates or replays an ordinary message", async () => {
       post = () => json({ error: { message: "Discussion rejected" } }, 503);
       const h = mount();
