@@ -28,6 +28,14 @@ $installer = (Resolve-Path -LiteralPath $InstallerPath).Path
 $candidateArchive = (Resolve-Path -LiteralPath $CandidateArchivePath).Path
 $candidateExecutable = (Resolve-Path -LiteralPath $CandidateExecutablePath).Path
 $candidateCLI = Join-Path (Split-Path $candidateExecutable -Parent) "convenewire-bridge.exe"
+$candidateNode = Join-Path (Split-Path $candidateExecutable -Parent) "convenewire-node.exe"
+$candidateHub = Join-Path (Split-Path $candidateExecutable -Parent) "hub"
+$repositoryRoot = Split-Path $bridgeRoot -Parent
+$hubVerifier = Join-Path $repositoryRoot "scripts\local-node\desktop-bundle.mjs"
+$sourceCommit = (& git -C $repositoryRoot rev-parse --verify "HEAD^{commit}").Trim()
+if ($LASTEXITCODE -ne 0 -or $sourceCommit -notmatch '^[0-9a-f]{40}$') { throw "Unable to resolve the candidate source commit" }
+& node $hubVerifier $candidateHub $sourceCommit $ReleaseTag
+if ($LASTEXITCODE -ne 0) { throw "Candidate native Hub verification failed" }
 if (-not (Test-Path -LiteralPath $candidateCLI)) {
   throw "Candidate staged payload omits convenewire-bridge.exe"
 }
@@ -49,10 +57,15 @@ $installLog = Join-Path $verificationRoot "previous-install.log"
 $upgradeLog = Join-Path $verificationRoot "upgrade.log"
 $uninstallLog = Join-Path $verificationRoot "uninstall.log"
 $configDir = Join-Path $env:APPDATA "agentroom"
+$nodeDataDir = Join-Path $configDir "local-node"
 $statePaths = @(
   (Join-Path $configDir "bridge.json"),
   (Join-Path $configDir "agent-identities.json"),
-  (Join-Path $configDir "inbox\run_installer_upgrade_fixture.json")
+  (Join-Path $configDir "inbox\run_installer_upgrade_fixture.json"),
+  (Join-Path $nodeDataDir "identity.json"),
+  (Join-Path $nodeDataDir "hub\hub.sqlite"),
+  (Join-Path $nodeDataDir "peer-ingress.pending.json"),
+  (Join-Path $nodeDataDir "authorities\fixture\settlement.json")
 )
 $inboxDirectory = Join-Path $configDir "inbox"
 $inboxExisted = Test-Path -LiteralPath $inboxDirectory
@@ -137,6 +150,15 @@ $archiveCLISHA256 = Get-SafeZipExecutableSHA256 `
 if ($archiveCLISHA256 -ne $candidateCLISHA256) {
   throw "Candidate ZIP CLI helper differs from the staged executable"
 }
+$candidateNodeSHA256 = (Get-FileHash -LiteralPath $candidateNode -Algorithm SHA256).Hash
+if ((Get-SafeZipExecutableSHA256 $candidateArchive "$candidatePackage/convenewire-node.exe") -ne $candidateNodeSHA256) {
+  throw "Candidate ZIP native Node host differs from staging"
+}
+$candidateHubManifestPath = Join-Path $candidateHub "hub-manifest.json"
+$candidateHubManifestSHA256 = (Get-FileHash -LiteralPath $candidateHubManifestPath -Algorithm SHA256).Hash
+if ((Get-SafeZipExecutableSHA256 $candidateArchive "$candidatePackage/hub/hub-manifest.json") -ne $candidateHubManifestSHA256) {
+  throw "Candidate ZIP Hub manifest differs from staging"
+}
 
 function Invoke-CheckedProcess {
   param(
@@ -206,6 +228,18 @@ function Assert-InstalledPayload {
     if ($installedCLIDigest -ne $candidateCLISHA256) {
       throw "Installed candidate CLI helper differs from staging and ZIP"
     }
+    $installedNode = Join-Path $installDir "convenewire-node.exe"
+    if ((Get-FileHash -LiteralPath $installedNode -Algorithm SHA256).Hash -ne $candidateNodeSHA256) {
+      throw "Installed native Node host differs from staging and ZIP"
+    }
+    $installedHub = Join-Path $installDir "hub"
+    if ((Get-FileHash -LiteralPath (Join-Path $installedHub "hub-manifest.json") -Algorithm SHA256).Hash -ne $candidateHubManifestSHA256) {
+      throw "Installed Hub manifest differs from staging and ZIP"
+    }
+    & node $hubVerifier $installedHub $sourceCommit $ReleaseTag
+    if ($LASTEXITCODE -ne 0) { throw "Installed native Hub verification failed" }
+    $nodeVersion = (& $installedNode --version).Trim()
+    if ($LASTEXITCODE -ne 0 -or $nodeVersion -ne $ReleaseTag) { throw "Installed native Node version mismatch" }
   }
   if (-not (Test-Path -LiteralPath $startMenuLink)) {
     throw "Installer did not create the current-user Start menu shortcut"
@@ -259,7 +293,14 @@ function Install-OwnerStateFixture {
   $state[$statePaths[1]] = '{"agent_fixture":"stable-owner-identity"}'
   $state[$statePaths[2]] =
     '{"runId":"run_installer_upgrade_fixture","state":"accepted","sequence":1}'
+  # Synthetic byte sentinels only. Native state validity and restart/restore
+  # are independently exercised by test:local-node, without installation.
+  $state[$statePaths[3]] = 'fixture stable local Node and Owner identity'
+  $state[$statePaths[4]] = 'fixture stopped Hub database bytes'
+  $state[$statePaths[5]] = 'fixture pending private ingress configuration'
+  $state[$statePaths[6]] = 'fixture private Authority execution settlement'
   foreach ($entry in $state.GetEnumerator()) {
+    New-Item -ItemType Directory -Path (Split-Path $entry.Key -Parent) -Force | Out-Null
     Set-Content -LiteralPath $entry.Key -Value $entry.Value -NoNewline
     $script:stateDigests[$entry.Key] =
       (Get-FileHash -LiteralPath $entry.Key -Algorithm SHA256).Hash
@@ -283,6 +324,9 @@ foreach ($path in $statePaths) {
     throw "Installer verification refuses to replace existing owner state: $path"
   }
 }
+if (Test-Path -LiteralPath $nodeDataDir) {
+  throw "Installer verification refuses to replace an existing Local Node data root"
+}
 if (Test-Path -LiteralPath $installDir) {
   throw "Installer verification refuses to replace an existing installation: $installDir"
 }
@@ -304,6 +348,9 @@ try {
   Assert-InstalledPayload -ExpectedReleaseTag $PreviousReleaseTag
   Install-OwnerStateFixture
   Assert-OwnerStateFixture
+  $retiredHubFile = Join-Path $installDir "hub\retired-upgrade-fixture.txt"
+  New-Item -ItemType Directory -Path (Split-Path $retiredHubFile -Parent) -Force | Out-Null
+  Set-Content -LiteralPath $retiredHubFile -Value "obsolete managed payload"
 
   $upgradeArguments = @(
     "/VERYSILENT",
@@ -317,6 +364,7 @@ try {
     -ExpectedExecutableSHA256 $candidateExecutableSHA256 `
     -RequireCLIHelper
   Assert-OwnerStateFixture
+  if (Test-Path -LiteralPath $retiredHubFile) { throw "Upgrade retained obsolete managed Hub content" }
 
   $uninstaller = Join-Path $installDir "unins000.exe"
   $uninstallArguments = @(
@@ -331,6 +379,10 @@ try {
   }
   if (Test-Path -LiteralPath (Join-Path $installDir "convenewire-bridge.exe")) {
     throw "Uninstaller left the managed CLI helper behind"
+  }
+  if ((Test-Path -LiteralPath (Join-Path $installDir "convenewire-node.exe")) -or
+      (Test-Path -LiteralPath (Join-Path $installDir "hub"))) {
+    throw "Uninstaller left managed Local Node payload behind"
   }
   if (Test-Path -LiteralPath $startMenuLink) {
     throw "Uninstaller left the managed Start menu shortcut behind"
@@ -352,6 +404,7 @@ finally {
       Remove-Item -LiteralPath $path -Force
     }
   }
+  if (Test-Path -LiteralPath $nodeDataDir) { Remove-Item -LiteralPath $nodeDataDir -Recurse -Force }
   if (-not $inboxExisted -and (Test-Path -LiteralPath $inboxDirectory) -and
       (@(Get-ChildItem `
           -LiteralPath $inboxDirectory `

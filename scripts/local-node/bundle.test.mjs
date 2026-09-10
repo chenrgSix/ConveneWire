@@ -50,7 +50,10 @@ test("native Hub starts without PATH tools; SQLite, static Web and exhaustive ta
     assert.equal(bootstrap.status, 200);
     child.kill("SIGTERM");
     const [code] = await exited;
-    assert.equal(code, 0, logs);
+    // Node's Windows kill emulation forcibly terminates the direct Hub child.
+    // Graceful shutdown and retained SQLite state are tested through the native
+    // supervisor's stdin control channel in supervisor.test.mjs on both OSes.
+    assert.equal(code, process.platform === "win32" ? 1 : 0, logs);
     child = undefined;
     const asset = path.join(output, "apps/web/dist/index.html");
     const original = await readFile(asset);

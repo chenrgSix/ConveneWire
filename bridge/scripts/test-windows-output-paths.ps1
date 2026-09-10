@@ -14,7 +14,7 @@ $end = $source.IndexOf('if ([string]::IsNullOrWhiteSpace($ReleaseTag))')
 if ($start -lt 0 -or $end -le $start) { throw "Missing output initialization" }
 $initialize = $source.Substring($start, $end - $start)
 $assignments = @{}
-foreach ($name in @("package", "staging", "binary", "cliBinary", "archive", "installerBase", "installer", "buildArguments", "cliBuildArguments", "compilerArguments")) {
+foreach ($name in @("package", "staging", "binary", "cliBinary", "nodeBinary", "archive", "installerBase", "installer", "buildArguments", "cliBuildArguments", "compilerArguments")) {
   $matches = @($ast.FindAll({ param($node)
     $node -is [Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq ('$' + $name)
   }, $true))
@@ -43,7 +43,7 @@ try {
           $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($requested)
         }
         Invoke-Expression $initialize
-        foreach ($name in @("package", "staging", "binary", "cliBinary", "archive", "installerBase", "installer", "buildArguments", "cliBuildArguments", "compilerArguments")) {
+        foreach ($name in @("package", "staging", "binary", "cliBinary", "nodeBinary", "archive", "installerBase", "installer", "buildArguments", "cliBuildArguments", "compilerArguments")) {
           Invoke-Expression $assignments[$name]
         }
         Push-Location $otherDirectory
@@ -51,7 +51,7 @@ try {
           if ($OutputDir -ne $expected -or -not [IO.Path]::IsPathFullyQualified($OutputDir)) {
             throw "Output did not resolve against caller: '$requested'"
           }
-          foreach ($artifact in @($binary, $cliBinary, $archive, $installer)) {
+          foreach ($artifact in @($binary, $cliBinary, $nodeBinary, $archive, $installer)) {
             if (-not [IO.Path]::IsPathFullyQualified($artifact) -or -not $artifact.StartsWith($expected + [IO.Path]::DirectorySeparatorChar)) {
               throw "Artifact escaped normalized output: $artifact"
             }

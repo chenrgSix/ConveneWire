@@ -37,7 +37,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 CloseApplications=yes
-CloseApplicationsFilter=ConveneWire Bridge.exe,AgentRoom Bridge.exe
+CloseApplicationsFilter=ConveneWire Bridge.exe,AgentRoom Bridge.exe,convenewire-node.exe,node.exe,*.node
 RestartApplications=no
 Uninstallable=yes
 UninstallDisplayName=ConveneWire Bridge
@@ -78,6 +78,8 @@ Source: "{#SourceDir}\TRADEMARKS.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [InstallDelete]
 Type: files; Name: "{app}\AgentRoom Bridge.exe"
+; This is the managed runtime payload. Owner data lives outside {app}.
+Type: filesandordirs; Name: "{app}\hub"
 
 [Icons]
 Name: "{group}\ConveneWire Bridge"; Filename: "{app}\ConveneWire Bridge.exe"; WorkingDir: "{app}"; IconFilename: "{app}\ConveneWire Bridge.exe"; IconIndex: 0

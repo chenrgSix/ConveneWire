@@ -350,6 +350,15 @@ and exact `SOURCE_REF` commit. A release bundle must record a clean checkout;
 only `v0.0.0-local` allows a manifest explicitly recording local modifications.
 The `package:local-node` wrapper prepares this input automatically.
 
+`node scripts/local-node/release-hub.mjs HUB_DIRECTORY SOURCE_COMMIT RELEASE_TAG PLATFORM ARCH`
+inspects an extracted distribution against its explicit target without running
+foreign code. It requires a clean source manifest even for a local version.
+The combined release verifier calls it only after
+`python3 scripts/local-node/verify-desktop-zip.py ARCHIVE PACKAGE` validates the
+desktop ZIP before extraction. Python is used by these ZIP regression checks
+(`python` on Windows, `python3` elsewhere). Native build and launch continue to
+use the current-platform `bundle.mjs verify` admission.
+
 ## Local Node desktop and recovery
 
 `node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-ingress-configuration.test.ts test/native-peer-ingress.test.ts test/local-node.test.ts test/peer-human-entry.test.ts`

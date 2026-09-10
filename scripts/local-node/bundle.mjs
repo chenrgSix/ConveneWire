@@ -23,10 +23,17 @@ async function inventory(root, relative = "") {
 }
 
 export async function verifyBundle(root) {
+  return verifyBundleForTarget(root, process.platform, process.arch);
+}
+
+// Distribution inspection may run on a different host; native launch and build
+// callers keep using verifyBundle and cannot select a foreign runtime.
+export async function verifyBundleForTarget(root, platform, arch) {
+  if (!["darwin", "win32", "linux"].includes(platform) || !["x64", "arm64"].includes(arch)) throw new Error("Invalid Hub target");
   const raw = await readFile(path.join(root, manifestName));
   const manifest = JSON.parse(raw);
   if (Object.keys(manifest).sort().join() !== "arch,files,nodeVersion,platform,releaseVersion,schemaVersion,sourceCommit,sourceState" ||
-      !/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.test(manifest.releaseVersion) || manifest.schemaVersion !== 1 || manifest.platform !== process.platform || manifest.arch !== process.arch ||
+      !/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.test(manifest.releaseVersion) || manifest.schemaVersion !== 1 || manifest.platform !== platform || manifest.arch !== arch ||
       !/^v22\.\d+\.\d+$/u.test(manifest.nodeVersion) || !/^[a-f0-9]{40}$/u.test(manifest.sourceCommit) ||
       !["clean", "modified"].includes(manifest.sourceState) || !Array.isArray(manifest.files) || manifest.files.length < 1) throw new Error("Invalid or incompatible Hub manifest");
   const seen = new Set();
@@ -35,7 +42,7 @@ export async function verifyBundle(root) {
         !Number.isSafeInteger(entry.size) || entry.size < 0 || !/^[a-f0-9]{64}$/u.test(entry.sha256)) throw new Error("Invalid Hub file manifest");
     seen.add(entry.path);
   }
-  for (const required of [process.platform === "win32" ? "bin/node.exe" : "bin/node", "apps/server/dist/server.js", "apps/server/dist/local-node.js", "apps/web/dist/index.html",
+  for (const required of [platform === "win32" ? "bin/node.exe" : "bin/node", "apps/server/dist/server.js", "apps/server/dist/local-node.js", "apps/web/dist/index.html",
     "node_modules/better-sqlite3/package.json", "node_modules/@convene-wire/contracts/package.json", "NODE-LICENSE", "LICENSE", "NOTICE"]) {
     if (!seen.has(required)) throw new Error(`Missing Hub runtime file: ${required}`);
   }

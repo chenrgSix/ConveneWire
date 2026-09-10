@@ -94,3 +94,17 @@ test("Windows CI and Release execute production-expression output-path regressio
     assert.ok(source.includes("./scripts/test-windows-output-paths.ps1"));
   }
 });
+
+test("Windows upgrades replace only the managed Hub and require both Node payload components", async () => {
+  const source = await readFile(path.join(root, "bridge/desktop/windows/installer.iss"), "utf8");
+  const files = source.split("[Files]\n")[1].split("\n[InstallDelete]")[0];
+  assert.match(files, /Source: "\{#SourceDir\}\\hub\\\*"; DestDir: "\{app\}\\hub"/u);
+  assert.match(files, /Source: "\{#SourceDir\}\\convenewire-node\.exe"/u);
+  assert.ok(!files.includes("#if"));
+  const deletes = source.split("[InstallDelete]\n")[1].split("\n[Icons]")[0];
+  const targets = deletes.split("\n").filter(line => line.startsWith("Type:"));
+  assert.deepEqual(targets, [
+    'Type: files; Name: "{app}\\AgentRoom Bridge.exe"',
+    'Type: filesandordirs; Name: "{app}\\hub"'
+  ], "upgrade must not acquire ownership of the private Node or legacy profile");
+});

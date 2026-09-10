@@ -268,6 +268,7 @@ verify_macos_desktop_archive() {
   local helper
 
   mkdir -p "${extraction}"
+  python3 "${repository_root}/scripts/local-node/verify-desktop-zip.py" "${asset_dir}/${archive}" "${package}"
   unzip -Z1 "${asset_dir}/${archive}" > "${members}"
   assert_safe_members "${archive}" "${members}"
   unzip -q "${asset_dir}/${archive}" -d "${extraction}"
@@ -300,6 +301,11 @@ verify_macos_desktop_archive() {
   assert_binary_architecture "${binary}" "darwin/${architecture}"
   assert_binary_version "${helper}"
   assert_binary_architecture "${helper}" "darwin/${architecture}"
+  assert_binary_version "${resources}/bin/convenewire-node"
+  assert_binary_architecture "${resources}/bin/convenewire-node" "darwin/${architecture}"
+  [[ -x "${resources}/bin/convenewire-node" && -x "${resources}/hub/bin/node" ]]
+  node "${repository_root}/scripts/local-node/release-hub.mjs" "${resources}/hub" "${source_commit}" "${release_tag}" darwin arm64
+  assert_binary_architecture "${resources}/hub/bin/node" "darwin/${architecture}"
   assert_licenses "${resources}"
 }
 
@@ -314,6 +320,7 @@ verify_windows_desktop_archive() {
   local helper
 
   mkdir -p "${extraction}"
+  python3 "${repository_root}/scripts/local-node/verify-desktop-zip.py" "${asset_dir}/${archive}" "${package}"
   unzip -Z1 "${asset_dir}/${archive}" > "${members}"
   assert_safe_members "${archive}" "${members}"
   unzip -q "${asset_dir}/${archive}" -d "${extraction}"
@@ -329,6 +336,10 @@ verify_windows_desktop_archive() {
   assert_binary_architecture "${binary}" "windows/${architecture}"
   assert_binary_version "${helper}"
   assert_binary_architecture "${helper}" "windows/${architecture}"
+  assert_binary_version "${root}/convenewire-node.exe"
+  assert_binary_architecture "${root}/convenewire-node.exe" "windows/${architecture}"
+  node "${repository_root}/scripts/local-node/release-hub.mjs" "${root}/hub" "${source_commit}" "${release_tag}" win32 x64
+  assert_binary_architecture "${root}/hub/bin/node.exe" "windows/${architecture}"
   assert_licenses "${root}"
 }
 

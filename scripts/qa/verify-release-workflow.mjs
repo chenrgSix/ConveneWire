@@ -72,6 +72,7 @@ export function assertTagSource(sourceSha, tagSourceSha) {
 }
 
 export function verifyCIWorkflowSource(source) {
+  verifyNativeNodeJobs(source);
   invariant(
     source.includes("runs-on: windows-latest"),
     "CI must retain one native Windows job"
@@ -110,7 +111,12 @@ export function verifyReleaseAssetVerifierSource(source) {
     "verify_macos_desktop_archive \"${desktop_archives[0]}\" arm64",
     "verify_windows_desktop_archive \"${desktop_archives[1]}\" amd64",
     'helper="${resources}/bin/convenewire-bridge"',
-    'helper="${root}/convenewire-bridge.exe"'
+    'helper="${root}/convenewire-bridge.exe"',
+    '"${repository_root}/scripts/local-node/verify-desktop-zip.py"',
+    '"${resources}/bin/convenewire-node"',
+    '"${root}/convenewire-node.exe"',
+    '"${repository_root}/scripts/local-node/release-hub.mjs" "${resources}/hub" "${source_commit}" "${release_tag}" darwin arm64',
+    '"${repository_root}/scripts/local-node/release-hub.mjs" "${root}/hub" "${source_commit}" "${release_tag}" win32 x64'
   ];
   assertIncludes(source, requiredAssets, "combined Release asset verifier");
   for (const retiredAsset of [
@@ -128,6 +134,15 @@ export function verifyReleaseAssetVerifierSource(source) {
 }
 
 export function verifyWindowsInstallerVerifierSource(source) {
+  assertIncludes(source, [
+    'throw "Installed native Node host differs from staging and ZIP"',
+    'throw "Installed Hub manifest differs from staging and ZIP"',
+    '& node $hubVerifier $installedHub $sourceCommit $ReleaseTag',
+    'if ($LASTEXITCODE -ne 0) { throw "Installed native Hub verification failed" }',
+    'throw "Uninstaller left managed Local Node payload behind"',
+    'throw "Installer verification refuses to replace an existing Local Node data root"',
+    'throw "Upgrade retained obsolete managed Hub content"'
+  ], "Windows Node installer verifier");
   assertIncludes(source, [
     "[switch]$RequireCLIHelper",
     'if ($RequireCLIHelper) {',
@@ -379,7 +394,31 @@ function assertBefore(block, earlier, later, scope) {
   invariant(earlierIndex < laterIndex, `${scope} must run ${earlier} before ${later}`);
 }
 
+export function verifyNativeNodeJobs(source) {
+  const jobs = jobBlocks(source);
+  for (const name of ["desktop-macos", "desktop-windows"]) {
+    const job = requireJob(jobs, name);
+    const gate = stepForName(job, "Build and verify native Node bundle");
+    const setup = stepForName(job, "Set up Node.js");
+    assertIncludes(setup, ["uses: actions/setup-node@", "node-version: 22.23.1"], `${name} Node toolchain`);
+    assertIncludes(gate, ["shell: bash", "LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub"], `${name} native Node gate`);
+    invariant(!/^\s+(?:if|continue-on-error):/mu.test(gate), `${name} native Node gate cannot be skipped or allowed to fail`);
+    const commands = ["npm ci", "npm run build:local-hub", "npm run test:local-hub-bundle", "npm run test:local-node",
+      'node scripts/local-node/bundle.mjs build "$LOCAL_HUB_BUNDLE"'];
+    for (const command of commands) {
+      invariant(gate.split("\n").includes(`          ${command}`), `${name} native Node gate must execute ${command}`);
+    }
+    for (let index = 1; index < commands.length; index++) assertBefore(gate, commands[index - 1], commands[index], `${name} native Node gate`);
+    const packaging = name === "desktop-macos" ? "package-desktop-darwin.sh" : "package-desktop-windows.ps1";
+    const position = job.indexOf(packaging);
+    invariant(position > job.indexOf(gate), `${name} must package after native Node verification`);
+    const packageStep = job.slice(job.lastIndexOf("      - name:", position), position);
+    assertIncludes(packageStep, ["LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub"], `${name} native package input`);
+  }
+}
+
 export function verifyReleaseWorkflowSource(source) {
+  verifyNativeNodeJobs(source);
   verifyWindowsNativeFailures(source);
   const jobs = jobBlocks(source);
   const validate = requireJob(jobs, "validate-release");

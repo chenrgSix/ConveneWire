@@ -250,12 +250,18 @@ jobs:
     name: Build desktop macOS/arm64
     needs: [validate-release, repository-gates, go-gates]
     runs-on: macos-15
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.validate-release.outputs.source_sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22.23.1
+          cache: npm
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
@@ -265,6 +271,17 @@ jobs:
             bridge/go.sum
             packages/contracts/go.sum
 
+      - name: Build and verify native Node bundle
+        shell: bash
+        env:
+          LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub
+        run: |
+          npm ci
+          npm run build:local-hub
+          npm run test:local-hub-bundle
+          npm run test:local-node
+          node scripts/local-node/bundle.mjs build "$LOCAL_HUB_BUNDLE"
+
       - name: Test desktop shell
         working-directory: bridge
         run: go test -tags desktop ./cmd/convenewire-bridge-desktop
@@ -273,6 +290,7 @@ jobs:
         shell: bash
         working-directory: bridge
         env:
+          LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub
           GOARCH: arm64
           OUTPUT_DIR: ${{ github.workspace }}/dist
           SOURCE_REF: ${{ needs.validate-release.outputs.source_sha }}
@@ -290,12 +308,18 @@ jobs:
     name: Build desktop Windows/amd64
     needs: [validate-release, repository-gates, go-gates]
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ needs.validate-release.outputs.source_sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22.23.1
+          cache: npm
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
@@ -305,6 +329,17 @@ jobs:
             bridge/go.sum
             packages/contracts/go.sum
             bridge/tools/windows-resources/go.sum
+
+      - name: Build and verify native Node bundle
+        shell: bash
+        env:
+          LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub
+        run: |
+          npm ci
+          npm run build:local-hub
+          npm run test:local-hub-bundle
+          npm run test:local-node
+          node scripts/local-node/bundle.mjs build "$LOCAL_HUB_BUNDLE"
 
       - name: Test and check Windows product icon resources
         working-directory: bridge/tools/windows-resources
@@ -368,6 +403,7 @@ jobs:
         working-directory: bridge
         shell: pwsh
         env:
+          LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub
           GOARCH: amd64
           OUTPUT_DIR: ${{ github.workspace }}/dist
           SOURCE_REF: ${{ needs.validate-release.outputs.source_sha }}

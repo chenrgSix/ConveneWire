@@ -62,6 +62,31 @@ test("Release workflow binds every checkout and build gate to one source SHA", (
   assert.doesNotThrow(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier));
 });
 
+test("both native pipelines retain executable Hub gates and pass the verified bundle into packaging", () => {
+  for (const [source, verify] of [[workflow, verifyReleaseWorkflowSource], [ciWorkflow, verifyCIWorkflowSource]]) {
+    for (const name of ["desktop-macos", "desktop-windows"]) {
+      for (const command of ["npm ci", "npm run build:local-hub", "npm run test:local-hub-bundle", "npm run test:local-node"]) {
+        const changed = mutateJob(source, name, block => block.replace(`          ${command}\n`, `          # ${command}\n`));
+        assert.throws(() => verify(changed), /native Node gate/u);
+      }
+      const disconnected = mutateJob(source, name, block => {
+        const marker = "LOCAL_HUB_BUNDLE: ${{ runner.temp }}/convenewire-native-hub";
+        const position = block.lastIndexOf(marker);
+        return block.slice(0, position) + block.slice(position).replace(marker, "LOCAL_HUB_BUNDLE: unrelated");
+      });
+      assert.throws(() => verify(disconnected), /native package input/u);
+    }
+  }
+});
+
+test("release and installed payload verification cannot omit Node-first inventory admission", () => {
+  for (const marker of ["verify-desktop-zip.py", "release-hub.mjs", "convenewire-node.exe"]) {
+    assert.throws(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier.replaceAll(marker, "removed")), /combined Release asset verifier/u);
+  }
+  assert.throws(() => verifyWindowsInstallerVerifierSource(windowsInstallerVerifier.replace(
+    '& node $hubVerifier $installedHub $sourceCommit $ReleaseTag', '# Hub inspection removed')), /Windows Node installer verifier/u);
+});
+
 test("combined asset verifier cannot restore a retired top-level package", () => {
   const changed = releaseAssetVerifier.replace(
     '"convenewire-bridge_${version}_linux_amd64.tar.gz"',

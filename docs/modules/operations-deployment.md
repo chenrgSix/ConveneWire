@@ -47,8 +47,33 @@ archived Hub file against the staged inventory, including the manifest itself,
 and compares all three native executables with their staged bytes. License
 discovery supports both the Windows executable-directory and Unix bin-directory
 Node distribution layouts. Native Hub/tamper/admission tests pass 3/3 and existing
-output-path/release-policy regressions pass 26/26. CI integration and installed
-upgrade evidence remain tracked by OPS-020 in TASKS.md.
+output-path/release-policy regressions passed 26/26 in the first increment.
+
+Both native CI/release jobs now install the locked build dependencies, build
+the Hub, run the bundled offline Run/Discussion/restart/restore scenarios, then
+pass a verified Hub into native desktop packaging. The distributed ZIP verifier
+rejects unsafe, duplicate, case-colliding and symbolic-link entries before
+extraction. Release inspection reuses the closed inventory against an explicit
+target platform, checks clean exact-source identity and each native executable's
+architecture; ordinary Hub launch still requires the current native platform.
+This does not execute a foreign binary on the release aggregation worker.
+
+Windows installation replaces only the managed `{app}\hub` payload to remove
+obsolete files. The candidate upgrade verifier compares the installed native
+Node executable and Hub manifest with staging/ZIP, then verifies every installed
+Hub byte. It checks that synthetic legacy profile, local identity, database,
+pending-network and execution-record sentinels remain unchanged through upgrade
+and uninstall. These byte sentinels do not claim valid Runtime state; the actual
+native offline scenario separately verifies identity, completed records, network
+activation and restart/restore. The installer preserves its existing App ID,
+protocol schemes and data locations. Stop the Node and keep its backup and old
+bundle before upgrade; this workflow does not claim atomic installer rollback.
+
+The expanded local inventory/path suite passes 5/5, workflow/packaging policy
+passes 29/29 and the actual native offline loop passes. Windows PowerShell and
+installation checks are wired into the native Windows jobs but have not executed
+on this macOS host. Actual CI and public release remain separate evidence gates;
+delivery state stays in TASKS.md.
 
 ## Native Peer HTTPS ingress
 
