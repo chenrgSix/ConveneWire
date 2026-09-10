@@ -37,6 +37,7 @@ func (s *Sources) Resolve(localAgentID string) (ExportSource, error) {
 	}
 	agent = cloneSourceConfig(agent)
 	agent.AuthorityNodeID = ""
+	agent.PeerRuntimeNamespace = ""
 	agent.TrustedExecutionRevision, agent.CentralApprovalRevision = 0, 0
 	var adapter bridgeruntime.Adapter
 	switch {

@@ -15,6 +15,29 @@ import (
 	contracts "convenewire.dev/contracts/generated/go"
 )
 
+func TestPeerProcessTracksAnActualRestrictedGenericChild(t *testing.T) {
+	file, err := os.CreateTemp(t.TempDir(), "peer-process-lock")
+	if err != nil {
+		t.Fatal(err)
+	}
+	lease := &governedProcessLeaseStub{lockFile: file}
+	tracker := &governedProcessTrackerStub{lease: lease}
+	binding := peerProcessBinding()
+	adapter := PeerProcessAdapter{Tracker: tracker, Binding: binding, Adapter: GenericAdapter{Config: config.AgentConfig{
+		Command: []string{"/bin/sh", "-c", "printf peer-completed"}, Workspace: t.TempDir()}}}
+	var reply string
+	if err := adapter.Execute(context.Background(), Request{Run: contracts.RunRequestedPayload{RunID: binding.RunID,
+		RoomID: binding.RoomID, TargetAgentID: binding.ProjectionAgentID}}, func(_ context.Context, event Event) error {
+		reply += event.Reply
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if reply != "peer-completed" || tracker.prepared != 1 || lease.started != 1 || lease.finished != 1 || lease.observation.PID <= 0 {
+		t.Fatal("Peer process did not retain actual lifecycle", reply, tracker.prepared, lease.started, lease.finished)
+	}
+}
+
 func TestGovernedUnixRuntimeCannotExecuteBeforeDurableObservation(t *testing.T) {
 	directory := t.TempDir()
 	marker := filepath.Join(directory, "runtime-started")

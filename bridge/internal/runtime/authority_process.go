@@ -12,6 +12,7 @@ import (
 type authorityProcessContextKey struct{}
 type authorityProcessContext struct {
 	tracker       GovernedProcessTracker
+	domain        string
 	namespace     string
 	payloadDigest string
 	attempt       atomic.Uint64
@@ -40,7 +41,11 @@ func (a AuthorityProcessAdapter) Execute(ctx context.Context, request Request, e
 }
 func processDigest(raw []byte) string { sum := sha256.Sum256(raw); return hex.EncodeToString(sum[:]) }
 func (p *authorityProcessContext) identity() GovernedProcessIdentity {
-	scope := fmt.Sprintf("convenewire.authority.process.v1\x00%s\x00%d", p.namespace, p.attempt.Add(1))
+	domain := p.domain
+	if domain == "" {
+		domain = "convenewire.authority.process.v1"
+	}
+	scope := fmt.Sprintf("%s\x00%s\x00%d", domain, p.namespace, p.attempt.Add(1))
 	digest := processDigest([]byte(scope))
 	return GovernedProcessIdentity{RunID: "run_" + digest, AdmissionDigest: p.payloadDigest, StartDigest: digest}
 }

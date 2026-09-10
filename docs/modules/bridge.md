@@ -198,6 +198,24 @@ test uses this durable departure path. Authenticated Console regressions verify
 local invalidation before Host wait; the bundled fixture reads the actual native
 departure inventory. Product controls remain WEB-085 work.
 
+The Runtime SDK adds a Peer-specific process adapter. Its stable process
+namespace includes Authority Node, Participant Node, Peer and Run; its admission
+digest binds the immutable Peer execution pins and actual Runtime request.
+Changed input, Export or Acceptance pins for the same Peer Run therefore collide
+with existing process evidence instead of allocating a new process identity.
+Different Peers and the legacy Device path cannot share that identity. An actual
+offline Generic child test verifies durable prepare/start/finish observation.
+
+Native Peer composition can also supply a private `PeerRuntimeNamespace` to the
+Runtime Session fingerprint, separating Pi native IDs and persisted Session keys
+even when one Host reuses the same Room/Task/Agent identifiers across Peers.
+This value cannot come from Agent JSON; source resolution clears any prior Peer
+namespace along with Device authority. Empty namespace preserves the previous
+Device fingerprint and process namespace. The shared-core Peer factory and
+authenticated Run transport still need to consume these SDK boundaries.
+Owning Runtime/config/Peer/core race tests and vet pass, along with Windows
+Runtime test-binary compilation; this is not Windows physical execution.
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

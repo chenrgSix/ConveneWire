@@ -75,6 +75,8 @@ func (c Config) ResolvedAgentProvisioningMode() AgentProvisioningMode {
 type AgentConfig struct {
 	// Set by the authenticated connector composition, never accepted from Agent JSON.
 	AuthorityNodeID string `json:"-"`
+	// Set only by native Peer composition; never inherited from Device configuration.
+	PeerRuntimeNamespace string `json:"-"`
 	// Derived only from the paired device's local consent; never accepted from Agent JSON.
 	CentralApprovalRevision    int64                      `json:"-"`
 	TrustedExecutionRevision   int64                      `json:"-"`

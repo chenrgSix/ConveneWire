@@ -12,6 +12,7 @@ func TestNativeSourcesPinIndependentRestrictedCopiesAndActualAdapterCapabilities
 	agent.Adapter, agent.RuntimeKind = "codex", "codex"
 	agent.Sandbox, agent.AuthorityNodeID = "danger-full-access", "node_deviceauthority001"
 	agent.TrustedExecutionRevision, agent.CentralApprovalRevision = 8, 9
+	agent.PeerRuntimeNamespace = "a-prior-peer-namespace"
 	agent.Command = []string{"codex", "app-server"}
 	agent.EnvAllowlist = []string{"LOCAL_RUNTIME_KEY"}
 	sources, err := NewSources([]config.AgentConfig{agent}, map[string]string{agent.Name: local.AgentID})
@@ -25,7 +26,7 @@ func TestNativeSourcesPinIndependentRestrictedCopiesAndActualAdapterCapabilities
 	}
 	cfg := source.Configuration
 	if cfg.Command[0] != "codex" || cfg.EnvAllowlist[0] != "LOCAL_RUNTIME_KEY" || cfg.Sandbox != "workspace-write" ||
-		cfg.AuthorityNodeID != "" || cfg.TrustedExecutionRevision != 0 || cfg.CentralApprovalRevision != 0 ||
+		cfg.AuthorityNodeID != "" || cfg.PeerRuntimeNamespace != "" || cfg.TrustedExecutionRevision != 0 || cfg.CentralApprovalRevision != 0 ||
 		!source.Capabilities.SupportsResume || !source.Capabilities.SupportsStreaming || !source.Capabilities.SupportsInterrupt ||
 		source.Capabilities.SupportsOwnerPrivateOutput {
 		t.Fatal("Peer source inherited Device authority or caller mutations", source)

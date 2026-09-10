@@ -136,6 +136,7 @@ func fingerprintRuntimeConfig(configuration config.AgentConfig) (string, error) 
 	sort.Strings(envAllowlist)
 	semantic := struct {
 		AuthorityNodeID          string   `json:"authorityNodeId,omitempty"`
+		PeerRuntimeNamespace     string   `json:"peerRuntimeNamespace,omitempty"`
 		CentralApprovalRevision  int64    `json:"centralApprovalRevision,omitempty"`
 		TrustedExecutionRevision int64    `json:"trustedExecutionRevision,omitempty"`
 		Adapter                  string   `json:"adapter"`
@@ -148,6 +149,7 @@ func fingerprintRuntimeConfig(configuration config.AgentConfig) (string, error) 
 		OwnerPrivateOutput       bool     `json:"ownerPrivateOutput,omitempty"`
 	}{
 		AuthorityNodeID:          configuration.AuthorityNodeID,
+		PeerRuntimeNamespace:     configuration.PeerRuntimeNamespace,
 		TrustedExecutionRevision: configuration.TrustedExecutionRevision,
 		CentralApprovalRevision:  configuration.CentralApprovalRevision,
 		Adapter:                  configuration.Adapter,
