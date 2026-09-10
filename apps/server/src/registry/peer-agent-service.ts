@@ -69,7 +69,7 @@ export class PeerAgentService {
 
   public listOffers(actor: WebPrincipal, teamId: string) {
     this.requireOwner(actor, teamId);
-    const rows = this.database.prepare(`SELECT o.payload_json, o.offer_digest FROM peer_export_heads h
+    const rows = this.database.prepare(`SELECT o.payload_json, o.offer_digest, o.grant_digest FROM peer_export_heads h
       JOIN peer_export_revisions r ON r.export_id = h.export_id
       JOIN peer_agent_offers o ON o.export_id = r.export_id AND o.grant_revision = r.revision
       JOIN peer_memberships m ON m.peer_id = h.peer_id
@@ -77,7 +77,7 @@ export class PeerAgentService {
       ORDER BY o.received_at, h.peer_id, h.local_agent_id`).all(teamId) as OfferRow[];
     return rows.map(row => {
       const offer = JSON.parse(row.payload_json) as PeerAgentOffer;
-      return { offer, offerDigest: row.offer_digest,
+      return { offer, offerDigest: row.offer_digest, grantDigest: row.grant_digest,
         acceptance: this.grants.currentAcceptance(offer.grant.peerId, offer.grant.localAgentId)?.value ?? null };
     });
   }

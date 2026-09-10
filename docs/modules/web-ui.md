@@ -14,7 +14,42 @@ The read model omits invitation secrets, credential IDs/hashes, claim proofs and
 remote local User IDs. A full Owner session and current Team membership are
 required before any query. Authenticated Room guests, ordinary Members, unknown
 Teams and machine credentials are denied; another authorized Team returns only
-its own records. UI integration remains active in WEB-085.
+its own records.
+
+The Owner's Team/member settings now open one collaboration dialog. Invitations
+default to one current Room, explicitly offer Team scope and a 1/7/30-day
+membership, and expire after one hour. The one-use invitation is shown only
+after a successful response; copying is explicit and closing/expiry clears the
+in-memory secret. No browser storage or remote request carries it automatically.
+Agent review shows the source member, offered expiry and selectable Room subset.
+Acceptance pins the server-provided offer/grant digests and previous acceptance
+revision. Changed offers or concurrent decisions invalidate an unsubmitted
+review. Existing acceptance remains visible as unavailable after membership
+revocation. Agent, membership and invitation revocations each review their
+specific scope before submission.
+
+An ambiguous write retains the exact operation for retry, including its original
+expiry and decision revision, even if polling already observes its commit.
+Polling cannot erase a mutation error. Team/session changes retire old reads,
+late responses and invitation display. Missing current access disables decisions.
+All requests stay on the current Host origin with its Web session; a received
+offer does not itself create a projection or authorize execution.
+
+Focused Web tests cover exact retry, current review, scope/session retirement,
+revocation targets and unavailable access; the HTTP test checks the digests
+against the actual signed offer. The production build was inspected through a
+disposable native Local Hub with actual Peer HTTPS admission at
+[1280px](../acceptance/assets/web-085/host-1280.png),
+[720px](../acceptance/assets/web-085/host-720.png) and
+[390px](../acceptance/assets/web-085/host-390.png).
+The [Agent review](../acceptance/assets/web-085/host-review-390.png) and
+[invitation form](../acceptance/assets/web-085/host-invitation-390.png) fit the
+narrow viewport without horizontal dialog overflow; Tab cycles to the close
+control and Escape restores the trigger. Browser automation did not submit
+access changes: automatic approval rejected the specific acceptance click as
+requiring action-time consent. That interaction remains in the final QA-092
+manual gate; component and Server mutation regressions are separate evidence.
+Native Console/Space UI integration remains active in WEB-085.
 
 ## Authority-bound Spaces
 

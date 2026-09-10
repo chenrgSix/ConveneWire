@@ -52,6 +52,7 @@ import { useRoomComposer } from "./features/room/useRoomComposer.js";
 import { clearComposerUserState } from "./features/room/composer-storage.js";
 import { useWorkspaceNavigation } from "./features/navigation/useWorkspaceNavigation.js";
 import { TeamMembersWorkspace } from "./features/team/TeamMembersWorkspace.js";
+import { PeerHostPanel } from "./features/team/PeerHostPanel.js";
 import {
   ResourceLifecycleDialog,
   RoomArchiveDialog,
@@ -1888,7 +1889,11 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
           </div>
         ) : activeView === "members" ? (
           <>
-          {currentMember?.role === "owner" && <div className="management-page-actions"><button onClick={() => void openLifecycleDialog()} type="button">{locale === "zh-CN" ? "资源生命周期" : "Resource lifecycle"}</button></div>}
+          {currentMember?.role === "owner" && <div className="management-page-actions">
+            <button onClick={() => void openLifecycleDialog()} type="button">{locale === "zh-CN" ? "资源生命周期" : "Resource lifecycle"}</button>
+            {session && <PeerHostPanel key={`${selectedTeam.teamId}:${session.userId}:${session.token ?? "cookie"}`} teamId={selectedTeam.teamId}
+              teamName={selectedTeam.name} rooms={rooms} locale={locale} sessionToken={session.token} />}
+          </div>}
           <TeamMembersWorkspace
             key={selectedTeam.teamId}
             error={error ? errorLabel(error, locale) : null}

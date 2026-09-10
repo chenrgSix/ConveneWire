@@ -1353,3 +1353,30 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .space-directory a { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border, #39433e); overflow-wrap: anywhere; }
 .space-directory a:hover { background: var(--cw-surface-raised, #39433e); }
 .space-directory small, .space-directory > span { opacity: .7; font-size: 11px; }
+/* Owner-scoped Peer access controls share the existing product dialog. */
+.peer-host-panel { min-width: 0; display: grid; gap: 16px; }
+.peer-host-panel section { min-width: 0; display: grid; gap: 12px; }
+.peer-host-panel h3, .peer-host-panel p { margin: 0; }
+.peer-host-panel h3 { font-size: 15px; }
+.peer-host-panel p { line-height: 1.6; font-size: 13px; }
+.peer-host-panel small, .peer-host-origin { opacity: .72; }
+.peer-host-panel .panel-header { margin: 0; align-items: center; }
+.peer-host-panel button { min-height: 36px; padding: 8px 12px; border: 1px solid #465344; border-radius: 8px; background: #263027; font-size: 12px; cursor: pointer; }
+.peer-host-panel button:hover:enabled { border-color: #99b66b; background: #34402e; }
+.peer-host-panel button:disabled { opacity: .45; cursor: default; }
+.peer-host-panel form { display: grid; gap: 16px; }
+.peer-host-panel label { display: grid; gap: 6px; }
+.peer-host-panel select, .peer-host-panel textarea { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px; border: 1px solid #465344; border-radius: 8px; color: inherit; background: #111713; font-size: 13px; }
+.peer-host-panel fieldset { min-width: 0; display: grid; gap: 10px; padding: 12px; border: 1px solid #465344; border-radius: 8px; }
+.peer-host-panel legend { padding: 0 6px; font-size: 13px; }
+.peer-host-panel textarea { overflow-wrap: anywhere; resize: vertical; }
+.peer-host-origin, .peer-access-row { overflow-wrap: anywhere; }
+.peer-access-row { min-width: 0; display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border, #39433e); }
+.peer-access-row p { margin: 4px 0; }
+.peer-access-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.peer-host-panel .peer-room-choice { display: flex; align-items: center; gap: 8px; }
+.peer-room-choice input { width: auto; }
+:root[data-theme="light"] .peer-host-panel button { color: #304332; border-color: #b6c5ae; background: #edf2e9; }
+:root[data-theme="light"] .peer-host-panel button:hover:enabled { background: #dde9d3; }
+:root[data-theme="light"] .peer-host-panel select, :root[data-theme="light"] .peer-host-panel textarea { color: #243324; border-color: #b6c5ae; background: #fff; }
+@media (max-width: 600px) { .peer-access-row { align-items: stretch; flex-direction: column; } }

@@ -154,4 +154,6 @@ test("HTTP Agent sharing keeps machine publication separate from human Host deci
   const list = await app.inject({ method: "GET", url: listURL, headers: owner });
   assert.equal(list.statusCode, 200, list.body);
   assert.equal(list.json().offers.length, 1);
+  assert.equal(list.json().offers[0].grantDigest, peerDigest(f.offer.grant));
+  assert.equal(list.json().offers[0].offerDigest, peerDigest(f.offer));
 });

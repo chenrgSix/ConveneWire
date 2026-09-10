@@ -23,7 +23,7 @@ export async function freeIngressPort(): Promise<number> {
   return address.port;
 }
 
-export async function nativePeerIngressFixture(t: TestContext) {
+export async function nativePeerIngressFixture(t: TestContext, options: { webRoot?: string } = {}) {
   const resources = await createTestResources(t, "convenewire-native-peer-ingress-");
   const localPort = await freeIngressPort();
   let peerPort = await freeIngressPort();
@@ -38,7 +38,7 @@ export async function nativePeerIngressFixture(t: TestContext) {
   const now = new Date().toISOString();
   const databasePath = path.join(resources.directory, "hub.sqlite");
   const app = await createServerApp({ databasePath, localNode: launch,
-    peerIngress: ingress, clock: () => now });
+    peerIngress: ingress, clock: () => now, ...options });
   resources.defer(() => app.close());
   await app.listen({ host: "127.0.0.1", port: localPort });
   await ingress.listen(app.server);
