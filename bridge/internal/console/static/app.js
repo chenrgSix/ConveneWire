@@ -591,7 +591,7 @@ function openAgentModal(agent = null) {
     agent?.codexSessionConflictPolicy || "preserve_and_retry";
   elements["agent-credential-env"].value = agent?.credentialEnvironmentVariable || "";
   elements["agent-preflight-result"].className = "";
-  elements["agent-preflight-result"].textContent = "先验证当前表单；不会写入文件或重启 Bridge。";
+  elements["agent-preflight-result"].textContent = "先检查当前表单，不保存配置或重启运行服务。";
   syncAgentKindFields();
   elements["agent-modal-backdrop"].classList.remove("hidden");
   elements["agent-name"].focus();

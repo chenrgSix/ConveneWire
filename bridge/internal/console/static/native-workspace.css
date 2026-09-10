@@ -1,44 +1,44 @@
-/* Native settings belongs to the workspace; legacy Bridge keeps its own skin. */
+/* Match apps/web/src/visual-system.css; legacy Bridge keeps its own skin. */
 body.native-workspace {
-  --app-bg: #0e1110;
-  --surface: #161b18;
-  --surface-subtle: #131715;
-  --surface-strong: #222a23;
-  --topbar-bg: #0e1110;
-  --line: #2a332c;
-  --line-strong: #3a473d;
-  --text: #edf1eb;
-  --muted: #9ba69b;
-  --faint: #7b897d;
-  --accent: #c7e574;
-  --accent-hover: #d6f18e;
-  --accent-soft: #2b3620;
-  --accent-text: #d9f28f;
-  --accent-border: #667c3f;
-  --on-accent: #1b2511;
-  --hover-bg: #202820;
-  --focus-ring: rgb(199 229 116 / 24%);
+  --app-bg: #0a0c10;
+  --surface: #12161d;
+  --surface-subtle: #0e1117;
+  --surface-strong: #171c24;
+  --topbar-bg: #0a0c10;
+  --line: #2b3340;
+  --line-strong: #3b4658;
+  --text: #f2f4f7;
+  --muted: #a8b1c0;
+  --faint: #7d8797;
+  --accent: #7c83ff;
+  --accent-hover: #969bff;
+  --accent-soft: rgb(124 131 255 / 14%);
+  --accent-text: #c1c5ff;
+  --accent-border: rgb(124 131 255 / 42%);
+  --on-accent: #fff;
+  --hover-bg: #1d2330;
+  --focus-ring: rgb(124 131 255 / 24%);
   color-scheme: dark;
   font-family: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
 }
 :root[data-theme="light"] body.native-workspace {
-  --app-bg: #f4f7f3;
+  --app-bg: #f4f6f9;
   --surface: #fff;
-  --surface-subtle: #f5f8f3;
-  --surface-strong: #e8efdf;
-  --topbar-bg: #f4f7f3;
-  --line: #d5ddd2;
-  --line-strong: #b7c5af;
-  --text: #233025;
-  --muted: #61725d;
-  --faint: #7d8b76;
-  --accent: #547331;
-  --accent-hover: #456328;
-  --accent-soft: #e7efdd;
-  --accent-text: #365021;
-  --accent-border: #b0c995;
+  --surface-subtle: #eef1f6;
+  --surface-strong: #fbfcfe;
+  --topbar-bg: #f4f6f9;
+  --line: #d7dce6;
+  --line-strong: #bdc5d2;
+  --text: #171a21;
+  --muted: #566171;
+  --faint: #7a8494;
+  --accent: #5e65e8;
+  --accent-hover: #4f56d8;
+  --accent-soft: rgb(94 101 232 / 10%);
+  --accent-text: #4f56d8;
+  --accent-border: rgb(94 101 232 / 34%);
   --on-accent: #fff;
-  --hover-bg: #eaf0e5;
+  --hover-bg: #f0f2fb;
   color-scheme: light;
 }
 body.native-workspace .app-shell { display: block; }

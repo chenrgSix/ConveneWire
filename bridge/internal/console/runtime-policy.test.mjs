@@ -74,7 +74,7 @@ test("Codex session conflict policy explains continuity before saving", () => {
   const copy = {textContent: ""};
 
   applyCodexSessionConflictPolicy("preserve_and_retry", copy);
-  assert.match(copy.textContent, /保留原绑定/);
+  assert.match(copy.textContent, /保留原会话/);
   assert.match(copy.textContent, /不会另建会话/);
 
   applyCodexSessionConflictPolicy("start_new", copy);

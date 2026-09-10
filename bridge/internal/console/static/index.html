@@ -422,7 +422,7 @@
                 <button class="secondary workspace-picker hidden" type="button" data-workspace-picker-for="codex-workspace" aria-label="选择 Codex 工作区文件夹">选择文件夹</button>
               </span>
             </div>
-            <label>工作区别名（仅此别名可同步到中央）<input id="codex-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
+            <label>工作区别名（协作空间可见）<input id="codex-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
             <label>文件沙箱<select id="codex-sandbox"><option value="workspace-write">允许修改工作区</option><option value="read-only">只读</option></select></label>
             <label>会话占用策略
               <select id="codex-session-conflict-policy" aria-describedby="codex-session-ownership-policy">
@@ -430,7 +430,7 @@
                 <option value="start_new">新建会话，继续执行</option>
               </select>
             </label>
-            <p class="runtime-policy runtime-policy-warning" id="codex-session-ownership-policy">当前 Bridge 不与 Codex Desktop/CLI 共享同一个 App Server。<span id="codex-session-ownership-policy-copy">若会话正被其他客户端使用，Bridge 会保留原绑定并提示稍后重试，不会另建会话。</span><button class="inline-guide-link" type="button" data-open-codex-session-guide>查看完整说明</button></p>
+            <p class="runtime-policy runtime-policy-warning" id="codex-session-ownership-policy">ConveneWire 独立管理 Codex 会话。<span id="codex-session-ownership-policy-copy">若会话正被其他客户端使用，ConveneWire 会保留原会话并提示稍后重试，不会另建会话。</span><button class="inline-guide-link" type="button" data-open-codex-session-guide>查看完整说明</button></p>
           </div>
         </div>
         <div class="runtime-card">
@@ -456,7 +456,7 @@
                 <button class="secondary workspace-picker hidden" type="button" data-workspace-picker-for="pi-workspace" aria-label="选择 Pi 工作区文件夹">选择文件夹</button>
               </span>
             </div>
-            <label>工作区别名（仅此别名可同步到中央）<input id="pi-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
+            <label>工作区别名（协作空间可见）<input id="pi-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
             <label>凭据环境变量名称（可选）<input id="pi-credential-env" placeholder="例如 ANTHROPIC_API_KEY"></label>
             <p class="runtime-policy" id="pi-permission-policy">权限跟随本机 Pi：本地启用的工具、扩展、Skills 与项目上下文保持生效；中央服务无法提升权限。</p>
           </div>
@@ -591,7 +591,7 @@
           <div class="runtime-draft-actions" id="agent-runtime-draft-actions">
             <button class="secondary" id="agent-use-detected" type="button">重新检测并填入</button>
             <button class="secondary" id="agent-preflight" type="button">保存前预检</button>
-            <span id="agent-preflight-result">先验证当前表单；不会写入文件或重启 Bridge。</span>
+            <span id="agent-preflight-result">先检查当前表单，不保存配置或重启运行服务。</span>
           </div>
           <div class="workspace-field">
             <label for="agent-workspace">工作区</label>
@@ -600,7 +600,7 @@
               <button class="secondary workspace-picker hidden" type="button" data-workspace-picker-for="agent-workspace" aria-label="选择 Agent 工作区文件夹">选择文件夹</button>
             </span>
           </div>
-          <label>工作区别名（仅此别名可同步到中央）<input id="agent-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
+          <label>工作区别名（协作空间可见）<input id="agent-workspace-alias" maxlength="80" placeholder="留空则使用目录名"></label>
           <label id="agent-sandbox-field">文件沙箱
             <select id="agent-sandbox">
               <option value="workspace-write">允许修改工作区</option>
@@ -616,9 +616,9 @@
           <label class="hidden" id="agent-credential-field">凭据环境变量名称（可选）
             <input id="agent-credential-env" placeholder="例如 ANTHROPIC_API_KEY">
           </label>
-          <p class="runtime-policy runtime-policy-warning" id="agent-codex-session-ownership-policy">当前 Bridge 不与 Codex Desktop/CLI 共享同一个 App Server。<span id="agent-codex-session-ownership-policy-copy">若会话正被其他客户端使用，Bridge 会保留原绑定并提示稍后重试，不会另建会话。</span><button class="inline-guide-link" type="button" data-open-codex-session-guide>查看完整说明</button></p>
+          <p class="runtime-policy runtime-policy-warning" id="agent-codex-session-ownership-policy">ConveneWire 独立管理 Codex 会话。<span id="agent-codex-session-ownership-policy-copy">若会话正被其他客户端使用，ConveneWire 会保留原会话并提示稍后重试，不会另建会话。</span><button class="inline-guide-link" type="button" data-open-codex-session-guide>查看完整说明</button></p>
           <p class="runtime-policy hidden" id="agent-pi-permission-policy">权限跟随本机 Pi；Bridge 仅固定 JSON 输出与无会话运行方式。</p>
-          <p class="modal-help">绝对路径、文件与网络权限、命令和环境变量只保存在本机。中央仅收到安全别名、不透明 Workspace 引用和闭合能力摘要。保存只会更新这个智能体；若 Bridge 正在运行，将安全重启连接。任务或自检执行期间禁止修改。</p>
+          <p class="modal-help">实际工作区路径、文件权限和运行配置只保存在本机；协作空间只看到安全别名和允许公开的能力。保存后会重新加载本机运行配置。执行任务或自检时暂不能修改。</p>
           <div class="actions modal-actions">
             <button class="secondary" id="cancel-agent-modal" type="button">取消</button>
             <button class="primary" id="save-agent" type="submit">保存</button>
