@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "verificationSourceCommit": "41cd563fb983f80f70ae1fd9a34a8552df9b7484",
+  "sourceState": "clean",
+  "checks": [
+    {
+      "name": "Server full regression",
+      "command": "npm run test --workspace @convene-wire/server",
+      "passed": 822,
+      "failed": 0,
+      "skipped": 1,
+      "durationMs": 308341.194708,
+      "skip": "Opt-in Peer Host browser preview requires explicit preview mode"
+    },
+    {
+      "name": "Bundled local Codex/Pi product loop",
+      "command": "GOPROXY=https://goproxy.cn,direct npm run test:local-node",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 22252.744375
+    },
+    {
+      "name": "Peer partial Wave and Finalizer Host recovery",
+      "command": "go test -race -count=1 -run ^TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization$ -v ./internal/peer; go vet ./internal/peer",
+      "passed": 1,
+      "failed": 0,
+      "testDurationSeconds": 16.16,
+      "vet": "passed",
+      "execution": "Repository temporary-root wrapper; bridge working directory"
+    },
+    {
+      "name": "Hub and Web production build",
+      "command": "npm run build:local-hub",
+      "result": "passed"
+    },
+    {
+      "name": "Native package extraction and runtime inventory",
+      "evidence": "native-package.json",
+      "result": "passed"
+    }
+  ],
+  "retainedModuleChecks": [
+    {
+      "name": "Full Peer race and vet",
+      "evidence": "../../ops-020-native-distribution.md",
+      "raceSeconds": 342.54,
+      "result": "passed",
+      "boundary": "Before the added partial-Wave assertion; that extension passed the focused race check above"
+    },
+    {
+      "name": "Web full regression",
+      "passed": 361,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "../../../modules/web-ui.md#peer-invitation-and-sharing-controls",
+      "boundary": "WEB-085 full run plus six final affected checks; production Web unchanged afterward"
+    },
+    {
+      "name": "Embedded Console UI",
+      "passed": 89,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "../../../modules/web-ui.md#peer-invitation-and-sharing-controls"
+    },
+    {
+      "name": "Native distribution policy and path regressions",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "../../ops-020-native-distribution.md"
+    },
+    {
+      "name": "Native bundle and foreign-target negative checks",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "../../ops-020-native-distribution.md"
+    }
+  ],
+  "externalModelCalls": 0,
+  "notClaimed": [
+    "manual A/B/C acceptance",
+    "independent physical owners",
+    "Windows native installation",
+    "minimum-OS hardware",
+    "external CI execution",
+    "publication",
+    "universal OS sandbox"
+  ],
+  "scenarioMap": "../../qa-091-node-first-v1.md"
+}
