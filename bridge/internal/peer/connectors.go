@@ -2,6 +2,7 @@ package peer
 
 import (
 	"context"
+	"path/filepath"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -77,7 +78,7 @@ func NewConnectors(store *Store, sources *Sources, signer *Signer, checkIdentity
 		pollInterval: time.Second, heartbeatInterval: 5 * time.Second, syncInterval: 10 * time.Second, retryInterval: time.Second,
 		wake: make(chan struct{}, 1), workers: map[string]*peerWorker{}, statuses: map[string]ConnectorStatus{}, state: "stopped",
 		newClient: func(origin string, host wire.PeerNodeIdentity) (*Client, error) {
-			return NewClient(origin, host, signer, nil)
+			return NewNativeClient(filepath.Dir(store.directory), origin, host, signer, checkIdentity)
 		},
 	}, nil
 }
@@ -242,22 +243,24 @@ func (c *Connectors) runWorker(worker *peerWorker) {
 	local := worker.local
 	id := local.Receipt.Membership.PeerID
 	defer c.approvals.RevokePeer(id)
-	client, err := c.newClient(local.Receipt.Invitation.HostOrigin, wire.PeerNodeIdentity(local.Receipt.Invitation.Host))
-	if err != nil {
-		c.update(worker, func(v *ConnectorStatus) { v.State, v.ErrorCode = "unavailable", "PEER_CLIENT_UNAVAILABLE" })
-		// Await a real local change. A bad pinned identity must not hot-loop.
-		<-worker.ctx.Done()
-		return
-	}
-	defer client.Close()
-	client.beforeOperation = c.checkIdentity
 	for worker.ctx.Err() == nil {
 		c.update(worker, func(v *ConnectorStatus) { v.State, v.ErrorCode = "connecting", ""; v.Attempt++ })
-		connection, err := client.ConnectRuntime(worker.ctx, c.store, local.Receipt.Membership.MembershipID)
+		// Reload explicit local TLS configuration only between drained attempts.
+		client, err := c.newClient(local.Receipt.Invitation.HostOrigin, wire.PeerNodeIdentity(local.Receipt.Invitation.Host))
+		var connection *RuntimeConnection
+		if err == nil {
+			if client.beforeOperation == nil {
+				client.beforeOperation = c.checkIdentity
+			}
+			connection, err = client.ConnectRuntime(worker.ctx, c.store, local.Receipt.Membership.MembershipID)
+		}
 		if err == nil {
 			c.update(worker, func(v *ConnectorStatus) { v.State, v.ErrorCode = "online", "" })
 			c.serve(worker, client, connection)
 			c.approvals.RevokePeer(id)
+		}
+		if client != nil {
+			client.Close()
 		}
 		if worker.ctx.Err() != nil {
 			return

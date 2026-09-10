@@ -80,12 +80,11 @@ func TestNativePeerConnectorsUseTwoRealHostsSyncGrantsAndIsolateRevocation(t *te
 	}
 	c.clock = client.clock
 	c.pollInterval, c.retryInterval, c.heartbeatInterval, c.syncInterval = 20*time.Millisecond, 50*time.Millisecond, 100*time.Millisecond, 500*time.Millisecond
+	writeNativeTLSFixture(t, filepath.Dir(store.directory), f)
+	writeNativeTLSFixture(t, filepath.Dir(store.directory), other)
+	nativeClient := c.newClient
 	c.newClient = func(origin string, host wire.PeerNodeIdentity) (*Client, error) {
-		roots := f.roots
-		if origin == other.Origin {
-			roots = other.roots
-		}
-		value, err := NewClient(origin, host, client.signer, roots)
+		value, err := nativeClient(origin, host)
 		if err == nil {
 			value.clock = client.clock
 		}

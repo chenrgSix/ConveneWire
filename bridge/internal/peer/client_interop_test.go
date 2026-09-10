@@ -27,14 +27,15 @@ import (
 )
 
 type peerHTTPFixture struct {
-	Origin     string                `json:"origin"`
-	Host       wire.PeerNodeIdentity `json:"host"`
-	Invitation wire.PeerInvitation   `json:"invitation"`
-	Secret     string                `json:"secret"`
-	roots      *x509.CertPool
-	command    *exec.Cmd
-	input      io.WriteCloser
-	lines      *bufio.Scanner
+	Origin         string                `json:"origin"`
+	Host           wire.PeerNodeIdentity `json:"host"`
+	Invitation     wire.PeerInvitation   `json:"invitation"`
+	Secret         string                `json:"secret"`
+	roots          *x509.CertPool
+	certificatePEM []byte
+	command        *exec.Cmd
+	input          io.WriteCloser
+	lines          *bufio.Scanner
 }
 
 func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
@@ -116,6 +117,7 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		t.Fatal("invalid Peer fixture readiness")
 	}
 	f.roots = x509.NewCertPool()
+	f.certificatePEM = certPEM
 	if !f.roots.AppendCertsFromPEM(certPEM) {
 		t.Fatal("fixture CA")
 	}

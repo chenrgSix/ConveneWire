@@ -142,6 +142,14 @@ HTTP review/withdrawal/retry, two-Host lifecycle and owning Go race/vet checks
 pass. The bundled native fixture also reads the actual configured Agent's
 export review through Console without exposing a Device fallback.
 
+Native Peer clients also read explicit per-Host private-CA configuration from
+the Node root, scoped to the exact origin and Node key. System trust remains
+the default; no OS/browser/Device trust is installed or inherited. A changed
+or broken configuration invalidates requests and live heartbeats. Reconnect
+creates a fresh client and rechecks normal TLS plus the pinned Host proof.
+The actual two-Host connector fixture uses this native client factory. See
+[Participant-scoped private CA](operations-deployment.md#participant-scoped-private-ca).
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

@@ -121,6 +121,36 @@ and backup/restore while retaining ordinary Run/Discussion outcomes. These
 checks use disposable local fixtures with no model calls; they do not claim a
 physical second device, installed CA trust, live CI or external deployment.
 
+### Participant-scoped private CA
+
+Native Peer clients use normal system CA verification by default. An explicit
+private-CA setup lives at `peer-tls/<host-node-id>/config.json` under the
+Participant's private Node root. Create both private directories before the
+file, with the same owner-only protections as other Node configuration. The
+closed JSON object contains `schemaVersion: 1`, the exact invitation `host`
+object (`nodeId` and `publicKey`), its canonical `hostOrigin`, and
+`caCertificatePem` containing one currently valid CA certificate. Private keys,
+extra certificates, duplicate/unknown JSON fields, another origin/key and
+unsafe permissions or links are rejected. This file is explicit local
+configuration; it is not downloaded or installed automatically.
+
+The CA is loaded into only that Peer client's TLS pool. It neither installs
+system/browser trust nor changes Device trust. Node-key and origin proof remain
+mandatory after normal certificate/hostname verification. A Host directory
+with a missing/broken config fails closed instead of selecting system trust.
+Changes during a request, handshake or heartbeat invalidate that client; the
+next connection attempt rereads the configuration and proves the Host again.
+Deleting the entire Host configuration directory explicitly selects the
+system-CA default for a new client. Existing clients first invalidate their
+previous configuration and close. No machine bearer crosses an unverified
+Host proof.
+
+Actual Go/Host TLS and two-Host connector tests use these disposable scoped
+files, covering private-CA admission, missing/broken configuration, public-key/
+origin substitution, unknown/duplicate fields, private-key/extra-PEM input and
+file protection. Owning Go race tests and vet pass; no real CA installation or
+physical-platform acceptance is claimed.
+
 ## Controller boundary
 
 `convenewirectl` is a small Go 1.26.7 CLI. New source-build Central archives
