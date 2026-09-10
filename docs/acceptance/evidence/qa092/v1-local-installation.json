@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9286835ad90dfa600601764f5ef0f4e0d1ae8ef8",
+  "installedAt": "2026-09-10T20:25:57.160220+08:00",
+  "platform": "darwin",
+  "arch": "arm64",
+  "previousDesktopVersion": "v0.5.9-local.85e3156",
+  "installedDesktopVersion": "v0.0.0-local",
+  "archiveSHA256": "9271934572f6cda456a30f6452855fb442171b249fdbaab5f2cba0fa0cbd70ab",
+  "hubManifestSHA256": "aca447cde798ce043b41fb3d4cb862781b663a6777f834fd8f073bee612e794a",
+  "authorization": "User explicitly requested local update and startup",
+  "installation": "Applications/ConveneWire Bridge.app",
+  "oldApplicationBackedUp": true,
+  "legacyProfileBytesUnchanged": true,
+  "nodeData": "new persistent private owner profile",
+  "nodeDataMode": "0700",
+  "launchMode": "explicit --hub-bundle and --node-data; legacy default retained",
+  "nativeWindowTitle": "ConveneWire · 本地空间",
+  "nativeVisibleState": "Create your first Team; no Team or Agent created by this installation",
+  "hubReadiness": {
+    "httpStatus": 200,
+    "status": "ready"
+  },
+  "leftRunning": true,
+  "externalModelCalls": 0,
+  "notRun": [
+    "system tray interaction",
+    "independent owners",
+    "physical Windows",
+    "minimum OS",
+    "remote CI",
+    "publication"
+  ]
+}

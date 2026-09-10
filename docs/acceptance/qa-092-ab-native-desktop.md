@@ -64,6 +64,27 @@ extraction and data were removed. This fixture had no configured Agent process.
 These actions close the current-source window lifecycle gap and do not stand in
 for the remaining system-tray menu observations.
 
+## Authorized local installation
+
+On 2026-09-10 the owner explicitly requested a local update and startup. The
+verified `9286835a` replacement was installed in `/Applications/ConveneWire Bridge.app`,
+replacing `v0.5.9-local.85e3156` with the `v0.0.0-local` Node-first development build.
+The stopped old application was retained in the owner profile's timestamped
+`app-backups` directory. The existing remote Bridge configuration is byte-identical.
+
+[Installation assertions](evidence/qa092/v1-local-installation.json) record the
+exact archive, source and installed manifest. Startup used explicit `--hub-bundle`
+and `--node-data` arguments with a new persistent private Local Node root (0700).
+The actual native window showed “ConveneWire · 本地空间” and first-Team onboarding;
+`/api/health/ready` returned HTTP 200 with `status: ready`. The application is left
+running for the owner. No Team, Agent or external model invocation was created.
+
+The retained remote profile still selects Bridge mode on a later argument-free
+launch; Local Node launch uses the explicit mode arguments. This observation
+covers installation and initial startup on this macOS arm64 machine only. It
+does not close the outstanding tray, independent-owner, Windows or minimum-OS
+gates. Earlier disposable acceptance data remains separate from this real profile.
+
 ## Final acceptance procedure
 
 Use the exact replacement artifact and explicit disposable profiles for remaining
@@ -92,8 +113,9 @@ The access-changing Host browser click `接纳此 Agent` was previously rejected
 automatic approval review because it creates Agent access to a Room and the
 specific recipient/resource/scope had not been approved. It remains pending;
 it has not been retried through another UI or API. The reviewable fixture above
-makes the required decision concrete. Actual installation and independent-owner
-consent retain their own gates; live models require a separately bounded budget.
+makes the required decision concrete. The authorized local macOS installation
+above does not grant independent-owner consent or Windows installation; live
+models require a separately bounded budget.
 
 ## Historical A/B local behavior
 
@@ -192,4 +214,4 @@ before accessing its UI.
 
 All deliberately started test applications and fixture Hosts are stopped. The
 named local packages and nonsensitive evidence remain. Physical Windows, minimum-OS
-hardware, real installation, external models, CI and publication are separate gates.
+hardware, other real installations, external models, CI and publication are separate gates.
