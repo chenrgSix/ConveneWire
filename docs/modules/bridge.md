@@ -120,8 +120,8 @@ the current native core and disappear when its process/connection closes.
 Focused HTTP tests exercise the actual local approval kernel; Console/core/
 Local Node race tests and vet pass. The bundled native fixture verifies the
 capability reaches the real Console and rejects a foreign-origin decision.
-Invitation and independent human-entry owner operations, plus Peer
-session/execution composition, remain under BRG-081/RUN-020/WEB-085.
+Peer session/execution composition and product interfaces remain under
+BRG-081/RUN-020/WEB-085.
 
 Console's `/api/peers/exports` inventory resolves existing native Agent IDs
 without creating or renaming them. Its local source review includes the exact
@@ -149,6 +149,29 @@ or broken configuration invalidates requests and live heartbeats. Reconnect
 creates a fresh client and rechecks normal TLS plus the pinned Host proof.
 The actual two-Host connector fixture uses this native client factory. See
 [Participant-scoped private CA](operations-deployment.md#participant-scoped-private-ca).
+
+Native Console invitation preview, confirmation, pending-join recovery and
+human-entry operations use the installation's actual Node key and local User.
+They reject caller-supplied Participant/User identity, foreign origins, query
+parameters and ambiguous JSON. Confirmation refreshes the short Host proof but
+requires the exact invitation digest the Owner reviewed. Concurrent confirmations
+for one operation serialize; a lost response recovers the original intent.
+After both private receipts commit, a credential-free completion marker permits
+exact offline retries without retaining the invitation secret. Recovery also
+finishes interrupted journal cleanup. Changed intent, corrupt completion or a
+missing human binding cannot recreate authority. See
+[join persistence](persistence-recovery.md#native-owner-join-recovery).
+
+Human entry returns only the short one-use browser exchange and its scope;
+Runtime connectors never receive the human vault or Owner capability. Owner
+network waits release the Console mutex. Native shutdown cancels and drains
+Owner operations before releasing the installation lease, while core restarts
+retain the same private history observer. A broken human vault blocks human
+operations independently of Device resources and Peer machine authority.
+Actual TLS regressions cover review expiry, dropped responses, concurrent
+confirmation, native reopen, offline replay, cleanup interruption and scope
+widening. Authenticated HTTP tests cover all Owner routes and sanitized entry
+responses. Browser navigation and Participant leave remain later increments.
 
 ## Local Node supervision
 

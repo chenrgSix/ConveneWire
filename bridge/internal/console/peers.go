@@ -32,7 +32,7 @@ func (s *Service) authorizePeer(next http.HandlerFunc) http.HandlerFunc {
 		host, _, err := net.SplitHostPort(request.Host)
 		ip := net.ParseIP(strings.Trim(host, "[]"))
 		origin := request.Header.Get("origin")
-		if err != nil || ip == nil || !ip.IsLoopback() ||
+		if err != nil || ip == nil || !ip.IsLoopback() || request.URL.RawQuery != "" ||
 			(origin != "" && origin != "http://"+request.Host) || request.Header.Get("sec-fetch-site") == "cross-site" ||
 			request.Header.Get("forwarded") != "" || request.Header.Get("x-forwarded-host") != "" {
 			writeError(response, http.StatusForbidden, "Peer 操作只接受本机 Console 请求")
@@ -64,6 +64,9 @@ func decodePeerJSON(request *http.Request, value any) error {
 	}
 	if _, err := wire.CanonicalJSON(raw); err != nil {
 		return err
+	}
+	if trimmed := bytes.TrimSpace(raw); len(trimmed) == 0 || trimmed[0] != '{' {
+		return peer.ErrProof
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()

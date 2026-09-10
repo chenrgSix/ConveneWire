@@ -72,6 +72,26 @@ schema statically so bundling does not leave a source-relative filesystem read.
 Native Windows ACL execution and actual Peer transport remain later gates;
 SEC-019 now owns network and human admission.
 
+## Native Owner join recovery
+
+The Owner-only join journal freezes the exact invitation, native Participant and
+User, display name and operation before the first claim. Runtime and human
+receipts commit to separate private stores. Only then does
+`peer-joins/completed/<operationId>.json` record the membership, semantic receipt
+digest and frozen intent digest; it contains no invitation secret, bearer or
+proof. The sensitive pending file is removed after that marker is durable.
+This preserves exact recovery after either credential commit, the completion
+write or a lost Console response. A refreshed transport proof does not change
+the immutable Owner intent.
+
+Completed recovery verifies both retained receipts and their binding before
+returning the original local outcome without Host access. It removes an
+interrupted pending file only if that file matches the completed intent.
+Unknown/duplicate completion fields, changed intent and missing/corrupt receipts
+fail closed. Recovery never renews expiry, reverses local withdrawal or creates
+human authority. The native Owner capability keeps one history observer across
+core restarts and drains pending operations before the installation lease ends.
+
 ## Authority partition ownership
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) assigns DATA-009 the

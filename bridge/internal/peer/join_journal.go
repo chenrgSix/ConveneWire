@@ -199,6 +199,9 @@ func (j *JoinJournal) RecordJoined(operationID, nonce string, joined Joined, now
 	if err = j.human.Bind(joined, now); err != nil {
 		return err
 	}
+	if err = j.saveCompletion(pending, joined.Runtime); err != nil {
+		return err
+	}
 	filename := filepath.Join(j.directory, operationID+".json")
 	if err = os.Remove(filename); err != nil {
 		return err

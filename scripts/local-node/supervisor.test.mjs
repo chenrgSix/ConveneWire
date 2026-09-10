@@ -111,6 +111,10 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     return peers.body.state === "running";
   }, "native Peer owner capability reaches the actual Console");
   assert.deepEqual((await consoleRequest("/api/peers/approvals")).body, { approvals: [] });
+  const pendingPeerJoins = await consoleRequest("/api/peers/joins");
+  assert.equal(pendingPeerJoins.status, 200, JSON.stringify(pendingPeerJoins.body));
+  assert.deepEqual(pendingPeerJoins.body, { pending: [] });
+  assert.equal((await consoleRequest("/api/peers/invitations/confirm", { participant: { nodeId: "node_foreign001" } })).status, 400);
   const foreignPeerDecision = await fetch(`${consoleURL.origin}/api/peers/approvals/approval_foreign001`, {
     method: "POST", headers: { authorization: `Bearer ${consoleURL.searchParams.get("token")}`, origin: "https://foreign-peer.example", "content-type": "application/json" },
     body: JSON.stringify({ allow: true })

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 
 	"convenewire.dev/bridge/internal/admission"
 	"convenewire.dev/bridge/internal/authority"
@@ -24,15 +25,20 @@ var errNativeNode = errors.New("native Runtime ownership no longer matches this 
 // lease. The Console owns the separate Bridge lease; neither a Device profile
 // nor an HTTP request can provide this native signing identity.
 type NativeNode struct {
-	root      string
-	identity  localwire.LocalNodeIdentity
-	signer    *peer.Signer
-	store     *peer.Store
-	storeOnce sync.Once
-	storeErr  error
-	peerMu    sync.Mutex
-	peers     *peer.Connectors
-	peerError string
+	root                   string
+	identity               localwire.LocalNodeIdentity
+	signer                 *peer.Signer
+	store                  *peer.Store
+	storeOnce              sync.Once
+	storeErr               error
+	peerMu                 sync.Mutex
+	peers                  *peer.Connectors
+	peerError              string
+	closed                 atomic.Bool
+	ownerMu                sync.Mutex
+	ownerAccess            *peer.OwnerAccess
+	ownerAccessError       error
+	ownerAccessInitialized bool
 }
 
 func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNode, error) {
@@ -51,7 +57,7 @@ func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNo
 }
 
 func (n *NativeNode) checkIdentity() error {
-	if n == nil || n.signer == nil {
+	if n == nil || n.signer == nil || n.closed.Load() {
 		return errNativeNode
 	}
 	raw, err := privatefs.ReadFile(filepath.Join(n.root, "identity.json"), 4096)

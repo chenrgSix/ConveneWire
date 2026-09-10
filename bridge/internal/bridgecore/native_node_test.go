@@ -47,6 +47,7 @@ func nativeCoreFixture(t *testing.T) (context.Context, *NativeNode, config.Confi
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(node.Close)
 	cfg := config.Config{SchemaVersion: config.CurrentSchemaVersion, LocalNodeID: identity.NodeID, ServerURL: "http://127.0.0.1:48291",
 		DataDir: filepath.Join(root, "bridge"), Agents: []config.AgentConfig{{Name: "Local Agent", Workspace: t.TempDir()}}}
 	credential := pairing.Credential{ServerURL: cfg.ServerURL, TeamID: "team_nativecore001", DeviceID: "device_nativecore001", OwnerMemberID: "member_nativecore001", Token: "local-device-secret"}

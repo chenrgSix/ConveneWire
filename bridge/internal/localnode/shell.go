@@ -156,5 +156,8 @@ func (shell *Shell) Close() error {
 	if shell.service != nil {
 		shell.service.Close()
 	}
+	if shell.native != nil {
+		shell.native.Close()
+	}
 	return shell.Hub.Close()
 }
