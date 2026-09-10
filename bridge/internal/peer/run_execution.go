@@ -185,6 +185,33 @@ func peerStatus(event bridgeruntime.Event) map[string]any {
 	return value
 }
 
+func (e *peerRunExecution) status(event bridgeruntime.Event) (map[string]any, error) {
+	value := peerStatus(event)
+	if event.Session == nil || *event.Status != "working" {
+		return value, nil
+	}
+	var request struct {
+		Payload contracts.RunRequestedPayload `json:"payload"`
+	}
+	if json.Unmarshal(e.delivery.Request, &request) != nil || request.Payload.Session == nil ||
+		event.Session.ContextCursor != request.Payload.Session.ContextCursor {
+		return nil, ErrProof
+	}
+	if revision := event.Session.ResultEvidenceRevision; revision != nil {
+		if request.Payload.ContextPlan == nil || request.Payload.ContextPlan.ResultEvidence == nil {
+			if *revision != 0 {
+				return nil, ErrProof
+			}
+			// Native Session stores use zero for no evidence. The frozen Peer
+			// request has no evidence revision in that case, so omit the field.
+			delete(value["session"].(map[string]any), "resultEvidenceRevision")
+		} else if *revision != request.Payload.ContextPlan.ResultEvidence.Revision {
+			return nil, ErrProof
+		}
+	}
+	return value, nil
+}
+
 // Only the closed Peer carriers can leave this adapter. The actual restricted
 // adapters already redact accumulated streaming text before producing events.
 func (e *peerRunExecution) emit(ctx context.Context, event bridgeruntime.Event) error {
@@ -203,11 +230,27 @@ func (e *peerRunExecution) emit(ctx context.Context, event bridgeruntime.Event) 
 			return ErrStore
 		}
 		e.terminal = &retained
+		if event.Session != nil {
+			working := contracts.Working
+			// Native adapters report their final local Session cursor at exit.
+			// Peer wire carries that evidence as a separate working update,
+			// without the provider identity and before the deferred final status.
+			value, err := e.status(bridgeruntime.Event{Status: &working, Session: event.Session})
+			if err != nil {
+				e.terminal = nil
+				return err
+			}
+			return e.append(value)
+		}
 		return nil // The final status waits for actual process cleanup and Finish.
 	}
 	values := []map[string]any{}
 	if event.Status != nil {
-		values = append(values, peerStatus(event))
+		value, err := e.status(event)
+		if err != nil {
+			return err
+		}
+		values = append(values, value)
 	}
 	if event.Reply != "" {
 		value := map[string]any{"type": "reply", "content": bridgeruntime.RedactSensitiveText(event.Reply)}
@@ -332,7 +375,7 @@ func (e *peerRunExecution) execute(ctx context.Context) error {
 	if result.ProcessesStopped && (errors.Is(cause, context.Canceled) || errors.Is(cause, context.DeadlineExceeded) || publicationDenied(cause) || errors.Is(runErr, context.Canceled) || errors.Is(runErr, context.DeadlineExceeded)) {
 		outcome.State = "canceled"
 	}
-	if result.ProcessesStopped && runErr == nil && e.terminal != nil {
+	if result.ProcessesStopped && e.terminal != nil {
 		outcome.State = string(*e.terminal.Status)
 		if outcome.State == "completed" {
 			outcome.Reply = e.reply

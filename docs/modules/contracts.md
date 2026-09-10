@@ -77,8 +77,13 @@ bounded settlement identity, sequence, state and receipt digest. They cannot
 carry Result text, restore membership or renew the capability. Shared signed
 vectors and actual Go/Node checks cover every new carrier, semantic delivery
 conflicts, capability expiry, decimal/path boundaries and forbidden fields.
-These contracts still require the RUN-020 Host/Participant transport handlers;
-schema validation is not execution, credential or settlement admission.
+The RUN-020 Host and native Participant use these carriers through the
+[execution coordinator](run-orchestration.md). Schema validation alone is not
+execution, credential or settlement admission. Native adapters' final Session
+progress becomes a separate closed `working` event before the deferred terminal
+event. A zero native evidence revision becomes an omitted field only when the
+frozen request contains no result evidence; other cursor/revision mismatches
+fail closed. Provider Session identifiers never enter this carrier.
 
 REG-007 adds closed signed offer/receipt and explicit Host accept/revoke
 requests. An offer digest covers its exact grant and bounded display metadata.

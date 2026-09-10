@@ -89,6 +89,11 @@ try {
     if (command.action === "stop") break;
     if (command.action === "clock") now = command.now!;
     else if (command.action === "revoke") peers.revokeMembership(owner, command.membershipId!, now);
+    else if (command.action === "cancel-run") {
+      const response = await app.inject({ method: "POST", url: `/api/runs/${command.runId!}/cancel`,
+        headers: { origin, cookie: `__Host-agentroom_session=${session.secret}` }, payload: { reason: "Offline Peer cancellation fixture" } });
+      if (response.statusCode !== 200) throw new Error(`fixture cancellation returned ${response.statusCode}`);
+    }
     else if (command.action === "accept-agent") {
       const offered = agents.listOffers(owner, teamId)[0]!;
       const grant = offered.offer.grant;

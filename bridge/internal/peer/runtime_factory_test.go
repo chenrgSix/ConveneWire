@@ -7,6 +7,7 @@ import (
 	"crypto/ed25519"
 	"encoding/json"
 	"errors"
+	"flag"
 	"os"
 	"path/filepath"
 	"sync/atomic"
@@ -21,6 +22,9 @@ import (
 	contracts "convenewire.dev/contracts/generated/go"
 	wire "convenewire.dev/contracts/generated/go/peer"
 )
+
+var peerPiSessionID = flag.String("session-id", "", "offline Peer Pi session")
+var peerPiSessionName = flag.String("name", "", "offline Peer Pi name")
 
 type runtimeFactoryFixture struct {
 	connectors *Connectors
@@ -336,6 +340,13 @@ func TestPeerRuntimeProcessFixture(t *testing.T) {
 	}
 	_, _ = marker.WriteString("started\n")
 	_ = marker.Close()
+	if kind == "pi" {
+		if *peerPiSessionID == "" || *peerPiSessionName == "" {
+			os.Exit(5)
+		}
+		_, _ = os.Stdout.WriteString("{\"type\":\"message_end\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Peer Pi completed.\"}],\"stopReason\":\"stop\"}}\n")
+		return
+	}
 	if kind == "generic-hold" {
 		for {
 			time.Sleep(100 * time.Millisecond)

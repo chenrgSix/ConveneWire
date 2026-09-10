@@ -183,10 +183,18 @@ Actual Go/Host TLS tests now include automatic connector polling with a real
 restricted Generic child, repeated completed recovery, a retained clarification,
 Host revoke/local leave during a live child, a lost final event acknowledgment,
 and a possible-start recovery with no child replay. Revocation waits for actual
-process evidence before releasing the shared Workspace. Network Codex/Pi,
-complete native packaging, broader cancellation/concurrency and crash scenarios
-still require their RUN-020/QA-091 coverage; no live model call or manual/platform
-acceptance is implied by these checks.
+process evidence before releasing the shared Workspace. Actual Codex and Pi
+protocol children now use this same Host transport and native factory. Codex
+tests cover exact local approval, foreign decisions, and Host revoke/local
+withdrawal while an approval is pending. Pi/Codex Session progress is retained as
+a separate `working` update before the final status; native identifiers remain
+private. Frozen cursor/revision mismatches are rejected locally and at the Host.
+Native zero means absent evidence only when the request contains no result
+evidence. A retained actual terminal outcome is independent of a subsequent
+publication failure once process termination is confirmed.
+Complete native packaging, broader concurrency and crash scenarios still require
+their RUN-020/QA-091 coverage; no live model call or manual/platform acceptance is
+implied by these checks.
 
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned

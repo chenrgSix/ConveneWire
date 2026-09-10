@@ -29,6 +29,14 @@ func runExecutionFixture(t *testing.T, modes ...string) (*peerHTTPFixture, *Clie
 	t.Setenv("CONVENE_WIRE_PEER_RUNTIME_FIXTURE", mode)
 	cfg := config.AgentConfig{Name: "Peer writer", Role: "Reviewer", Adapter: "generic", RuntimeKind: "generic", Sandbox: "workspace-write",
 		Workspace: t.TempDir(), Command: []string{os.Args[0], "-test.run=^TestPeerRuntimeProcessFixture$"}, EnvAllowlist: []string{"CONVENE_WIRE_PEER_RUNTIME_FIXTURE"}}
+	if mode == "codex" {
+		cfg.Adapter, cfg.RuntimeKind = "codex", "codex"
+		cfg.Command = append(cfg.Command, "--", "app-server")
+	}
+	if mode == "pi" {
+		cfg.RuntimeKind, cfg.PresetVersion = "pi", config.CurrentPresetVersion
+		cfg.Command = append(cfg.Command, "--")
+	}
 	id := "agent_localexecution001"
 	sources, err := NewSources([]config.AgentConfig{cfg}, map[string]string{cfg.Name: id})
 	if err != nil {
@@ -75,7 +83,7 @@ func runExecutionFixture(t *testing.T, modes ...string) (*peerHTTPFixture, *Clie
 }
 
 func TestPeerRunExecutionSettlesRevocationAfterActualProcessStops(t *testing.T) {
-	for _, mode := range []string{"Host revoke", "local leave"} {
+	for _, mode := range []string{"Host revoke", "local leave", "Host cancel"} {
 		t.Run(mode, func(t *testing.T) {
 			f, client, connectors, partition, binding := runExecutionFixture(t, "generic-hold")
 			connection, err := client.ConnectRuntime(context.Background(), connectors.store, partition.receipt.MembershipID)
@@ -116,6 +124,8 @@ func TestPeerRunExecutionSettlesRevocationAfterActualProcessStops(t *testing.T) 
 			}
 			if mode == "Host revoke" {
 				f.control(t, map[string]any{"action": "revoke", "membershipId": partition.receipt.MembershipID})
+			} else if mode == "Host cancel" {
+				f.control(t, map[string]any{"action": "cancel-run", "runId": binding.RunID})
 			} else {
 				state, _ := connectors.store.Read()
 				state.Connections[0].State = "left"
