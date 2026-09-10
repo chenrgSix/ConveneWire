@@ -9,8 +9,12 @@ test("Peer transport retains bounded independent IP budgets and one-minute recov
   assert.throws(() => limits.consume("identity", "127.0.0.1", 59_999), AnonymousRateLimitError);
   for (let count = 0; count < 1_200; count++) limits.consume("run", "127.0.0.1", 0);
   assert.throws(() => limits.consume("run", "127.0.0.1", 59_999), AnonymousRateLimitError);
+  for (let count = 0; count < 120; count++) limits.consume("agent", "127.0.0.1", 0);
+  assert.throws(() => limits.consume("agent", "127.0.0.1", 59_999), AnonymousRateLimitError);
   limits.consume("identity", "127.0.0.2", 59_999);
   limits.consume("run", "127.0.0.2", 59_999);
+  limits.consume("agent", "127.0.0.2", 59_999);
   limits.consume("identity", "127.0.0.1", 60_000);
   limits.consume("run", "127.0.0.1", 60_000);
+  limits.consume("agent", "127.0.0.1", 60_000);
 });

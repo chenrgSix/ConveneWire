@@ -16,7 +16,7 @@ function body<T>(request: FastifyRequest, kind: string): T {
 export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peerDeliveries, peerHumanEntry, peerAgents, peerIngress, principal, clock, limitAnonymous, webAuth,
   routeAgentReplyMentions, advanceDiscussion, pauseDiscussionForInput }: ServerRouteContext): void {
   const transportLimits = new PeerTransportRateLimiter();
-  const limitTransport = (request: FastifyRequest, kind: "identity" | "run") => {
+  const limitTransport = (request: FastifyRequest, kind: "identity" | "run" | "agent") => {
     const now = Date.parse(clock());
     transportLimits.consume(kind, request.ip, Number.isFinite(now) ? now : Date.now());
   };
@@ -68,12 +68,12 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peer
       return peerRuns.authorize(bearerToken(request), body<PeerAdmission>(request, "PeerAdmission"), clock());
     });
     peer.post("/api/peer/agents/offers", async request => {
-      limitAnonymous(request, "peer-agent-offer");
+      limitTransport(request, "agent");
       if (request.headers.origin || request.headers.cookie) throw new PeerStoreError("SCOPE_DENIED");
       return peerAgents.offer(bearerToken(request), body<PeerAgentOfferRequest>(request, "PeerAgentOfferRequest"), clock());
     });
     peer.post("/api/peer/agents/sync", { bodyLimit: 1024 * 1024 }, async request => {
-      limitAnonymous(request, "peer-agent-sync");
+      limitTransport(request, "agent");
       if (request.headers.origin || request.headers.cookie) throw new PeerStoreError("SCOPE_DENIED");
       return peerAgents.synchronize(bearerToken(request), body<PeerAgentSyncRequest>(request, "PeerAgentSyncRequest"), clock());
     });

@@ -9,9 +9,9 @@ The native factory delivered by BRG-081 supplies shared physical resources,
 private Peer Sessions and local approval. Fresh signed admission, private
 Participant journals and the Host delivery/event/settlement transport now exist.
 Native connectors now poll, execute through that factory, retain event/outcome
-evidence and recover transport without replay. Actual restricted Generic child
-and Host TLS checks pass; broader native/package and network coverage remains
-part of RUN-020 and QA-091.
+evidence and recover transport without replay. Actual restricted Generic/Codex/Pi
+children and Host TLS/recovery checks pass; combined native/package and network
+coverage remains QA-091, with consolidated manual acceptance under QA-092.
 
 The Host `PeerRunAuthority` now freezes an already-authorized local Run into one
 immutable Peer request in migration 0103. It derives execution and context from
@@ -150,6 +150,10 @@ assessment replies, duplicate acknowledgments and post-leave settlement expiry.
 
 Continuous traffic has separate pre-authentication IP limits: 600 Host identity
 challenges and 1,200 combined Run poll/admit/event/settlement requests per minute.
+Agent offers/history synchronization share a separate 120-request IP budget,
+supporting the native ten-second refresh of multiple exported Agents without
+exhausting the anonymous invitation limit. Invalid and unauthenticated requests
+consume these budgets too; another Agent ID cannot create a fresh bucket.
 Invitation admission keeps its existing limit. These bounded buckets prevent
 ordinary Runtime traffic from consuming the invitation budget; body limits and
 every signature, current-authority and audience check still apply. The native

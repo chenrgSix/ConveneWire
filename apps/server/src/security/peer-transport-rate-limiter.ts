@@ -6,8 +6,9 @@ import { AnonymousRateLimiter } from "./anonymous-rate-limiter.js";
 export class PeerTransportRateLimiter {
   private readonly identity = new AnonymousRateLimiter(600);
   private readonly run = new AnonymousRateLimiter(1_200);
+  private readonly agent = new AnonymousRateLimiter(120);
 
-  public consume(kind: "identity" | "run", ip: string, nowMilliseconds: number): void {
+  public consume(kind: "identity" | "run" | "agent", ip: string, nowMilliseconds: number): void {
     this[kind].consume(ip, nowMilliseconds);
   }
 }
