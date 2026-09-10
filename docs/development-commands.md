@@ -51,7 +51,8 @@ The contracts Go module pins the selected Go toolchain.
   assertions.
 - `npm run test:bridge` — run all Go Bridge tests with one owned temporary root
   and invocation-scoped Go build and module caches.
-- `npm run test:bridge-ui` — test the embedded Bridge GUI's pairing state projection.
+- `npm run test:bridge-ui` — test embedded Console controllers, including pairing,
+  native Space invitations/recovery, local Runtime forms and permission views.
 - `npm run test:qa-evidence` — test the sanitized two-machine acceptance evidence verifier.
 - `npm run test:product-experience` — verify disposable local/trusted product acceptance fixtures with real sealed evidence.
 - `CONVENE_WIRE_PRODUCT_PREVIEW=1 npm run preview:product-experience` — serve the built Web UI on two isolated loopback QA servers, with synthetic model responses and temporary data removed on shutdown; never use for deployment.

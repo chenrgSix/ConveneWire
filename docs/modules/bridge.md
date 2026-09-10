@@ -164,6 +164,16 @@ journals. Its `current` flag means current local Export authorization only;
 the separately retained Host Acceptance does not grant live Run admission.
 Old-lineage withdrawal cannot hide a newer Export in the inventory.
 
+The independent `GET /api/peers/spaces` returns only installation identity and
+invitation/membership/local-state metadata. It uses the retained Peer store
+without resolving Runtime sources or opening the human vault, so configuration
+loss or a core replacement cannot hide memberships that the Owner needs to
+leave. It omits Export availability, credentials and proofs. Focused HTTP tests
+cover missing Runtime configuration, no-store responses and rejection of
+machine credentials, foreign origins and query-bearing requests. The native
+[Space interface](web-ui.md#peer-invitation-and-sharing-controls) consumes this
+read model alongside independent join and departure recovery inventories.
+
 `POST /api/peers/exports/withdraw` persists local revocation before invalidating
 the affected Peer lifetime. It needs no Host response, Runtime configuration,
 Agent identity map or running core, and works during configuration replacement.

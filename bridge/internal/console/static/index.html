@@ -20,6 +20,9 @@
         <button class="nav-item" type="button" data-page-target="agents">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3"/><path d="M4.5 16.2c.7-2.8 2.5-4.2 5.5-4.2s4.8 1.4 5.5 4.2"/></svg></span><span>本机 Agent</span>
         </button>
+        <button class="nav-item hidden" type="button" data-page-target="peers" data-native-only>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="5" cy="6" r="2.5"/><circle cx="15" cy="14" r="2.5"/><path d="m7 7.5 6 5M12 3h5v5M3 12v5h5"/></svg></span><span>远端空间</span>
+        </button>
         <button class="nav-item" type="button" data-page-target="governed">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.8 16 5v4.5c0 3.7-2.2 6.2-6 7.7-3.8-1.5-6-4-6-7.7V5Z"/><path d="m7.3 9.8 1.7 1.7 3.8-4"/></svg></span><span>受控开发</span>
         </button>
@@ -119,6 +122,33 @@
               <button class="primary" id="add-agent" type="button">添加 Agent</button>
             </div>
             <div class="agent-list detailed-agents" id="agent-list"></div>
+          </section>
+
+          <section class="app-page hidden peer-spaces" data-page-panel="peers" id="peer-spaces-page">
+            <div class="page-heading">
+              <div><p class="eyebrow">跨节点协作</p><h2 tabindex="-1">远端空间</h2><p>加入其他节点的 Team 或 Room。本机 Agent 的分享和执行权限由你单独管理。</p></div>
+              <div class="peer-actions"><button class="secondary" type="button" data-peer-refresh>刷新</button><button class="primary" type="button" data-peer-invite data-peer-mutation>加入远端空间</button></div>
+            </div>
+            <p data-peer-result role="status"></p>
+            <section class="settings-card"><h3>已加入的空间</h3><div data-peer-spaces class="peer-list"></div></section>
+            <section class="settings-card"><h3>连接状态</h3><div data-peer-status></div></section>
+            <section class="settings-card"><h3>待恢复的加入操作</h3><p>请求中断时查询原操作，不会创建另一份成员关系。</p><div data-peer-joins class="peer-list"></div></section>
+            <section class="settings-card"><h3>离开记录</h3><p>本机先停止访问和执行，再等待 Host 确认；远端已有内容仍由 Host 管理。</p><div data-peer-departures class="peer-list"></div></section>
+            <dialog class="peer-dialog" data-peer-invite-dialog aria-labelledby="peer-invite-heading">
+              <div class="section-heading"><h3 id="peer-invite-heading">加入远端空间</h3><button type="button" class="secondary" data-peer-invite-close>关闭</button></div>
+              <p data-peer-invite-note></p>
+              <label>Host 提供的完整邀请<textarea data-peer-invitation rows="5" maxlength="16384" autocomplete="off" spellcheck="false" placeholder="粘贴邀请内容"></textarea></label>
+              <div data-peer-invite-details></div>
+              <label>你在远端空间的显示名称<input data-peer-display-name maxlength="80" autocomplete="off" placeholder="例如：陈同学"></label>
+              <p data-peer-invite-error role="alert" class="peer-error"></p>
+              <div class="peer-actions"><button type="button" class="primary" data-peer-preview data-peer-mutation>验证并查看范围</button><button type="button" class="primary" data-peer-join data-peer-mutation hidden>确认加入此空间</button></div>
+            </dialog>
+            <dialog class="peer-dialog" data-peer-leave-dialog aria-labelledby="peer-leave-heading">
+              <h3 id="peer-leave-heading">离开此空间</h3>
+              <p>本机会立即停止该成员关系的连接、分享和执行。再次加入需要新的邀请；远端已保存的内容不会删除。</p>
+              <div data-peer-leave-details></div><p data-peer-leave-error role="alert" class="peer-error"></p>
+              <div class="peer-actions"><button type="button" class="secondary" data-peer-leave-cancel>取消</button><button type="button" class="primary" data-peer-leave-confirm data-peer-mutation>确认离开</button></div>
+            </dialog>
           </section>
 
           <section class="app-page hidden" data-page-panel="governed" id="governed-page">

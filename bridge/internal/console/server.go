@@ -455,6 +455,7 @@ func (s *Service) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/state", s.authorize(s.getState))
 	mux.HandleFunc("GET /api/peers/status", s.authorizePeer(s.getPeerStatus))
+	mux.HandleFunc("GET /api/peers/spaces", s.authorizePeer(s.getPeerSpaces))
 	mux.HandleFunc("GET /api/peers/approvals", s.authorizePeer(s.getPeerApprovals))
 	mux.HandleFunc("POST /api/peers/approvals/{requestId}", s.authorizePeer(s.decidePeerApproval))
 	mux.HandleFunc("GET /api/peers/exports", s.authorizePeer(s.getPeerExports))

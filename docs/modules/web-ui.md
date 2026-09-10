@@ -49,7 +49,40 @@ control and Escape restores the trigger. Browser automation did not submit
 access changes: automatic approval rejected the specific acceptance click as
 requiring action-time consent. That interaction remains in the final QA-092
 manual gate; component and Server mutation regressions are separate evidence.
-Native Console/Space UI integration remains active in WEB-085.
+The native Console now has a separate `Remote Spaces` page. Its Space inventory,
+Peer connection status, pending joins and departure receipts load independently
+only while that page is active. Unchanged rows retain keyboard focus during
+polling; navigation, expired Console credentials and changed local identity
+retire old reads and clear invitation secrets. All local requests use the
+existing Console bearer; no secret is copied to browser storage or a URL.
+
+Invitation review starts from the Host's copied JSON and calls the native
+verification endpoint before enabling confirmation. The reviewed Host origin,
+Node/public key, Team/Room scope and membership expiry come from that verified
+response. A new join requires an unexpired review and a display name. Once a
+confirmation might have committed, retry preserves its exact operation, name
+and digest, even after invitation expiry. Closing the dialog clears the secret;
+the native pending journal provides recovery after interruption. A recovered
+inactive membership cannot be presented as newly joined.
+
+Leaving reviews one membership, retains the exact operation after an ambiguous
+response, and distinguishes local access removal from Host confirmation. Its
+recovery button synchronizes the stored departure without inventing a new
+operation. Broken Runtime or human-entry state does not hide independent Space
+and departure reads. This page does not automatically open a remote browser,
+share an Agent, accept a Run or make a model call.
+
+All 71 embedded Console UI checks and focused Console HTTP race/vet pass.
+The actual bundled native fixture also completes its offline Run/Discussion,
+restart and restoration loop. Browser inspection of that real Console covers
+the [1280px Space page](../acceptance/assets/web-085/console-spaces-1280.jpg),
+[390px navigation](../acceptance/assets/web-085/console-spaces-390.jpg) and
+[390px invitation dialog](../acceptance/assets/web-085/console-invitation-390.jpg).
+There is no horizontal overflow; forward/reverse Tab cycles inside the dialog
+and Escape returns focus to its trigger. Browser inspection uses read-only
+pages and form controls; access-changing interactions remain deferred under
+QA-092. Human browser entry, Agent sharing and local approval UI remain active
+in WEB-085.
 
 Peer projections also have a distinct inventory type and presence explanation.
 Their detail view describes Participant-owned execution and routes the Host

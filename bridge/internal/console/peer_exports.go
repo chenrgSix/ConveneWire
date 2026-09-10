@@ -39,6 +39,34 @@ func (s *Service) getPeerExports(response http.ResponseWriter, _ *http.Request) 
 	writeJSON(response, http.StatusOK, map[string]any{"state": state, "sources": sources.Reviews()})
 }
 
+// Space membership is readable even while Runtime configuration is unavailable
+// or being replaced. It exposes no Export availability or credential material.
+func (s *Service) getPeerSpaces(response http.ResponseWriter, _ *http.Request) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	owner, ok := s.options.NativePeers.(nativePeerExports)
+	if !ok || s.closed || s.owner == nil {
+		peerOwnerError(response, peer.ErrStore)
+		return
+	}
+	exporter, err := owner.PeerWithdrawal()
+	if err != nil {
+		peerOwnerError(response, err)
+		return
+	}
+	state, err := exporter.OwnerState(time.Now())
+	if err != nil {
+		peerOwnerError(response, err)
+		return
+	}
+	connections := make([]map[string]any, 0, len(state.Connections))
+	for _, connection := range state.Connections {
+		connections = append(connections, map[string]any{"invitation": connection.Invitation,
+			"membership": connection.Membership, "state": connection.State})
+	}
+	writeJSON(response, http.StatusOK, map[string]any{"participant": state.Participant, "localUserId": state.LocalUserID, "connections": connections})
+}
+
 func (s *Service) preparePeerExport(response http.ResponseWriter, request *http.Request) {
 	var input struct {
 		ExpectedRevision    int64              `json:"expectedRevision"`

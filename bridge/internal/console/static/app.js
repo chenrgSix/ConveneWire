@@ -1,4 +1,5 @@
 import { createClientEntryController } from "./client-entry.mjs";
+import { createPeerSpacesController } from "./peer-spaces.mjs";
 import { pairingView } from "./pairing-view.mjs";
 import {
   configuredPairingEntryView,
@@ -133,12 +134,14 @@ function consumePairingLaunchHash() {
 const pageCopy = {
   overview: {context: "本机执行环境", title: "概览"},
   agents: {context: "Runtime 与权限", title: "本机 Agent"},
+  peers: {context: "跨节点协作", title: "远端空间"},
   governed: {context: "只保存在这台设备", title: "受控开发"},
   settings: {context: "只保存在这台设备", title: "设置"}
 };
 
 function setPage(page, focus = false) {
   if (!pageCopy[page]) return;
+  if (page === "peers" && !currentState?.localNodeId) page = "overview";
   activePage = page;
   for (const panel of document.querySelectorAll("[data-page-panel]")) {
     panel.classList.toggle("hidden", panel.dataset.pagePanel !== page);
@@ -153,6 +156,7 @@ function setPage(page, focus = false) {
   elements["page-title"].textContent = pageCopy[page].title;
   if (focus) document.querySelector(`[data-page-panel="${page}"] h2`)?.focus?.();
   if (page === "governed") void refreshGovernedState();
+  peerSpacesController.setActive(page === "peers");
 }
 
 function governedInventoryGroup(title, entries, renderEntry) {
@@ -268,11 +272,13 @@ async function request(path, options = {}) {
   if (options.body) headers.set("content-type", "application/json");
   const response = await fetch(path, {...options, headers});
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error || `请求失败 (${response.status})`);
+  if (!response.ok) throw Object.assign(new Error(body.error || `请求失败 (${response.status})`), {status: response.status});
   return body;
 }
 
 const clientEntryController = createClientEntryController({elements, request});
+const peerSpacesController = createPeerSpacesController({root: document.getElementById("peer-spaces-page"), request});
+window.addEventListener("pagehide", () => peerSpacesController.dispose());
 const workPolicyForm = createWorkPolicyForm({form: document.getElementById("work-policy-form"), request,
   agents: () => currentState?.agents ?? [], refreshed: async () => { await refresh(); await refreshGovernedState(); }});
 
@@ -620,6 +626,8 @@ function render(state) {
   document.getElementById("device-approval-toggle").textContent = trust.mode === "central-approval" ? "关闭中心审批" : "开启中心审批";
   document.getElementById("device-approval-toggle").disabled = !trust.editable;
   currentState = state;
+  peerSpacesController.render(state);
+  for (const element of document.querySelectorAll("[data-native-only]")) element.classList.toggle("hidden", !state.localNodeId);
   clientEntryController.render(state);
   const waiting = Boolean(state.enrollment?.active);
   renderDiscovery("codex", "codex");
@@ -803,6 +811,7 @@ async function refresh() {
   try {
     render(await request("/api/state"));
   } catch (error) {
+    if (error.status === 401) peerSpacesController.render(null);
     showError(error);
   }
 }
