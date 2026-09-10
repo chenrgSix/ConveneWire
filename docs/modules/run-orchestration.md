@@ -49,6 +49,27 @@ admission and negative browser/control checks. Fourteen owning HTTP/authority
 tests, seven native-ingress tests, full Peer race/vet and Hub build/bundle pass.
 Automatic content delivery and Run/approval lifecycle wiring remain RUN-020.
 
+The Participant now retains the exact validated request in its immutable Peer
+Runtime partition. Separate private receive, possible-start and outcome files
+keep one namespace for the qualified Run across retries, revisions and restart.
+A new receive and the one-time start claim require a fresh Host admission and
+current local membership; historical reads and exact receive retries grant no
+execution rights. Local Export/Acceptance checks remain the native factory's
+responsibility immediately before execution and after waits.
+
+The start claim rejects a second caller, including after cold reopen with no
+known outcome. Reconciliation lists that retained ambiguity without resetting it
+to queued. A known local outcome can be retained after leave/expiry; its Reply
+is private local evidence and cannot be sent using settlement authority.
+Outcomes are immutable, and denied-before-start, terminal and unknown states
+cannot reopen a Run. Requests are limited to 512 KiB and local replies to
+256 KiB; oversized data fails before a new journal record is accepted.
+The native partition retains the journal observer across core replacements.
+Observed rollback/deletion, changed ownership, malformed JSON, copied Peer pins
+and linked paths fail closed. OS process fencing remains independently required;
+the journal does not prove that a child has stopped. Network dispatch, lifecycle
+callbacks and remote content/settlement receipts still require integration.
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

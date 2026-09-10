@@ -39,6 +39,8 @@ type RuntimePartition struct {
 	namespace string
 	owner     *RuntimePartitions
 	receipt   runtimePartitionReceipt
+	journalMu sync.Mutex
+	journal   *RunJournal
 }
 
 func NewRuntimePartitions(root string, store *Store, checkIdentity func() error) (*RuntimePartitions, error) {
