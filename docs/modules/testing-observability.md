@@ -882,3 +882,25 @@ absence of a manual result does not block implementation tasks or waive their
 own focused regression/security/interop checks. Fixtures use offline runtimes
 and process-owned temporary roots. Actual installations, physical owner/platform
 results, external models, CI execution and publication remain separate evidence.
+
+QA-091 maps the original N1-N8 scenarios to executable evidence: local Codex/Pi
+protocol participation without model access; one-use invitation and Room ceiling;
+explicit Export plus Host Acceptance; one Host's mixed Discussion; Participant
+death without replay; Host restart before a contribution Wave has fully settled;
+revocation across content, execution and publication; and credential/session/
+disclosure isolation. In accordance with ADR-0065, the last case does not claim
+a universal sandbox or protection against an arbitrary malicious Runtime with
+the local OS user's privileges. Native fixtures own their executables, private
+roots and network listeners, and drain children before removing their data.
+The acceptance record will identify its exact source and final package separately
+from earlier module evidence. This is an evidence map; TASKS.md owns status.
+
+The [native offline protocol fixture](../../scripts/local-node/fixtures/offline-runtime.go)
+now serves both Codex app-server and Pi JSONL through the actual local adapters.
+The bundled Node scenario requires both kinds in the physical invocation journal,
+then checks unchanged calls and identity after restart/restore. It passes in
+22.25 s. The actual TLS Peer Discussion scenario reopens its Host with one
+completed and one pending contribution, checks the same Wave/Turn/Run identities,
+then reopens again before its single Finalizer delivery; race and vet pass.
+These extend the combined gate's scenario coverage without calling providers or
+changing production execution behavior.

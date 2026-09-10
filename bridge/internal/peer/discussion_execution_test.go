@@ -23,6 +23,40 @@ func TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization(t *testing.T) 
 	if created.DiscussionID == "" || created.PeerRunID == "" {
 		t.Fatal("actual Discussion did not create its remote Wave slot")
 	}
+	type discussionView struct {
+		Discussion struct{ State string }
+		Waves      []struct{ WaveID, State string }
+		Turns      []struct{ TurnID, RunID, Kind, State string }
+	}
+	readView := func() discussionView {
+		var view discussionView
+		f.controlResult(t, map[string]any{"action": "discussion-state", "discussionId": created.DiscussionID}, &view)
+		return view
+	}
+	var before discussionView
+	awaitRunWorker(t, "Host contributor did not settle while the Peer contribution remained pending", func() bool {
+		before = readView()
+		completed := 0
+		for _, turn := range before.Turns {
+			if turn.State == "completed" {
+				completed++
+			}
+		}
+		return len(before.Waves) == 1 && len(before.Turns) == 2 && completed == 1
+	})
+	// Reopen with one accepted contribution and one undelivered Peer Turn.
+	// Recovery must retain the original Wave/Turn/Run identities and leave its
+	// barrier open for that contribution, rather than scheduling a replacement.
+	f.control(t, map[string]any{"action": "restart-host"})
+	after := readView()
+	if len(after.Waves) != 1 || len(after.Turns) != 2 || after.Waves[0].WaveID != before.Waves[0].WaveID || after.Waves[0].State != "open" {
+		t.Fatal("Host recovery duplicated or prematurely closed the partial contribution Wave", after)
+	}
+	for index, turn := range after.Turns {
+		if turn.TurnID != before.Turns[index].TurnID || turn.RunID != before.Turns[index].RunID || turn.State != before.Turns[index].State {
+			t.Fatal("Host recovery replaced an existing contribution identity or committed outcome", before, after)
+		}
+	}
 	ids := []string{}
 	for turn := 0; turn < 2; turn++ {
 		connection, err := client.ConnectRuntime(context.Background(), c.store, partition.receipt.MembershipID)
@@ -90,12 +124,7 @@ func TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization(t *testing.T) 
 			f.control(t, map[string]any{"action": "restart-host"})
 		}
 	}
-	var view struct {
-		Discussion struct{ State string }
-		Waves      []struct{ State string }
-		Turns      []struct{ Kind, State string }
-	}
-	f.controlResult(t, map[string]any{"action": "discussion-state", "discussionId": created.DiscussionID}, &view)
+	view := readView()
 	if view.Discussion.State != "completed" || len(view.Waves) != 2 || len(view.Turns) != 3 || ids[0] == ids[1] {
 		t.Fatal("native Discussion did not finalize exactly once", view)
 	}

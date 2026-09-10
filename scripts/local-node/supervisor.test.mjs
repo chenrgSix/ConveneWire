@@ -24,29 +24,14 @@ async function until(read, label, timeout = 20_000) {
   throw new Error(`Timed out: ${label}`);
 }
 
-// A native offline Pi-protocol fixture: no provider SDK, model calls, network,
-// tools or home-directory reads. The real Bridge owns dispatch and sessions.
-const fixtureSource = `package main
-import("encoding/json";"io";"os";"strings")
-func main(){
- input,_:=io.ReadAll(os.Stdin)
- record,_:=json.Marshal(map[string]any{"bytes":len(input),"args":os.Args[1:]})
- file,err:=os.OpenFile("fixture-calls.jsonl",os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if err!=nil{panic(err)}
- file.Write(append(record,'\\n'));file.Sync();file.Close()
- reply:="Local Node fixture reply. Team collaboration remains on this computer."
- if strings.Contains(string(input),"Discussion ID:"){reply += "\\n<agentroom-assessment>{\\"goalSatisfied\\":true,\\"confidence\\":0.95,\\"newInformationAdded\\":true,\\"reviewerApproved\\":true,\\"disagreementRemaining\\":\\"none\\",\\"recommendation\\":\\"finish\\"}</agentroom-assessment>"}
- json.NewEncoder(os.Stdout).Encode(map[string]any{"type":"message_end","message":map[string]any{"role":"assistant","content":[]any{map[string]string{"type":"text","text":reply}},"stopReason":"stop"}})
-}`;
-
-test("native Local Node completes Run and Discussion, then restores the same Owner and execution state", { timeout: process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE ? 420_000 : 240_000 }, async (t) => {
+test("native Local Node completes Codex/Pi Run and Discussion, then restores the same Owner and execution state", { timeout: process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE ? 420_000 : 240_000 }, async (t) => {
   const resources = await createTestResources(t, "convenewire-local-node-e2e-");
   const root = resources.directory;
   const bundle = path.join(root, "hub");
   const manifest = await buildBundle(bundle);
   const hostBinary = path.join(root, `convenewire-node${suffix}`);
-  const fixtureBinary = path.join(root, `offline-pi${suffix}`);
-  const fixtureFile = path.join(root, "offline-pi.go");
-  await writeFile(fixtureFile, fixtureSource);
+  const fixtureBinary = path.join(root, `offline-runtime${suffix}`);
+  const fixtureFile = path.join(repository, "scripts/local-node/fixtures/offline-runtime.go");
   await exec("go", ["build", "-o", hostBinary, "./cmd/convenewire-node"], { cwd: path.join(repository, "bridge") });
   await exec("go", ["build", "-o", fixtureBinary, fixtureFile], { cwd: root });
   const dataRoot = path.join(root, "node-data");
@@ -103,7 +88,7 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   assert.equal((await fetch(unboundConsole.origin + "/api/peers/joins", { headers: unboundHeaders })).status, 200);
   const unboundAdded = await fetch(unboundConsole.origin + "/api/agents", { method: "POST",
     headers: { ...unboundHeaders, "content-type": "application/json" },
-    body: JSON.stringify({ kind: "pi", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root }) });
+    body: JSON.stringify({ kind: "codex", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root }) });
   const independentAgent = await unboundAdded.json();
   assert.equal(unboundAdded.status, 201, JSON.stringify(independentAgent));
   await until(async () => {
@@ -221,6 +206,7 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     assert.ok(processFiles.includes(file.replace(".prepared.json", ".finished.json")), "process completion was not durably recorded");
   }
   const callsBefore = await readFile(path.join(root, "fixture-calls.jsonl"), "utf8");
+  assert.deepEqual([...new Set(callsBefore.trim().split("\n").map(line => JSON.parse(line).runtimeKind))].sort(), ["codex", "pi"]);
   assert.equal(callsBefore.trim().split("\n").length, 4);
   const snapshot = path.join(root, "snapshot");
   await assert.rejects(exec(hostBinary, ["--data-dir", dataRoot, "--backup", snapshot]), /already|owned|lock/i);
