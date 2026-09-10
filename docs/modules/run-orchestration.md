@@ -10,6 +10,25 @@ private Peer Sessions and local approval. Fresh signed admission, Host delivery,
 Participant journals and bounded content-free settlement remain in progress;
 the contract and native SDK alone are not network execution evidence.
 
+The Host `PeerRunAuthority` now freezes an already-authorized local Run into one
+immutable Peer request in migration 0103. It derives execution and context from
+the Host Run, captured context fence and existing planner. It does not accept
+caller-supplied prompts or copy Device policy into a Peer manifest. Replay and
+reopen return the original request, including after expiry, solely as historical
+evidence. Current delivery/admission must separately check that exact binding.
+
+Fresh admission accepts a closed, Participant-signed `PeerAdmission` for that
+retained binding and returns a Host signature with the same operation and nonce,
+valid for at most 30 seconds. In one synchronous Host transaction it checks the
+machine audience, both Nodes, current bilateral revision/digests, Room and Task
+participation, current requester membership, cancellation, Run state and deadline.
+Ordinary Task assignment and scheduling remain required. The originating Member
+is read from the persisted Run, including its current Peer ceiling when present;
+no synthetic browser session or Device principal is created. This service does
+not yet provide HTTP delivery, Participant start/receipt journals or settlement.
+Discussion requests are explicitly refused until DISC-022 supplies frozen Wave
+and Finalizer context, preserving its existing exclusion rules.
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

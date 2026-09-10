@@ -116,6 +116,24 @@ added only after fresh verification and remains immutable. Concurrent same-inten
 submissions preserve one revision; changed intent and withdrawal revival fail.
 Owner inventory distinguishes pending Host revocation from a confirmed receipt.
 
+## Immutable Peer Run requests
+
+RUN-020 migration 0103 stores one canonical `peer_run_requests` row per existing
+Host Run, bound to its Peer, membership and semantic request digest. Foreign
+keys and insert triggers require the actual Peer Agent projection, local Agent,
+Team/Room/Task and Run identity. Update/delete triggers retain the original
+execution content and bilateral pins; new attempts or refreshed attestations
+cannot replace them. Frozen rows contain Host-authorized context, not Participant
+configuration, Workspace paths or Device credentials.
+
+The Host derives a first request under one immediate transaction and rereads
+the canonical stored form. Failed insert rolls back completely. Historical reads
+and exact freezes do not renew authority: current admission rechecks membership,
+Room/Task, grant/Acceptance, Run/cancellation and deadline. Tests cover actual
+Message-to-Run creation, immutable replay/reopen, changed-pin/proof rejection,
+post-wait scope loss and rollback. Transport delivery and Participant recovery
+records remain subsequent RUN-020 work.
+
 ## Authority partition ownership
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) assigns DATA-009 the
