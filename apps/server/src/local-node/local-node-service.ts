@@ -96,7 +96,6 @@ export class LocalNodeService {
 
   public requestConsole(actor: WebPrincipal) {
     this.requireOwner(actor);
-    if (!this.status().teamId) throw new Error("Choose the local Runtime Team first");
     this.consoleRequestId = randomBytes(32).toString("base64url");
     return { requested: true };
   }

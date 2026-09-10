@@ -94,6 +94,13 @@ native Agent Console. Initial page load and Team navigation never bind or move
 the Runtime. Accepting a scoped Client Access entry retires any cached local
 Owner session so a later reload cannot silently restore broader permissions.
 
+WEB-085 separates `Open local Console` from `Connect local Runtime`. The former
+works without any Team and never calls the binding API, including when a Team
+is selected. The latter retains the explicit single-Team choice. Both use the
+fixed local Owner and current origin; a retired component cannot open a Console
+after its delayed binding response. The shell's unpaired Console exposes native
+Owner controls, while Device execution starts only after explicit binding.
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies
 to the selected Task, including the default conversation. Switching Tasks retires

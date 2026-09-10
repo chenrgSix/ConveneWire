@@ -65,8 +65,8 @@ test("native Local Node completes Run and Discussion, then restores the same Own
       }
     });
     host.process.stderr.on("data", (chunk) => { error += chunk; });
-    const event = (kind) => until(() => {
-      const found = events.find((entry) => entry.event === kind);
+    const event = (kind, accepts = () => true) => until(() => {
+      const found = events.find((entry) => entry.event === kind && accepts(entry));
       if (found) return found;
       if (host.process.exitCode !== null) throw new Error(`Node host exited: ${error}`);
       return null;
@@ -91,12 +91,22 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   const health = await request("/api/health/ready");
   assert.equal(health.status, "ready");
   assert.equal(manifest.releaseVersion, "v0.0.0-local");
+  const unboundConsole = new URL((await running.event("console")).consoleUrl);
+  const unboundHeaders = { authorization: `Bearer ${unboundConsole.searchParams.get("token")}` };
+  const unboundState = await fetch(unboundConsole.origin + "/api/state", { headers: unboundHeaders }).then(response => response.json());
+  assert.equal(unboundState.paired, false);
+  assert.equal(unboundState.bridgeRunning, false);
+  assert.equal(unboundState.localNodeId, ready.nodeId);
+  assert.equal((await request("/api/local-node")).teamId, null);
+  assert.deepEqual(await request("/api/teams"), []);
+  assert.equal((await fetch(unboundConsole.origin + "/api/peers/joins", { headers: unboundHeaders })).status, 200);
   const { team } = await request("/api/teams", { name: "Local fixture Team" });
   const room = await request(`/api/teams/${team.teamId}/rooms`, { name: "Local work" });
   await request(`/api/local-node/teams/${team.teamId}/bind`, undefined, "POST");
   await request("/api/local-node/open-console", undefined, "POST");
-  const consoleEvent = await running.event("console");
+  const consoleEvent = await running.event("console", entry => entry.consoleUrl !== unboundConsole.href);
   const consoleURL = new URL(consoleEvent.consoleUrl);
+  assert.equal((await fetch(unboundConsole.origin + "/api/peers/joins", { headers: unboundHeaders })).status, 401);
   const consoleRequest = async (route, body, method = body === undefined ? "GET" : "POST") => {
     const response = await fetch(consoleURL.origin + route, { method, headers: { authorization: `Bearer ${consoleURL.searchParams.get("token")}`,
       ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });

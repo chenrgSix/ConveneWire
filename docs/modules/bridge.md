@@ -48,6 +48,17 @@ and restores the same identity and process owner from backup. Core/Local Node
 race tests, vet and this offline native fixture pass. The Peer transport and
 local approval composition are described below.
 
+WEB-085 makes the native Owner Console available before a local Team is bound.
+The shell creates only its pinned local profile and native Owner capability;
+it does not invent a Device credential or start a Device Runtime. The existing
+Owner-only Peer inventory/join/departure endpoints remain usable without a
+local Team. An unexpected or malformed saved Device credential fails closed.
+On the first explicit Team binding, the old Console drains and releases its
+lease, its token retires, and a new Console uses the same NativeNode identity
+and private Peer store. Later binding changes are rejected. Agent configuration
+and continuous Peer execution without Device binding are completed separately
+within WEB-085; this entry step alone does not claim that Runtime path.
+
 The Participant approval kernel binds each local decision to the immutable Peer
 execution, reviewed Export revision, opaque live-process owner and exact Runtime
 callback. It retains no transferable decision across restart. Disconnect, Run

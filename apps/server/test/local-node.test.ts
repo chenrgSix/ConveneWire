@@ -48,7 +48,11 @@ test("Local Node fixed Owner, one-time entry, origin isolation and durable bindi
   const owner = { host, origin, authorization: `Bearer ${token}` };
   assert.equal((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: { host, origin } })).statusCode, 401);
   assert.equal((await app.inject({ url: "/api/local-node/control/state", headers: owner })).statusCode, 403);
-  assert.notEqual((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: owner })).statusCode, 200);
+  assert.equal((await app.inject({ method: "POST", url: "/api/local-node/open-console", headers: owner })).statusCode, 200);
+  const unboundState = (await app.inject({ url: "/api/local-node/control/state", headers: control })).json();
+  assert.equal(unboundState.binding, null);
+  assert.match(unboundState.consoleRequestId, /^[A-Za-z0-9_-]{43}$/u);
+  assert.deepEqual((await app.inject({ url: "/api/teams", headers: owner })).json(), []);
   const team = (await app.inject({ method: "POST", url: "/api/teams", headers: owner, payload: { name: "Local Team" } })).json().team;
   const bindURL = `/api/local-node/teams/${team.teamId}/bind`;
   const bound = await app.inject({ method: "POST", url: bindURL, headers: owner });

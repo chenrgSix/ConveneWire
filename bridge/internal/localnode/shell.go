@@ -18,8 +18,8 @@ import (
 	contracts "convenewire.dev/contracts/generated/go/localnode"
 )
 
-// Shell connects the selected local Team to one existing Console/Bridge core.
-// Web can request opening the Console; it cannot supply Runtime configuration.
+// Shell exposes the native Owner Console independently of a local Team.
+// Explicit Team binding adds the Device connector to the same installation.
 type Shell struct {
 	Hub          *Supervisor
 	mu           sync.Mutex
@@ -28,6 +28,7 @@ type Shell struct {
 	workspace    string
 	version      string
 	requestID    string
+	binding      *contracts.Binding
 	closed       bool
 	native       *bridgecore.NativeNode
 }
@@ -53,11 +54,15 @@ func (shell *Shell) Poll(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if state.Binding == nil {
-		return false, nil
+	if shell.binding != nil && (state.Binding == nil || *shell.binding != *state.Binding) {
+		return false, errors.New("Local Node binding changed after Console attachment")
 	}
-	if shell.service == nil {
-		if err := shell.attach(*state.Binding); err != nil {
+	if shell.service == nil || (shell.binding == nil && state.Binding != nil) {
+		if shell.service != nil {
+			shell.service.Close()
+			shell.service = nil
+		}
+		if err := shell.attach(state.Binding); err != nil {
 			return false, err
 		}
 	}
@@ -66,12 +71,15 @@ func (shell *Shell) Poll(ctx context.Context) (bool, error) {
 	return requested, nil
 }
 
-func (shell *Shell) attach(binding contracts.Binding) error {
+func (shell *Shell) attach(binding *contracts.Binding) error {
 	root := shell.Hub.Data.Root
 	configPath := filepath.Join(root, "bridge.json")
 	dataDir := filepath.Join(root, "bridge")
 	candidate := config.Config{SchemaVersion: config.CurrentSchemaVersion, LocalNodeID: shell.Hub.Data.Identity.NodeID,
-		ServerURL: binding.ServerURL, DeviceName: "Local Node", DataDir: dataDir, Agents: []config.AgentConfig{}}
+		ServerURL: shell.Hub.Data.Origin(), DeviceName: "Local Node", DataDir: dataDir, Agents: []config.AgentConfig{}}
+	if binding != nil && binding.ServerURL != candidate.ServerURL {
+		return errors.New("Local Node binding has a foreign origin")
+	}
 	if _, err := os.Lstat(configPath); errors.Is(err, os.ErrNotExist) {
 		if err := config.Save(configPath, candidate); err != nil {
 			return err
@@ -87,22 +95,10 @@ func (shell *Shell) attach(binding contracts.Binding) error {
 			return errors.New("existing Bridge profile does not belong to this Local Node")
 		}
 	}
-	credential := pairing.Credential{ServerURL: binding.ServerURL, TeamID: binding.TeamID, DeviceID: binding.DeviceID, OwnerMemberID: binding.OwnerMemberID, Token: binding.Token}
-	saved, err := pairing.Load(dataDir)
-	if err == nil {
-		if saved.ServerURL != credential.ServerURL || saved.TeamID != credential.TeamID || saved.DeviceID != credential.DeviceID ||
-			saved.OwnerMemberID != credential.OwnerMemberID || saved.Token != credential.Token {
-			return errors.New("existing Bridge credential differs from the Local Node binding")
-		}
-	} else {
-		// Do not reinterpret a malformed credential as an unpaired installation.
-		if !errors.Is(err, os.ErrNotExist) {
-			return err
-		}
-		if err := pairing.Save(dataDir, credential); err != nil {
-			return err
-		}
+	if err := shell.persistBinding(dataDir, binding); err != nil {
+		return err
 	}
+	var err error
 	if shell.native == nil {
 		shell.native, err = bridgecore.NewNativeNode(root, shell.Hub.Data.Identity)
 		if err != nil {
@@ -130,6 +126,36 @@ func (shell *Shell) attach(binding contracts.Binding) error {
 		return err
 	}
 	shell.service = service
+	if binding != nil {
+		copy := *binding
+		shell.binding = &copy
+	}
+	return nil
+}
+
+func (shell *Shell) persistBinding(dataDir string, binding *contracts.Binding) error {
+	saved, err := pairing.Load(dataDir)
+	if binding == nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return errors.New("unbound Local Node has an unexpected or unreadable Device credential")
+	}
+	credential := pairing.Credential{ServerURL: binding.ServerURL, TeamID: binding.TeamID, DeviceID: binding.DeviceID, OwnerMemberID: binding.OwnerMemberID, Token: binding.Token}
+	if err == nil {
+		if saved.ServerURL != credential.ServerURL || saved.TeamID != credential.TeamID || saved.DeviceID != credential.DeviceID ||
+			saved.OwnerMemberID != credential.OwnerMemberID || saved.Token != credential.Token {
+			return errors.New("existing Bridge credential differs from the Local Node binding")
+		}
+	} else {
+		// Do not reinterpret a malformed credential as an unpaired installation.
+		if !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		if err := pairing.Save(dataDir, credential); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -139,7 +165,7 @@ func (shell *Shell) Handler() http.Handler {
 		if service == nil {
 			response.Header().Set("Content-Type", "text/html; charset=utf-8")
 			response.Header().Set("Cache-Control", "no-store")
-			fmt.Fprint(response, "<!doctype html><html lang=zh-CN><meta charset=utf-8><title>本机 Agent</title><main><h1>先选择本地 Team</h1><p>请在本地空间中创建或选择 Team，然后点击“连接本机 Runtime”。</p></main></html>")
+			fmt.Fprint(response, "<!doctype html><html lang=zh-CN><meta charset=utf-8><title>本机 Agent</title><main><h1>本机 Console 正在准备</h1><p>请稍后从本地空间重新打开。</p></main></html>")
 			return
 		}
 		service.Handler().ServeHTTP(response, request)
