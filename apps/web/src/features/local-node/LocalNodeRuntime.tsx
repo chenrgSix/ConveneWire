@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { captureWebSessionScope, isStaleWebSessionError, jsonRequest } from "../../api-client.js";
 import type { Locale } from "../../i18n.js";
 import type { LocalSession, Team } from "../../models.js";
+import { LocalNodeNetwork } from "./LocalNodeNetwork.js";
 
 interface Binding { nodeId: string; teamId: string | null; deviceId: string | null }
 
@@ -45,6 +46,7 @@ export function LocalNodeRuntime({ session, team, teams, locale }: { session: Lo
     <button type="button" disabled={busy || !binding || (!binding.teamId && !team)} onClick={() => void open(true)}>
       {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "配置本机 Agent" : "Configure local Agents") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
     </button>
+    <LocalNodeNetwork session={session} locale={locale} />
     {error && <p role="alert">{error}</p>}
   </section>;
 }

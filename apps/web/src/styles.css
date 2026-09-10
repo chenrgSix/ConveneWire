@@ -1,6 +1,7 @@
 @import "./features/agent/agent-setup.css";
 @import "./features/work/work-experience.css";
 @import "./features/room/experience.css";
+@import "./features/local-node/local-network.css";
 
 :root {
   color: #edf1eb;

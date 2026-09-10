@@ -115,6 +115,30 @@ callbacks. This capability does not grant Device trust or persistent permission;
 the Runtime still rechecks current bilateral admission after waiting.
 All 89 embedded UI checks and focused Console/Peer approval race/vet pass.
 Actual system-window approval interactions remain part of QA-092.
+The actual [390px native approval page](../acceptance/assets/web-085/console-approvals-390.jpg)
+also loads its empty request list without horizontal overflow; this read-only
+inspection is separate from permission-changing manual acceptance.
+
+The local Owner's `Network settings` dialog is available before Team binding.
+It distinguishes the running HTTPS listener from pending next-startup settings,
+reviews listener scope and certificate fingerprint/expiry, and retains the exact
+save after an ambiguous response. Existing origins stay read-only; enabling
+requires explicit bounded PEM certificate/key selection. File contents remain
+in memory only and are cleared on close/session retirement. A delayed file read
+cannot submit private material after its view closes. Current-state changes
+invalidate an unsubmitted review; discarding pending settings requires a separate
+current decision. Disabling an entry does not revoke existing memberships.
+The native startup/ownership boundary is recorded under
+[network settings](operations-deployment.md#native-peer-https-ingress).
+
+All 361 Web checks, six final affected network/Runtime checks and production
+Web build pass. The actual bundled native fixture covers API staging, exact
+retry, TLS activation on restart and backup/restore. Browser inspection of the
+[1280px dialog](../acceptance/assets/web-085/network-settings-1280.jpg) and
+[390px dialog](../acceptance/assets/web-085/network-settings-390.jpg) confirms
+no horizontal overflow, both Tab directions, Escape and trigger restoration.
+Browser review does not save or restart the Node. Physical network reachability,
+browser/system CA trust and manual network changes remain in QA-092.
 
 An explicit `Enter Space` action now asks the native Owner capability to issue
 and open one short browser exchange. The Console receives only opening status

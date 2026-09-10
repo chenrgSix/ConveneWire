@@ -135,7 +135,9 @@ with Hub/Web builds and the actual bundled native offline Run/Discussion,
 restart and backup/restore loop. The native fixture now stages HTTPS through
 the Owner API, verifies that saving opens no listener, retries the exact save,
 then confirms the requested certificate after native restart and restoration.
-The configuration dialog remains active WEB-085 work.
+The [local Owner network dialog](web-ui.md#peer-invitation-and-sharing-controls)
+now exposes current/pending state, explicit certificate review and next-startup
+save/discard controls. It does not change system trust, DNS, firewall or NAT.
 
 Listener evidence: all 750 Server tests pass. The final startup-cancellation and
 immutable-configuration refinements pass all 17 affected configuration, actual

@@ -1,0 +1,9 @@
+.local-network-panel { display: grid; gap: 16px; min-width: 0; }
+.local-network-panel section, .local-network-panel form, .local-network-panel fieldset { display: grid; gap: 12px; min-width: 0; }
+.local-network-panel fieldset { border: 0; padding: 0; margin: 0; }
+.local-network-panel label { display: grid; gap: 6px; min-width: 0; }
+.local-network-panel input:not([type="checkbox"]) { width: 100%; min-width: 0; box-sizing: border-box; }
+.local-network-panel .local-network-toggle { display: flex; align-items: center; gap: 8px; }
+.local-network-details { display: grid; grid-template-columns: minmax(80px, auto) minmax(0, 1fr); gap: 8px 12px; margin: 0; }
+.local-network-details dd { margin: 0; overflow-wrap: anywhere; }
+.local-network-actions { display: flex; flex-wrap: wrap; gap: 8px; }
