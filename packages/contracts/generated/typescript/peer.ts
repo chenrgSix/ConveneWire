@@ -3062,3 +3062,555 @@ export interface Payload19 {
   subjectDigest:   string;
 }
 
+export interface PeerRunContextMessage {
+  content:   string;
+  messageId: string;
+  /**
+   * Opaque identifier with a lowercase type prefix and non-semantic suffix.
+   */
+  senderId:    string;
+  senderName?: string;
+  sequence?:   number;
+}
+
+export interface PeerRunContextManifest {
+  criteria:           PeerRunContextManifestCriterion[];
+  criteriaRevision:   number;
+  definitionRevision: number;
+  goal:               string;
+  included:           PeerRunContextManifestIncluded;
+  manifestVersion:    ManifestVersion;
+  omittedCategories:  [OmittedCategory, ...OmittedCategory[]];
+  permissions:        PeerRunContextManifestPermissions;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  recordedAt:   string;
+  runId:        string;
+  target:       PeerRunContextManifestTarget;
+  taskId:       string;
+  taskRevision: number;
+}
+
+export interface PeerRunContextManifestCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export interface PeerRunContextManifestIncluded {
+  artifactIds:         string[];
+  artifactRevision:    number;
+  memoryIds:           string[];
+  messageIds:          string[];
+  parentRunIds:        string[];
+  roomContextRevision: number;
+  taskMemoryRevision:  number;
+}
+
+export type ManifestVersion = "1.0";
+
+export type OmittedCategory = "unrelated_room_history" | "local_paths" | "environment_values" | "provider_credentials" | "provider_session_ids" | "hidden_reasoning" | "tool_payloads" | "other_workspaces";
+
+export interface PeerRunContextManifestPermissions {
+  filesystemAccess:   Access;
+  handoff:            Handoff;
+  interrupt:          Interrupt;
+  maxDurationSeconds: number | null;
+  networkAccess:      Access;
+}
+
+export type Access = "local-policy";
+
+export type Handoff = "unsupported";
+
+export type Interrupt = "supported" | "unsupported" | "not_recorded";
+
+export interface PeerRunContextManifestTarget {
+  agentId:     string;
+  runtimeKind: RuntimeKind;
+}
+
+export type RuntimeKind = "not_recorded";
+
+export interface PeerRunPayload {
+  contextManifest: PeerRunPayloadContextManifest;
+  contextMessages: PeerRunPayloadContextMessage[];
+  contextPlan?:    PeerRunPayloadContextPlan;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline:          string;
+  instruction:       string;
+  parentRunId?:      string;
+  requesterMemberId: string;
+  roomId:            string;
+  routingAgents?:    PeerRunPayloadRoutingAgent[];
+  runId:             string;
+  session:           PeerRunPayloadSession;
+  targetAgentId:     string;
+  targetAgentName?:  string;
+  taskId:            string;
+  traceId:           string;
+  triggerMessageId:  string;
+}
+
+export interface PeerRunPayloadContextManifest {
+  criteria:           PurpleCriterion[];
+  criteriaRevision:   number;
+  definitionRevision: number;
+  goal:               string;
+  included:           PurpleIncluded;
+  manifestVersion:    ManifestVersion;
+  omittedCategories:  [OmittedCategory, ...OmittedCategory[]];
+  permissions:        PurplePermissions;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  recordedAt:   string;
+  runId:        string;
+  target:       PurpleTarget;
+  taskId:       string;
+  taskRevision: number;
+}
+
+export interface PurpleCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export interface PurpleIncluded {
+  artifactIds:         string[];
+  artifactRevision:    number;
+  memoryIds:           string[];
+  messageIds:          string[];
+  parentRunIds:        string[];
+  roomContextRevision: number;
+  taskMemoryRevision:  number;
+}
+
+export interface PurplePermissions {
+  filesystemAccess:   Access;
+  handoff:            Handoff;
+  interrupt:          Interrupt;
+  maxDurationSeconds: number | null;
+  networkAccess:      Access;
+}
+
+export interface PurpleTarget {
+  agentId:     string;
+  runtimeKind: RuntimeKind;
+}
+
+export interface PeerRunPayloadContextMessage {
+  content:   string;
+  messageId: string;
+  /**
+   * Opaque identifier with a lowercase type prefix and non-semantic suffix.
+   */
+  senderId:    string;
+  senderName?: string;
+  sequence?:   number;
+}
+
+export interface PeerRunPayloadContextPlan {
+  longTermMemory?: PurpleLongTermProvenanceMemoryPlan;
+  resultEvidence?: PurpleTaskResultEvidence;
+  roomMemory?:     PurpleContextMemoryProjection;
+  taskMemory?:     FluffyContextMemoryProjection;
+}
+
+export interface PurpleLongTermProvenanceMemoryPlan {
+  room?: PurpleLongTermMemoryScopeSnapshot;
+  task?: FluffyLongTermMemoryScopeSnapshot;
+}
+
+export interface PurpleLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [PurpleProvenanceMemoryEntry, ...PurpleProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface PurpleProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export type ProvenanceMemoryEntryState = "active" | "superseded" | "retracted";
+
+export type ProvenanceMemoryEntryType = "decision" | "constraint" | "fact" | "open_question" | "convention" | "goal" | "acceptance_criterion" | "plan" | "progress" | "blocker" | "result";
+
+export interface FluffyLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [FluffyProvenanceMemoryEntry, ...FluffyProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface FluffyProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface PurpleTaskResultEvidence {
+  artifactRefs:     [PurpleArtifactReference, ...PurpleArtifactReference[]];
+  deliveryKind?:    DeliveryKind;
+  fromRevision?:    number;
+  hasMore?:         boolean;
+  revision:         number;
+  throughRevision?: number;
+}
+
+export interface PurpleArtifactReference {
+  artifactId:        string;
+  artifactRevision?: number;
+  branch?:           string;
+  commitSha?:        string;
+  /**
+   * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+   */
+  content?: PurplePinnedArtifactContent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  createdAt:          string;
+  createdByAgentId?:  string;
+  createdByMemberId?: string;
+  path?:              string;
+  relations?:         PurpleArtifactRelationReference[];
+  repository?:        string;
+  sourceRunId?:       string;
+  summary:            string;
+  title:              string;
+  type:               ArtifactReferenceType;
+  workspaceRef?:      string;
+}
+
+/**
+ * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+ */
+export interface PurplePinnedArtifactContent {
+  contentId:    string;
+  logicalAlias: string;
+  mediaType:    MediaType;
+  sha256:       string;
+  sizeBytes:    number;
+}
+
+export type MediaType = "text/x-diff" | "text/markdown" | "application/json" | "application/x-git-bundle";
+
+/**
+ * Immutable lineage from the containing source Artifact to older Task evidence.
+ */
+export interface PurpleArtifactRelationReference {
+  relationId:       string;
+  targetArtifactId: string;
+  type:             RelationType;
+}
+
+export type RelationType = "derives_from" | "reviews" | "verifies";
+
+export type ArtifactReferenceType = "commit" | "branch" | "file" | "patch" | "test_result" | "document";
+
+export type DeliveryKind = "bootstrap" | "delta";
+
+export interface PurpleContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export type ProjectionKind = "canonical" | "historical";
+
+export interface FluffyContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface PeerRunPayloadRoutingAgent {
+  agentId: string;
+  name:    string;
+}
+
+export interface PeerRunPayloadSession {
+  contextCursor: number;
+  contextPolicy: ContextPolicy;
+  resumePolicy:  ResumePolicy;
+  scope:         ScopeEnum;
+}
+
+export type ContextPolicy = "task_isolated_v1";
+
+export type ResumePolicy = "resume_or_start" | "start_new";
+
+export type ScopeEnum = "task";
+
+export interface PeerRunRequest {
+  binding:       PeerRunRequestBinding;
+  payload:       PeerRunRequestPayload;
+  schemaVersion: number;
+}
+
+export interface PeerRunRequestBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface PeerRunRequestPayload {
+  contextManifest: PayloadContextManifest;
+  contextMessages: PayloadContextMessage[];
+  contextPlan?:    PayloadContextPlan;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline:          string;
+  instruction:       string;
+  parentRunId?:      string;
+  requesterMemberId: string;
+  roomId:            string;
+  routingAgents?:    PayloadRoutingAgent[];
+  runId:             string;
+  session:           PayloadSession;
+  targetAgentId:     string;
+  targetAgentName?:  string;
+  taskId:            string;
+  traceId:           string;
+  triggerMessageId:  string;
+}
+
+export interface PayloadContextManifest {
+  criteria:           FluffyCriterion[];
+  criteriaRevision:   number;
+  definitionRevision: number;
+  goal:               string;
+  included:           FluffyIncluded;
+  manifestVersion:    ManifestVersion;
+  omittedCategories:  [OmittedCategory, ...OmittedCategory[]];
+  permissions:        FluffyPermissions;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  recordedAt:   string;
+  runId:        string;
+  target:       FluffyTarget;
+  taskId:       string;
+  taskRevision: number;
+}
+
+export interface FluffyCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export interface FluffyIncluded {
+  artifactIds:         string[];
+  artifactRevision:    number;
+  memoryIds:           string[];
+  messageIds:          string[];
+  parentRunIds:        string[];
+  roomContextRevision: number;
+  taskMemoryRevision:  number;
+}
+
+export interface FluffyPermissions {
+  filesystemAccess:   Access;
+  handoff:            Handoff;
+  interrupt:          Interrupt;
+  maxDurationSeconds: number | null;
+  networkAccess:      Access;
+}
+
+export interface FluffyTarget {
+  agentId:     string;
+  runtimeKind: RuntimeKind;
+}
+
+export interface PayloadContextMessage {
+  content:   string;
+  messageId: string;
+  /**
+   * Opaque identifier with a lowercase type prefix and non-semantic suffix.
+   */
+  senderId:    string;
+  senderName?: string;
+  sequence?:   number;
+}
+
+export interface PayloadContextPlan {
+  longTermMemory?: FluffyLongTermProvenanceMemoryPlan;
+  resultEvidence?: FluffyTaskResultEvidence;
+  roomMemory?:     TentacledContextMemoryProjection;
+  taskMemory?:     StickyContextMemoryProjection;
+}
+
+export interface FluffyLongTermProvenanceMemoryPlan {
+  room?: TentacledLongTermMemoryScopeSnapshot;
+  task?: StickyLongTermMemoryScopeSnapshot;
+}
+
+export interface TentacledLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [TentacledProvenanceMemoryEntry, ...TentacledProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface TentacledProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface StickyLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [StickyProvenanceMemoryEntry, ...StickyProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface StickyProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface FluffyTaskResultEvidence {
+  artifactRefs:     [FluffyArtifactReference, ...FluffyArtifactReference[]];
+  deliveryKind?:    DeliveryKind;
+  fromRevision?:    number;
+  hasMore?:         boolean;
+  revision:         number;
+  throughRevision?: number;
+}
+
+export interface FluffyArtifactReference {
+  artifactId:        string;
+  artifactRevision?: number;
+  branch?:           string;
+  commitSha?:        string;
+  /**
+   * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+   */
+  content?: FluffyPinnedArtifactContent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  createdAt:          string;
+  createdByAgentId?:  string;
+  createdByMemberId?: string;
+  path?:              string;
+  relations?:         FluffyArtifactRelationReference[];
+  repository?:        string;
+  sourceRunId?:       string;
+  summary:            string;
+  title:              string;
+  type:               ArtifactReferenceType;
+  workspaceRef?:      string;
+}
+
+/**
+ * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+ */
+export interface FluffyPinnedArtifactContent {
+  contentId:    string;
+  logicalAlias: string;
+  mediaType:    MediaType;
+  sha256:       string;
+  sizeBytes:    number;
+}
+
+/**
+ * Immutable lineage from the containing source Artifact to older Task evidence.
+ */
+export interface FluffyArtifactRelationReference {
+  relationId:       string;
+  targetArtifactId: string;
+  type:             RelationType;
+}
+
+export interface TentacledContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface StickyContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface PayloadRoutingAgent {
+  agentId: string;
+  name:    string;
+}
+
+export interface PayloadSession {
+  contextCursor: number;
+  contextPolicy: ContextPolicy;
+  resumePolicy:  ResumePolicy;
+  scope:         ScopeEnum;
+}
+

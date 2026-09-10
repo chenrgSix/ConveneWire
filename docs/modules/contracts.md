@@ -18,6 +18,36 @@ rounding can change an authorization counter. Schemas do not themselves prove
 that a caller holds the referenced grant; current identity/authority checks
 belong to SEC-019, REG-007 and RUN-020.
 
+RUN-020 adds `PeerRunRequest`, with a closed execution binding and
+`PeerRunPayload`. The payload contains the qualified Run/Task/context snapshot
+and a Task-isolated session request. Its closed manifest target has no Device
+or Workspace identity; Runtime kind is `not_recorded`, and filesystem/network
+policy remains `local-policy`. The Participant selects its actual reviewed
+Runtime. Device/Central consent, governed execution, owner-private output,
+Room-wide sessions, foreign provider session pins and transport retry fields
+cannot enter this carrier. Context messages are closed; shared memory/evidence
+values reuse the existing source schemas. Generation bundles external schema
+references into the single offline Peer validator resource for both languages.
+
+The semantic request digest is RFC 8785/SHA-256 of
+`{ domain: "convenewire.peer.run.v1", binding, payload }`, omitting only
+`binding.requestDigest` from that preimage. Every other Node/Peer/Run, grant,
+Acceptance and execution/context pin is included. Helpers validate closed
+shapes and matching Run/Room/Agent/manifest Task identities before calculating
+or checking the digest. Go retains the validated original payload JSON for this
+calculation, avoiding Runtime-struct field loss or timestamp rewriting. Exact
+integer spellings such as `1.0` normalize after strict checking; unsafe and
+fractional authorization values remain invalid. Changed pins/content for an
+existing Run are a conflict, never a replacement deduplication namespace.
+
+A shared Unicode/timestamp vector and actual Node-to-Go process comparisons
+cover semantic identity, reordered keys, context/policy changes, foreign Task
+pins, unknown fields, duplicate keys and ambiguous integer spellings. Full
+Contracts tests, deterministic generation, types/Go fixtures, Bridge compile/vet,
+Server build and isolated Hub bundling pass. This carrier grants no admission;
+RUN-020 still must connect current signed Host proofs, durable delivery and
+receipt-scoped settlement to it.
+
 REG-007 adds closed signed offer/receipt and explicit Host accept/revoke
 requests. An offer digest covers its exact grant and bounded display metadata.
 Host acceptance freezes that digest and uses expected Acceptance ID/revision

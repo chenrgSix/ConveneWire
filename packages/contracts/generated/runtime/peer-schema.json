@@ -3080,6 +3080,1288 @@
           "$ref": "#/$defs/PeerLeaveReceipt"
         }
       }
+    },
+    "PeerRunContextMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "messageId",
+        "senderId",
+        "content"
+      ],
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+        },
+        "senderId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$",
+          "title": "ConveneWire Opaque Identifier",
+          "description": "Opaque identifier with a lowercase type prefix and non-semantic suffix.",
+          "$defs": {
+            "opaqueId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+            },
+            "teamId": {
+              "type": "string",
+              "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+            },
+            "roomId": {
+              "type": "string",
+              "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+            },
+            "memberId": {
+              "type": "string",
+              "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+            },
+            "deviceId": {
+              "type": "string",
+              "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+            },
+            "agentId": {
+              "type": "string",
+              "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+            },
+            "agentProvisionRequestId": {
+              "type": "string",
+              "pattern": "^agentprov_[A-Za-z0-9_-]{8,128}$"
+            },
+            "pairingSessionId": {
+              "type": "string",
+              "pattern": "^pairing_[A-Za-z0-9_-]{8,128}$"
+            },
+            "pairingAttemptId": {
+              "type": "string",
+              "pattern": "^pairattempt_[A-Za-z0-9_-]{8,128}$"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+            },
+            "runId": {
+              "type": "string",
+              "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+            },
+            "taskId": {
+              "type": "string",
+              "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+            },
+            "resultId": {
+              "type": "string",
+              "pattern": "^result_[A-Za-z0-9_-]{8,128}$"
+            },
+            "discussionId": {
+              "type": "string",
+              "pattern": "^discussion_[A-Za-z0-9_-]{8,128}$"
+            },
+            "discussionWaveId": {
+              "type": "string",
+              "pattern": "^wave_[A-Za-z0-9_-]{8,128}$"
+            },
+            "discussionTurnId": {
+              "type": "string",
+              "pattern": "^turn_[A-Za-z0-9_-]{8,128}$"
+            },
+            "memoryId": {
+              "type": "string",
+              "pattern": "^memory_[A-Za-z0-9_-]{8,128}$"
+            },
+            "artifactId": {
+              "type": "string",
+              "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+            },
+            "contentId": {
+              "type": "string",
+              "pattern": "^content_[A-Za-z0-9_-]{8,128}$"
+            },
+            "traceId": {
+              "type": "string",
+              "pattern": "^trace_[A-Za-z0-9_-]{8,128}$"
+            },
+            "deliveryAttemptId": {
+              "type": "string",
+              "pattern": "^delivery_[A-Za-z0-9_-]{8,128}$"
+            },
+            "handoffId": {
+              "type": "string",
+              "pattern": "^handoff_[A-Za-z0-9_-]{8,128}$"
+            },
+            "sessionId": {
+              "type": "string",
+              "pattern": "^session_[A-Za-z0-9_-]{8,128}$"
+            },
+            "operationId": {
+              "type": "string",
+              "pattern": "^op_[A-Za-z0-9_-]{8,128}$"
+            },
+            "installationId": {
+              "type": "string",
+              "pattern": "^install_[A-Za-z0-9_-]{8,128}$"
+            }
+          }
+        },
+        "senderName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 32768
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "PeerRunContextManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestVersion",
+        "runId",
+        "taskId",
+        "taskRevision",
+        "definitionRevision",
+        "criteriaRevision",
+        "goal",
+        "criteria",
+        "target",
+        "included",
+        "permissions",
+        "omittedCategories",
+        "recordedAt"
+      ],
+      "properties": {
+        "manifestVersion": {
+          "const": "1.0"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "taskId": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+        },
+        "taskRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "definitionRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "criteriaRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "goal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "criteria": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "criterionKey",
+              "description",
+              "required",
+              "ordinal"
+            ],
+            "properties": {
+              "criterionKey": {
+                "type": "string",
+                "pattern": "^criterion_[A-Za-z0-9_-]{8,64}$"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              }
+            }
+          }
+        },
+        "included": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "messageIds",
+            "artifactIds",
+            "memoryIds",
+            "parentRunIds",
+            "roomContextRevision",
+            "taskMemoryRevision",
+            "artifactRevision"
+          ],
+          "properties": {
+            "messageIds": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "artifactIds": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "memoryIds": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^memory_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "parentRunIds": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+              }
+            },
+            "roomContextRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "taskMemoryRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "artifactRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "omittedCategories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "unrelated_room_history",
+              "local_paths",
+              "environment_values",
+              "provider_credentials",
+              "provider_session_ids",
+              "hidden_reasoning",
+              "tool_payloads",
+              "other_workspaces"
+            ]
+          }
+        },
+        "recordedAt": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "agentId",
+            "runtimeKind"
+          ],
+          "properties": {
+            "agentId": {
+              "type": "string",
+              "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+            },
+            "runtimeKind": {
+              "type": "string",
+              "const": "not_recorded"
+            }
+          }
+        },
+        "permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "filesystemAccess",
+            "networkAccess",
+            "interrupt",
+            "handoff",
+            "maxDurationSeconds"
+          ],
+          "properties": {
+            "filesystemAccess": {
+              "type": "string",
+              "const": "local-policy"
+            },
+            "networkAccess": {
+              "type": "string",
+              "const": "local-policy"
+            },
+            "interrupt": {
+              "enum": [
+                "supported",
+                "unsupported",
+                "not_recorded"
+              ]
+            },
+            "handoff": {
+              "type": "string",
+              "const": "unsupported"
+            },
+            "maxDurationSeconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 86400
+            }
+          }
+        }
+      }
+    },
+    "PeerRunPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runId",
+        "traceId",
+        "roomId",
+        "taskId",
+        "triggerMessageId",
+        "requesterMemberId",
+        "targetAgentId",
+        "instruction",
+        "deadline",
+        "contextMessages",
+        "contextManifest",
+        "session"
+      ],
+      "properties": {
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^trace_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomId": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+        },
+        "taskId": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+        },
+        "triggerMessageId": {
+          "type": "string",
+          "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+        },
+        "requesterMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "targetAgentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "targetAgentName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "parentRunId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32768
+        },
+        "deadline": {
+          "title": "ConveneWire UTC Timestamp",
+          "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+        },
+        "routingAgents": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "agentId",
+              "name"
+            ],
+            "properties": {
+              "agentId": {
+                "type": "string",
+                "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        },
+        "contextPlan": {
+          "title": "Runtime Context Plan",
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "roomMemory": {
+              "title": "Context Memory Projection",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "summary",
+                "sourceCursor",
+                "revision",
+                "sourceMessageIds"
+              ],
+              "properties": {
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                },
+                "sourceCursor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "projectionKind": {
+                  "enum": [
+                    "canonical",
+                    "historical"
+                  ]
+                },
+                "sourceMessageIds": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                  }
+                }
+              }
+            },
+            "taskMemory": {
+              "title": "Context Memory Projection",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "summary",
+                "sourceCursor",
+                "revision",
+                "sourceMessageIds"
+              ],
+              "properties": {
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                },
+                "sourceCursor": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "projectionKind": {
+                  "enum": [
+                    "canonical",
+                    "historical"
+                  ]
+                },
+                "sourceMessageIds": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                  }
+                }
+              }
+            },
+            "resultEvidence": {
+              "title": "Task Result Evidence",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "artifactRefs"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "deliveryKind": {
+                  "enum": [
+                    "bootstrap",
+                    "delta"
+                  ]
+                },
+                "fromRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "throughRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "artifactRefs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "items": {
+                    "title": "Artifact Reference",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "artifactId",
+                      "type",
+                      "title",
+                      "summary",
+                      "createdAt"
+                    ],
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "createdByMemberId": {}
+                        },
+                        "required": [
+                          "createdByMemberId"
+                        ]
+                      },
+                      {
+                        "properties": {
+                          "createdByAgentId": {}
+                        },
+                        "required": [
+                          "createdByAgentId"
+                        ]
+                      }
+                    ],
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "content": {}
+                          },
+                          "required": [
+                            "content"
+                          ]
+                        },
+                        "then": {
+                          "oneOf": [
+                            {
+                              "properties": {
+                                "type": {
+                                  "const": "patch"
+                                },
+                                "content": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mediaType": {
+                                      "const": "text/x-diff"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "properties": {
+                                "type": {
+                                  "const": "document"
+                                },
+                                "content": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mediaType": {
+                                      "const": "text/markdown"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "properties": {
+                                "type": {
+                                  "const": "test_result"
+                                },
+                                "content": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mediaType": {
+                                      "const": "application/json"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "required": [
+                                "commitSha"
+                              ],
+                              "properties": {
+                                "type": {
+                                  "const": "commit"
+                                },
+                                "commitSha": {
+                                  "type": "string",
+                                  "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                                },
+                                "content": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mediaType": {
+                                      "const": "application/x-git-bundle"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "properties": {
+                      "artifactId": {
+                        "type": "string",
+                        "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "artifactRevision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "relations": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "uniqueItems": true,
+                        "items": {
+                          "title": "Artifact Relation Reference",
+                          "description": "Immutable lineage from the containing source Artifact to older Task evidence.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "relationId",
+                            "type",
+                            "targetArtifactId"
+                          ],
+                          "properties": {
+                            "relationId": {
+                              "type": "string",
+                              "pattern": "^relation_[A-Za-z0-9_-]{8,128}$"
+                            },
+                            "type": {
+                              "enum": [
+                                "derives_from",
+                                "reviews",
+                                "verifies"
+                              ]
+                            },
+                            "targetArtifactId": {
+                              "type": "string",
+                              "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          }
+                        }
+                      },
+                      "type": {
+                        "enum": [
+                          "commit",
+                          "branch",
+                          "file",
+                          "patch",
+                          "test_result",
+                          "document"
+                        ]
+                      },
+                      "workspaceRef": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "repository": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      "commitSha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{7,64}$"
+                      },
+                      "branch": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "content": {
+                        "title": "Pinned Artifact Content",
+                        "description": "Immutable content metadata and a path-free logical alias pinned into one Run delivery.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "contentId",
+                          "sizeBytes",
+                          "mediaType",
+                          "sha256",
+                          "logicalAlias"
+                        ],
+                        "properties": {
+                          "contentId": {
+                            "type": "string",
+                            "pattern": "^content_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "sizeBytes": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 4194304
+                          },
+                          "mediaType": {
+                            "enum": [
+                              "text/x-diff",
+                              "text/markdown",
+                              "application/json",
+                              "application/x-git-bundle"
+                            ]
+                          },
+                          "sha256": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{64}$"
+                          },
+                          "logicalAlias": {
+                            "type": "string",
+                            "pattern": "^artifact://artifact_[A-Za-z0-9_-]{8,128}/[A-Za-z0-9][A-Za-z0-9._-]{0,254}$"
+                          }
+                        }
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160
+                      },
+                      "summary": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000
+                      },
+                      "sourceRunId": {
+                        "type": "string",
+                        "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "createdByMemberId": {
+                        "type": "string",
+                        "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "createdByAgentId": {
+                        "type": "string",
+                        "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+                      },
+                      "createdAt": {
+                        "title": "ConveneWire UTC Timestamp",
+                        "description": "Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at most nanosecond precision.",
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9](?:\\.[0-9]{1,9})?Z$"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "longTermMemory": {
+              "title": "Long-term Provenance Memory Plan",
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "room": {
+                  "title": "Long-term Memory Scope Snapshot",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "activeComplete",
+                    "entries"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "activeComplete": {
+                      "type": "boolean"
+                    },
+                    "entries": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 24,
+                      "items": {
+                        "title": "Provenance Memory Entry",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "memoryId",
+                          "type",
+                          "content",
+                          "state",
+                          "revision",
+                          "sourceMessageIds",
+                          "sourceArtifactIds",
+                          "sourceRunIds",
+                          "sourceDiscussionIds"
+                        ],
+                        "anyOf": [
+                          {
+                            "properties": {
+                              "sourceMessageIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceArtifactIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceRunIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceDiscussionIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "properties": {
+                          "memoryId": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "type": {
+                            "enum": [
+                              "decision",
+                              "constraint",
+                              "fact",
+                              "open_question",
+                              "convention",
+                              "goal",
+                              "acceptance_criterion",
+                              "plan",
+                              "progress",
+                              "blocker",
+                              "result"
+                            ]
+                          },
+                          "content": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "state": {
+                            "enum": [
+                              "active",
+                              "superseded",
+                              "retracted"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "supersedesMemoryId": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "sourceMessageIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceArtifactIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceRunIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceDiscussionIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "task": {
+                  "title": "Long-term Memory Scope Snapshot",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "activeComplete",
+                    "entries"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "activeComplete": {
+                      "type": "boolean"
+                    },
+                    "entries": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 24,
+                      "items": {
+                        "title": "Provenance Memory Entry",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "memoryId",
+                          "type",
+                          "content",
+                          "state",
+                          "revision",
+                          "sourceMessageIds",
+                          "sourceArtifactIds",
+                          "sourceRunIds",
+                          "sourceDiscussionIds"
+                        ],
+                        "anyOf": [
+                          {
+                            "properties": {
+                              "sourceMessageIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceArtifactIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceRunIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "sourceDiscussionIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 16,
+                                "uniqueItems": true,
+                                "items": {
+                                  "type": "string",
+                                  "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "properties": {
+                          "memoryId": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "type": {
+                            "enum": [
+                              "decision",
+                              "constraint",
+                              "fact",
+                              "open_question",
+                              "convention",
+                              "goal",
+                              "acceptance_criterion",
+                              "plan",
+                              "progress",
+                              "blocker",
+                              "result"
+                            ]
+                          },
+                          "content": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "state": {
+                            "enum": [
+                              "active",
+                              "superseded",
+                              "retracted"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "supersedesMemoryId": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                          },
+                          "sourceMessageIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^msg_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceArtifactIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^artifact_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceRunIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          },
+                          "sourceDiscussionIds": {
+                            "type": "array",
+                            "maxItems": 16,
+                            "uniqueItems": true,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9]*_[A-Za-z0-9_-]{8,128}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "contextMessages": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/PeerRunContextMessage"
+          }
+        },
+        "contextManifest": {
+          "$ref": "#/$defs/PeerRunContextManifest"
+        },
+        "session": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "resumePolicy",
+            "contextPolicy",
+            "contextCursor"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "task"
+            },
+            "resumePolicy": {
+              "enum": [
+                "resume_or_start",
+                "start_new"
+              ]
+            },
+            "contextPolicy": {
+              "type": "string",
+              "const": "task_isolated_v1"
+            },
+            "contextCursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    "PeerRunRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "binding",
+        "payload"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/PeerExecutionBinding"
+        },
+        "payload": {
+          "$ref": "#/$defs/PeerRunPayload"
+        }
+      }
     }
   }
 }

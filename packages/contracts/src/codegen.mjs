@@ -116,6 +116,17 @@ async function loadSchemas(packageRoot) {
   return schemas;
 }
 
+// Preserve Peer-local references and bundle shared context/identifier schemas
+// so both offline validators need only their own generated schema resource.
+function bundlePeerReferences(value, peerSchema, schemas) {
+  if (Array.isArray(value)) return value.map(item => bundlePeerReferences(item, peerSchema, schemas));
+  if (value === null || typeof value !== "object") return value;
+  if (typeof value.$ref === "string" && !value.$ref.startsWith("#")) {
+    return removeNestedSchemaIdentities(dereference(value, peerSchema, schemas), false);
+  }
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, bundlePeerReferences(child, peerSchema, schemas)]));
+}
+
 function pascalCase(value) {
   return value
     .split(/[._-]/u)
@@ -1809,7 +1820,7 @@ export async function generateContractTypes(packageRoot) {
   );
 
   return {
-    peerTypescript, peerGo, peerSchema: `${JSON.stringify(peerSchema, null, 2)}\n`,
+    peerTypescript, peerGo, peerSchema: `${JSON.stringify(bundlePeerReferences(peerSchema, peerSchema, schemas), null, 2)}\n`,
     peerValidator: formatGo(await readFile(path.join(packageRoot, "src/go-peer-validator.template"), "utf8")),
     peerProof: formatGo(await readFile(path.join(packageRoot, "src/go-peer-proof.template"), "utf8")),
     peerJson: formatGo(await readFile(path.join(packageRoot, "src/go-peer-json.template"), "utf8")),

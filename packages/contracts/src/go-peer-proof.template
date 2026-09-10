@@ -5,6 +5,7 @@ import (
  "crypto/sha256"
  "encoding/hex"
  "encoding/json"
+ "errors"
  "time"
 )
 
@@ -16,6 +17,33 @@ const SettlementMaximumSeconds = 604800
 func Digest(data []byte) (string,error) {
  canonical,err:=CanonicalJSON(data);if err!=nil{return "",err}
  sum:=sha256.Sum256(canonical);return hex.EncodeToString(sum[:]),nil
+}
+
+// RunRequestDigest retains the original validated context JSON. Decoding it
+// through a Runtime struct before hashing could erase fields or rewrite times.
+func RunRequestDigest(binding PeerExecutionBinding, payload []byte) (string,error) {
+ raw,err:=json.Marshal(binding);if err!=nil{return "",err}
+ var pins map[string]any;var content map[string]any
+ if Decode("PeerExecutionBinding",raw,&pins)!=nil||Decode("PeerRunPayload",payload,&content)!=nil{return "",errors.New("invalid Peer execution request")}
+ manifest:=content["contextManifest"].(map[string]any)
+ target:=manifest["target"].(map[string]any)
+ if content["runId"]!=binding.RunID||content["roomId"]!=binding.RoomID||content["targetAgentId"]!=binding.ProjectionAgentID||
+ manifest["runId"]!=content["runId"]||manifest["taskId"]!=content["taskId"]||target["agentId"]!=content["targetAgentId"]{return "",errors.New("invalid Peer execution request")}
+ delete(pins,"requestDigest")
+ raw,err=json.Marshal(map[string]any{"domain":"convenewire.peer.run.v1","binding":pins,"payload":json.RawMessage(payload)});if err!=nil{return "",err}
+ return Digest(raw)
+}
+
+func VerifyRunRequest(raw []byte) error {
+ var request struct {Binding PeerExecutionBinding `json:"binding"`;Payload json.RawMessage `json:"payload"`}
+ // Decode normalizes exact integer spellings such as 1.0 before typed pins.
+ // Keep the payload's original spellings for its own validation and digest.
+ if Decode("PeerRunRequest",raw,&request)!=nil{return errors.New("invalid Peer execution request")}
+ var original struct {Payload json.RawMessage `json:"payload"`}
+ if json.Unmarshal(raw,&original)!=nil{return errors.New("invalid Peer execution request")}
+ request.Payload=original.Payload
+ digest,err:=RunRequestDigest(request.Binding,request.Payload)
+ if err!=nil||digest!=request.Binding.RequestDigest{return errors.New("invalid Peer execution request")};return nil
 }
 
 func ProofTranscript(payload PeerProofPayload) ([]byte,error) {

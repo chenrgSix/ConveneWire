@@ -25,6 +25,19 @@ func main() {
 		if err == nil {
 			canonical, _ := peer.CanonicalJSON([]byte(input.Raw))
 			result["canonical"] = string(canonical)
+			if input.Kind == "PeerRunRequest" {
+				result["executionValid"] = peer.VerifyRunRequest([]byte(input.Raw)) == nil
+				var request struct {
+					Binding peer.PeerExecutionBinding
+					Payload json.RawMessage
+				}
+				if peer.Decode(input.Kind, []byte(input.Raw), &request) == nil {
+					digest, digestErr := peer.RunRequestDigest(request.Binding, request.Payload)
+					if digestErr == nil {
+						result["executionDigest"] = digest
+					}
+				}
+			}
 			if input.Kind == "PeerProof" {
 				var proof peer.PeerProof
 				err = peer.Decode(input.Kind, []byte(input.Raw), &proof)

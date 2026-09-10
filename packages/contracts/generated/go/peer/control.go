@@ -3034,6 +3034,494 @@ type Payload19 struct {
 	SubjectDigest   string  `json:"subjectDigest"`
 }
 
+type PeerRunContextMessage struct {
+	Content   string `json:"content"`
+	MessageID string `json:"messageId"`
+	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
+	SenderID   string  `json:"senderId"`
+	SenderName *string `json:"senderName,omitempty"`
+	Sequence   *int64  `json:"sequence,omitempty"`
+}
+
+type PeerRunContextManifest struct {
+	Criteria           []PeerRunContextManifestCriterion `json:"criteria"`
+	CriteriaRevision   int64                             `json:"criteriaRevision"`
+	DefinitionRevision int64                             `json:"definitionRevision"`
+	Goal               string                            `json:"goal"`
+	Included           PeerRunContextManifestIncluded    `json:"included"`
+	ManifestVersion    ManifestVersion                   `json:"manifestVersion"`
+	OmittedCategories  []OmittedCategory                 `json:"omittedCategories"`
+	Permissions        PeerRunContextManifestPermissions `json:"permissions"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RecordedAt   string                       `json:"recordedAt"`
+	RunID        string                       `json:"runId"`
+	Target       PeerRunContextManifestTarget `json:"target"`
+	TaskID       string                       `json:"taskId"`
+	TaskRevision int64                        `json:"taskRevision"`
+}
+
+type PeerRunContextManifestCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
+}
+
+type PeerRunContextManifestIncluded struct {
+	ArtifactIDS         []string `json:"artifactIds"`
+	ArtifactRevision    int64    `json:"artifactRevision"`
+	MemoryIDS           []string `json:"memoryIds"`
+	MessageIDS          []string `json:"messageIds"`
+	ParentRunIDS        []string `json:"parentRunIds"`
+	RoomContextRevision int64    `json:"roomContextRevision"`
+	TaskMemoryRevision  int64    `json:"taskMemoryRevision"`
+}
+
+type PeerRunContextManifestPermissions struct {
+	FilesystemAccess   Access    `json:"filesystemAccess"`
+	Handoff            Handoff   `json:"handoff"`
+	Interrupt          Interrupt `json:"interrupt"`
+	MaxDurationSeconds *int64    `json:"maxDurationSeconds"`
+	NetworkAccess      Access    `json:"networkAccess"`
+}
+
+type PeerRunContextManifestTarget struct {
+	AgentID     string      `json:"agentId"`
+	RuntimeKind RuntimeKind `json:"runtimeKind"`
+}
+
+type PeerRunPayload struct {
+	ContextManifest PeerRunPayloadContextManifest  `json:"contextManifest"`
+	ContextMessages []PeerRunPayloadContextMessage `json:"contextMessages"`
+	ContextPlan     *PeerRunPayloadContextPlan     `json:"contextPlan,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Deadline          string                       `json:"deadline"`
+	Instruction       string                       `json:"instruction"`
+	ParentRunID       *string                      `json:"parentRunId,omitempty"`
+	RequesterMemberID string                       `json:"requesterMemberId"`
+	RoomID            string                       `json:"roomId"`
+	RoutingAgents     []PeerRunPayloadRoutingAgent `json:"routingAgents,omitempty"`
+	RunID             string                       `json:"runId"`
+	Session           PeerRunPayloadSession        `json:"session"`
+	TargetAgentID     string                       `json:"targetAgentId"`
+	TargetAgentName   *string                      `json:"targetAgentName,omitempty"`
+	TaskID            string                       `json:"taskId"`
+	TraceID           string                       `json:"traceId"`
+	TriggerMessageID  string                       `json:"triggerMessageId"`
+}
+
+type PeerRunPayloadContextManifest struct {
+	Criteria           []PurpleCriterion `json:"criteria"`
+	CriteriaRevision   int64             `json:"criteriaRevision"`
+	DefinitionRevision int64             `json:"definitionRevision"`
+	Goal               string            `json:"goal"`
+	Included           PurpleIncluded    `json:"included"`
+	ManifestVersion    ManifestVersion   `json:"manifestVersion"`
+	OmittedCategories  []OmittedCategory `json:"omittedCategories"`
+	Permissions        PurplePermissions `json:"permissions"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RecordedAt   string       `json:"recordedAt"`
+	RunID        string       `json:"runId"`
+	Target       PurpleTarget `json:"target"`
+	TaskID       string       `json:"taskId"`
+	TaskRevision int64        `json:"taskRevision"`
+}
+
+type PurpleCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
+}
+
+type PurpleIncluded struct {
+	ArtifactIDS         []string `json:"artifactIds"`
+	ArtifactRevision    int64    `json:"artifactRevision"`
+	MemoryIDS           []string `json:"memoryIds"`
+	MessageIDS          []string `json:"messageIds"`
+	ParentRunIDS        []string `json:"parentRunIds"`
+	RoomContextRevision int64    `json:"roomContextRevision"`
+	TaskMemoryRevision  int64    `json:"taskMemoryRevision"`
+}
+
+type PurplePermissions struct {
+	FilesystemAccess   Access    `json:"filesystemAccess"`
+	Handoff            Handoff   `json:"handoff"`
+	Interrupt          Interrupt `json:"interrupt"`
+	MaxDurationSeconds *int64    `json:"maxDurationSeconds"`
+	NetworkAccess      Access    `json:"networkAccess"`
+}
+
+type PurpleTarget struct {
+	AgentID     string      `json:"agentId"`
+	RuntimeKind RuntimeKind `json:"runtimeKind"`
+}
+
+type PeerRunPayloadContextMessage struct {
+	Content   string `json:"content"`
+	MessageID string `json:"messageId"`
+	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
+	SenderID   string  `json:"senderId"`
+	SenderName *string `json:"senderName,omitempty"`
+	Sequence   *int64  `json:"sequence,omitempty"`
+}
+
+type PeerRunPayloadContextPlan struct {
+	LongTermMemory *PurpleLongTermProvenanceMemoryPlan `json:"longTermMemory,omitempty"`
+	ResultEvidence *PurpleTaskResultEvidence           `json:"resultEvidence,omitempty"`
+	RoomMemory     *PurpleContextMemoryProjection      `json:"roomMemory,omitempty"`
+	TaskMemory     *FluffyContextMemoryProjection      `json:"taskMemory,omitempty"`
+}
+
+type PurpleLongTermProvenanceMemoryPlan struct {
+	Room *PurpleLongTermMemoryScopeSnapshot `json:"room,omitempty"`
+	Task *FluffyLongTermMemoryScopeSnapshot `json:"task,omitempty"`
+}
+
+type PurpleLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                          `json:"activeComplete"`
+	Entries        []PurpleProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                         `json:"revision"`
+}
+
+type PurpleProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type FluffyLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                          `json:"activeComplete"`
+	Entries        []FluffyProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                         `json:"revision"`
+}
+
+type FluffyProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type PurpleTaskResultEvidence struct {
+	ArtifactRefs    []PurpleArtifactReference `json:"artifactRefs"`
+	DeliveryKind    *DeliveryKind             `json:"deliveryKind,omitempty"`
+	FromRevision    *int64                    `json:"fromRevision,omitempty"`
+	HasMore         *bool                     `json:"hasMore,omitempty"`
+	Revision        int64                     `json:"revision"`
+	ThroughRevision *int64                    `json:"throughRevision,omitempty"`
+}
+
+type PurpleArtifactReference struct {
+	ArtifactID       string  `json:"artifactId"`
+	ArtifactRevision *int64  `json:"artifactRevision,omitempty"`
+	Branch           *string `json:"branch,omitempty"`
+	CommitSHA        *string `json:"commitSha,omitempty"`
+	// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+	Content *PurplePinnedArtifactContent `json:"content,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	CreatedAt         string                            `json:"createdAt"`
+	CreatedByAgentID  *string                           `json:"createdByAgentId,omitempty"`
+	CreatedByMemberID *string                           `json:"createdByMemberId,omitempty"`
+	Path              *string                           `json:"path,omitempty"`
+	Relations         []PurpleArtifactRelationReference `json:"relations,omitempty"`
+	Repository        *string                           `json:"repository,omitempty"`
+	SourceRunID       *string                           `json:"sourceRunId,omitempty"`
+	Summary           string                            `json:"summary"`
+	Title             string                            `json:"title"`
+	Type              ArtifactReferenceType             `json:"type"`
+	WorkspaceRef      *string                           `json:"workspaceRef,omitempty"`
+}
+
+// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+type PurplePinnedArtifactContent struct {
+	ContentID    string    `json:"contentId"`
+	LogicalAlias string    `json:"logicalAlias"`
+	MediaType    MediaType `json:"mediaType"`
+	Sha256       string    `json:"sha256"`
+	SizeBytes    int64     `json:"sizeBytes"`
+}
+
+// Immutable lineage from the containing source Artifact to older Task evidence.
+type PurpleArtifactRelationReference struct {
+	RelationID       string       `json:"relationId"`
+	TargetArtifactID string       `json:"targetArtifactId"`
+	Type             RelationType `json:"type"`
+}
+
+type PurpleContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type FluffyContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type PeerRunPayloadRoutingAgent struct {
+	AgentID string `json:"agentId"`
+	Name    string `json:"name"`
+}
+
+type PeerRunPayloadSession struct {
+	ContextCursor int64         `json:"contextCursor"`
+	ContextPolicy ContextPolicy `json:"contextPolicy"`
+	ResumePolicy  ResumePolicy  `json:"resumePolicy"`
+	Scope         ScopeEnum     `json:"scope"`
+}
+
+type PeerRunRequest struct {
+	Binding       PeerRunRequestBinding `json:"binding"`
+	Payload       PeerRunRequestPayload `json:"payload"`
+	SchemaVersion int64                 `json:"schemaVersion"`
+}
+
+type PeerRunRequestBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type PeerRunRequestPayload struct {
+	ContextManifest PayloadContextManifest  `json:"contextManifest"`
+	ContextMessages []PayloadContextMessage `json:"contextMessages"`
+	ContextPlan     *PayloadContextPlan     `json:"contextPlan,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Deadline          string                `json:"deadline"`
+	Instruction       string                `json:"instruction"`
+	ParentRunID       *string               `json:"parentRunId,omitempty"`
+	RequesterMemberID string                `json:"requesterMemberId"`
+	RoomID            string                `json:"roomId"`
+	RoutingAgents     []PayloadRoutingAgent `json:"routingAgents,omitempty"`
+	RunID             string                `json:"runId"`
+	Session           PayloadSession        `json:"session"`
+	TargetAgentID     string                `json:"targetAgentId"`
+	TargetAgentName   *string               `json:"targetAgentName,omitempty"`
+	TaskID            string                `json:"taskId"`
+	TraceID           string                `json:"traceId"`
+	TriggerMessageID  string                `json:"triggerMessageId"`
+}
+
+type PayloadContextManifest struct {
+	Criteria           []FluffyCriterion `json:"criteria"`
+	CriteriaRevision   int64             `json:"criteriaRevision"`
+	DefinitionRevision int64             `json:"definitionRevision"`
+	Goal               string            `json:"goal"`
+	Included           FluffyIncluded    `json:"included"`
+	ManifestVersion    ManifestVersion   `json:"manifestVersion"`
+	OmittedCategories  []OmittedCategory `json:"omittedCategories"`
+	Permissions        FluffyPermissions `json:"permissions"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RecordedAt   string       `json:"recordedAt"`
+	RunID        string       `json:"runId"`
+	Target       FluffyTarget `json:"target"`
+	TaskID       string       `json:"taskId"`
+	TaskRevision int64        `json:"taskRevision"`
+}
+
+type FluffyCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
+}
+
+type FluffyIncluded struct {
+	ArtifactIDS         []string `json:"artifactIds"`
+	ArtifactRevision    int64    `json:"artifactRevision"`
+	MemoryIDS           []string `json:"memoryIds"`
+	MessageIDS          []string `json:"messageIds"`
+	ParentRunIDS        []string `json:"parentRunIds"`
+	RoomContextRevision int64    `json:"roomContextRevision"`
+	TaskMemoryRevision  int64    `json:"taskMemoryRevision"`
+}
+
+type FluffyPermissions struct {
+	FilesystemAccess   Access    `json:"filesystemAccess"`
+	Handoff            Handoff   `json:"handoff"`
+	Interrupt          Interrupt `json:"interrupt"`
+	MaxDurationSeconds *int64    `json:"maxDurationSeconds"`
+	NetworkAccess      Access    `json:"networkAccess"`
+}
+
+type FluffyTarget struct {
+	AgentID     string      `json:"agentId"`
+	RuntimeKind RuntimeKind `json:"runtimeKind"`
+}
+
+type PayloadContextMessage struct {
+	Content   string `json:"content"`
+	MessageID string `json:"messageId"`
+	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
+	SenderID   string  `json:"senderId"`
+	SenderName *string `json:"senderName,omitempty"`
+	Sequence   *int64  `json:"sequence,omitempty"`
+}
+
+type PayloadContextPlan struct {
+	LongTermMemory *FluffyLongTermProvenanceMemoryPlan `json:"longTermMemory,omitempty"`
+	ResultEvidence *FluffyTaskResultEvidence           `json:"resultEvidence,omitempty"`
+	RoomMemory     *TentacledContextMemoryProjection   `json:"roomMemory,omitempty"`
+	TaskMemory     *StickyContextMemoryProjection      `json:"taskMemory,omitempty"`
+}
+
+type FluffyLongTermProvenanceMemoryPlan struct {
+	Room *TentacledLongTermMemoryScopeSnapshot `json:"room,omitempty"`
+	Task *StickyLongTermMemoryScopeSnapshot    `json:"task,omitempty"`
+}
+
+type TentacledLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                             `json:"activeComplete"`
+	Entries        []TentacledProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                            `json:"revision"`
+}
+
+type TentacledProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type StickyLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                          `json:"activeComplete"`
+	Entries        []StickyProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                         `json:"revision"`
+}
+
+type StickyProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type FluffyTaskResultEvidence struct {
+	ArtifactRefs    []FluffyArtifactReference `json:"artifactRefs"`
+	DeliveryKind    *DeliveryKind             `json:"deliveryKind,omitempty"`
+	FromRevision    *int64                    `json:"fromRevision,omitempty"`
+	HasMore         *bool                     `json:"hasMore,omitempty"`
+	Revision        int64                     `json:"revision"`
+	ThroughRevision *int64                    `json:"throughRevision,omitempty"`
+}
+
+type FluffyArtifactReference struct {
+	ArtifactID       string  `json:"artifactId"`
+	ArtifactRevision *int64  `json:"artifactRevision,omitempty"`
+	Branch           *string `json:"branch,omitempty"`
+	CommitSHA        *string `json:"commitSha,omitempty"`
+	// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+	Content *FluffyPinnedArtifactContent `json:"content,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	CreatedAt         string                            `json:"createdAt"`
+	CreatedByAgentID  *string                           `json:"createdByAgentId,omitempty"`
+	CreatedByMemberID *string                           `json:"createdByMemberId,omitempty"`
+	Path              *string                           `json:"path,omitempty"`
+	Relations         []FluffyArtifactRelationReference `json:"relations,omitempty"`
+	Repository        *string                           `json:"repository,omitempty"`
+	SourceRunID       *string                           `json:"sourceRunId,omitempty"`
+	Summary           string                            `json:"summary"`
+	Title             string                            `json:"title"`
+	Type              ArtifactReferenceType             `json:"type"`
+	WorkspaceRef      *string                           `json:"workspaceRef,omitempty"`
+}
+
+// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+type FluffyPinnedArtifactContent struct {
+	ContentID    string    `json:"contentId"`
+	LogicalAlias string    `json:"logicalAlias"`
+	MediaType    MediaType `json:"mediaType"`
+	Sha256       string    `json:"sha256"`
+	SizeBytes    int64     `json:"sizeBytes"`
+}
+
+// Immutable lineage from the containing source Artifact to older Task evidence.
+type FluffyArtifactRelationReference struct {
+	RelationID       string       `json:"relationId"`
+	TargetArtifactID string       `json:"targetArtifactId"`
+	Type             RelationType `json:"type"`
+}
+
+type TentacledContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type StickyContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type PayloadRoutingAgent struct {
+	AgentID string `json:"agentId"`
+	Name    string `json:"name"`
+}
+
+type PayloadSession struct {
+	ContextCursor int64         `json:"contextCursor"`
+	ContextPolicy ContextPolicy `json:"contextPolicy"`
+	ResumePolicy  ResumePolicy  `json:"resumePolicy"`
+	Scope         ScopeEnum     `json:"scope"`
+}
+
 type Kind string
 
 const (
@@ -3170,4 +3658,134 @@ const (
 	TypePeerRuntimeChallenge PeerRuntimeMessageType = "peer.runtime.challenge"
 	TypePeerRuntimeHeartbeat PeerRuntimeMessageType = "peer.runtime.heartbeat"
 	TypePeerRuntimeReady     PeerRuntimeMessageType = "peer.runtime.ready"
+)
+
+type ManifestVersion string
+
+const (
+	The10 ManifestVersion = "1.0"
+)
+
+type OmittedCategory string
+
+const (
+	EnvironmentValues    OmittedCategory = "environment_values"
+	HiddenReasoning      OmittedCategory = "hidden_reasoning"
+	LocalPaths           OmittedCategory = "local_paths"
+	OtherWorkspaces      OmittedCategory = "other_workspaces"
+	ProviderCredentials  OmittedCategory = "provider_credentials"
+	ProviderSessionIDS   OmittedCategory = "provider_session_ids"
+	ToolPayloads         OmittedCategory = "tool_payloads"
+	UnrelatedRoomHistory OmittedCategory = "unrelated_room_history"
+)
+
+type Access string
+
+const (
+	LocalPolicy Access = "local-policy"
+)
+
+type Handoff string
+
+const (
+	HandoffUnsupported Handoff = "unsupported"
+)
+
+type Interrupt string
+
+const (
+	InterruptNotRecorded Interrupt = "not_recorded"
+	InterruptUnsupported Interrupt = "unsupported"
+	Supported            Interrupt = "supported"
+)
+
+type RuntimeKind string
+
+const (
+	RuntimeKindNotRecorded RuntimeKind = "not_recorded"
+)
+
+type ProvenanceMemoryEntryState string
+
+const (
+	Retracted    ProvenanceMemoryEntryState = "retracted"
+	StickyActive ProvenanceMemoryEntryState = "active"
+	Superseded   ProvenanceMemoryEntryState = "superseded"
+)
+
+type ProvenanceMemoryEntryType string
+
+const (
+	AcceptanceCriterion ProvenanceMemoryEntryType = "acceptance_criterion"
+	Blocker             ProvenanceMemoryEntryType = "blocker"
+	Constraint          ProvenanceMemoryEntryType = "constraint"
+	Convention          ProvenanceMemoryEntryType = "convention"
+	Decision            ProvenanceMemoryEntryType = "decision"
+	Fact                ProvenanceMemoryEntryType = "fact"
+	Goal                ProvenanceMemoryEntryType = "goal"
+	OpenQuestion        ProvenanceMemoryEntryType = "open_question"
+	Plan                ProvenanceMemoryEntryType = "plan"
+	Progress            ProvenanceMemoryEntryType = "progress"
+	Result              ProvenanceMemoryEntryType = "result"
+)
+
+type MediaType string
+
+const (
+	ApplicationJSON       MediaType = "application/json"
+	ApplicationXGitBundle MediaType = "application/x-git-bundle"
+	TextMarkdown          MediaType = "text/markdown"
+	TextXDiff             MediaType = "text/x-diff"
+)
+
+type RelationType string
+
+const (
+	DerivesFrom RelationType = "derives_from"
+	Reviews     RelationType = "reviews"
+	Verifies    RelationType = "verifies"
+)
+
+type ArtifactReferenceType string
+
+const (
+	Branch     ArtifactReferenceType = "branch"
+	Commit     ArtifactReferenceType = "commit"
+	Document   ArtifactReferenceType = "document"
+	File       ArtifactReferenceType = "file"
+	Patch      ArtifactReferenceType = "patch"
+	TestResult ArtifactReferenceType = "test_result"
+)
+
+type DeliveryKind string
+
+const (
+	Bootstrap DeliveryKind = "bootstrap"
+	Delta     DeliveryKind = "delta"
+)
+
+type ProjectionKind string
+
+const (
+	Canonical  ProjectionKind = "canonical"
+	Historical ProjectionKind = "historical"
+)
+
+type ContextPolicy string
+
+const (
+	TaskIsolatedV1 ContextPolicy = "task_isolated_v1"
+)
+
+type ResumePolicy string
+
+const (
+	ResumeOrStart ResumePolicy = "resume_or_start"
+	StartNew      ResumePolicy = "start_new"
+)
+
+type ScopeEnum string
+
+const (
+	Task ScopeEnum = "task"
 )

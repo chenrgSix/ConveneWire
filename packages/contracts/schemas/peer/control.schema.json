@@ -3080,6 +3080,252 @@
           "$ref": "#/$defs/PeerLeaveReceipt"
         }
       }
+    },
+    "PeerRunContextMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "messageId",
+        "senderId",
+        "content"
+      ],
+      "properties": {
+        "messageId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/contextMessage/properties/messageId"
+        },
+        "senderId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/contextMessage/properties/senderId"
+        },
+        "senderName": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/contextMessage/properties/senderName"
+        },
+        "content": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/contextMessage/properties/content"
+        },
+        "sequence": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/contextMessage/properties/sequence"
+        }
+      }
+    },
+    "PeerRunContextManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestVersion",
+        "runId",
+        "taskId",
+        "taskRevision",
+        "definitionRevision",
+        "criteriaRevision",
+        "goal",
+        "criteria",
+        "target",
+        "included",
+        "permissions",
+        "omittedCategories",
+        "recordedAt"
+      ],
+      "properties": {
+        "manifestVersion": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/manifestVersion"
+        },
+        "runId": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/runId"
+        },
+        "taskId": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/taskId"
+        },
+        "taskRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/taskRevision"
+        },
+        "definitionRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/definitionRevision"
+        },
+        "criteriaRevision": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/criteriaRevision"
+        },
+        "goal": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/goal"
+        },
+        "criteria": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/criteria"
+        },
+        "included": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/included"
+        },
+        "omittedCategories": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/omittedCategories"
+        },
+        "recordedAt": {
+          "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/recordedAt"
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "agentId",
+            "runtimeKind"
+          ],
+          "properties": {
+            "agentId": {
+              "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/targetAgentId"
+            },
+            "runtimeKind": {
+              "type": "string",
+              "const": "not_recorded"
+            }
+          }
+        },
+        "permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "filesystemAccess",
+            "networkAccess",
+            "interrupt",
+            "handoff",
+            "maxDurationSeconds"
+          ],
+          "properties": {
+            "filesystemAccess": {
+              "type": "string",
+              "const": "local-policy"
+            },
+            "networkAccess": {
+              "type": "string",
+              "const": "local-policy"
+            },
+            "interrupt": {
+              "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/permissions/properties/interrupt"
+            },
+            "handoff": {
+              "type": "string",
+              "const": "unsupported"
+            },
+            "maxDurationSeconds": {
+              "$ref": "https://agentroom.dev/schemas/work/task-result.schema.json#/$defs/contextManifest/properties/permissions/properties/maxDurationSeconds"
+            }
+          }
+        }
+      }
+    },
+    "PeerRunPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runId",
+        "traceId",
+        "roomId",
+        "taskId",
+        "triggerMessageId",
+        "requesterMemberId",
+        "targetAgentId",
+        "instruction",
+        "deadline",
+        "contextMessages",
+        "contextManifest",
+        "session"
+      ],
+      "properties": {
+        "runId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/runId"
+        },
+        "traceId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/traceId"
+        },
+        "roomId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/roomId"
+        },
+        "taskId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/taskId"
+        },
+        "triggerMessageId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/triggerMessageId"
+        },
+        "requesterMemberId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/requesterMemberId"
+        },
+        "targetAgentId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/targetAgentId"
+        },
+        "targetAgentName": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/targetAgentName"
+        },
+        "parentRunId": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/parentRunId"
+        },
+        "instruction": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/instruction"
+        },
+        "deadline": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/deadline"
+        },
+        "routingAgents": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/routingAgents"
+        },
+        "contextPlan": {
+          "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/runRequestedPayload/properties/contextPlan"
+        },
+        "contextMessages": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/PeerRunContextMessage"
+          }
+        },
+        "contextManifest": {
+          "$ref": "#/$defs/PeerRunContextManifest"
+        },
+        "session": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "resumePolicy",
+            "contextPolicy",
+            "contextCursor"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "task"
+            },
+            "resumePolicy": {
+              "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/logicalSessionRequest/properties/resumePolicy"
+            },
+            "contextPolicy": {
+              "type": "string",
+              "const": "task_isolated_v1"
+            },
+            "contextCursor": {
+              "$ref": "https://agentroom.dev/schemas/bridge/messages.schema.json#/$defs/logicalSessionRequest/properties/contextCursor"
+            }
+          }
+        }
+      }
+    },
+    "PeerRunRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "binding",
+        "payload"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/PeerExecutionBinding"
+        },
+        "payload": {
+          "$ref": "#/$defs/PeerRunPayload"
+        }
+      }
     }
   }
 }

@@ -1,5 +1,15 @@
 # Run Orchestration Module
 
+RUN-020 implements the separate bilateral Peer execution path defined by
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md). Its first increment is the
+[closed Peer request and semantic digest](contracts.md#peer-collaboration-contracts).
+Transport attempts do not alter execution identity; changing content or bilateral
+pins for the same qualified Peer Run must conflict with retained evidence.
+The native factory delivered by BRG-081 supplies shared physical resources,
+private Peer Sessions and local approval. Fresh signed admission, Host delivery,
+Participant journals and bounded content-free settlement remain in progress;
+the contract and native SDK alone are not network execution evidence.
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and
