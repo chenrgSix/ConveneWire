@@ -2,12 +2,14 @@ package console
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net"
 	"net/http"
 	"strings"
 
+	"convenewire.dev/bridge/internal/config"
 	"convenewire.dev/bridge/internal/peer"
 	wire "convenewire.dev/contracts/generated/go/peer"
 )
@@ -18,6 +20,19 @@ type NativePeers interface {
 	PeerStatus() peer.ConnectorSnapshot
 	PeerApprovals() ([]peer.ApprovalView, error)
 	DecidePeerApproval(peer.ApprovalDecision) error
+}
+
+type nativeUnpairedCore interface {
+	ValidateUnpairedConfiguration(config.Config) error
+	RunUnpaired(context.Context, config.Config) error
+}
+
+func (s *Service) unpairedCoreLocked() nativeUnpairedCore {
+	if s.configuration == nil || s.configuration.LocalNodeID == "" || s.credential != nil {
+		return nil
+	}
+	core, _ := s.options.NativePeers.(nativeUnpairedCore)
+	return core
 }
 
 func (s *Service) authorizePeer(next http.HandlerFunc) http.HandlerFunc {

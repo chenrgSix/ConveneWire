@@ -95,11 +95,22 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   const unboundHeaders = { authorization: `Bearer ${unboundConsole.searchParams.get("token")}` };
   const unboundState = await fetch(unboundConsole.origin + "/api/state", { headers: unboundHeaders }).then(response => response.json());
   assert.equal(unboundState.paired, false);
-  assert.equal(unboundState.bridgeRunning, false);
+  assert.equal(unboundState.bridgeRunning, true);
+  assert.equal(unboundState.connection.state, "stopped");
   assert.equal(unboundState.localNodeId, ready.nodeId);
   assert.equal((await request("/api/local-node")).teamId, null);
   assert.deepEqual(await request("/api/teams"), []);
   assert.equal((await fetch(unboundConsole.origin + "/api/peers/joins", { headers: unboundHeaders })).status, 200);
+  const unboundAdded = await fetch(unboundConsole.origin + "/api/agents", { method: "POST",
+    headers: { ...unboundHeaders, "content-type": "application/json" },
+    body: JSON.stringify({ kind: "pi", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root }) });
+  const independentAgent = await unboundAdded.json();
+  assert.equal(unboundAdded.status, 201, JSON.stringify(independentAgent));
+  await until(async () => {
+    const state = await fetch(unboundConsole.origin + "/api/peers/status", { headers: unboundHeaders }).then(response => response.json());
+    return state.state === "running";
+  }, "unpaired native core restarts after configuring its first Agent");
+  await assert.rejects(readFile(path.join(dataRoot, "bridge", "device-credential.json")), { code: "ENOENT" });
   const { team } = await request("/api/teams", { name: "Local fixture Team" });
   const room = await request(`/api/teams/${team.teamId}/rooms`, { name: "Local work" });
   await request(`/api/local-node/teams/${team.teamId}/bind`, undefined, "POST");
@@ -113,7 +124,9 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     return { status: response.status, body: await response.json() };
   };
   const initial = await consoleRequest("/api/state");
-  assert.equal(initial.body.localNodeId, ready.nodeId); assert.equal(initial.body.paired, true); assert.equal(initial.body.agents.length, 0);
+  assert.equal(initial.body.localNodeId, ready.nodeId); assert.equal(initial.body.paired, true);
+  assert.equal(initial.body.agents.length, 1);
+  assert.equal(initial.body.agents[0].agentId, independentAgent.agentId);
   await until(async () => {
     const peers = await consoleRequest("/api/peers/status");
     assert.equal(peers.status, 200, JSON.stringify(peers.body));
@@ -135,8 +148,6 @@ test("native Local Node completes Run and Discussion, then restores the same Own
   assert.equal(foreignPeerDecision.status, 403);
   await foreignPeerDecision.body?.cancel();
   assert.equal((await consoleRequest("/api/enrollment/restart", {})).status, 409);
-  const added = await consoleRequest("/api/agents", { kind: "pi", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root });
-  assert.equal(added.status, 201, JSON.stringify(added.body));
   const agents = await until(async () => {
     const list = await request(`/api/teams/${team.teamId}/agents`);
     return list.length === 1 && list[0].presence === "ready" ? list : null;

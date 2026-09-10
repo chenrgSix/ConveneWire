@@ -129,11 +129,10 @@ type nativeResources struct {
 // even if their configuration has been removed or their Host cannot be reached.
 func openNativeResources(ctx context.Context, node *NativeNode, cfg config.Config, credential pairing.Credential,
 	identities map[string]string) (*nativeResources, error) {
-	if err := node.check(); err != nil {
+	if err := node.checkConfiguration(cfg); err != nil {
 		return nil, err
 	}
-	if cfg.LocalNodeID != node.identity.NodeID || cfg.DataDir != filepath.Join(node.root, "bridge") ||
-		cfg.ServerURL != fmt.Sprintf("http://127.0.0.1:%d", node.identity.Port) || credential.ServerURL != cfg.ServerURL {
+	if credential.ServerURL != cfg.ServerURL {
 		return nil, errNativeNode
 	}
 	owner := admission.Owner{ServerURL: credential.ServerURL, TeamID: credential.TeamID, DeviceID: credential.DeviceID, OwnerMemberID: credential.OwnerMemberID}
@@ -167,6 +166,24 @@ func openNativeResources(ctx context.Context, node *NativeNode, cfg config.Confi
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return nil, err
 	}
+	return openNodeExecutionResources(ctx, node, cfg, identities)
+}
+
+func (n *NativeNode) checkConfiguration(cfg config.Config) error {
+	if err := n.check(); err != nil {
+		return err
+	}
+	if cfg.LocalNodeID != n.identity.NodeID || cfg.DataDir != filepath.Join(n.root, "bridge") ||
+		cfg.ServerURL != fmt.Sprintf("http://127.0.0.1:%d", n.identity.Port) {
+		return errNativeNode
+	}
+	return nil
+}
+
+// Paired and unpaired epochs reuse the same physical gate and durable process
+// owner. Adding a Device connection cannot select a fresh recovery namespace.
+func openNodeExecutionResources(ctx context.Context, node *NativeNode, cfg config.Config,
+	identities map[string]string) (*nativeResources, error) {
 	shared := &delivery.ResourceGate{}
 	primary := &delivery.MappedExecutionGate{Shared: shared, Resources: map[string]delivery.LocalResource{}, Paths: map[string]string{}}
 	for _, agent := range cfg.Agents {

@@ -18,6 +18,21 @@ export function connectionPresentation(state) {
   const normalizedError = technicalDetail.toLowerCase();
   const server = serverLabel(state.serverUrl);
 
+  if (state.localNodeId && !state.paired) {
+    return {
+      state: state.bridgeRunning ? "running" : "stopped",
+      tone: state.bridgeRunning ? "success" : technicalDetail ? "danger" : "neutral",
+      label: state.bridgeRunning ? "运行中" : "已停止",
+      title: state.bridgeRunning ? "本机节点正在运行" : "本机节点已停止接收任务",
+      summary: state.bridgeRunning
+        ? "可以配置本机 Agent，并通过邀请参与跨节点协作。任务仍需双方确认分享范围。"
+        : "本机配置已保留。启动后可继续跨节点协作。",
+      server: "本机节点",
+      action: state.bridgeRunning ? "none" : "start",
+      technicalDetail
+    };
+  }
+
   if (!state.bridgeRunning || connection.state === "stopped") {
     return {
       state: "stopped",

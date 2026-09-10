@@ -55,9 +55,28 @@ Owner-only Peer inventory/join/departure endpoints remain usable without a
 local Team. An unexpected or malformed saved Device credential fails closed.
 On the first explicit Team binding, the old Console drains and releases its
 lease, its token retires, and a new Console uses the same NativeNode identity
-and private Peer store. Later binding changes are rejected. Agent configuration
-and continuous Peer execution without Device binding are completed separately
-within WEB-085; this entry step alone does not claim that Runtime path.
+and private Peer store. Later binding changes are rejected.
+
+The same native capability now starts the shared core before Device binding.
+Only the Peer connector family runs; Device connection state stays stopped and
+no Device credential is created. A fresh installation with no Agents needs no
+identity-map file. Once Agents exist, missing or invalid stable identities fail
+closed. The Console permits local Agent creation/editing through this native
+capability, while legacy profiles and Peer metadata alone cannot bypass Device
+enrollment. Device connection, provisioning and trust operations keep their
+existing gates. Configuration replacement drains the previous core before
+restarting it. Stop/start and later Device attachment reuse the same durable
+Node process owner and fence retained possible starts before new work.
+
+Unpaired startup rejects any Device credential (including malformed files or
+dangling links), Authority configuration/partitions or legacy Device process
+directories. These cannot be reinterpreted as a fresh installation after
+credential loss. Core/Console race regressions, focused native shell tests and
+vet cover ownership rejection, orphan fencing, Agent rename identity, stop/start
+and explicit attachment. The embedded UI suite passes 64 checks. The actual
+bundled fixture configures its first Agent before creating a Team, then binds
+the Device without changing the Agent ID and completes Run/Discussion,
+restart and backup restoration with an offline Runtime.
 
 The Participant approval kernel binds each local decision to the immutable Peer
 execution, reviewed Export revision, opaque live-process owner and exact Runtime

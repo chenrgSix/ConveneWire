@@ -687,7 +687,7 @@ func (s *Service) checkUpdate(response http.ResponseWriter, request *http.Reques
 
 func (s *Service) StartConfiguredBridge() error {
 	s.mu.Lock()
-	if s.configuration == nil || s.credential == nil {
+	if s.configuration == nil || (s.credential == nil && s.unpairedCoreLocked() == nil) {
 		s.mu.Unlock()
 		return nil
 	}
@@ -1108,17 +1108,24 @@ func (s *Service) startBridgeLocked() error {
 	if s.bridgeCancel != nil {
 		return nil
 	}
-	if s.configuration == nil || s.credential == nil {
+	unpaired := s.unpairedCoreLocked()
+	if s.configuration == nil || (s.credential == nil && unpaired == nil) {
 		return fmt.Errorf("Bridge must be configured and paired before start")
 	}
-	governedState, err := s.dependencies.InspectGovernedOwnerState(
-		ownership.WithOwner(context.Background(), s.owner), *s.configuration, *s.credential,
-	)
-	if err != nil {
-		return fmt.Errorf("inspect local governed-authority state: %w", err)
+	if unpaired != nil {
+		if err := unpaired.ValidateUnpairedConfiguration(*s.configuration); err != nil {
+			return err
+		}
+	} else {
+		governedState, err := s.dependencies.InspectGovernedOwnerState(
+			ownership.WithOwner(context.Background(), s.owner), *s.configuration, *s.credential,
+		)
+		if err != nil {
+			return fmt.Errorf("inspect local governed-authority state: %w", err)
+		}
+		s.governedOwnerState = cloneGovernedOwnerState(governedState)
+		s.governedStateLoaded = true
 	}
-	s.governedOwnerState = cloneGovernedOwnerState(governedState)
-	s.governedStateLoaded = true
 	ctx, cancel := context.WithCancel(ownership.WithOwner(context.Background(), s.owner))
 	done := make(chan struct{})
 	s.bridgeEpoch++
@@ -1131,9 +1138,15 @@ func (s *Service) startBridgeLocked() error {
 	s.state.Phase = PhaseRunning
 	s.state.LastError = ""
 	s.state.Connection = ConnectionView{State: operations.ConnectionConnecting, Attempt: 1}
-	s.recordEventLocked("bridge.started", "", string(operations.ConnectionConnecting))
+	if unpaired != nil {
+		s.state.Connection = ConnectionView{State: operations.ConnectionStopped}
+	}
+	s.recordEventLocked("bridge.started", "", string(s.state.Connection.State))
 	configuration := *s.configuration
-	credential := *s.credential
+	var credential pairing.Credential
+	if s.credential != nil {
+		credential = *s.credential
+	}
 	provisionHandler := connection.ProvisionHandler(func(
 		handlerContext context.Context,
 		requested contracts.AgentProvisionRequestedMessage,
@@ -1143,7 +1156,9 @@ func (s *Service) startBridgeLocked() error {
 	go func() {
 		defer close(done)
 		var err error
-		if s.dependencies.RunBridgeWithProvisioning != nil {
+		if unpaired != nil {
+			err = unpaired.RunUnpaired(ctx, configuration)
+		} else if s.dependencies.RunBridgeWithProvisioning != nil {
 			err = s.dependencies.RunBridgeWithProvisioning(
 				ctx,
 				configuration,
@@ -1174,7 +1189,7 @@ func (s *Service) startBridgeLocked() error {
 		s.bridgeCancel = nil
 		s.state.BridgeRunning = false
 		s.state.Connection.State = operations.ConnectionStopped
-		if errors.Is(err, connection.ErrConfigurationChanged) && ctx.Err() == nil {
+		if unpaired == nil && errors.Is(err, connection.ErrConfigurationChanged) && ctx.Err() == nil {
 			if s.configuration != nil {
 				reloadedCredential, credentialErr := pairing.Load(s.configuration.DataDir)
 				if credentialErr != nil {
@@ -1271,7 +1286,7 @@ func (s *Service) addAgent(response http.ResponseWriter, request *http.Request) 
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if err := s.requireConfigurationMutationLocked(); err != nil {
+	if err := s.requireLocalConfigurationMutationLocked(true); err != nil {
 		writeError(response, http.StatusConflict, err.Error())
 		return
 	}
@@ -1306,7 +1321,7 @@ func (s *Service) updateAgent(response http.ResponseWriter, request *http.Reques
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if err := s.requireConfigurationMutationLocked(); err != nil {
+	if err := s.requireLocalConfigurationMutationLocked(true); err != nil {
 		writeError(response, http.StatusConflict, err.Error())
 		return
 	}
@@ -1359,14 +1374,24 @@ func (s *Service) updateAgent(response http.ResponseWriter, request *http.Reques
 }
 
 func (s *Service) requireConfigurationMutationLocked() error {
+	return s.requireLocalConfigurationMutationLocked(false)
+}
+
+func (s *Service) requireLocalConfigurationMutationLocked(allowUnpaired bool) error {
 	if s.governedMutation {
 		return fmt.Errorf("Wait for the current local authority change")
 	}
 	if s.closed {
 		return fmt.Errorf("Bridge service is closed")
 	}
-	if s.configuration == nil || s.credential == nil {
+	unpaired := s.unpairedCoreLocked()
+	if s.configuration == nil || (s.credential == nil && (!allowUnpaired || unpaired == nil)) {
 		return fmt.Errorf("Complete Team enrollment before editing configuration")
+	}
+	if s.credential == nil {
+		if err := unpaired.ValidateUnpairedConfiguration(*s.configuration); err != nil {
+			return err
+		}
 	}
 	if s.joinCancel != nil {
 		return fmt.Errorf("Wait for Team enrollment to finish before editing configuration")
@@ -1434,7 +1459,7 @@ func (s *Service) restartBridgeAfterWorker(stopped <-chan struct{}, restartEpoch
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.bridgeEpoch != restartEpoch || !s.bridgeRestartPending || s.bridgeCancel != nil || s.joinCancel != nil || s.closed ||
-		s.configuration == nil || s.credential == nil {
+		s.configuration == nil || (s.credential == nil && s.unpairedCoreLocked() == nil) {
 		return
 	}
 	s.bridgeRestartPending = false

@@ -65,7 +65,7 @@ func TestShellConsolePrecedesTeamBindingAndKeepsNativeOwnerAcrossAttachment(t *t
 		t.Fatal("initial Owner Console", requested, err)
 	}
 	initial, native := shell.Console(), shell.native
-	if initial == nil || native == nil || initial.State().Paired || initial.State().BridgeRunning {
+	if initial == nil || native == nil || initial.State().Paired || !initial.State().BridgeRunning || initial.State().Connection.State != operations.ConnectionStopped {
 		t.Fatal("Console required or invented Device binding")
 	}
 	if _, err := pairing.Load(filepath.Join(data.Root, "bridge")); !errors.Is(err, os.ErrNotExist) {
@@ -95,6 +95,58 @@ func TestShellConsolePrecedesTeamBindingAndKeepsNativeOwnerAcrossAttachment(t *t
 			t.Fatal("foreign origin entered Owner Console", response.Code)
 		}
 	}
+	waitPeers := func(want string) {
+		t.Helper()
+		deadline := time.Now().Add(3 * time.Second)
+		for time.Now().Before(deadline) {
+			if native.PeerStatus().State == want {
+				return
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+		t.Fatal("native Peer core state", native.PeerStatus())
+	}
+	waitPeers("running")
+	mutate := func(method, route string, input any) *httptest.ResponseRecorder {
+		raw, err := json.Marshal(input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		request := httptest.NewRequest(method, "http://127.0.0.1:48290"+route, bytes.NewReader(raw))
+		request.Header.Set("Authorization", "Bearer "+initial.Token())
+		response := httptest.NewRecorder()
+		shell.Handler().ServeHTTP(response, request)
+		return response
+	}
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := console.RuntimeInput{Kind: "codex", Enabled: true, Name: "Independent Agent", Role: "Reviewer",
+		ExecutablePath: executable, Workspace: shell.workspace, Sandbox: "read-only"}
+	created := mutate(http.MethodPost, "/api/agents", input)
+	var agent console.AgentView
+	if created.Code != http.StatusCreated || json.Unmarshal(created.Body.Bytes(), &agent) != nil || agent.AgentID == "" {
+		t.Fatal("pre-Team Agent configuration", created.Code, created.Body.String())
+	}
+	input.Name = "Independent Renamed"
+	updated := mutate(http.MethodPut, "/api/agents/"+agent.AgentID, input)
+	var renamed console.AgentView
+	if updated.Code != http.StatusOK || json.Unmarshal(updated.Body.Bytes(), &renamed) != nil || renamed.AgentID != agent.AgentID {
+		t.Fatal("pre-Team Agent identity after edit", updated.Code, updated.Body.String())
+	}
+	initial.StopBridge()
+	waitPeers("stopped")
+	if _, err := initial.StartBridge(); err != nil {
+		t.Fatal(err)
+	}
+	waitPeers("running")
+	if initial.State().Paired || initial.State().Connection.State != operations.ConnectionStopped {
+		t.Fatal("editing or restarting the native core invented Device pairing")
+	}
+	if _, err := pairing.Load(filepath.Join(data.Root, "bridge")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("pre-Team Agent editing wrote Device credentials", err)
+	}
 	state.ConsoleRequestID = strings.Repeat("A", 43)
 	if requested, err := shell.Poll(context.Background()); err != nil || !requested {
 		t.Fatal("pre-Team open request", requested, err)
@@ -111,6 +163,12 @@ func TestShellConsolePrecedesTeamBindingAndKeepsNativeOwnerAcrossAttachment(t *t
 	if attached == initial || shell.native != native || !attached.State().Paired || attached.State().TeamID != state.Binding.TeamID {
 		t.Fatal("Team attachment replaced native identity or failed to pair")
 	}
+	if len(attached.State().Agents) != 1 || attached.State().Agents[0].AgentID != agent.AgentID || attached.State().Agents[0].Name != input.Name {
+		t.Fatal("Device attachment forgot unpaired Agent configuration or identity")
+	}
+	// The fixture's bound runner intentionally has no Peer family. Seeing stopped
+	// here proves the old real native worker drained before the new Device starts.
+	waitPeers("stopped")
 	select {
 	case credential := <-started:
 		if credential.TeamID != state.Binding.TeamID || credential.DeviceID != state.Binding.DeviceID {

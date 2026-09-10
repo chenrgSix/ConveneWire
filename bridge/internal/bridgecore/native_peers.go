@@ -69,13 +69,9 @@ func (n *NativeNode) PeerExports(cfg config.Config) (*peer.Exporter, *peer.Sourc
 	if err != nil {
 		return nil, nil, err
 	}
-	ids, err := authority.ReadLocalIdentities(cfg.DataDir, cfg.Agents)
+	ids, err := nativeLocalIdentities(cfg)
 	if err != nil {
-		_, missing := os.Lstat(filepath.Join(cfg.DataDir, "agent-identities.json"))
-		if len(cfg.Agents) != 0 || !errors.Is(missing, os.ErrNotExist) {
-			return nil, nil, err
-		}
-		ids = map[string]string{}
+		return nil, nil, err
 	}
 	sources, err := peer.NewSources(cfg.Agents, ids)
 	if err != nil {
@@ -83,6 +79,16 @@ func (n *NativeNode) PeerExports(cfg config.Config) (*peer.Exporter, *peer.Sourc
 	}
 	exporter, err := peer.NewExporter(store, sources.Resolve)
 	return exporter, sources, err
+}
+
+func nativeLocalIdentities(cfg config.Config) (map[string]string, error) {
+	ids, err := authority.ReadLocalIdentities(cfg.DataDir, cfg.Agents)
+	if err != nil && len(cfg.Agents) == 0 {
+		if _, missing := os.Lstat(filepath.Join(cfg.DataDir, "agent-identities.json")); errors.Is(missing, os.ErrNotExist) {
+			return map[string]string{}, nil
+		}
+	}
+	return ids, err
 }
 
 func (n *NativeNode) PeerAuthorizationChanged(peerID string) {
@@ -151,6 +157,11 @@ func runNativeConnectors(ctx context.Context, node *NativeNode, cfg config.Confi
 	}()
 	deviceDone := make(chan error, 1)
 	go func() {
+		if device == nil {
+			<-ctx.Done()
+			deviceDone <- nil
+			return
+		}
 		for ctx.Err() == nil {
 			err := device(ctx)
 			if errors.Is(err, connection.ErrConfigurationChanged) {

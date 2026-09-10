@@ -100,6 +100,13 @@ is selected. The latter retains the explicit single-Team choice. Both use the
 fixed local Owner and current origin; a retired component cannot open a Console
 after its delayed binding response. The shell's unpaired Console exposes native
 Owner controls, while Device execution starts only after explicit binding.
+The unpaired Console now permits Agent creation/editing and starting/stopping
+the native Peer core. Its overview describes a running local Node without
+claiming a Device connection or current remote Run permission. Local Team and
+Device fields remain explicitly unbound; the native connection profile cannot
+be edited through legacy connection settings. Stable Agent IDs survive rename,
+core replacement and subsequent explicit Device attachment. See the
+[shared core boundary](bridge.md#shared-runtime-core) for recovery and validation.
 
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies

@@ -6,6 +6,18 @@ import {
   connectionPresentation
 } from "./static/bridge-presentation.mjs";
 
+test("unpaired native execution remains independent of Device connection state", () => {
+  const state = {localNodeId: "node_local001", paired: false, bridgeRunning: true, connection: {state: "stopped"}};
+  const running = connectionPresentation(state);
+  assert.equal(running.action, "none");
+  assert.equal(running.label, "运行中");
+  assert.match(running.summary, /双方确认分享范围/);
+  const stopped = connectionPresentation({...state, bridgeRunning: false, lastError: "identity unavailable"});
+  assert.equal(stopped.action, "start");
+  assert.equal(stopped.tone, "danger");
+  assert.equal(stopped.technicalDetail, "identity unavailable");
+});
+
 test("online connection presents one calm owner-facing summary", () => {
   const view = connectionPresentation({
     bridgeRunning: true,

@@ -695,8 +695,8 @@ function render(state) {
       ? `Bridge 定向私有 CA · epoch ${state.serverTrustEpoch} · SHA-256 ${state.serverCaDigestPrefix}…`
       : (trustMode === "system_ca" ? "系统 CA（公开证书默认）" : "叶证书指纹（高级兼容）");
     elements["current-reasoning-sharing"].textContent = state.shareReasoningSummaries ? "已授权（仅公开摘要）" : "未授权（不共享摘要）";
-    elements["current-team"].textContent = state.teamId || "等待配对";
-    elements["current-device"].textContent = state.deviceId || "等待配对";
+    elements["current-team"].textContent = state.teamId || (state.localNodeId ? "尚未绑定本地 Team" : "等待配对");
+    elements["current-device"].textContent = state.deviceId || (state.localNodeId ? "未创建 Device" : "等待配对");
     elements["config-path"].textContent = state.configPath;
     elements["connection-detail"].textContent = connection.state === "retrying"
       ? `${connectionLabels[connection.state]} · 第 ${connection.attempt || 1} 次尝试`
@@ -706,13 +706,15 @@ function render(state) {
       : "尚未连接";
     elements["connection-error"].textContent = connection.lastError || "";
     elements["connection-error"].classList.toggle("hidden", !connection.lastError);
-    elements["start-bridge"].disabled = !pairing.canStartExisting;
+    elements["start-bridge"].disabled = state.localNodeId
+      ? state.bridgeRunning || waiting
+      : !pairing.canStartExisting;
     elements["stop-bridge"].disabled = !state.bridgeRunning;
     const interactionBusy = waiting || [...runtimeTestResults.values()].includes("running") || draftPreflightRunning;
     const mutationBlocked = interactionBusy || state.agents.some((agent) => agent.activeRuns > 0);
-    elements["add-agent"].classList.toggle("hidden", !state.paired);
+    elements["add-agent"].classList.toggle("hidden", !state.paired && !state.localNodeId);
     elements["add-agent"].disabled = mutationBlocked;
-    elements["edit-connection"].classList.toggle("hidden", !state.paired);
+    elements["edit-connection"].classList.toggle("hidden", !state.paired || Boolean(state.localNodeId));
     elements["edit-connection"].disabled = mutationBlocked;
     const consentView = reasoningConsentView(state, interactionBusy);
     elements["stop-for-reasoning-consent"].classList.toggle("hidden", consentView.action !== "stop");
