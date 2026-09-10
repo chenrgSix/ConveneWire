@@ -81,7 +81,7 @@ the [1280px Space page](../acceptance/assets/web-085/console-spaces-1280.jpg),
 There is no horizontal overflow; forward/reverse Tab cycles inside the dialog
 and Escape returns focus to its trigger. Browser inspection uses read-only
 pages and form controls; access-changing interactions remain deferred under
-QA-092. Local approval and remaining App/network controls remain active in WEB-085.
+QA-092. Remaining App/network controls remain active in WEB-085.
 
 The native Agent sharing panel reviews local Workspace/sandbox, capability subset,
 explicit Room scope and membership-bounded expiry before saving consent. Room
@@ -102,6 +102,19 @@ All 82 embedded Console UI checks and the real bundled native offline
 Run/Discussion/restart/restore loop pass. The actual
 [390px sharing panel](../acceptance/assets/web-085/console-sharing-390.jpg) has no
 horizontal overflow. Browser sharing/withdrawal submissions remain in QA-092.
+
+The native Peer page also reviews individual Runtime command/file-change requests.
+Read-only polling updates a navigation count without opening a dialog or deciding
+anything. Review shows the authoritative Node, Team/Room, local Agent, Run,
+Export revision, deadline and inert Runtime text. Allow and deny submit the exact
+process/binding/consent tuple once; closing makes no decision. Changed scope,
+process, content, expiry or unavailable current state disables an unsubmitted
+review. A lost response remains explicitly unconfirmed and is never replayed.
+Native identity/session retirement clears private details and ignores late
+callbacks. This capability does not grant Device trust or persistent permission;
+the Runtime still rechecks current bilateral admission after waiting.
+All 89 embedded UI checks and focused Console/Peer approval race/vet pass.
+Actual system-window approval interactions remain part of QA-092.
 
 An explicit `Enter Space` action now asks the native Owner capability to issue
 and open one short browser exchange. The Console receives only opening status

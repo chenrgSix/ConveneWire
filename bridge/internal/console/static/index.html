@@ -21,7 +21,7 @@
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3"/><path d="M4.5 16.2c.7-2.8 2.5-4.2 5.5-4.2s4.8 1.4 5.5 4.2"/></svg></span><span>本机 Agent</span>
         </button>
         <button class="nav-item hidden" type="button" data-page-target="peers" data-native-only>
-          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="5" cy="6" r="2.5"/><circle cx="15" cy="14" r="2.5"/><path d="m7 7.5 6 5M12 3h5v5M3 12v5h5"/></svg></span><span>远端空间</span>
+          <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="5" cy="6" r="2.5"/><circle cx="15" cy="14" r="2.5"/><path d="m7 7.5 6 5M12 3h5v5M3 12v5h5"/></svg></span><span>远端空间 <small id="peer-approval-badge" hidden></small></span>
         </button>
         <button class="nav-item" type="button" data-page-target="governed">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.8 16 5v4.5c0 3.7-2.2 6.2-6 7.7-3.8-1.5-6-4-6-7.7V5Z"/><path d="m7.3 9.8 1.7 1.7 3.8-4"/></svg></span><span>受控开发</span>
@@ -131,6 +131,18 @@
             </div>
             <p data-peer-result role="status"></p>
             <section class="settings-card"><h3>已加入的空间</h3><div data-peer-spaces class="peer-list"></div></section>
+            <section class="settings-card" id="peer-approvals-panel">
+              <div class="section-heading"><h3>本机运行审批</h3><button type="button" class="secondary" data-approval-refresh>刷新审批</button></div>
+              <p>远端任务的命令和文件变更由本机逐次决定。关闭窗口不会允许或拒绝请求，请求到期后自动失效。</p>
+              <p data-approval-result role="status"></p><div data-approval-list class="peer-list"></div>
+              <dialog class="peer-dialog" data-approval-dialog aria-labelledby="peer-approval-heading">
+                <div class="section-heading"><h3 id="peer-approval-heading">审阅本次运行请求</h3><button type="button" class="secondary" data-approval-close>关闭</button></div>
+                <div data-approval-scope></div><h4>Runtime 请求内容</h4><pre class="peer-approval-details" data-approval-details></pre>
+                <p>允许仅适用于本次运行中的这一项请求，不会授予持续权限。请核对具体命令或文件变更。</p>
+                <p role="alert" class="peer-error" data-approval-error></p>
+                <div class="peer-actions"><button type="button" class="secondary" data-approval-deny>拒绝本次</button><button type="button" class="primary" data-approval-allow>允许本次</button></div>
+              </dialog>
+            </section>
             <section class="settings-card" id="peer-sharing-panel">
               <div class="section-heading"><h3>本机 Agent 分享</h3><button type="button" class="secondary" data-sharing-refresh>刷新分享</button></div>
               <p>本机明确分享、Host 接纳后，才可在双方同意的房间执行。工作区和临时权限仍由本机管理。</p>
