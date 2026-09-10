@@ -3,8 +3,12 @@ package bridgecore
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
+	"convenewire.dev/bridge/internal/authority"
 	"convenewire.dev/bridge/internal/config"
 	"convenewire.dev/bridge/internal/connection"
 	"convenewire.dev/bridge/internal/operations"
@@ -49,6 +53,52 @@ func (n *NativeNode) DecidePeerApproval(decision peer.ApprovalDecision) error {
 		return peer.ErrApproval
 	}
 	return n.peers.Approvals().Decide(decision)
+}
+
+// The Console supplies its locked current local configuration, never an HTTP
+// configuration payload. A read cannot create or rename stable Agent identities.
+func (n *NativeNode) PeerExports(cfg config.Config) (*peer.Exporter, *peer.Sources, error) {
+	if err := n.checkIdentity(); err != nil {
+		return nil, nil, err
+	}
+	if cfg.LocalNodeID != n.identity.NodeID || cfg.DataDir != filepath.Join(n.root, "bridge") ||
+		cfg.ServerURL != fmt.Sprintf("http://127.0.0.1:%d", n.identity.Port) {
+		return nil, nil, errNativeNode
+	}
+	store, err := n.peerStore()
+	if err != nil {
+		return nil, nil, err
+	}
+	ids, err := authority.ReadLocalIdentities(cfg.DataDir, cfg.Agents)
+	if err != nil {
+		_, missing := os.Lstat(filepath.Join(cfg.DataDir, "agent-identities.json"))
+		if len(cfg.Agents) != 0 || !errors.Is(missing, os.ErrNotExist) {
+			return nil, nil, err
+		}
+		ids = map[string]string{}
+	}
+	sources, err := peer.NewSources(cfg.Agents, ids)
+	if err != nil {
+		return nil, nil, err
+	}
+	exporter, err := peer.NewExporter(store, sources.Resolve)
+	return exporter, sources, err
+}
+
+func (n *NativeNode) PeerAuthorizationChanged(peerID string) {
+	n.peerMu.Lock()
+	defer n.peerMu.Unlock()
+	if n.peers != nil {
+		n.peers.LocalChange(peerID)
+	}
+}
+
+func (n *NativeNode) PeerWithdrawal() (*peer.Exporter, error) {
+	store, err := n.peerStore()
+	if err != nil {
+		return nil, err
+	}
+	return peer.NewExporter(store, func(string) (peer.ExportSource, error) { return peer.ExportSource{}, peer.ErrExport })
 }
 
 func (n *NativeNode) newPeerConnectors(cfg config.Config, identities map[string]string) (*peer.Connectors, error) {

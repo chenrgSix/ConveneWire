@@ -175,7 +175,14 @@ func (e *Exporter) Current(membershipID, localAgentID string, now time.Time) (Lo
 		return LocalExport{}, err
 	}
 	_, connection, found := exportConnection(state, membershipID)
-	if !found || connection.State != "active" || !after(connection.Receipt.Membership.ExpiresAt, now) {
+	if !found {
+		return LocalExport{}, ErrExport
+	}
+	return e.current(connection, localAgentID, now)
+}
+
+func (e *Exporter) current(connection LocalConnection, localAgentID string, now time.Time) (LocalExport, error) {
+	if connection.State != "active" || !after(connection.Receipt.Membership.ExpiresAt, now) {
 		return LocalExport{}, ErrExport
 	}
 	grant, found := currentLocalGrant(connection, localAgentID)

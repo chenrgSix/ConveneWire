@@ -124,6 +124,15 @@ test("native Local Node completes Run and Discussion, then restores the same Own
     const list = await request(`/api/teams/${team.teamId}/agents`);
     return list.length === 1 && list[0].presence === "ready" ? list : null;
   }, "Agent registration");
+  const exportReview = await consoleRequest("/api/peers/exports");
+  assert.equal(exportReview.status, 200, JSON.stringify(exportReview.body));
+  assert.equal(exportReview.body.state.participant.nodeId, ready.nodeId);
+  assert.deepEqual(exportReview.body.state.connections, []);
+  assert.equal(exportReview.body.sources.length, 1);
+  assert.equal(exportReview.body.sources[0].localAgentId, agents[0].agentId);
+  assert.equal(exportReview.body.sources[0].workspace, root);
+  assert.equal(exportReview.body.sources[0].available, true);
+  assert.match(exportReview.body.sources[0].configurationDigest, /^[a-f0-9]{64}$/u);
   const sent = await request(`/api/rooms/${room.roomId}/messages`, { content: "Verify the offline Local Node", mentionAgentId: agents[0].agentId });
   const runId = sent.runs[0].runId;
   await until(async () => {

@@ -2,6 +2,7 @@ package bridgecore
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -12,6 +13,54 @@ import (
 	"convenewire.dev/bridge/internal/operations"
 	"convenewire.dev/bridge/internal/privatefs"
 )
+
+func TestNativePeerExportsReadOnlyBoundIDsAndKeepWithdrawalIndependent(t *testing.T) {
+	_, node, cfg, _, ids := nativeCoreFixture(t)
+	cfg.Agents[0].Role, cfg.Agents[0].Adapter, cfg.Agents[0].RuntimeKind = "Reviewer", "generic", "generic"
+	cfg.Agents[0].Command = []string{"offline-runtime"}
+	raw, _ := json.Marshal(ids)
+	path := filepath.Join(cfg.DataDir, "agent-identities.json")
+	if err := privatefs.WriteFile(path, raw); err != nil {
+		t.Fatal(err)
+	}
+	_, sources, err := node.PeerExports(cfg)
+	if err != nil || len(sources.Reviews()) != 1 || !sources.Reviews()[0].Available || sources.Reviews()[0].LocalAgentID != ids[cfg.Agents[0].Name] {
+		t.Fatal("native source mapping", err)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil || string(after) != string(raw) {
+		t.Fatal("Peer review rewrote stable identities", err)
+	}
+	wrong := cfg
+	wrong.LocalNodeID = "node_anotherlocal001"
+	if _, _, err := node.PeerExports(wrong); err == nil {
+		t.Fatal("another Node selected local export sources")
+	}
+	wrong = cfg
+	wrong.DataDir = t.TempDir()
+	if _, _, err := node.PeerExports(wrong); err == nil {
+		t.Fatal("another profile selected local export sources")
+	}
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := node.PeerExports(cfg); err == nil {
+		t.Fatal("missing stable IDs silently recreated")
+	}
+	withdrawal, err := node.PeerWithdrawal()
+	if err != nil {
+		t.Fatal("missing Runtime map blocked local withdrawal authority", err)
+	}
+	if _, err := withdrawal.OwnerState(time.Now()); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(node.root, "identity.json")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := node.PeerWithdrawal(); err == nil {
+		t.Fatal("changed installation retained local Peer authority")
+	}
+}
 
 func waitNativePeerState(t *testing.T, node *NativeNode, state string) {
 	t.Helper()

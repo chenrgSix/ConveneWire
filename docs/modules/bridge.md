@@ -120,8 +120,27 @@ the current native core and disappear when its process/connection closes.
 Focused HTTP tests exercise the actual local approval kernel; Console/core/
 Local Node race tests and vet pass. The bundled native fixture verifies the
 capability reaches the real Console and rejects a foreign-origin decision.
-Invitation, export/withdrawal and independent human-entry owner operations,
-plus Peer session/execution composition, remain under BRG-081/RUN-020/WEB-085.
+Invitation and independent human-entry owner operations, plus Peer
+session/execution composition, remain under BRG-081/RUN-020/WEB-085.
+
+Console's `/api/peers/exports` inventory resolves existing native Agent IDs
+without creating or renaming them. Its local source review includes the exact
+configuration digest, Workspace, restricted sandbox and actual capabilities.
+Export submission pins that reviewed configuration and the Participant store
+revision; a changed executable/Workspace/policy cannot silently replace what
+the Owner reviewed. The inventory omits machine/human credentials and proof
+journals. Its `current` flag means current local Export authorization only;
+the separately retained Host Acceptance does not grant live Run admission.
+Old-lineage withdrawal cannot hide a newer Export in the inventory.
+
+`POST /api/peers/exports/withdraw` persists local revocation before invalidating
+the affected Peer lifetime. It needs no Host response, Runtime configuration,
+Agent identity map or running core, and works during configuration replacement.
+An unchanged operation notification cannot cancel a newer live Peer epoch.
+Reviewed-config race, native identity/profile/Agent-map boundaries, authenticated
+HTTP review/withdrawal/retry, two-Host lifecycle and owning Go race/vet checks
+pass. The bundled native fixture also reads the actual configured Agent's
+export review through Console without exposing a Device fallback.
 
 ## Local Node supervision
 

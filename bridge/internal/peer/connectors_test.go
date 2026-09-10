@@ -147,6 +147,8 @@ func TestNativePeerConnectorsUseTwoRealHostsSyncGrantsAndIsolateRevocation(t *te
 	secondDecision := askApproval(ctx, secondSession, secondInput)
 	firstView := waitApproval(t, c.Approvals(), firstInput.RequestID)
 	secondView := waitApproval(t, c.Approvals(), secondInput.RequestID)
+	// A retry notification with unchanged durable authority must be inert.
+	c.LocalChange(secondID)
 	f.control(t, map[string]any{"action": "revoke", "membershipId": first.Membership.MembershipID})
 	select {
 	case result := <-firstDecision:
@@ -179,7 +181,7 @@ func TestNativePeerConnectorsUseTwoRealHostsSyncGrantsAndIsolateRevocation(t *te
 	if err := store.Update(state.Revision-1, state, now); err != nil {
 		t.Fatal(err)
 	}
-	c.Wake()
+	c.LocalChange(secondID)
 	view := waitConnectors(t, c, func(v ConnectorSnapshot) bool { return connectorState(v, secondID) == "left" })
 	raw, _ := json.Marshal(view)
 	for _, secret := range []string{first.MachineCredential.Token, second.MachineCredential.Token, f.Secret, other.Secret, local.Configuration.Command[0]} {

@@ -89,6 +89,35 @@ func (c *Connectors) Wake() {
 	}
 }
 func (c *Connectors) Approvals() *Approvals { return c.approvals }
+
+// An Owner mutation calls this only after persistence. Replaying an unchanged
+// operation must not cancel a newer live epoch for the same Peer.
+func (c *Connectors) LocalChange(peerID string) {
+	defer c.Wake()
+	state, err := c.store.Read()
+	if err != nil {
+		c.stopAll("unavailable", "PEER_STORAGE_UNAVAILABLE")
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	worker := c.workers[peerID]
+	if worker == nil {
+		return
+	}
+	for _, local := range state.Connections {
+		if local.Receipt.Membership.PeerID == peerID && (local.State != "active" || peerAuthorizationDigest(local) != worker.digest) {
+			worker.cancel()
+			c.approvals.RevokePeer(peerID)
+			return
+		}
+	}
+}
+
+func peerAuthorizationDigest(local LocalConnection) string {
+	digest, _ := semanticDigest(map[string]any{"receipt": local.Receipt, "exports": local.Exports, "acceptances": local.Acceptances})
+	return digest
+}
 func (c *Connectors) Snapshot() ConnectorSnapshot {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -166,7 +195,7 @@ func (c *Connectors) reconcile(ctx context.Context) {
 		}
 		// Proof snapshot refreshes are excluded; only immutable grant/acceptance
 		// history changes invalidate a live execution/approval epoch.
-		digest, _ := semanticDigest(map[string]any{"receipt": local.Receipt, "exports": local.Exports, "acceptances": local.Acceptances})
+		digest := peerAuthorizationDigest(local)
 		if worker := c.workers[id]; worker != nil {
 			if !eligible || worker.digest != digest {
 				worker.cancel()
