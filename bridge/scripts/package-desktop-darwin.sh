@@ -16,6 +16,8 @@ if [[ ! "${source_commit}" =~ ^[0-9a-f]{40}$ || "${source_commit}" != "${checkou
   echo "Desktop packaging requires SOURCE_REF to equal the exact checked-out commit" >&2
   exit 1
 fi
+local_hub_bundle=${LOCAL_HUB_BUNDLE:?LOCAL_HUB_BUNDLE is required for the Node-first desktop}
+node "${repository_root}/scripts/local-node/desktop-bundle.mjs" "${local_hub_bundle}" "${source_commit}" "${release_tag}"
 
 if [[ ! "${version}" =~ ^[0-9A-Za-z._-]+$ ]]; then
   echo "Release tag must contain only letters, numbers, dots, underscores, and hyphens" >&2
@@ -84,17 +86,14 @@ sed "s/__VERSION__/${bundle_version}/g" \
     -o "${helper}" \
     ./cmd/convenewire-bridge
 )
-if [[ -n "${LOCAL_HUB_BUNDLE:-}" ]]; then
-  node "${repository_root}/scripts/local-node/bundle.mjs" verify "${LOCAL_HUB_BUNDLE}"
-  node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync(process.argv[1])); if(m.sourceCommit!==process.argv[2] || m.releaseVersion!==process.argv[3]) throw new Error("Hub and desktop build identities differ")' "${LOCAL_HUB_BUNDLE}/hub-manifest.json" "${source_commit}" "${release_tag}"
-  cp -R "${LOCAL_HUB_BUNDLE}" "${contents}/Resources/hub"
-  (
-    cd "${bridge_root}"
-    CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath \
-      -ldflags="-s -w -X main.version=${release_tag} -X main.sourceCommit=${source_commit}" \
-      -o "${contents}/Resources/bin/convenewire-node" ./cmd/convenewire-node
-  )
-fi
+cp -R "${local_hub_bundle}" "${contents}/Resources/hub"
+(
+  cd "${bridge_root}"
+  CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath \
+    -ldflags="-s -w -X main.version=${release_tag} -X main.sourceCommit=${source_commit}" \
+    -o "${contents}/Resources/bin/convenewire-node" ./cmd/convenewire-node
+)
+node "${repository_root}/scripts/local-node/desktop-bundle.mjs" "${contents}/Resources/hub" "${source_commit}" "${release_tag}"
 
 # A dependency can override CGO linker flags. Verify the emitted Mach-O, not
 # just the plist or environment, before any archive can be distributed.
@@ -130,6 +129,15 @@ fi
 helper_version=$("${helper}" version)
 if [[ "${helper_version}" != "${release_tag}" ]]; then
   echo "Built CLI helper reports ${helper_version}, expected ${release_tag}" >&2
+  exit 1
+fi
+node_host_version=$("${contents}/Resources/bin/convenewire-node" --version)
+if [[ "${node_host_version}" != "${release_tag}" ]]; then
+  echo "Built native Node host reports ${node_host_version}, expected ${release_tag}" >&2
+  exit 1
+fi
+if ! strings "${contents}/Resources/bin/convenewire-node" | grep -F "${source_commit}" >/dev/null; then
+  echo "Built native Node host omits the exact source commit ${source_commit}" >&2
   exit 1
 fi
 

@@ -333,7 +333,8 @@ npm run test:local-hub-bundle
 ```
 
 The output must not already exist. Node's distribution license is read beside
-its installation (`../LICENSE` from the executable directory); builders with a
+its executable (Windows) or in its installation root (`../LICENSE` from a bin
+directory); builders with a
 different distribution layout set `CONVENE_WIRE_NODE_LICENSE` to that license
 file. Packaging validates the native Node version and SQLite load with an empty
 PATH. The manifest records the source commit and whether the checkout has local
@@ -341,6 +342,13 @@ changes, and includes every regular file's size and SHA-256. This inventory
 checks bundle integrity; release authenticity still comes from the verified
 outer distribution. Never copy private data into a bundle. macOS package tests
 provide no Windows native or installed-client evidence.
+
+`test:local-hub-bundle` also checks desktop exact-source/version admission and
+Node distribution license discovery. Direct native packaging requires
+`LOCAL_HUB_BUNDLE` to name an already built bundle with the same `RELEASE_TAG`
+and exact `SOURCE_REF` commit. A release bundle must record a clean checkout;
+only `v0.0.0-local` allows a manifest explicitly recording local modifications.
+The `package:local-node` wrapper prepares this input automatically.
 
 ## Local Node desktop and recovery
 

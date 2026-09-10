@@ -62,6 +62,18 @@ async function copyTree(source, target, exclude = () => false) {
   }
 }
 
+export async function nodeDistributionLicense(node, explicitPath) {
+  const candidates = explicitPath ? [explicitPath] : [path.join(path.dirname(node), "LICENSE"), path.resolve(path.dirname(node), "../LICENSE")];
+  for (const candidate of candidates) {
+    let text;
+    try { text = await readFile(candidate, "utf8"); }
+    catch (error) { if (!explicitPath && error.code === "ENOENT") continue; throw error; }
+    if (text.includes("Node.js") && text.includes("Permission")) return text;
+    if (explicitPath) break;
+  }
+  throw new Error("Expected the Node distribution LICENSE; set CONVENE_WIRE_NODE_LICENSE to its installed path");
+}
+
 // Resolve the locked production dependency graph without npm, a registry fetch,
 // workspace links, .bin shims, or development dependencies in the output.
 function productionPackages(lock) {
@@ -104,9 +116,7 @@ export async function buildBundle(output, { root = repository, node = process.ex
   if (!/^v22\.\d+\.\d+$/u.test(nodeVersion)) throw new Error("Hub requires Node 22");
   const target = JSON.parse(execFileSync(node, ["-p", "JSON.stringify([process.platform,process.arch])"], { encoding: "utf8" }));
   if (target[0] !== process.platform || target[1] !== process.arch) throw new Error("Hub packaging must run natively");
-  const license = nodeLicense ?? path.resolve(path.dirname(node), "../LICENSE");
-  const licenseText = await readFile(license, "utf8");
-  if (!licenseText.includes("Node.js") || !licenseText.includes("Permission")) throw new Error("Expected the Node distribution LICENSE");
+  const licenseText = await nodeDistributionLicense(node, nodeLicense);
   const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
   const sourceState = execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim() ? "modified" : "clean";
   const staging = `${output}.partial-${process.pid}`;

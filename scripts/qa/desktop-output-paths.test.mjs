@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -14,8 +15,8 @@ test("macOS packaging keeps build and ZIP output under caller-relative, spaced a
   try {
     const bin = path.join(fixture, "bin");
     await mkdir(bin);
-    // Only compilation/plist validation are doubles. The production packaging
-    // script performs all path resolution, staging, version checks and ZIP IO.
+    // Compilation/plist validation and Hub payloads are fixtures. Production
+    // code performs path resolution, manifest admission, staging and ZIP IO.
     await writeFile(path.join(bin, "go"), `#!/bin/sh
 if [ "$1" = env ]; then
   if [ "$2" = GOHOSTOS ]; then echo darwin; else echo arm64; fi
@@ -27,7 +28,7 @@ case "$*" in
     [ "$MACOSX_DEPLOYMENT_TARGET" = 12.0 ] || exit 42
     case "$CGO_CFLAGS $CGO_CXXFLAGS $CGO_LDFLAGS" in *-mmacosx-version-min=12.0*) ;; *) exit 43 ;; esac
     ;;
-  *cmd/convenewire-bridge) ;;
+  *cmd/convenewire-bridge|*cmd/convenewire-node) ;;
   *) exit 44 ;;
 esac
 while [ "$#" -gt 0 ]; do
@@ -40,13 +41,24 @@ chmod +x "$target"
     await writeFile(path.join(bin, "plutil"), "#!/bin/sh\nif [ \"$1\" = -extract ]; then echo 12.0; fi\n", { mode: 0o700 });
     await writeFile(path.join(bin, "xcrun"), '#!/bin/sh\necho "platform MACOS"\necho "minos ${CW_PATH_TEST_MINIMUM:-12.0}"\n', { mode: 0o700 });
     const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+    const hub = path.join(fixture, "fixture hub");
+    const files = [];
+    for (const name of [process.platform === "win32" ? "bin/node.exe" : "bin/node", "apps/server/dist/server.js",
+      "apps/server/dist/local-node.js", "apps/web/dist/index.html", "node_modules/better-sqlite3/package.json",
+      "node_modules/@convene-wire/contracts/package.json", "NODE-LICENSE", "LICENSE", "NOTICE"]) {
+      const file = path.join(hub, name), content = Buffer.from(`fixture ${name}\n`);
+      await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, content);
+      files.push({ path: name, size: content.length, sha256: createHash("sha256").update(content).digest("hex") });
+    }
+    await writeFile(path.join(hub, "hub-manifest.json"), JSON.stringify({schemaVersion: 1, platform: process.platform,
+      arch: process.arch, nodeVersion: "v22.23.1", sourceCommit: commit, sourceState: "clean", releaseVersion: "v0.0.0-path-test", files}));
     const packageName = "convenewire-bridge-desktop_0.0.0-path-test_darwin_arm64";
     for (const [index, directory] of ["dist", "nested output/dist space", path.join(fixture, "absolute output")].entries()) {
       const cwd = path.join(fixture, `caller ${index}`);
       await mkdir(cwd);
       const expected = path.resolve(cwd, directory);
       const env = { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, OUTPUT_DIR: directory,
-        RELEASE_TAG: "v0.0.0-path-test", SOURCE_REF: "HEAD", GOARCH: "arm64", CW_PATH_TEST_COMMIT: commit };
+        RELEASE_TAG: "v0.0.0-path-test", SOURCE_REF: "HEAD", GOARCH: "arm64", CW_PATH_TEST_COMMIT: commit, LOCAL_HUB_BUNDLE: hub };
       const output = execFileSync("bash", [darwinScript], { cwd, env, encoding: "utf8" });
       // realpath handles /var -> /private/var on macOS.
       const canonical = execFileSync("pwd", ["-P"], { cwd: expected, encoding: "utf8" }).trim();
@@ -55,6 +67,8 @@ chmod +x "$target"
       const entries = execFileSync("unzip", ["-Z1", archive], { encoding: "utf8" });
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/MacOS/convenewire-bridge-desktop`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-bridge`));
+      assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-node`));
+      assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/hub/hub-manifest.json`));
       assert.match(await readFile(path.join(expected, packageName, "ConveneWire Bridge.app/Contents/MacOS/convenewire-bridge-desktop"), "utf8"), new RegExp(commit, "u"));
       assert.match(await readFile(path.join(expected, packageName, "ConveneWire Bridge.app/Contents/Resources/bin/convenewire-bridge"), "utf8"), new RegExp(commit, "u"));
       assert.throws(() => execFileSync("bash", [darwinScript], { cwd, env, stdio: "pipe" }), /output already exists/u);

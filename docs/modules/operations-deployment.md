@@ -37,6 +37,19 @@ publication. Stop the Node and take a recoverable snapshot before upgrading;
 retain the matching old bundle for rollback. SQL checksums and unknown-schema
 rejection remain enforced by the existing Server migration runner.
 
+OPS-020 makes that Hub and lifecycle helper mandatory in both native desktop
+packages and the Windows installer. Before compilation and after staging,
+[desktop Hub admission](../../scripts/local-node/desktop-bundle.mjs) verifies the
+native closed inventory and exact source/version. Release payloads require a
+clean checkout; only the explicit `v0.0.0-local` development version permits a
+manifest reporting local modifications. Windows packaging also checks every
+archived Hub file against the staged inventory, including the manifest itself,
+and compares all three native executables with their staged bytes. License
+discovery supports both the Windows executable-directory and Unix bin-directory
+Node distribution layouts. Native Hub/tamper/admission tests pass 3/3 and existing
+output-path/release-policy regressions pass 26/26. CI integration and installed
+upgrade evidence remain tracked by OPS-020 in TASKS.md.
+
 ## Native Peer HTTPS ingress
 
 OPS-019 uses an explicitly configured additional HTTPS listener in the native

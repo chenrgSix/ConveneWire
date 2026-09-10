@@ -3,7 +3,8 @@ param(
   [string]$ReleaseTag = $env:RELEASE_TAG,
   [string]$SourceRef = $env:SOURCE_REF,
   [string]$GoArch = $env:GOARCH,
-  [string]$OutputDir = $env:OUTPUT_DIR
+  [string]$OutputDir = $env:OUTPUT_DIR,
+  [string]$LocalHubBundle = $env:LOCAL_HUB_BUNDLE
 )
 
 $ErrorActionPreference = "Stop"
@@ -59,6 +60,13 @@ $checkoutCommit = (& git -C $repositoryRoot rev-parse --verify "HEAD^{commit}").
 if ($LASTEXITCODE -ne 0 -or $sourceCommit -ne $checkoutCommit) {
   throw "Desktop packaging requires SOURCE_REF to equal the exact checked-out commit"
 }
+if ([string]::IsNullOrWhiteSpace($LocalHubBundle)) {
+  throw "LOCAL_HUB_BUNDLE is required for the Node-first desktop"
+}
+$LocalHubBundle = (Resolve-Path -LiteralPath $LocalHubBundle).Path
+$hubVerifier = Join-Path $repositoryRoot "scripts\local-node\desktop-bundle.mjs"
+& node $hubVerifier $LocalHubBundle $sourceCommit $ReleaseTag
+if ($LASTEXITCODE -ne 0) { throw "Native Hub verification failed" }
 
 $version = $ReleaseTag.Substring(1)
 if ($version -notmatch '^[0-9A-Za-z._-]+$') {
@@ -87,6 +95,7 @@ $package = "convenewire-bridge-desktop_${version}_windows_${GoArch}"
 $staging = Join-Path $OutputDir $package
 $binary = Join-Path $staging "ConveneWire Bridge.exe"
 $cliBinary = Join-Path $staging "convenewire-bridge.exe"
+$nodeBinary = Join-Path $staging "convenewire-node.exe"
 $archive = Join-Path $OutputDir "${package}.zip"
 $installerBase = "${package}_setup"
 $installer = Join-Path $OutputDir "${installerBase}.exe"
@@ -128,6 +137,8 @@ try {
     if ($LASTEXITCODE -ne 0) {
       throw "Windows CLI helper build failed"
     }
+    & go build -trimpath "-ldflags=-s -w -X=main.version=$ReleaseTag -X=main.sourceCommit=$sourceCommit" -o $nodeBinary ./cmd/convenewire-node
+    if ($LASTEXITCODE -ne 0) { throw "Windows native Node host build failed" }
   }
   finally {
     Pop-Location
@@ -138,20 +149,13 @@ finally {
   $env:GOOS = $previousGOOS
   $env:GOARCH = $previousGOARCH
 }
-
-if (-not [string]::IsNullOrWhiteSpace($env:LOCAL_HUB_BUNDLE)) {
-  $hubBundle = (Resolve-Path -LiteralPath $env:LOCAL_HUB_BUNDLE).Path
-  & node (Join-Path $repositoryRoot "scripts/local-node/bundle.mjs") verify $hubBundle
-  if ($LASTEXITCODE -ne 0) { throw "Local Hub bundle verification failed" }
-  $hubManifest = Get-Content -Raw -LiteralPath (Join-Path $hubBundle "hub-manifest.json") | ConvertFrom-Json
-  if ($hubManifest.sourceCommit -ne $sourceCommit -or $hubManifest.releaseVersion -ne $ReleaseTag) { throw "Hub and desktop build identities differ" }
-  Copy-Item -Recurse -LiteralPath $hubBundle -Destination (Join-Path $staging "hub")
-  Push-Location $bridgeRoot
-  try {
-    & go build -trimpath "-ldflags=-s -w -X main.version=$ReleaseTag -X main.sourceCommit=$sourceCommit" -o (Join-Path $staging "convenewire-node.exe") ./cmd/convenewire-node
-    if ($LASTEXITCODE -ne 0) { throw "Local Node helper build failed" }
-  } finally { Pop-Location }
-}
+Copy-Item -LiteralPath $LocalHubBundle -Destination (Join-Path $staging "hub") -Recurse
+& node $hubVerifier (Join-Path $staging "hub") $sourceCommit $ReleaseTag
+if ($LASTEXITCODE -ne 0) { throw "Staged native Hub verification failed" }
+$nodeVersion = (& $nodeBinary --version).Trim()
+if ($LASTEXITCODE -ne 0 -or $nodeVersion -ne $ReleaseTag) { throw "Native Node host version mismatch" }
+$nodeBytes = [IO.File]::ReadAllBytes($nodeBinary)
+if (-not [Text.Encoding]::ASCII.GetString($nodeBytes).Contains($sourceCommit)) { throw "Native Node host source commit mismatch" }
 
 Copy-Item (Join-Path $bridgeRoot "README.md") (Join-Path $staging "README.md")
 Copy-Item (Join-Path $repositoryRoot "LICENSE") (Join-Path $staging "LICENSE")
@@ -237,6 +241,10 @@ try {
   $requiredMembers = @(
     "$package/ConveneWire Bridge.exe",
     "$package/convenewire-bridge.exe",
+    "$package/convenewire-node.exe",
+    "$package/hub/hub-manifest.json",
+    "$package/hub/bin/node.exe",
+    "$package/hub/NODE-LICENSE",
     "$package/README.md",
     "$package/LICENSE",
     "$package/NOTICE",
@@ -248,9 +256,33 @@ try {
       throw "Windows Desktop archive is missing $requiredMember"
     }
   }
+  $hubPrefix = "$package/hub/"
+  $hubEntries = [Collections.Generic.Dictionary[string, object]]::new([StringComparer]::Ordinal)
+  foreach ($entry in $zip.Entries) {
+    if ($entry.FullName.StartsWith($hubPrefix, [StringComparison]::Ordinal) -and -not $entry.FullName.EndsWith('/')) {
+      $hubEntries.Add($entry.FullName.Substring($hubPrefix.Length), $entry)
+    }
+  }
+  $hubManifestPath = Join-Path $staging "hub\hub-manifest.json"
+  $hubManifest = Get-Content -LiteralPath $hubManifestPath -Raw | ConvertFrom-Json
+  $hubFiles = @($hubManifest.files) + @([PSCustomObject]@{
+    path = "hub-manifest.json";
+    size = (Get-Item -LiteralPath $hubManifestPath).Length;
+    sha256 = (Get-FileHash -LiteralPath $hubManifestPath -Algorithm SHA256).Hash
+  })
+  if ($hubEntries.Count -ne $hubFiles.Count) { throw "Archived Hub inventory differs from its verified manifest" }
+  foreach ($file in $hubFiles) {
+    if (-not $hubEntries.ContainsKey($file.path) -or $hubEntries[$file.path].Length -ne $file.size) { throw "Archived Hub file is missing or truncated: $($file.path)" }
+    $stream = $hubEntries[$file.path].Open()
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { $actual = [BitConverter]::ToString($sha.ComputeHash($stream)).Replace("-", "") }
+    finally { $sha.Dispose(); $stream.Dispose() }
+    if ($actual -ne $file.sha256) { throw "Archived Hub file digest mismatch: $($file.path)" }
+  }
   foreach ($executable in @(
       @{ Member = "$package/ConveneWire Bridge.exe"; Path = $binary },
-      @{ Member = "$package/convenewire-bridge.exe"; Path = $cliBinary }
+      @{ Member = "$package/convenewire-bridge.exe"; Path = $cliBinary },
+      @{ Member = "$package/convenewire-node.exe"; Path = $nodeBinary }
     )) {
     $binaryEntries = @($zip.Entries | Where-Object {
       $_.FullName.Replace("\", "/") -eq $executable.Member
