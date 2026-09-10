@@ -78,6 +78,32 @@ export class PeerAdmissionService {
     }).immediate();
   }
 
+  /** Owner-facing metadata for invitation/revocation controls. Never return
+   * secret hashes, machine/human credentials or the remote local User ID. */
+  public hostAccess(actor: WebPrincipal, teamId: string, now: string) {
+    this.requireOwner(actor, teamId);
+    let invitationSupported = true;
+    try { assertPeerOrigin(this.origin); } catch { invitationSupported = false; }
+    const invitations = (this.database.prepare(`SELECT invitation_id FROM peer_invitations
+      WHERE json_extract(invitation_json, '$.scope.teamId') = ? ORDER BY created_at DESC, invitation_id`)
+      .all(teamId) as Array<{ invitation_id: string }>).map(({ invitation_id }) => {
+      const { invitation, state } = this.memberships.getInvitation(invitation_id)!;
+      return { invitation, state: state === "open" && invitation.expiresAt <= now ? "expired" as const : state };
+    });
+    const memberships = (this.database.prepare(`SELECT membership_id FROM peer_memberships
+      WHERE team_id = ? ORDER BY created_at DESC, membership_id`).all(teamId) as Array<{ membership_id: string }>)
+      .map(({ membership_id }) => {
+        const m = this.memberships.getMembership(membership_id)!;
+        return { membershipId: m.membershipId, peerId: m.peerId, memberId: m.memberId,
+          participantNodeId: m.participantNodeId, scope: m.scope, createdAt: m.createdAt, expiresAt: m.expiresAt,
+          state: m.state === "active" && m.expiresAt <= now ? "expired" as const : m.state,
+          displayName: this.core.getMember(m.memberId)?.displayName ?? "",
+          roomLabel: m.scope.kind === "room" && m.scope.roomId ? this.core.getRoom(m.scope.roomId)?.name ?? "" : null };
+      });
+    return { host: { nodeId: this.authority.nodeId, publicKey: this.authority.publicKey }, hostOrigin: this.origin,
+      invitationSupported, invitations, memberships };
+  }
+
   public preview(input: PeerInvitationPreviewRequest, now: string): PeerInvitationPreview {
     this.assert("PeerInvitationPreviewRequest", input);
     const { invitation, digest } = this.memberships.requireInvitationSecret(input.invitationId, input.secret, now);

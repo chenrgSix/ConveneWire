@@ -39,6 +39,8 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peer
       void reply.code(status).send({ code });
     });
     peer.post("/api/peer/invitations", async request => peerAdmission.createInvitation(principal(request), body<PeerInvitationCreateRequest>(request, "PeerInvitationCreateRequest"), clock()));
+    peer.get<{ Params: { teamId: string } }>("/api/peer/teams/:teamId/access", async request =>
+      peerAdmission.hostAccess(principal(request), request.params.teamId, clock()));
     const runRequest = (request: FastifyRequest) => {
       limitTransport(request, "run");
       if (request.url.includes("?") || request.headers.origin || request.headers.cookie ||

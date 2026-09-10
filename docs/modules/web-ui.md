@@ -1,5 +1,21 @@
 # Web UI
 
+## Peer invitation and sharing controls
+
+WEB-085 completes the Owner's invitation, remote Space and Agent sharing
+interfaces under [ADR-0068](../adr/0068-peer-collaboration-delivery.md). The
+Host's `GET /api/peer/teams/:teamId/access` supplies Owner-only invitation and
+membership metadata for these controls, including current expiry/revocation and
+whether its configured origin supports invitations. It does not claim network
+reachability. Existing mutation routes retain exact invitation operations and
+the independent Export/Acceptance decisions.
+
+The read model omits invitation secrets, credential IDs/hashes, claim proofs and
+remote local User IDs. A full Owner session and current Team membership are
+required before any query. Authenticated Room guests, ordinary Members, unknown
+Teams and machine credentials are denied; another authorized Team returns only
+its own records. UI integration remains active in WEB-085.
+
 ## Authority-bound Spaces
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines WEB-084's
@@ -7,7 +23,7 @@ reference-only local Space directory and separate origin-bound views. Opening a
 remote Space never forwards Local Owner or Device credentials. Each Host keeps
 its own human authentication, navigation, drafts and pending request lifecycle.
 Directory presence is not membership and cannot create a writable remote Room
-replica. A/B native desktop acceptance follows B's implementation checks.
+replica. Manual A/B/C native desktop acceptance is consolidated under QA-092.
 
 The shared core refreshes owner-private navigation references only after Host
 proof. The Local Hub checks bounded closed-schema references and local Owner
