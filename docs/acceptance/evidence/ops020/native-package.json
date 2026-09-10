@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "607677e9fbf7fe5502b44f88c32ed781950e70fd",
+  "sourceState": "clean",
+  "archive": "dist/local-node-ops020-607677e9/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+  "archiveBytes": 75960118,
+  "archiveSHA256": "fbb2c8f14951ee021512462d554950aaa6e93afeb0216c016876a2a9a753de66",
+  "hubManifestSHA256": "d3cdd5c30b7919dceece66f7265ff98d0d9ab60288c0da3bf504f0c41b469a54",
+  "hubFiles": 6215,
+  "versions": {
+    "desktop": "v0.0.0-local",
+    "legacyCLI": "v0.0.0-local",
+    "nodeHost": "v0.0.0-local",
+    "node": "v22.23.1"
+  },
+  "verified": [
+    "ZIP path preflight",
+    "extracted complete Hub inventory",
+    "exact source and version",
+    "native Mach-O arm64",
+    "bundled Node and SQLite with empty PATH"
+  ],
+  "notRun": [
+    "installation",
+    "physical Windows",
+    "CI",
+    "publication",
+    "live models"
+  ]
+}

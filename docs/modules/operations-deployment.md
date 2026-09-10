@@ -70,7 +70,13 @@ protocol schemes and data locations. Stop the Node and keep its backup and old
 bundle before upgrade; this workflow does not claim atomic installer rollback.
 
 The expanded local inventory/path suite passes 5/5, workflow/packaging policy
-passes 29/29 and the actual native offline loop passes. Windows PowerShell and
+passes 30/30 and the actual native offline loop passes. The
+[verified macOS archive](../acceptance/ops-020-native-distribution.md) records its
+exact clean source, ZIP digest, 6,215-file Hub inventory and empty-PATH
+Node/SQLite execution. Go CI jobs install the locked Node Host fixture
+dependencies before running the actual Peer cross-language tests. The full Peer
+race suite and vet pass; the serial-queue fixture now shares one bounded batch
+deadline so an arbitrarily ordered receipt can wait for its preceding children. Windows PowerShell and
 installation checks are wired into the native Windows jobs but have not executed
 on this macOS host. Actual CI and public release remain separate evidence gates;
 delivery state stays in TASKS.md.

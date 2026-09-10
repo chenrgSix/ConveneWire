@@ -396,6 +396,12 @@ function assertBefore(block, earlier, later, scope) {
 
 export function verifyNativeNodeJobs(source) {
   const jobs = jobBlocks(source);
+  const go = requireJob(jobs, jobs.has("go-gates") ? "go-gates" : "go");
+  const setupHost = stepForName(go, "Set up Node.js for Peer interoperability");
+  assertIncludes(setupHost, ["uses: actions/setup-node@", "node-version: 22.23.1"], "Go Peer Host toolchain");
+  const installHost = stepForName(go, "Install locked Peer Host fixture dependencies");
+  invariant(installHost.split("\n").includes("        run: npm ci"), "Go Peer Host fixture must install locked dependencies");
+  assertBefore(go, "Install locked Peer Host fixture dependencies", "Test and vet Bridge", "Go Peer Host fixture");
   for (const name of ["desktop-macos", "desktop-windows"]) {
     const job = requireJob(jobs, name);
     const gate = stepForName(job, "Build and verify native Node bundle");

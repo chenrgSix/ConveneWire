@@ -5,6 +5,43 @@ explicit JSON configuration and never accepts shell command strings. The
 desktop GUI is the primary interactive client; CLI commands remain available
 for headless environments and diagnostics.
 
+## Node-first desktop from this source
+
+Current desktop builds bundle the local Hub, Web, Node.js and SQLite with the
+Go Runtime. Opening the bundled application creates a private local Node and
+opens its local workspace. Its Owner identity and Team records stay on this
+computer. Source-build delivery and combined acceptance are tracked in
+[TASKS.md](../docs/TASKS.md); a new public application release is separate.
+
+1. Create a local Team and Room. Choose **连接本机 Runtime** to bind this
+   installation's local Runtime to one Team, then **配置本机 Agent** to select
+   installed Runtime executables and Workspaces. The Console can also open
+   before a Team is created. Local model execution uses the chosen Runtime's
+   existing setup; the desktop bundle does not include a model.
+2. For incoming Peer access, use the local workspace's network settings to
+   review an HTTPS origin, listen address and certificate/key. Saving stages
+   the exact configuration for the next Node startup. The intended peers must
+   be able to reach that origin and trust its certificate. DNS, firewall, CA
+   trust and NAT traversal are not configured automatically.
+3. The hosting Team Owner can create a scoped invitation. Its recipient reviews
+   and joins from the local Console's Peer page, then opens the remote workspace
+   using a separate human session. A Room invitation limits access to that Room.
+4. Sharing a local Agent requires a separate local Export and explicit Host
+   acceptance. Runtime approval requests remain on the executing computer.
+   Leaving a space or withdrawing an Export retains recovery receipts and
+   fences further local starts under that authority.
+
+The tray offers **打开本地空间**, **配置本机 Agent** and **退出**. Exit the Node
+and take a recoverable snapshot before replacing its package. The native data
+directory is a separate `local-node` child beside the existing Bridge profile;
+upgrades do not import that profile's credentials or erase its records. Launch
+the desktop with `--bridge-only` to use the existing remote Device profile.
+
+Contributors with the required Node.js/Go toolchains can run
+`npm run package:local-node` from the repository root. See
+[native packaging and recovery commands](../docs/development-commands.md#local-node-desktop-and-recovery)
+for explicit data roots, snapshots and package verification.
+
 ## Install
 
 End users download the Desktop package or Linux CLI archive matching their

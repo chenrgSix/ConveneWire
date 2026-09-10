@@ -88,6 +88,15 @@ jobs:
             packages/contracts/go.sum
             ops/convenewirectl/go.mod
 
+      - name: Set up Node.js for Peer interoperability
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22.23.1
+          cache: npm
+
+      - name: Install locked Peer Host fixture dependencies
+        run: npm ci
+
       - name: Test and vet Go contracts
         working-directory: packages/contracts
         run: |

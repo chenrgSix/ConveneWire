@@ -79,6 +79,13 @@ test("both native pipelines retain executable Hub gates and pass the verified bu
   }
 });
 
+test("Go gates provide the real Node Host used by Peer cross-language tests", () => {
+  for (const [source, verify, job] of [[workflow, verifyReleaseWorkflowSource, "go-gates"], [ciWorkflow, verifyCIWorkflowSource, "go"]]) {
+    const changed = mutateJob(source, job, block => block.replace("        run: npm ci", "        run: echo skipped"));
+    assert.throws(() => verify(changed), /Go Peer Host fixture/u);
+  }
+});
+
 test("release and installed payload verification cannot omit Node-first inventory admission", () => {
   for (const marker of ["verify-desktop-zip.py", "release-hub.mjs", "convenewire-node.exe"]) {
     assert.throws(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier.replaceAll(marker, "removed")), /combined Release asset verifier/u);

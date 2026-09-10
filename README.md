@@ -2,10 +2,12 @@
 
 > “有什么事跟我的Codex说去吧。”
 
-ConveneWire is a self-hosted workspace for people and AI Agents. The central
-Web service brings Rooms, tasks, execution history and delivery evidence into
-one Team. Use an optional Central Agent for HTTP model calls, or connect a
-Bridge on an execution machine for local Runtime and Workspace capabilities.
+ConveneWire is a self-hosted workspace for people and AI Agents. The current
+source builds a complete desktop Node with its own Web UI, Team authority,
+SQLite and local Runtime. Independent Nodes collaborate through scoped human
+invitations and explicitly shared Agents. Rooms, tasks, execution history and
+delivery evidence stay with the Team's hosting Node. Central deployment and
+the legacy Bridge client remain supported.
 
 MCP lets a running Agent use Team capabilities. WebSocket plus the Bridge lets
 the Team wake a managed Agent.
@@ -14,6 +16,14 @@ the Team wake a managed Agent.
 [Getting started](https://chenrgsix.github.io/ConveneWire/guide/)
 
 ## Status
+
+The Node-first source build includes local Run/Discussion, independent Peer
+membership, bilateral Agent sharing, Participant-local approval and private
+HTTPS configuration. See the [native desktop guide](bridge/README.md#node-first-desktop-from-this-source)
+and [distribution evidence](docs/acceptance/ops-020-native-distribution.md).
+The [task register](docs/TASKS.md) tracks the remaining combined automated and
+A/B/C manual acceptance gates. This source-build work has not been published
+as a new application release.
 
 The central Team MVP is runnable: the Fastify API and React UI persist Teams,
 Rooms, Agents, messages, structured mentions, Runs, ordered Run events, and

@@ -42,7 +42,11 @@ func startRunWorker(t *testing.T, c *Connectors) func() {
 
 func awaitRunWorker(t *testing.T, description string, condition func() bool) {
 	t.Helper()
-	deadline := time.Now().Add(30 * time.Second)
+	awaitRunWorkerBefore(t, description, time.Now().Add(30*time.Second), condition)
+}
+
+func awaitRunWorkerBefore(t *testing.T, description string, deadline time.Time, condition func() bool) {
+	t.Helper()
 	for time.Now().Before(deadline) {
 		if condition() {
 			return
@@ -54,7 +58,12 @@ func awaitRunWorker(t *testing.T, description string, condition func() bool) {
 
 func assertRunSettledOnce(t *testing.T, f *peerHTTPFixture, partition *RuntimePartition, id, state string) {
 	t.Helper()
-	awaitRunWorker(t, "Run did not retain a settlement receipt: "+id, func() bool {
+	assertRunSettledBefore(t, f, partition, id, state, time.Now().Add(30*time.Second))
+}
+
+func assertRunSettledBefore(t *testing.T, f *peerHTTPFixture, partition *RuntimePartition, id, state string, deadline time.Time) {
+	t.Helper()
+	awaitRunWorkerBefore(t, "Run did not retain a settlement receipt: "+id, deadline, func() bool {
 		record, err := partition.Runs().Load(id)
 		transport, transportErr := partition.Runs().Transport(id)
 		return err == nil && transportErr == nil && record.Outcome != nil && record.Outcome.State == state && transport.SettlementReceipt != nil
@@ -128,13 +137,20 @@ func TestPeerRunWorkerBoundsConcurrentDeliveryAndSerializesTheWorkspace(t *testi
 	if err := os.WriteFile(filepath.Join(source.Configuration.Workspace, "runtime-release"), []byte("release"), 0600); err != nil {
 		t.Fatal(err)
 	}
+	// The shared Workspace deliberately serializes these children. Receipt
+	// order need not match creation order, so the first checked Run may wait
+	// behind the whole window. Give this batch one bounded aggregate deadline
+	// using the existing per-Run allowance; do not reset it for every receipt.
+	settlementStarted := time.Now()
+	settlementDeadline := settlementStarted.Add(time.Duration(len(ids)) * 30 * time.Second)
 	for _, id := range ids {
 		state := "completed"
 		if id == denied {
 			state = "delivery_denied"
 		}
-		assertRunSettledOnce(t, f, partition, id, state)
+		assertRunSettledBefore(t, f, partition, id, state, settlementDeadline)
 	}
+	t.Logf("settled %d serialized Runs in %s", len(ids), time.Since(settlementStarted).Round(time.Millisecond))
 	stop()
 	marker, err := os.ReadFile(filepath.Join(source.Configuration.Workspace, "runtime-started"))
 	if err != nil || strings.Count(string(marker), "started\n") != len(ids)-1 {
