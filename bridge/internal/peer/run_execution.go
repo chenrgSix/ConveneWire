@@ -17,16 +17,20 @@ import (
 // peerRunExecution composes authenticated delivery with the existing native
 // factory. Its owner drains every invocation before replacing a connection.
 type peerRunExecution struct {
-	factory     *runtimeFactory
-	client      *Client
-	journal     *RunJournal
-	membership  string
-	delivery    RunDelivery
-	emitMu      sync.Mutex
-	admissionMu sync.Mutex
-	admission   ExecutionAdmission
-	terminal    *bridgeruntime.Event
-	reply       string
+	factory          *runtimeFactory
+	client           *Client
+	journal          *RunJournal
+	membership       string
+	delivery         RunDelivery
+	emitMu           sync.Mutex
+	admissionMu      sync.Mutex
+	admission        ExecutionAdmission
+	terminal         *bridgeruntime.Event
+	reply            string
+	preview          string
+	previewPublished string
+	previewBytes     int
+	previewEvents    int
 }
 
 func (e *peerRunExecution) current(ctx context.Context) error {
@@ -260,18 +264,12 @@ func (e *peerRunExecution) emit(ctx context.Context, event bridgeruntime.Event) 
 		values = append(values, value)
 		e.reply = value["content"].(string)
 	}
-	if event.Output != nil && event.Output.Content != "" {
-		values = append(values, map[string]any{"type": "output", "content": bridgeruntime.RedactSensitiveText(event.Output.Content), "reset": event.Output.Reset})
+	if preview := e.previewEvent(event, time.Now()); preview != nil {
+		values = append(values, preview)
+		defer func() { e.factory.previews.cooldown(e.delivery.Settlement.Binding.AuthorityNodeID, time.Now()) }()
 	}
-	if a := event.Activity; a != nil {
-		value := map[string]any{"type": "activity", "activityId": a.ID, "kind": a.Kind, "phase": a.Phase, "reset": a.Reset}
-		if a.Label != "" {
-			value["label"] = bridgeruntime.RedactSensitiveText(a.Label)
-		}
-		if a.Content != "" {
-			value["content"] = bridgeruntime.RedactSensitiveText(a.Content)
-		}
-		values = append(values, value)
+	if len(values) == 0 {
+		return nil
 	}
 	for _, value := range values {
 		if err := e.append(value); err != nil {

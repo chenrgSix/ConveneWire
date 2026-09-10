@@ -23,6 +23,7 @@ type runtimeFactory struct {
 	gate       delivery.ExecutionGate
 	processes  bridgeruntime.GovernedProcessTracker
 	clock      func() time.Time
+	previews   peerPreviewBudget
 }
 
 // BindRuntime is native core composition, before this connector epoch starts.

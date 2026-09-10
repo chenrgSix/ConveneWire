@@ -352,6 +352,18 @@ func TestPeerRuntimeProcessFixture(t *testing.T) {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
+	if kind == "generic-burst" {
+		encoder := json.NewEncoder(os.Stdout)
+		for i := 0; i < 1000; i++ {
+			_ = encoder.Encode(map[string]any{"type": "assistant.delta", "delta": "segment "})
+			if i%5 == 0 {
+				_ = encoder.Encode(map[string]any{"type": "tool.started", "id": "tool_burst001", "name": "Inspect"})
+				_ = encoder.Encode(map[string]any{"type": "tool.completed", "id": "tool_burst001", "name": "Inspect"})
+			}
+		}
+		_ = encoder.Encode(map[string]any{"type": "reply.final", "text": "peer-completed"})
+		return
+	}
 	if kind == "generic-controlled" {
 		if err := os.Mkdir("runtime-exclusive", 0700); err != nil {
 			_ = os.WriteFile("runtime-overlapped", []byte("overlap"), 0600)

@@ -37,6 +37,9 @@ func runExecutionFixture(t *testing.T, modes ...string) (*peerHTTPFixture, *Clie
 		cfg.RuntimeKind, cfg.PresetVersion = "pi", config.CurrentPresetVersion
 		cfg.Command = append(cfg.Command, "--")
 	}
+	if mode == "generic-burst" {
+		cfg.OutputProtocol = config.OutputProtocolConveneWireJSONLV1
+	}
 	id := "agent_localexecution001"
 	sources, err := NewSources([]config.AgentConfig{cfg}, map[string]string{cfg.Name: id})
 	if err != nil {

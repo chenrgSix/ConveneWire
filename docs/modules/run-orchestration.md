@@ -153,7 +153,24 @@ challenges and 1,200 combined Run poll/admit/event/settlement requests per minut
 Invitation admission keeps its existing limit. These bounded buckets prevent
 ordinary Runtime traffic from consuming the invitation budget; body limits and
 every signature, current-authority and audience check still apply. The native
-worker must pace event publication and retain a failed request for retry.
+worker retains failed durable requests for retry. Native preview production
+shares one per-Host budget across that core's Runs: at most one output/activity
+preview every 500 ms, with another coalescing interval after slow publication.
+Text fragments coalesce before journal sequence allocation into redacted deltas
+or replacement snapshots of a tail of at most 20,000 Unicode code points.
+Optional previews stop at 256 KiB or 512 events per Run, preserving the durable
+outbox capacity for authoritative events. Skipped transient activity observations
+are best-effort UI data.
+Replies, lifecycle/Session status, clarifications and settlement are never
+sampled, and already journaled events are never removed or resequenced. Another
+Host has an independent budget; previews cannot indefinitely delay admission or
+consume the reply/settlement reserve.
+
+Native burst coverage drives the actual restricted Generic adapter through
+1,000 cumulative assistant fragments and 400 tool observations. It verifies a
+continuous journal sequence, bounded previews, the complete final reply and one
+Host settlement. Concurrent-producer and large Unicode reset regressions cover
+shared pacing, private Run content and the optional preview capacity limit.
 
 Each live connector polls the actual Host and runs at most eight concurrent
 invocations through the shared physical scheduler. It retains the authenticated
