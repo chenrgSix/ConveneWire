@@ -9,8 +9,14 @@ ajv.addSchema(schema);
 const validators = new Map(Object.keys(schema.$defs).map(kind => [kind, ajv.getSchema(`${schema.$id}#/$defs/${kind}`)]));
 
 export function validatePeer(kind, value) {
-  try { canonicalPeerJson(value); } catch { return false; }
-  return validators.get(kind)?.(value) === true;
+  try {
+    // The strict parser deliberately creates objects without prototypes.
+    // Ajv's uniqueItems comparator expects Object.prototype methods when it
+    // compares two objects. Validate a plain JSON copy of the already checked
+    // canonical data; never invoke input getters, toJSON or prototype hooks.
+    const plain = JSON.parse(new TextDecoder().decode(canonicalPeerJson(value)));
+    return validators.get(kind)?.(plain) === true;
+  } catch { return false; }
 }
 
 export function decodePeer(kind, data) {

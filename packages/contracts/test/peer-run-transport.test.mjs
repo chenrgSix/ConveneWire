@@ -4,9 +4,24 @@ import { createPublicKey, verify } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { peerDigest, peerProofTranscript, peerRunDeliveryReceiptDigest } from "../src/peer-proof.mjs";
-import { decodePeer } from "../src/peer-validation.mjs";
+import { decodePeer, validatePeer } from "../src/peer-validation.mjs";
 
 const f = JSON.parse(await readFile(new URL("./fixtures/peer-run-transport.json", import.meta.url)));
+
+test("Peer validation supports null-prototype collections without invoking input hooks", () => {
+  const intent = structuredClone(f.pollRequest.intent);
+  intent.knownRuns = [1, 2].map(n => ({ runId: `run_validcollection${n}`, requestDigest: "a".repeat(64) }));
+  const decoded = decodePeer("PeerRunPollIntent", JSON.stringify(intent));
+  assert.equal(Object.getPrototypeOf(decoded), null);
+  assert.equal(validatePeer("PeerRunPollIntent", decoded), true);
+  let invoked = false;
+  for (const hostile of [
+    { ...intent, toJSON() { invoked = true; return intent; } },
+    Object.defineProperty({}, "schemaVersion", { enumerable: true, get() { invoked = true; return 1; } }),
+    Object.assign(Object.create({ toJSON() { invoked = true; return intent; } }), intent)
+  ]) assert.equal(validatePeer("PeerRunPollIntent", hostile), false);
+  assert.equal(invoked, false);
+});
 
 test("Peer delivery receipt fixes exact execution and a nonrenewable seven-day capability", () => {
   assert.equal(peerRunDeliveryReceiptDigest(f.delivery), f.receiptDigest);
@@ -68,6 +83,16 @@ test("actual Go and Node agree on closed Peer transport and confidence-only deci
     }
   }
   add("PeerRunPollReceipt", { ...f.pollReceipt, delivery: null });
+  for (const count of [2, 8, 128]) {
+    const knownRuns = Array.from({ length: count }, (_, n) => ({ ...good.PeerRunKnown, runId: `run_collection${n.toString().padStart(8, "0")}` }));
+    add("PeerRunPollIntent", { ...f.pollRequest.intent, knownRuns });
+    add("PeerRunPollRequest", { ...f.pollRequest, intent: { ...f.pollRequest.intent, knownRuns } });
+    add("PeerRunPollIntent", { ...f.pollRequest.intent, knownRuns: [...knownRuns.slice(0, -1), { ...knownRuns[0] }] }, false);
+  }
+  for (const field of ["constructor", "valueOf", "toString", "__proto__"]) {
+    const item = { ...good.PeerRunKnown, [field]: { polluted: true } };
+    add("PeerRunPollIntent", { ...f.pollRequest.intent, knownRuns: [good.PeerRunKnown, item] }, false);
+  }
   add("PeerRunPollIntent", { ...f.pollRequest.intent, knownRuns: Array.from({ length: 129 }, (_, n) => ({ ...good.PeerRunKnown, runId: `run_transport${n.toString().padStart(8, "0")}` })) }, false);
   for (const status of ["working", "completed", "failed", "canceled", "input_required"]) add("PeerRunEvent", { type: "status", sequence: 2, status });
   add("PeerRunEvent", { type: "status", sequence: 2, status: "working", session: { disposition: "resumed", contextCursor: 3 } });

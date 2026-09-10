@@ -1,5 +1,6 @@
 /** Disposable TLS facade over the real Server for Go/Node Peer interoperability tests. */
 import https from "node:https";
+import type { Duplex } from "node:stream";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
@@ -21,6 +22,7 @@ const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [str
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
 let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, dropNextLeave = true, previewRequests = 0, runtimeUpgrades = 0;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
+const runtimeSockets = new Set<Duplex>();
 const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
   try {
     if (!app) { response.writeHead(503).end(); return; }
@@ -60,6 +62,8 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
 listener.on("upgrade", (request, socket, head) => {
   if (!app) { socket.destroy(); return; }
   runtimeUpgrades++;
+  runtimeSockets.add(socket);
+  socket.once("close", () => runtimeSockets.delete(socket));
   app.server.emit("upgrade", request, socket, head);
 });
 await new Promise<void>((resolve, reject) => { listener.once("error", reject); listener.listen(0, "127.0.0.1", resolve); });
@@ -67,8 +71,9 @@ const address = listener.address();
 if (!address || typeof address === "string") throw new Error("fixture listener address");
 const origin = `https://127.0.0.1:${address.port}`;
 const databasePath = path.join(directory, "host.sqlite");
-app = await createServerApp({ databasePath, logger: false, clock: () => now,
+const openHost = () => createServerApp({ databasePath, logger: false, clock: () => now,
   webAuth: { mode: "trusted-team", publicOrigin: origin, ownerRecoveryToken: "peer-local-fixture-owner-0123456789" } });
+app = await openHost();
 await app.ready();
 const database = openDatabase(databasePath);
 const core = new CoreRepository(database), auth = new AuthService(database, () => now);
@@ -88,6 +93,16 @@ try {
     const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string };
     if (command.action === "stop") break;
     if (command.action === "clock") now = command.now!;
+    else if (command.action === "drop-runtime") {
+      for (const socket of runtimeSockets) socket.destroy();
+    }
+    else if (command.action === "restart-host") {
+      const old = app;
+      app = undefined;
+      await old.close();
+      app = await openHost();
+      await app.ready();
+    }
     else if (command.action === "revoke") peers.revokeMembership(owner, command.membershipId!, now);
     else if (command.action === "cancel-run") {
       const response = await app.inject({ method: "POST", url: `/api/runs/${command.runId!}/cancel`,

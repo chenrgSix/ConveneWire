@@ -352,6 +352,21 @@ func TestPeerRuntimeProcessFixture(t *testing.T) {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
+	if kind == "generic-controlled" {
+		if err := os.Mkdir("runtime-exclusive", 0700); err != nil {
+			_ = os.WriteFile("runtime-overlapped", []byte("overlap"), 0600)
+			os.Exit(6)
+		}
+		defer os.Remove("runtime-exclusive")
+		for {
+			if _, err := os.Stat("runtime-release"); err == nil {
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+		_, _ = os.Stdout.WriteString("peer-completed")
+		return
+	}
 	if kind == "generic-clarification" {
 		_, _ = os.Stdout.WriteString(`<agentroom-clarification>{"kind":"task","question":"Which region?","choices":["EU","US"]}</agentroom-clarification>`)
 		return

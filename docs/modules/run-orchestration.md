@@ -119,7 +119,11 @@ revocation. One exact sequence-one terminal/unknown/denied receipt is retained
 per delivery, within the original seven-day expiry. It can record known local
 completion without Result text and cannot read context, start work, extend the
 capability or revive membership. A late receipt preserves the Host's existing
-terminal/unknown state while retaining the Participant's evidence.
+terminal/unknown state while retaining the Participant's evidence. A confirmed
+`delivery_denied` outcome resolves a pending requester cancellation as canceled
+or a deadline cancellation as expired; other denials remain failed. The retained
+Participant receipt still records the exact denial, independently of this Host
+projection.
 
 Requester cancellation before delivery is final. Any durable delivery is
 possibly received, so cancellation immediately fences admission/content and
@@ -192,9 +196,17 @@ private. Frozen cursor/revision mismatches are rejected locally and at the Host.
 Native zero means absent evidence only when the request contains no result
 evidence. A retained actual terminal outcome is independent of a subsequent
 publication failure once process termination is confirmed.
-Complete native packaging, broader concurrency and crash scenarios still require
-their RUN-020/QA-091 coverage; no live model call or manual/platform acceptance is
-implied by these checks.
+Recovery tests additionally exercise a dropped actual socket, Host service/DB
+reopen and a drained Participant core replacement. A separate Participant process
+is killed while its native child is active; the next core fences the same Node
+process store before reconciling one `outcome_unknown`, with no second child.
+The concurrency scenario submits nine Runs to an eight-delivery window, verifies
+that only one claims the shared Workspace, and cancels a waiting Run before start.
+Two independent TLS Hosts also execute through one native factory with the
+same local Agent/Workspace and colliding Room identifiers, retaining separate
+private journals, exactly one reply/settlement per Host and no overlapping child.
+Combined native packaging and product scenarios remain QA-091;
+no live model call or manual/platform acceptance is implied by these checks.
 
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned

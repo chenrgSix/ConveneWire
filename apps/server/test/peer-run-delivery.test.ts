@@ -86,6 +86,29 @@ test("Host commits one receipt and recoverable settlement capability before Peer
   assert.equal((database.prepare("SELECT count(*) AS n FROM run_deliveries").get() as { n: number }).n, 0);
 });
 
+test("a Participant denial before start settles the Host's pending cancellation cause", async t => {
+  for (const cause of ["requester", "deadline", "authorization_lost", "none"] as const) {
+    await t.test(cause, async t => {
+      const f = await deliveryFixture(t), delivery = f.offer();
+      if (cause === "requester") f.deliveries.cancel(f.run.runId, ownerMember, "Stop waiting", now);
+      if (cause === "deadline") {
+        f.database.prepare("UPDATE runs SET deadline_at = ? WHERE run_id = ?").run(now, f.run.runId);
+        f.deliveries.sweep(now);
+      }
+      if (cause === "authorization_lost") {
+        f.admission.revokeMembership(f.actor, f.membership.membershipId, now);
+        f.deliveries.sweep(now);
+      }
+      const request = f.settlement(delivery, "delivery_denied");
+      f.deliveries.settle(delivery.settlement.token, request, now);
+      f.deliveries.settle(delivery.settlement.token, request, now);
+      assert.equal(f.runs.getRun(f.run.runId)?.state, cause === "requester" ? "canceled" : cause === "deadline" ? "expired" : "failed");
+      assert.equal(f.runs.listEvents(f.run.runId).length, 1);
+      assert.equal((f.database.prepare("SELECT count(*) AS n FROM peer_run_settlements").get() as { n: number }).n, 1);
+    });
+  }
+});
+
 test("Host applies ordered Peer events and exact terminal retries without duplicating Room output", async t => {
   const f = await deliveryFixture(t), delivery = f.offer();
   const send = (event: PeerRunEvent, time = now) => f.deliveries.event(f.token, f.event(delivery, event, time), time);

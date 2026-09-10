@@ -14,7 +14,12 @@ and generated TypeScript/Go types for invitation and claim, Team/Room membership
 separate human/machine credentials, Export/Acceptance/Projection, immutable
 execution admission, content-free settlement and versioned control messages.
 The strict control decoder checks original numeric spellings before binary64
-rounding can change an authorization counter. Schemas do not themselves prove
+rounding can change an authorization counter. Schema validation uses a plain
+JSON copy of already checked canonical data so uniqueness checks also work on
+the strict parser's null-prototype objects. The returned parsed data, raw integer
+checks, duplicate-key rejection and no-getter/no-toJSON rules remain intact.
+Node/Go cases cover 2/8/128 known Runs, duplicate entries and prototype-like
+unknown fields. Schemas do not themselves prove
 that a caller holds the referenced grant; current identity/authority checks
 belong to SEC-019, REG-007 and RUN-020.
 
@@ -45,8 +50,8 @@ cover semantic identity, reordered keys, context/policy changes, foreign Task
 pins, unknown fields, duplicate keys and ambiguous integer spellings. Full
 Contracts tests, deterministic generation, types/Go fixtures, Bridge compile/vet,
 Server build and isolated Hub bundling pass. This carrier grants no admission;
-RUN-020 still must connect current signed Host proofs, durable delivery and
-receipt-scoped settlement to it.
+RUN-020 pairs it with current signed Host proofs, durable delivery and
+receipt-scoped settlement as described below.
 
 The closed Run transport now separates signed polling, execution events and
 content-free settlement. `PeerRunPollIntent` binds the current Peer connection

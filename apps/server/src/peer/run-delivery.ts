@@ -203,8 +203,13 @@ export class PeerRunDeliveryService {
         this.database.prepare("INSERT INTO peer_run_settlements (run_id, settlement_json, settlement_digest, created_at) VALUES (?, ?, ?, ?)")
           .run(row.run_id, json(s), digest, now);
         const run = this.runs.getRun(row.run_id)!;
+        const cancellation = s.state === "delivery_denied" ? this.database.prepare(
+          "SELECT cause FROM peer_run_cancellations WHERE run_id = ?"
+        ).get(row.run_id) as { cause: string } | undefined : undefined;
+        const status = s.state !== "delivery_denied" ? s.state :
+          cancellation?.cause === "requester" ? "canceled" : cancellation?.cause === "deadline" ? "expired" : "failed";
         if (!terminal.has(run.state)) this.runs.applyEvent(row.run_id, { type: "status", sequence: run.lastSequence + 1,
-          status: s.state === "delivery_denied" ? "failed" : s.state }, now);
+          status }, now);
       }
       return { ...subject, proof: this.receipt(proof, "run.settlement", b.participantNodeId, subject, now) };
     });
