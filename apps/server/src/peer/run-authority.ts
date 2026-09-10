@@ -12,6 +12,7 @@ import type { PeerAdmissionService } from "../security/peer-admission-service.js
 import { verifyPeerProof } from "../security/peer-proof-verifier.js";
 import { AgentTaskRepository } from "../task/task-repository.js";
 import { ContextPlanner } from "../task/context-planner.js";
+import { discussionExcludedMessageIds } from "../discussion/discussion-run-context.js";
 
 /** Host writer for already-authorized local Runs. No network caller supplies
  * execution content, and no background Web/Device principal is fabricated. */
@@ -37,7 +38,7 @@ export class PeerRunAuthority {
     return this.database.transaction(() => {
       const prior = this.get(runId);
       if (prior) return prior;
-      const { run, agent, effective, binding } = this.current(runId, now);
+      const { run, agent, effective, binding, discussion } = this.current(runId, now);
       if (run.state !== "queued") throw new PeerStoreError("STALE_AUTHORIZATION");
       const trigger = this.core.getMessage(run.triggerMessageId), manifest = this.runs.getContextManifest(runId);
       const fence = this.runs.getContextFence(runId);
@@ -46,13 +47,9 @@ export class PeerRunAuthority {
           agent.capabilities.ownerPrivateOutput || agent.runtimePolicy?.deviceTrust || agent.runtimePolicy?.centralApproval) {
         throw new PeerStoreError("UNSUPPORTED_CAPABILITY");
       }
-      // DISC-022 will supply the frozen Wave exclusion/finalizer context. It
-      // must never fall back to an ordinary rolling Room history here.
-      if (this.database.prepare("SELECT 1 FROM discussion_turns WHERE run_id = ?").get(runId)) {
-        throw new PeerStoreError("UNSUPPORTED_CAPABILITY");
-      }
       const planned = this.planner.plan({ roomId: run.roomId, taskId: run.taskId, throughSequence: trigger.sequence,
-        triggerMessageId: trigger.messageId, contextFence: fence }, now);
+        triggerMessageId: trigger.messageId, contextFence: fence,
+        excludedMessageIds: discussionExcludedMessageIds(this.database, runId) }, now);
       const contextPlan = { ...planned.contextPlan,
         ...(planned.contextPlan.resultEvidence ? { resultEvidence: { ...planned.contextPlan.resultEvidence,
           artifactRefs: planned.contextPlan.resultEvidence.artifactRefs.map(({ content: _content, ...reference }) => reference) } } : {}) };
@@ -62,7 +59,7 @@ export class PeerRunAuthority {
         targetAgentId: run.targetAgentId, targetAgentName: agent.name,
         ...(run.parentRunId ? { parentRunId: run.parentRunId } : {}), instruction: run.instruction, deadline: run.deadlineAt,
         session: { scope: "task", contextPolicy: "task_isolated_v1", contextCursor: trigger.sequence,
-          resumePolicy: effective.acceptance.value.capabilities.supportsResume ? "resume_or_start" : "start_new" },
+          resumePolicy: !discussion && effective.acceptance.value.capabilities.supportsResume ? "resume_or_start" : "start_new" },
         contextMessages: planned.contextMessages.map(message => ({ messageId: message.messageId, sequence: message.sequence,
           senderId: message.senderType === "system" && message.senderId === "execution-scheduler" ? "execution_scheduler" : message.senderId,
           content: message.content })), contextPlan,
@@ -89,6 +86,51 @@ export class PeerRunAuthority {
     try { verifyPeerRunRequest(request); } catch { throw new PeerStoreError("PAYLOAD_CONFLICT"); }
     if (request.binding.runId !== runId || request.binding.requestDigest !== row.request_digest) throw new PeerStoreError("PAYLOAD_CONFLICT");
     return request;
+  }
+
+  /** Selection observes current bilateral rights, never an online display hint.
+   * Offline delivery still waits under the frozen Wave deadline. */
+  public canParticipateInDiscussion(agentId: string, roomId: string, now: string): boolean {
+    const agent = this.core.getAgent(agentId), room = this.core.getRoom(roomId);
+    if (!agent || agent.integrationMode !== "peer" || agent.deviceId || !agent.enabled ||
+        !room || room.archivedAt || agent.teamId !== room.teamId || !this.core.isRoomAgent(roomId, agentId) ||
+        agent.capabilities.ownerPrivateOutput || agent.runtimePolicy?.deviceTrust || agent.runtimePolicy?.centralApproval) return false;
+    const projection = this.database.prepare("SELECT peer_id, local_agent_id FROM peer_agent_projections WHERE projection_agent_id = ?")
+      .get(agentId) as { peer_id: string; local_agent_id: string } | undefined;
+    if (!projection) return false;
+    try {
+      const { membership, acceptance } = this.grants.requireEffective(projection.peer_id, projection.local_agent_id, roomId, now);
+      return membership.hostNodeId === this.authority.nodeId && membership.memberId === agent.ownerMemberId &&
+        acceptance.value.capabilities.supportsStart && acceptance.value.capabilities.supportsTaskContextIsolation;
+    } catch (error) {
+      if (error instanceof PeerStoreError) return false;
+      throw error;
+    }
+  }
+
+  private requireDiscussionContext(runId: string, receiptOnly: boolean): boolean {
+    const row = this.database.prepare(`SELECT d.state, d.policy_json, w.state AS wave_state,
+        t.state AS turn_state, t.speaker_agent_id, d.room_id, d.task_id,
+        r.target_agent_id, r.room_id AS run_room_id, r.task_id AS run_task_id,
+        EXISTS (SELECT 1 FROM discussion_participants p JOIN agents a ON a.agent_id = p.agent_id
+          WHERE p.discussion_id = d.discussion_id AND json_extract(a.capabilities_json, '$.ownerPrivateOutput') = 1) AS private_participant,
+        EXISTS (SELECT 1 FROM discussion_turns prior JOIN run_deliveries delivery ON delivery.run_id = prior.run_id
+          WHERE prior.discussion_id = d.discussion_id AND json_extract(delivery.payload_json, '$.ownerPrivateOutput') = 1) AS private_history
+      FROM discussion_turns t JOIN discussions d ON d.discussion_id = t.discussion_id
+      LEFT JOIN discussion_waves w ON w.wave_id = t.wave_id AND w.discussion_id = d.discussion_id
+      JOIN runs r ON r.run_id = t.run_id WHERE t.run_id = ?`).get(runId) as {
+        state: string; policy_json: string; wave_state: string; turn_state: string;
+        speaker_agent_id: string; target_agent_id: string; room_id: string; task_id: string;
+        run_room_id: string; run_task_id: string; private_participant: number; private_history: number;
+      } | undefined;
+    if (!row) return false;
+    if (row.private_participant || row.private_history || JSON.parse(row.policy_json).waveCompletionMode !== "all_settled") {
+      throw new PeerStoreError("UNSUPPORTED_CAPABILITY");
+    }
+    if (row.speaker_agent_id !== row.target_agent_id || row.room_id !== row.run_room_id || row.task_id !== row.run_task_id ||
+        !receiptOnly && (row.wave_state !== "open" || !["active", "stop_requested", "finalizing"].includes(row.state) ||
+          !["queued", "working"].includes(row.turn_state))) throw new PeerStoreError("STALE_AUTHORIZATION");
+    return true;
   }
 
   public requireCurrent(binding: PeerExecutionBinding, now: string, receiptOnly = false): PeerRunRequest {
@@ -118,6 +160,7 @@ export class PeerRunAuthority {
   }
 
   private current(runId: string, now: string, receiptOnly = false) {
+    const discussion = this.requireDiscussionContext(runId, receiptOnly);
     const run = this.runs.getRun(runId);
     if (!run || !receiptOnly && (!["queued", "delivered", "working"].includes(run.state) || run.deadlineAt <= now ||
         this.runs.getCancellationIntent(runId)?.state === "pending" ||
@@ -153,6 +196,6 @@ export class PeerRunAuthority {
       peerId: m.peerId, teamId: room.teamId, roomId: room.roomId, runId, projectionAgentId: agent.agentId, localAgentId: projection.local_agent_id,
       exportId: g.value.exportId, grantRevision: g.value.revision, grantDigest: g.digest, acceptanceId: a.value.acceptanceId,
       acceptanceRevision: a.value.revision, acceptanceDigest: a.digest, requestDigest: "0".repeat(64) };
-    return { run, agent, effective, binding };
+    return { run, agent, effective, binding, discussion };
   }
 }

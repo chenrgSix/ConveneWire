@@ -42,7 +42,7 @@ export class DiscussionRecoveryService {
         let run = this.runs.getRun(turn.runId);
         if (!run) continue;
         if (!terminalRunStates.has(run.state)) {
-          const neverAccepted = run.state === "queued";
+          const neverAccepted = run.state === "queued" && !this.runs.hasPeerDelivery(run.runId);
           run = this.runs.applyEvent(run.runId, {
             type: "status",
             sequence: run.lastSequence + 1,
@@ -91,7 +91,7 @@ export class DiscussionRecoveryService {
           : ensureRun(currentTurn);
         if (!run) continue;
         if (!terminalRunStates.has(run.state)) {
-          const accepted = run.state !== "queued";
+          const accepted = run.state !== "queued" || this.runs.hasPeerDelivery(run.runId);
           run = this.runs.applyEvent(run.runId, {
             type: "status",
             sequence: run.lastSequence + 1,

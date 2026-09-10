@@ -810,7 +810,8 @@ export async function createServerApp(
       memories: memoryEntries,
       acceptance: results.acceptanceEvidence,
       disclosures: new DiscussionDisclosureEvidence(database, resultRepository)
-    }
+    },
+    (agentId, roomId, now) => peerRuns.canParticipateInDiscussion(agentId, roomId, now)
   );
   let discussionSweepTimer: ReturnType<typeof setInterval> | undefined;
   let discussionSweepInFlight = false;

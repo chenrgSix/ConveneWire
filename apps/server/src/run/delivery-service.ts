@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import type Database from "better-sqlite3";
+import { discussionExcludedMessageIds } from "../discussion/discussion-run-context.js";
 import { canDeliverDisclosureDiscussion } from "../discussion/discussion-disclosure-evidence.js";
 
 import type { BridgeConnectionRegistry } from "../bridge/bridge-connection-registry.js";
@@ -449,7 +450,7 @@ export class DeliveryService {
       throw new Error("Run delivery requires a frozen Context Manifest");
     }
     const excludedDiscussionMessageIds =
-      this.discussionExcludedMessageIds(run.runId);
+      discussionExcludedMessageIds(this.database, run.runId);
     const plannedContext = this.contextPlanner.plan({
       roomId: run.roomId,
       taskId: run.taskId,
@@ -611,41 +612,6 @@ export class DeliveryService {
       waveId: row.wave_id,
       turnId: row.turn_id
     };
-  }
-
-  private discussionExcludedMessageIds(runId: string): string[] {
-    const rows = this.database.prepare(`
-      SELECT
-        rejected.turn_id,
-        seal.accepted_members_json,
-        projection.message_id
-      FROM discussion_turns current_turn
-      JOIN discussion_waves current_wave
-        ON current_wave.wave_id = current_turn.wave_id
-      JOIN discussion_wave_seals seal
-        ON seal.discussion_id = current_turn.discussion_id
-      JOIN discussion_waves sealed_wave
-        ON sealed_wave.wave_id = seal.wave_id
-      JOIN discussion_turns rejected
-        ON rejected.wave_id = sealed_wave.wave_id
-      JOIN run_reply_message_projections projection
-        ON projection.run_id = rejected.run_id
-      WHERE current_turn.run_id = ?
-        AND sealed_wave.ordinal < current_wave.ordinal
-      ORDER BY sealed_wave.ordinal, rejected.wave_member_ordinal,
-        projection.reply_sequence
-    `).all(runId) as Array<{
-      turn_id: string;
-      accepted_members_json: string;
-      message_id: string;
-    }>;
-    return [...new Set(rows.flatMap((row) => {
-      const acceptedTurnIds = new Set(
-        (JSON.parse(row.accepted_members_json) as Array<{ turnId: string }>)
-          .map(({ turnId }) => turnId)
-      );
-      return acceptedTurnIds.has(row.turn_id) ? [] : [row.message_id];
-    }))];
   }
 
   private contextMessage(message: {

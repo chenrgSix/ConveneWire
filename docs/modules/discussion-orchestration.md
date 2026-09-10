@@ -1,5 +1,57 @@
 # Discussion Orchestration Module
 
+## Node-first Peer Discussion
+
+[ADR-0068](../adr/0068-peer-collaboration-delivery.md) keeps the Host as the sole
+writer of Discussion, Wave, Turn, budget, progress and finalization. DISC-022
+connects accepted Peer Agents to this existing orchestrator and its retained Run
+instruction/context fence. Selection and later Waves check current membership,
+Room participation, Export/Acceptance and start/Task-isolation capabilities.
+An offline presence hint does not grant or revoke execution: actual delivery and
+Participant-local admission retain their separate freshness and approval checks.
+Revocation cannot remove an already frozen Wave slot or replace its speaker.
+
+V1 Peer Discussion supports ordinary shared output with `all_settled` Waves.
+Read-only quorum and mixtures containing owner-private participants are rejected
+before creation; a later private-policy change also fences new Peer admission
+and publication. Export/Acceptance never substitutes for disclosure consent.
+Managed private/quorum Discussions retain their existing independent contract.
+
+Both Device and Peer context planning excludes prior-Wave replies that were not
+admitted: an all-settled Wave contributes only its completed Turn output; quorum
+requires the exact sealed Turn, message and reply sequence. Failed staged text
+remains in the Room record but cannot enter a later Wave's raw context or derived
+Task summary. The same frozen Run instruction supplies Finalizer claims and
+criterion input. Every Peer Discussion Turn requests `start_new`, even from a
+resume-capable Runtime, so an older native Session cannot add excluded context.
+Ordinary Peer Runs retain their accepted resume policy.
+
+Public Peer contribution provenance follows the existing Turn -> Run -> reply
+projection and retained `peer_run_requests` binding to both Nodes, Peer, local
+Agent and bilateral revisions. It creates no Device identity or private evidence
+grant. Exact event/settlement retries cannot reopen a closed Wave or produce a
+second Finalizer. The one-second Discussion sweep reconciles committed terminal
+Run outcomes and input-required states as well as released private Results, so
+poll denial, content-free settlement and missed callbacks cannot strand a Wave.
+
+A Peer delivery receipt is committed before the first response. Deadline and
+canceled-Discussion recovery therefore preserve `outcome_unknown` for a received
+Run even if its visible state is still queued. Without a receipt, the existing
+never-delivered expiry/cancellation behavior applies. Late local settlement
+retains its evidence without replacing an already committed Host terminal state.
+
+Server regressions cover mixed Device/Peer inputs, a remote Task-primary
+Finalizer, immutable context through database reopen, partial-Wave exclusions,
+current/foreign Room scope, private/quorum negatives, revoke, cancellation and
+deadlines. All 811 Server tests pass. The actual native Peer/Pi and TLS Host
+regression executes both remote Turns, reopens the Host service before Finalizer
+delivery, observes two new native Sessions and retains one conclusion/settlement
+per Run; its Host contributor uses the production offline fake-adapter API.
+This Go race/vet check passes, as do Hub build, existing bundled Local Node
+Run/Discussion restart/restore, docs and local links. Combined installation
+coverage remains QA-091; manual A/B/C acceptance remains QA-092. These checks
+perform no external-model invocation or real installation.
+
 ## Evidence access/use experiment boundary
 
 [ADR-0047](../adr/0047-screen-evidence-access-and-use.md) permits only an isolated

@@ -17,6 +17,7 @@ import { RunService } from "../../src/run/run-service.js";
 import { AgentTaskRepository } from "../../src/task/task-repository.js";
 import { MessageService } from "../../src/team-room/message-service.js";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
+import type { DiscussionView } from "../../src/discussion/discussion-orchestrator.js";
 
 const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
@@ -90,7 +91,7 @@ const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId
 process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret }) + "\n");
 try {
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
-    const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string };
+    const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string; discussionId?: string };
     if (command.action === "stop") break;
     if (command.action === "clock") now = command.now!;
     else if (command.action === "drop-runtime") {
@@ -131,6 +132,37 @@ try {
         .createRunsForMessage(owner, message.messageId, now)[0]!;
       const request = new PeerRunAuthority(database, peers, authority).freeze(run.runId, now);
       process.stdout.write(JSON.stringify({ request }) + "\n");
+      continue;
+    }
+    else if (command.action === "create-discussion") {
+      const headers = { origin, cookie: `__Host-agentroom_session=${session.secret}` };
+      const registered = await app.inject({ method: "POST", url: `/api/teams/${teamId}/fake-agents`, headers,
+        payload: { name: "Host offline contributor", role: "Reviewer" } });
+      if (registered.statusCode !== 200) throw new Error(registered.body);
+      const local = registered.json<{ agentId: string }>();
+      const remote = core.listAgents(teamId).find(agent => agent.integrationMode === "peer" && agent.enabled)!;
+      const tasks = new AgentTaskRepository(database), original = tasks.getDefaultForRoom(roomId)!;
+      const task = tasks.create({ ...original, taskId: "task_tlsdiscussion001", isDefault: false,
+        taskDisplayNumber: tasks.nextDisplayNumber(teamId), assignments: [
+          { agentId: local.agentId, role: "contributor", assignedByMemberId: memberId, assignedAt: now },
+          { agentId: remote.agentId, role: "primary", assignedByMemberId: memberId, assignedAt: now }
+        ] });
+      const created = await app.inject({ method: "POST", url: `/api/rooms/${roomId}/discussions`, headers,
+        payload: { taskId: task.taskId, goal: "Offline native Peer Discussion fixture", outputMode: "final_answer",
+          participantAgentIds: [local.agentId, remote.agentId] } });
+      if (created.statusCode !== 200) throw new Error(created.body);
+      const view = created.json<DiscussionView>(), discussionId = view.discussion.discussionId;
+      const finish = await app.inject({ method: "POST", url: `/api/discussions/${discussionId}/actions`, headers,
+        payload: { action: "finish" } });
+      if (finish.statusCode !== 200) throw new Error(finish.body);
+      process.stdout.write(JSON.stringify({ discussionId, peerRunId: view.turns.find(turn => turn.speakerAgentId === remote.agentId)!.runId }) + "\n");
+      continue;
+    }
+    else if (command.action === "discussion-state") {
+      const response = await app.inject({ method: "GET", url: `/api/discussions/${command.discussionId!}`,
+        headers: { cookie: `__Host-agentroom_session=${session.secret}` } });
+      if (response.statusCode !== 200) throw new Error(response.body);
+      process.stdout.write(response.body + "\n");
       continue;
     }
     else if (command.action === "run-state") {

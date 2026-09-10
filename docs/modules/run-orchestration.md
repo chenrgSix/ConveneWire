@@ -30,8 +30,11 @@ is read from the persisted Run, including its current Peer ceiling when present;
 no synthetic browser session or Device principal is created. This authority
 service supplies admission; the separate delivery service described below owns
 Host content and settlement transactions.
-Discussion requests are explicitly refused until DISC-022 supplies frozen Wave
-and Finalizer context, preserving its existing exclusion rules.
+DISC-022 supplies the shared prior-Wave exclusions and frozen Finalizer
+instruction/context. Ordinary shared-output Peer Discussions use fresh native
+Sessions for each Turn; private mixtures and quorum remain unsupported. Current
+Wave/Turn/Discussion state fences new work, while exact receipt-only retries can
+acknowledge prior terminal events. See [Peer Discussion](discussion-orchestration.md#node-first-peer-discussion).
 
 The separate machine-only `POST /api/peer/runs/admit` now exposes fresh
 authorization for an existing frozen request. Its strict `PeerAdmission` body

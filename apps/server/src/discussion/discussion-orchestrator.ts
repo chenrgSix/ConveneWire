@@ -175,7 +175,8 @@ export class DiscussionOrchestrator {
     private readonly tasks: AgentTaskRepository,
     private readonly clock: () => string,
     private readonly planProposals?: DiscussionPlanProposalService,
-    referenceSources: DiscussionEvidenceReferenceSources = {}
+    referenceSources: DiscussionEvidenceReferenceSources = {},
+    private readonly peerParticipantAllowed: (agentId: string, roomId: string, now: string) => boolean = () => false
   ) {
     this.recovery = new DiscussionRecoveryService(repository, runs, clock);
     this.evidence = new DiscussionEvidenceService(
@@ -256,7 +257,8 @@ export class DiscussionOrchestrator {
         !agent ||
         !agent.enabled ||
         agent.teamId !== room.teamId ||
-        !this.core.isRoomAgent(room.roomId, agentId)
+        !this.core.isRoomAgent(room.roomId, agentId) ||
+        agent.integrationMode === "peer" && !this.peerParticipantAllowed(agentId, room.roomId, now)
       ) {
         throw new Error(`Discussion participant is unavailable: ${agentId}`);
       }
@@ -270,6 +272,10 @@ export class DiscussionOrchestrator {
     const policy = resolvePolicy(input.policy);
     const mode = input.mode ?? "round_robin";
     const outputMode = input.outputMode ?? "final_answer";
+    if (participantAgents.some(agent => agent.integrationMode === "peer") &&
+        participantAgents.some(agent => agent.capabilities.ownerPrivateOutput === true)) {
+      throw new Error("Peer Discussion currently requires shared-output participants");
+    }
     if (outputMode !== "none" && participantAgents.every(agent => agent.capabilities.ownerPrivateOutput === true)) {
       throw new Error("Discussion final output requires a shared-output Finalizer participant");
     }
@@ -750,12 +756,16 @@ export class DiscussionOrchestrator {
 
   public sweepDueWaves(): RunRecord[] {
     const scheduled = new Map<string, RunRecord>();
-    // Committed Results are the durable notification. A lost HTTP response or restart
-    // cannot lose admission; callbacks remain an optional latency optimization.
+    // Committed Run outcomes and Results are durable notifications. Poll denial,
+    // settlement or a lost callback cannot leave an already settled Wave open.
     for (const wave of this.repository.listOpenWaves()) {
       for (const turn of this.repository.listTurnsForWave(wave.waveId)) {
-        if (!turn.runId || terminalTurnStates.has(turn.state) || !this.runs.isOwnerPrivateOutput(turn.runId)) continue;
-        for (const run of this.onRunTerminal(turn.runId)?.scheduledRuns ?? []) scheduled.set(run.runId, run);
+        if (!turn.runId || terminalTurnStates.has(turn.state)) continue;
+        const current = this.runs.getRun(turn.runId);
+        const result = current?.state === "input_required" ? this.onRunInputRequired(turn.runId) :
+          current && (terminalRunStates.has(current.state) || this.runs.isOwnerPrivateOutput(turn.runId))
+            ? this.onRunTerminal(turn.runId) : null;
+        for (const run of result?.scheduledRuns ?? []) scheduled.set(run.runId, run);
       }
     }
     for (const run of this.reconcileDueQuorums(Date.parse(this.clock()))) {
@@ -1357,6 +1367,7 @@ export class DiscussionOrchestrator {
         agent?.enabled &&
         agent.teamId === room.teamId &&
         this.core.isRoomAgent(room.roomId, agentId) &&
+        (agent.integrationMode !== "peer" || this.peerParticipantAllowed(agentId, room.roomId, this.clock())) &&
         (task.isDefault || task.assignments.some((assignment) =>
           assignment.agentId === agentId
         )) &&

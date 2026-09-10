@@ -1449,6 +1449,12 @@ export class RunRepository {
     return Boolean(delivery && JSON.parse(delivery.payload_json).ownerPrivateOutput === true);
   }
 
+  public hasPeerDelivery(runId: string): boolean {
+    // The Host commits this receipt before sending the payload. Lack of a
+    // later "delivered" event cannot establish that execution never started.
+    return Boolean(this.database.prepare("SELECT 1 FROM peer_run_deliveries WHERE run_id = ?").get(runId));
+  }
+
   public listEvents(runId: string, afterSequence = 0): RunEventRecord[] {
     const rows = this.database.prepare(`
       SELECT * FROM run_events
