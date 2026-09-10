@@ -11,6 +11,7 @@ import { MemberRecoveryPanel } from "./MemberRecoveryPanel.js";
 import { PanelDialog } from "../navigation/PanelDialog.js";
 
 interface TeamMembersWorkspaceProps {
+  scopeRoomName?: string | undefined;
   error?: string | null;
   authMode: AuthMode | null;
   currentMember: Member | null;
@@ -29,6 +30,7 @@ interface TeamMembersWorkspaceProps {
 }
 
 export function TeamMembersWorkspace({
+  scopeRoomName,
   authMode,
   error,
   currentMember,
@@ -53,7 +55,7 @@ export function TeamMembersWorkspace({
       {error && action !== "invite" && <p className="error-banner" role="alert">{error}</p>}
       <div className="management-intro">
         <div>
-          <p>{t("membersDescription")}</p>
+          <p>{scopeRoomName ? (locale === "zh-CN" ? `「${scopeRoomName}」的参与成员与 Agent 所属成员。访问范围由 Host 管理。` : `Participants and Agent owners in ${scopeRoomName}. The Host manages access.`) : t("membersDescription")}</p>
         </div>
         {authMode === "trusted-team" && currentMember?.role === "owner" && <div className="member-actions">
           <button className="primary-action" onClick={() => setAction("invite")} type="button">{t("inviteMember")}</button>
@@ -64,7 +66,7 @@ export function TeamMembersWorkspace({
       <div className="member-management-grid">
         <section className="control-panel" aria-labelledby="member-roster-title">
           <div className="panel-header">
-            <div><p className="eyebrow">{t("memberRoster")}</p><h3 id="member-roster-title">{selectedTeam.name}</h3></div>
+            <div><p className="eyebrow">{t("memberRoster")}</p><h3 id="member-roster-title">{scopeRoomName ?? selectedTeam.name}</h3></div>
             <span>{locale === "zh-CN" ? `${members.length} 位成员` : `${members.length} members`}</span>
           </div>
           <div className="member-roster">

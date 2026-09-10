@@ -151,6 +151,7 @@ export function AgentPolicySummary({
 }
 
 interface AgentWorkspaceProps {
+  peerMember?: boolean;
   error?: string | null;
   agentName: string;
   agents: Agent[];
@@ -194,7 +195,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
     onAgentChanged, onOpenHostedRoom, onSetAgentEnabled, readyAgents, rooms, sessionToken, setupTarget, teamId } = props;
   const t = (key: TranslationKey) => translate(locale, key);
   const zh = locale === "zh-CN";
-  const [flow, setFlow] = useState<SetupFlow | null>(setupTarget ?? null);
+  const [flow, setFlow] = useState<SetupFlow | null>(props.peerMember ? null : setupTarget ?? null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -207,10 +208,10 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
       (status === "all" || (status === "disabled" ? agent.enabled === false :
         agent.enabled !== false && (status === "ready" ? agent.presence === "ready" : agent.presence !== "ready")));
   });
-  useEffect(() => { if (setupTarget) setFlow(setupTarget); }, [setupTarget]);
+  useEffect(() => { if (props.peerMember) setFlow(null); else if (setupTarget) setFlow(setupTarget); }, [setupTarget, props.peerMember]);
   const close = () => { setFlow(null); setSelectedId(null); props.onSetupClosed(); };
   const selectSetup = (target: SetupFlow) => {
-    if (target === "hosted" && !currentMemberIsOwner) return;
+    if (props.peerMember || (target === "hosted" && !currentMemberIsOwner)) return;
     props.onSetupClosed();
     setFlow(target);
     if (target === "demo" || target === "mcp" || target === "legacy") {
@@ -223,7 +224,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
       {props.error && !selectedAgent && !flow && <p className="error-banner" role="alert">{props.error}</p>}
       <div className="management-intro">
         <div><p>{zh ? "让合适的智能体加入协作。运行方式与权限，在配置时按需查看。" : "Bring the right Agents into your work. Inspect runtime capabilities and permissions when configuring."}</p></div>
-        <button className="primary-action" onClick={() => selectSetup("choose")} type="button">{zh ? "新增智能体" : "Add an Agent"}</button>
+        {props.peerMember ? <p>{zh ? "请在本机 Console 分享 Agent，并等待 Host 接纳。" : "Share an Agent from your local Console and await Host acceptance."}</p> : <button className="primary-action" onClick={() => selectSetup("choose")} type="button">{zh ? "新增智能体" : "Add an Agent"}</button>}
       </div>
       <div className="inventory-toolbar">
         <input aria-label={zh ? "搜索智能体" : "Search Agents"} placeholder={zh ? "搜索名称、角色或模型" : "Search name, role or model"} type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
@@ -266,7 +267,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
           </>}
           {selectedAgent.integrationMode === "managed" && <>
             <p>{zh ? "名称、命令、工作区和模型凭据由本机客户端配置，不会在中央服务覆盖。" : "Names, commands, Workspaces and model credentials are configured in the local client, never overwritten here."}</p>
-            <button onClick={props.onDevices} type="button">{zh ? "查看设备" : "View Devices"}</button>
+            {!props.peerMember && <button onClick={props.onDevices} type="button">{zh ? "查看设备" : "View Devices"}</button>}
           </>}
           {currentMemberIsOwner && selectedAgent.integrationMode !== "peer" && <button disabled={lifecycleBusy} onClick={() => void onSetAgentEnabled(selectedAgent, selectedAgent.enabled === false)} type="button">
             {selectedAgent.enabled === false ? (zh ? "重新启用" : "Enable") : (zh ? "停用" : "Disable")}

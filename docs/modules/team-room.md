@@ -24,7 +24,23 @@ general Team rosters, Agent/Device lists, search and change counters are denied.
 A Team membership with a narrower human credential retains that credential's
 ceiling. Existing Room ACLs remain an additional constraint, and current
 membership/session revocation is rechecked before returning a waited change.
-The later WEB-085 interface uses the explicit scope in session metadata.
+WEB-085 uses the explicit scope in session metadata with three Room reads:
+
+- `GET /api/rooms/:roomId/registry` returns only participating Agents, participating
+  humans and those Agents' owner identities. Presence uses the same current
+  Runtime/Peer projection as Team inventory. It returns no Device inventory.
+- `GET /api/rooms/:roomId/work-items` applies existing Workbench filters/pagination
+  inside that exact currently authorized Room. Foreign Room filters return no
+  work, and the cursor is bound to the Room. The Team endpoint remains denied
+  for Room-scoped sessions.
+- `GET /api/rooms/:roomId/changes` checks Room authority before waiting and again
+  before response. Its independent Room counter/history excludes other Room
+  activity and IDs, while shared registry changes trigger a scoped refresh.
+  Cancellation, bounded history and restart reconciliation follow Team behavior.
+
+These reads do not change mutation permissions, membership or Agent acceptance.
+Negative HTTP tests cover a narrower credential despite wider Team membership
+and Room ACL, foreign search/filters/inventory, and revocation during a wait.
 
 ## Responsibilities
 

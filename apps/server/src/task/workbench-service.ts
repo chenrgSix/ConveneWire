@@ -152,13 +152,15 @@ export class WorkbenchService {
   public list(
     principal: WebPrincipal,
     teamId: string,
-    query: WorkbenchQuery
+    query: WorkbenchQuery,
+    roomId?: string
   ): WorkbenchPage {
-    const member = this.auth.requireTeamMember(principal, teamId);
+    const member = roomId ? this.auth.requireRoomMember(principal, roomId) : this.auth.requireTeamMember(principal, teamId);
+    if (member.teamId !== teamId) throw new Error("Workbench Room does not belong to this Team");
     this.validateQuery(query);
     const search = normalizedSearch(query.search);
     const displayNumber = searchedDisplayNumber(search);
-    const fingerprint = filterFingerprint(query, search);
+    const fingerprint = filterFingerprint(roomId ? { ...query, roomId } : query, search);
     const cursor = query.cursor ? decodeCursor(query.cursor) : null;
     if (cursor && (
       cursor.teamId !== teamId || cursor.filterFingerprint !== fingerprint
@@ -166,7 +168,8 @@ export class WorkbenchService {
       throw new Error("Workbench cursor does not match this Team and filter");
     }
 
-    const accessibleRooms = this.core.listRoomsForMember(teamId, member.memberId);
+    const accessibleRooms = this.core.listRoomsForMember(teamId, member.memberId)
+      .filter(room => (!roomId || room.roomId === roomId) && (member.peerAccess?.kind !== "room" || room.roomId === member.peerAccess.roomId));
     const roomIds = new Set(accessibleRooms.map(({ roomId }) => roomId));
     if (query.roomId && !roomIds.has(query.roomId)) return {
       items: [],

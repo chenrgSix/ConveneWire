@@ -125,6 +125,16 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
       row.append(element("h4", scopeLabel(invite)), element("p", invite.hostOrigin),
         element("p", connection.state === "left" ? "已在本机离开" : ended ? "成员关系不可用" : "已加入 · 访问和任务仍需当前授权"),
         details([["成员关系", membership.membershipId], ["有效至", new Date(membership.expiresAt).toLocaleString()]]));
+      if (!ended && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
+        row.append(button("进入空间", () => void run(async (current) => {
+          if (Date.parse(membership.expiresAt) <= now()) throw new Error("成员关系已过期，请刷新空间状态。");
+          const result = await request("/api/peers/human-entry/open", {method: "POST", body: JSON.stringify({
+            membershipId: membership.membershipId, scope: membership.scope, operationId: newOperationId()
+          })});
+          if (current()) control("result").textContent = result.status === "opened"
+            ? "已打开浏览器，请核对成员身份后进入。" : "浏览器入口尚未确认打开，请从本机重新进入。";
+        }), `enter:${membership.membershipId}`));
+      }
       if (connection.state !== "left" && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
         row.append(button("离开此空间", () => {
           if (busy || !active) return;

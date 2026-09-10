@@ -24,6 +24,7 @@ import {
 } from "./api-client.js";
 import { type Locale, type TranslationKey, translate } from "./i18n.js";
 import { ClientEntryGate, clientEntryFromFragment, type ClientEntrySession } from "./features/auth/ClientEntryGate.js";
+import { PeerEntryGate, peerEntryFromFragment } from "./features/auth/PeerEntryGate.js";
 import { SpaceDirectory } from "./features/local-node/SpaceDirectory.js";
 import { LocalNodeRuntime } from "./features/local-node/LocalNodeRuntime.js";
 import { AccessGate } from "./features/auth/AccessGate.js";
@@ -119,11 +120,20 @@ const localeKey = "agent-room.locale";
 const themeKey = "agent-room.theme";
 
 export function App() {
+  const [peerEntry, setPeerEntry] = useState<string | null>(() => peerEntryFromFragment(window.location.hash));
   const [entryTicket, setEntryTicket] = useState<string | null>(() => clientEntryFromFragment(window.location.hash));
-  const [clientEntrySession, setClientEntrySession] = useState<ClientEntrySession | null>(null);
-  useEffect(() => {
-    if (entryTicket !== null) window.history.replaceState(window.history.state, "", window.location.pathname);
+  const [clientEntrySession, setClientEntrySession] = useState<Pick<ClientEntrySession, "user" | "mode" | "session"> | null>(null);
+  useLayoutEffect(() => {
+    if (entryTicket !== null || peerEntry !== null) window.history.replaceState(window.history.state, "", window.location.pathname);
   }, []);
+  if (peerEntry !== null) return <PeerEntryGate entry={peerEntry} onCancel={() => { setPeerEntry(null); setEntryTicket(null); }} onEntered={(result) => {
+    const scope = result.identity.scope;
+    const params = new URLSearchParams({ team: scope.teamId, view: scope.roomId ? "room" : "work" });
+    if (scope.roomId) params.set("room", scope.roomId);
+    window.history.replaceState(null, "", `${window.location.pathname}?${params}`);
+    try { sessionStorage.removeItem("convenewire.local-node-session"); } catch { /* Retire previous Owner tab authority. */ }
+    setClientEntrySession(result); setPeerEntry(null); setEntryTicket(null);
+  }} />;
   if (entryTicket !== null) return <ClientEntryGate ticket={entryTicket} onCancel={() => setEntryTicket(null)} onEntered={(result) => {
     const params = new URLSearchParams({ team: result.identity.teamId, view: result.identity.roomId ? "room" : "work" });
     if (result.identity.roomId) params.set("room", result.identity.roomId);
@@ -134,8 +144,9 @@ export function App() {
   return <WorkspaceApp clientEntrySession={clientEntrySession} />;
 }
 
-function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntrySession | null }) {
+function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientEntrySession, "user" | "mode" | "session"> | null }) {
   const [isLocalNode, setIsLocalNode] = useState(false);
+  const [isPeerOnly, setIsPeerOnly] = useState(Boolean(clientEntrySession?.user.peerAccess));
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try { return localStorage.getItem("agent-room.sidebar-collapsed") === "true"; }
     catch { return false; }
@@ -313,7 +324,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
       else { pendingRoomTaskIdRef.current = null; if (taskId) setSelectedTaskId(taskId); }
       setSelectedTeamId(teamId);
       if (roomId) setSelectedRoomId(roomId);
-      setActiveView(navigation.view ?? (navigation.workTaskId ? "work" : navigation.taskId ? "room" : "work"));
+      setActiveView(session?.peerAccess && navigation.view === "devices" ? "agents" : navigation.view ?? (navigation.workTaskId ? "work" : navigation.taskId ? "room" : "work"));
       setSelectedWorkTaskId(navigation.workTaskId ?? null);
       setSelectedWorkTab(navigation.tab ?? "overview");
       setSelectedWorkRunId(navigation.runId ?? null);
@@ -852,7 +863,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         if (stopped) return;
         setAuthMode(status.mode);
         setIsLocalNode(status.localNode === true);
-        if (pendingInvitationToken && status.mode === "trusted-team") {
+        setIsPeerOnly(status.peerOnly === true || Boolean(status.user?.peerAccess));
+        if (pendingInvitationToken && status.mode === "trusted-team" && !status.peerOnly && !status.user?.peerAccess) {
           setAuthState("claim_required");
           return;
         }
@@ -886,33 +898,21 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
     if (!session || !selectedTeamId) return;
     let stopped = false;
     setError(null);
+    const registry = session.peerAccess?.kind === "room"
+      ? jsonRequest<{ agents: Agent[]; members: Member[]; devices: Device[] }>(`/api/rooms/${session.peerAccess.roomId}/registry`, {}, session.token)
+      : Promise.all([
+        jsonRequest<Agent[]>(`/api/teams/${selectedTeamId}/agents`, {}, session.token),
+        jsonRequest<Member[]>(`/api/teams/${selectedTeamId}/members`, {}, session.token),
+        session.peerAccess ? Promise.resolve([] as Device[]) : jsonRequest<Device[]>(`/api/teams/${selectedTeamId}/devices`, {}, session.token)
+      ]).then(([agents, members, devices]) => ({ agents, members, devices }));
     void Promise.all([
-      jsonRequest<Room[]>(
-        `/api/teams/${selectedTeamId}/rooms`,
-        {},
-        session.token
-      ),
-      jsonRequest<Agent[]>(
-        `/api/teams/${selectedTeamId}/agents`,
-        {},
-        session.token
-      ),
-      jsonRequest<Member[]>(
-        `/api/teams/${selectedTeamId}/members`,
-        {},
-        session.token
-      ),
-      jsonRequest<Device[]>(
-        `/api/teams/${selectedTeamId}/devices`,
-        {},
-        session.token
-      )
-    ]).then(([nextRooms, nextAgents, nextMembers, nextDevices]) => {
+      jsonRequest<Room[]>(`/api/teams/${selectedTeamId}/rooms`, {}, session.token), registry
+    ]).then(([nextRooms, registry]) => {
       if (stopped) return;
       setRooms(nextRooms);
-      setAgents(nextAgents);
-      setMembers(nextMembers);
-      setDevices(nextDevices);
+      setAgents(registry.agents);
+      setMembers(registry.members);
+      setDevices(registry.devices);
       setSelectedRoomId((current) =>
         preferredRoomRef.current?.teamId === selectedTeamId && nextRooms.some((room) => room.roomId === preferredRoomRef.current?.roomId)
           ? preferredRoomRef.current.roomId
@@ -1550,6 +1550,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
   }
 
   function selectWorkspaceView(view: WorkspaceView) {
+    if (session?.peerAccess && view === "devices") { revealConnectionSetup(); return; }
     if (view === "work") { revealWork(); return; }
     if (view === "agents") { revealConnectionSetup(); return; }
     if (view === "members") { revealTeamMembers(); return; }
@@ -1600,6 +1601,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         locale={locale}
         onClaimInvitation={claimInvitation}
         localNode={isLocalNode}
+        peerOnly={isPeerOnly}
         onEnterLocal={() => enterLocalSession()}
         onRecoverOwner={recoverOwner}
         onRecoverMember={recoverMember}
@@ -1624,7 +1626,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         session={session} tasks={tasks} taskId={selectedTaskId} onTask={openTaskInRoom}
         onTeam={(teamId) => navigate({ teamId, roomId: undefined, taskId: undefined, workTaskId: undefined,
           tab: undefined, runId: undefined, lifecycleState: undefined, ownerMemberId: undefined, search: undefined, attention: undefined, filterRoomId: undefined, filterAgentId: undefined, priority: undefined, view: managing ? activeView : "work" })}
-        canCreateTeam={!session?.clientTeamId} onNewTeam={() => setTeamDialogOpen(true)} onNewRoom={() => setRoomCreateOpen(true)}
+        canCreateTeam={!session?.clientTeamId && !session?.peerAccess} canCreateRoom={!session?.peerAccess} onNewTeam={() => setTeamDialogOpen(true)} onNewRoom={() => setRoomCreateOpen(true)}
         onRoom={(roomId) => navigate({ roomId, view: "room", taskId: undefined, workTaskId: undefined, tab: undefined, runId: undefined })}
         onView={selectWorkspaceView}>
         {selectedTeam && selectedRoom && (
@@ -1790,7 +1792,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
         {error && activeView !== "agents" && activeView !== "members" && !roomCreateOpen && <div className="error-banner" role="alert">{errorLabel(error, locale)}</div>}
         {restoringNavigation && <p className="navigation-status" role="status">{locale === "zh-CN" ? "正在验证并恢复工作位置…" : "Checking access and restoring your work…"}</p>}
         {copyStatus && <p className="navigation-status" role="status">{copyStatus}</p>}
-        {session && selectedTeamId && !session.clientTeamId && <RuntimeApprovals key={`${session.userId}:${selectedTeamId}:${session.token ?? "cookie"}`} teamId={selectedTeamId} token={session.token} locale={locale} onPendingChange={updateRuntimeAttention} />}
+        {session && selectedTeamId && !session.clientTeamId && !session.peerAccess && <RuntimeApprovals key={`${session.userId}:${selectedTeamId}:${session.token ?? "cookie"}`} teamId={selectedTeamId} token={session.token} locale={locale} onPendingChange={updateRuntimeAttention} />}
         {activeView === "security" && session ? (
           <AccountWorkspace session={session} authMode={authMode} locale={locale} theme={theme}
             onLocale={() => setLocale((current) => current === "zh-CN" ? "en" : "zh-CN")}
@@ -1895,6 +1897,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
               teamName={selectedTeam.name} rooms={rooms} locale={locale} sessionToken={session.token} />}
           </div>}
           <TeamMembersWorkspace
+            scopeRoomName={session?.peerAccess?.kind === "room" ? selectedRoom?.name : undefined}
             key={selectedTeam.teamId}
             error={error ? errorLabel(error, locale) : null}
             onDismissInvitation={clearSetupPresentation}
@@ -1919,6 +1922,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: ClientEntryS
             sessionToken={session?.token} teamId={selectedTeam.teamId} onRevokeDevice={revokeDevice} />
         ) : activeView === "agents" ? (
           <AgentWorkspace
+            peerMember={Boolean(session?.peerAccess)}
             key={`${selectedTeam.teamId}:${session?.userId}`}
             error={error ? errorLabel(error, locale) : null}
             agentName={agentName}

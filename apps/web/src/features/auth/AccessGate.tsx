@@ -6,6 +6,7 @@ import { errorLabel } from "../../presentation.js";
 
 interface AccessGateProps {
   localNode?: boolean;
+  peerOnly?: boolean;
   busy: boolean;
   error: string | null;
   locale: Locale;
@@ -22,6 +23,7 @@ interface AccessGateProps {
 
 export function AccessGate({
   localNode = false,
+  peerOnly = false,
   busy,
   error,
   locale,
@@ -81,7 +83,11 @@ export function AccessGate({
             <p>{t("accessLoadingHelp")}</p>
           </>
         )}
-        {state === "local_bootstrap" && (
+        {peerOnly && state !== "loading" && <>
+          <h1>{locale === "zh-CN" ? "从本机重新进入远端空间" : "Return through your local Console"}</h1>
+          <p>{locale === "zh-CN" ? "请回到本机 Console，在远端空间中点击进入，再确认你的成员身份。" : "Return to your local Console, open the remote Space and confirm your member identity."}</p>
+        </>}
+        {!peerOnly && state === "local_bootstrap" && (
           <>
             <h1>{t("localAccess")}</h1>
             <p>{localNode ? (locale === "zh-CN" ? "请从 ConveneWire 桌面端打开此本地空间。" : "Open this local workspace from the ConveneWire desktop app.") : t("localAccessHelp")}</p>
@@ -90,7 +96,7 @@ export function AccessGate({
             </button>}
           </>
         )}
-        {state === "setup_required" && (
+        {!peerOnly && state === "setup_required" && (
           <>
             <h1>{t("setupOwner")}</h1>
             <p>{t("setupOwnerHelp")}</p>
@@ -104,7 +110,7 @@ export function AccessGate({
             </form>
           </>
         )}
-        {state === "sign_in_required" && (
+        {!peerOnly && state === "sign_in_required" && (
           <>
             <h1>{locale === "zh-CN" ? "回到你的 Team" : "Back to your Team"}</h1>
             <p>{locale === "zh-CN" ? "恢复原来的身份，继续之前的工作。" : "Return to your existing identity and continue your work."}</p>
@@ -132,7 +138,7 @@ export function AccessGate({
             </aside>
           </>
         )}
-        {state === "claim_required" && (
+        {!peerOnly && state === "claim_required" && (
           <>
             <h1>{t("invitedToTeam")}</h1>
             <p>{t("invitationClaimHelp")}</p>

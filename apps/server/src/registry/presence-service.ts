@@ -178,8 +178,18 @@ export class PresenceService {
     now: string
   ): AgentRecord[] {
     this.auth.requireTeamMember(principal, teamId);
+    return this.projectAgents(this.repository.listAgents(teamId), now);
+  }
+
+  public listRoomAgents(principal: WebPrincipal, roomId: string, now: string): AgentRecord[] {
+    const member = this.auth.requireRoomMember(principal, roomId);
+    const ids = new Set(this.repository.getRoomParticipants(roomId).agentIds);
+    return this.projectAgents(this.repository.listAgents(member.teamId).filter(agent => ids.has(agent.agentId)), now);
+  }
+
+  private projectAgents(agents: AgentRecord[], now: string): AgentRecord[] {
     const nowMilliseconds = Date.parse(now);
-    return this.repository.listAgents(teamId).map((agent) => {
+    return agents.map((agent) => {
       let presence = agent.presence;
       if (agent.integrationMode === "hosted") {
         if (!agent.enabled) {

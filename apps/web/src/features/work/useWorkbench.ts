@@ -34,10 +34,11 @@ function mergeItems(items: WorkbenchPage["items"]): WorkbenchPage["items"] {
 
 /** Owns only the visible page window, never an independent Task projection. */
 export function useWorkbench({ teamId, session, scope, lifecycleState, ownerMemberId, search = "", attention = "", filterRoomId = "", filterAgentId = "", priority = "" }: WorkbenchOptions) {
+  const peerRoomId = session?.peerAccess?.kind === "room" ? session.peerAccess.roomId : null;
   const userId = session?.userId ?? null;
   const token = session?.token;
   const normalizedSearch = search.trim();
-  const key = JSON.stringify([teamId, userId, token, scope, lifecycleState, ownerMemberId, normalizedSearch, attention, filterRoomId, filterAgentId, priority]);
+  const key = JSON.stringify([teamId, peerRoomId, userId, token, scope, lifecycleState, ownerMemberId, normalizedSearch, attention, filterRoomId, filterAgentId, priority]);
   const [state, setState] = useState<WorkbenchState>(() => emptyState(key));
   const stateRef = useRef(state);
   const keyRef = useRef(key);
@@ -56,8 +57,8 @@ export function useWorkbench({ teamId, session, scope, lifecycleState, ownerMemb
     if (filterAgentId) query.set("agentId", filterAgentId);
     if (priority) query.set("priority", priority);
     if (cursor) query.set("cursor", cursor);
-    return `/api/teams/${teamId}/work-items?${query}`;
-  }, [teamId, scope, lifecycleState, ownerMemberId, normalizedSearch, attention, filterRoomId, filterAgentId, priority]);
+    return peerRoomId ? `/api/rooms/${peerRoomId}/work-items?${query}` : `/api/teams/${teamId}/work-items?${query}`;
+  }, [teamId, peerRoomId, scope, lifecycleState, ownerMemberId, normalizedSearch, attention, filterRoomId, filterAgentId, priority]);
 
   const refresh = useCallback(async () => {
     // A live notification must not silently cancel the page the user requested.

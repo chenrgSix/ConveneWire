@@ -173,6 +173,7 @@ type State struct {
 }
 
 type Dependencies struct {
+	OpenPeerEntry             func(string, string, string) error
 	CreateWorkPolicy          func(context.Context, config.Config, pairing.Credential, WorkPolicyInput, time.Time) (repository.WorkPolicyView, error)
 	RevokeWorkPolicy          func(context.Context, config.Config, pairing.Credential, string, GovernedGrantRevocationInput, time.Time) (repository.WorkPolicyView, error)
 	OpenClientEntry           func(string, string, string) error
@@ -250,6 +251,9 @@ type Service struct {
 var environmentName = regexp.MustCompile(`^[A-Z][A-Z0-9_]{0,79}$`)
 
 func New(options Options, dependencies Dependencies) (*Service, error) {
+	if dependencies.OpenPeerEntry == nil {
+		dependencies.OpenPeerEntry = browserlaunch.OpenPeerEntry
+	}
 	if dependencies.OpenClientEntry == nil {
 		dependencies.OpenClientEntry = browserlaunch.OpenClientEntryForBridge
 	}
@@ -466,6 +470,7 @@ func (s *Service) Handler() http.Handler {
 	mux.HandleFunc("GET /api/peers/joins", s.authorizePeer(s.getPeerJoins))
 	mux.HandleFunc("POST /api/peers/joins/{operationId}/recover", s.authorizePeer(s.recoverPeerJoin))
 	mux.HandleFunc("POST /api/peers/human-entry", s.authorizePeer(s.preparePeerHumanEntry))
+	mux.HandleFunc("POST /api/peers/human-entry/open", s.authorizePeer(s.openPeerHumanEntry))
 	mux.HandleFunc("GET /api/peers/departures", s.authorizePeer(s.getPeerDepartures))
 	mux.HandleFunc("POST /api/peers/departures", s.authorizePeer(s.preparePeerDeparture))
 	mux.HandleFunc("POST /api/peers/departures/{membershipId}/recover", s.authorizePeer(s.recoverPeerDeparture))

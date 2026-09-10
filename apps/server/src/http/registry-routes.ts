@@ -30,6 +30,17 @@ export function registerRegistryRoutes({
   requireBridgeServerToken,
   trustedWeb
 }: ServerRouteContext): void {
+  app.get<{ Params: { roomId: string } }>("/api/rooms/:roomId/registry", async (request, reply) => {
+    noStore(reply);
+    const actor = principal(request), roomId = request.params.roomId;
+    const member = auth.requireRoomMember(actor, roomId);
+    const roomAgents = presence.listRoomAgents(actor, roomId, clock());
+    const memberIds = new Set(core.getRoomParticipants(roomId).memberIds);
+    // Only identities participating in this Room and the owners of its Agents.
+    for (const agent of roomAgents) memberIds.add(agent.ownerMemberId);
+    return { agents: roomAgents, members: core.listMembers(member.teamId).filter(value => memberIds.has(value.memberId))
+      .map(value => value.memberId === member.memberId ? { ...value, role: member.role } : value), devices: [] };
+  });
   app.get<{ Params: { teamId: string } }>(
     "/api/teams/:teamId/devices",
     async (request) => registry.listDevices(

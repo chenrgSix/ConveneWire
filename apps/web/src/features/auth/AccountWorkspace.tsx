@@ -12,7 +12,8 @@ export function AccountWorkspace({ session, authMode, locale, theme, onLocale, o
       <h3>{zh ? "当前账户" : "Your account"}</h3>
       <dl className="account-facts">
         <div><dt>{zh ? "身份" : "Identity"}</dt><dd>{session.displayName}</dd></div>
-        <div><dt>{zh ? "登录方式" : "Access mode"}</dt><dd>{session.clientTeamId ? (zh ? "客户端成员入口（普通成员权限）" : "Client entry (member authority)") : authMode === "trusted-team" ? (zh ? "可信团队" : "Trusted Team") : (zh ? "本机模式" : "Local mode")}</dd></div>
+        <div><dt>{zh ? "登录方式" : "Access mode"}</dt><dd>{session.peerAccess ? (zh ? "远端空间成员入口" : "Remote Space member entry") : session.clientTeamId ? (zh ? "客户端成员入口（普通成员权限）" : "Client entry (member authority)") : authMode === "trusted-team" ? (zh ? "可信团队" : "Trusted Team") : (zh ? "本机模式" : "Local mode")}</dd></div>
+        {session.peerAccess && <div><dt>{zh ? "访问范围" : "Access scope"}</dt><dd>{session.peerAccess.kind === "room" ? (zh ? "单个授权房间" : "One authorized Room") : (zh ? "Team 内已授权房间" : "Authorized Rooms in this Team")}</dd></div>}
       </dl>
     </section>
     <section className="control-panel">
@@ -22,7 +23,7 @@ export function AccountWorkspace({ session, authMode, locale, theme, onLocale, o
     </section>
     <section className="control-panel">
       <h3>{zh ? "登录恢复" : "Login recovery"}</h3>
-      <p>{authMode !== "trusted-team"
+      <p>{session.peerAccess ? (zh ? "请回本机 Console 重新进入此空间。" : "Open this Space again from your local Console.") : authMode !== "trusted-team"
         ? (zh ? "本机模式不使用 Owner 登录恢复密钥。" : "Local mode does not use an Owner login recovery key.")
         : session.canManageOwnerRecovery
           ? (zh ? "更换此中央服务的 Owner 登录恢复密钥。不会修改智能体的 API 配置。" : "Replace this Central's Owner login recovery key without changing Agent API configuration.")

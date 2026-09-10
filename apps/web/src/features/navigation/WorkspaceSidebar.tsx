@@ -14,6 +14,7 @@ interface Props {
   onRetryAttention?: () => void;
   onOpenAttention?: (item: WorkbenchItem) => void;
   canCreateTeam?: boolean;
+  canCreateRoom?: boolean;
   activeView: WorkspaceView;
   locale: Locale;
   teams: Team[];
@@ -62,7 +63,7 @@ export function WorkspaceSidebar(props: Props) {
       </div>}
       {managing ? (
         <nav className="product-destinations" aria-label={zh ? "设置导航" : "Settings navigation"}>
-          {destinations.map(([view, name, icon]) => (
+          {destinations.filter(([view]) => !props.session?.peerAccess || view !== "devices").map(([view, name, icon]) => (
             <button key={view} disabled={!teamId && view !== "security"} aria-current={activeView === view ? "page" : undefined} onClick={() => props.onView(view)} type="button">
               <span aria-hidden="true">{icon}</span>{name}
             </button>
@@ -75,7 +76,7 @@ export function WorkspaceSidebar(props: Props) {
             <button aria-current={activeView === "room" ? "page" : undefined} onClick={() => props.onView("room")} type="button"><span aria-hidden="true">⌁</span>{translate(locale, "chat")}</button>
           </nav>
           {teamId && <div className="product-rooms">
-            <div className="product-section-heading"><span>{zh ? "房间" : "ROOMS"}</span><button aria-label={zh ? "新建房间" : "New Room"} onClick={props.onNewRoom} type="button">＋</button></div>
+            <div className="product-section-heading"><span>{zh ? "房间" : "ROOMS"}</span>{props.canCreateRoom !== false && <button aria-label={zh ? "新建房间" : "New Room"} onClick={props.onNewRoom} type="button">＋</button>}</div>
             <select className="product-room-picker" aria-label={translate(locale, "selectRoom")} value={roomId ?? ""} onChange={(event) => props.onRoom(event.target.value)}>
               {!roomId && <option value="">{translate(locale, "chooseRoom")}</option>}
               {rooms.map((room) => <option key={room.roomId} value={room.roomId}>{room.name}</option>)}

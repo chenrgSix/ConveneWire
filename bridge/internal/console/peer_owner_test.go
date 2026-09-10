@@ -3,6 +3,7 @@ package console
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -66,6 +67,14 @@ func TestPeerConsoleOwnerRoutesRequireLocalOwnerAndExactJSON(t *testing.T) {
 	owner := &consoleJoinOwner{consolePeerOwner: approvals, access: access}
 	service.mu.Lock()
 	service.options.NativePeers = owner
+	opened := 0
+	service.dependencies.OpenPeerEntry = func(origin, id, token string) error {
+		if origin != "https://127.0.0.1:40123" || id != "credential_browser001" || token != "one-use-entry" {
+			t.Error("browser handoff changed verified identity")
+		}
+		opened++
+		return nil
+	}
 	service.mu.Unlock()
 	routes := []struct{ path, method, body string }{
 		{"/api/peers/invitations/preview", "POST", `{"operationId":"op_consolejoin001"}`},
@@ -73,6 +82,7 @@ func TestPeerConsoleOwnerRoutesRequireLocalOwnerAndExactJSON(t *testing.T) {
 		{"/api/peers/joins", "GET", ""},
 		{"/api/peers/joins/op_consolejoin001/recover", "POST", `{}`},
 		{"/api/peers/human-entry", "POST", `{"membershipId":"membership_ownerconsole001","scope":{"kind":"team","teamId":"team_ownerconsole001"},"operationId":"op_consoleentry001"}`},
+		{"/api/peers/human-entry/open", "POST", `{"membershipId":"membership_ownerconsole001","scope":{"kind":"team","teamId":"team_ownerconsole001"},"operationId":"op_consoleentry001"}`},
 	}
 	for _, route := range routes {
 		for _, mode := range []string{"missing", "machine", "foreign-origin", "query", "valid"} {
@@ -117,6 +127,12 @@ func TestPeerConsoleOwnerRoutesRequireLocalOwnerAndExactJSON(t *testing.T) {
 				if response.Header.Get("cache-control") != "no-store" {
 					t.Fatal("secret-bearing owner response cached")
 				}
+				if route.path == "/api/peers/human-entry/open" {
+					var decoded map[string]any
+					if json.Unmarshal(raw, &decoded) != nil || len(decoded) != 2 || decoded["status"] != "opened" || strings.Contains(string(raw), "one-use-entry") || opened != 1 {
+						t.Fatal("browser handoff disclosed a credential or opened more than once")
+					}
+				}
 				if route.path == "/api/peers/human-entry" {
 					var decoded map[string]any
 					if json.Unmarshal(raw, &decoded) != nil || len(decoded) != 5 || decoded["token"] != "one-use-entry" || strings.Contains(string(raw), "private-proof") {
@@ -145,6 +161,18 @@ func TestPeerConsoleOwnerRoutesRequireLocalOwnerAndExactJSON(t *testing.T) {
 	if owner.changes.Load() != 2 {
 		t.Fatal("successful joins did not notify connector", owner.changes.Load())
 	}
+	if opened != 1 {
+		t.Fatal("unauthorized caller opened browser")
+	}
+	service.mu.Lock()
+	service.dependencies.OpenPeerEntry = func(string, string, string) error { return errors.New("secret-browser-proof") }
+	service.mu.Unlock()
+	failedOpen := consoleRequest(t, server.URL, service.Token(), "POST", "/api/peers/human-entry/open", map[string]any{})
+	raw, _ := io.ReadAll(failedOpen.Body)
+	failedOpen.Body.Close()
+	if failedOpen.StatusCode != 409 || strings.Contains(string(raw), "secret-browser-proof") {
+		t.Fatal("unsafe browser error", string(raw))
+	}
 	access.failure.Store(true)
 	response := consoleRequest(t, server.URL, service.Token(), "POST", "/api/peers/invitations/confirm", map[string]any{})
 	var body map[string]string
@@ -152,5 +180,30 @@ func TestPeerConsoleOwnerRoutesRequireLocalOwnerAndExactJSON(t *testing.T) {
 	response.Body.Close()
 	if response.StatusCode != 409 || body["code"] != "PEER_TLS_CONFIGURATION_UNAVAILABLE" || owner.changes.Load() != 2 {
 		t.Fatal("unconfirmed join changed authority", body)
+	}
+}
+
+type retiringPeerEntry struct{ *consoleOwnerOperations }
+
+func (p *retiringPeerEntry) HumanEntry(ctx context.Context, membershipID string, scope wire.PeerScope, operationID string) (peer.HumanEntry, error) {
+	entry, err := p.consoleOwnerOperations.HumanEntry(ctx, membershipID, scope, operationID)
+	p.service.mu.Lock()
+	p.service.closed = true
+	p.service.mu.Unlock()
+	return entry, err
+}
+
+func TestPeerBrowserOpenRejectsConsoleRetirementDuringHumanRequest(t *testing.T) {
+	service, approvals, server := peerConsoleFixture(t)
+	access := &retiringPeerEntry{&consoleOwnerOperations{service: service}}
+	service.mu.Lock()
+	service.options.NativePeers = &consoleJoinOwner{consolePeerOwner: approvals, access: access}
+	service.dependencies.OpenPeerEntry = func(string, string, string) error { t.Error("retired Console opened browser"); return nil }
+	service.mu.Unlock()
+	defer func() { service.mu.Lock(); service.closed = false; service.mu.Unlock() }()
+	response := consoleRequest(t, server.URL, service.Token(), "POST", "/api/peers/human-entry/open", map[string]any{})
+	response.Body.Close()
+	if response.StatusCode != 409 {
+		t.Fatal("retired Console accepted browser handoff", response.StatusCode)
 	}
 }

@@ -81,8 +81,38 @@ the [1280px Space page](../acceptance/assets/web-085/console-spaces-1280.jpg),
 There is no horizontal overflow; forward/reverse Tab cycles inside the dialog
 and Escape returns focus to its trigger. Browser inspection uses read-only
 pages and form controls; access-changing interactions remain deferred under
-QA-092. Human browser entry, Agent sharing and local approval UI remain active
-in WEB-085.
+QA-092. Agent sharing and local approval UI remain active in WEB-085.
+
+An explicit `Enter Space` action now asks the native Owner capability to issue
+and open one short browser exchange. The Console receives only opening status
+and exchange expiry. The native opener accepts the verified exact HTTPS origin
+and a fragment proof, uses a platform command without a shell, and omits secrets
+from failures. It cannot run after Console retirement; polling never opens it.
+
+Web clears the fragment before preview, displays the Host origin, member and
+Team/Room scope, and consumes the exchange only after confirmation. It checks
+the returned User, membership, credential and scope against that review before
+activating a secure-cookie session. A lost response does not replay consumption;
+late responses cannot reopen a retired view. Cancel before consumption preserves
+the current sign-in. After a possible consume, closing checks the current login
+without claiming the previous cookie was preserved. Confirmed Peer entry clears
+any cached local Owner tab token; Peer credentials are not persisted in browser
+storage and cannot fall back to Device or local bootstrap authority.
+
+Scoped session metadata survives reload. Expiry/revocation and an unauthenticated
+native Peer origin direct the user back to the local Console rather than Owner
+or member-recovery forms. Peer navigation omits Team/Room creation and Device
+controls, while the account page explains local re-entry. Room-scoped work uses
+the authorized Room registry, Workbench and change listener described in
+[Room ceilings](team-room.md#peer-room-ceilings); Team lists retain their prior
+denial. Actual native HTTPS Web regressions cover explicit single consumption,
+reload, real revocation, lost responses, mismatched scope and view retirement.
+Verification records 354 full Web checks followed by 29 affected entry/session/
+navigation checks and 12 final Peer/member presentation checks. All 73 embedded
+UI checks, Console/browser race/vet, 815 full Server checks (one opt-in browser
+fixture skipped), nine final HTTP/change checks, Hub/Web build and the actual
+bundled native offline Run/Discussion/restart/restore loop pass. Manual browser
+submission, system trust and physical desktop acceptance remain in QA-092.
 
 Peer projections also have a distinct inventory type and presence explanation.
 Their detail view describes Participant-owned execution and routes the Host

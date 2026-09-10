@@ -170,7 +170,7 @@ test("local departure and Host confirmation remain distinct and retain the origi
   f.replies.joins = new Error("human vault unavailable");
   await f.start();
   assert.match(f.e("status").textContent, /读取失败/);
-  f.e("spaces").querySelector("button").click();
+  f.e("spaces").querySelector(`[data-peer-key="leave:${membership.membershipId}"]`).click();
   assert.equal(f.calls.some(call => call.body), false);
   f.e("leave-confirm").click(); await flush();
   const first = f.calls.find(call => call.path === "/api/peers/departures" && call.body).body;
@@ -206,4 +206,34 @@ test("pending join recovery uses its stored operation and polling never creates 
   f.controller.render(null);
   assert.equal(f.e("spaces").textContent, "");
   assert.equal(f.e("invite").disabled, true);
+});
+
+test("native Space entry hands the exact membership to the native opener once without storing browser proof", async t => {
+  let release;
+  const f = fixture(t, async (path, body) => {
+    assert.equal(path, "/api/peers/human-entry/open");
+    assert.deepEqual(body, {membershipId: membership.membershipId, scope: membership.scope, operationId: "op_uifixture1"});
+    return new Promise(resolve => { release = resolve; });
+  });
+  f.replies.spaces.connections = [{invitation, membership, state: "active"}];
+  await f.start();
+  const entry = f.root.querySelector(`[data-peer-key="enter:${membership.membershipId}"]`);
+  entry.click(); entry.click(); await flush();
+  assert.equal(f.calls.filter(call => call.body).length, 1);
+  release({status: "opened", exchangeExpiresAt: membership.expiresAt}); await flush();
+  assert.match(f.e("result").textContent, /已打开浏览器/);
+  assert.equal(f.dom.window.localStorage.length + f.dom.window.sessionStorage.length, 0);
+  assert.equal(f.dom.window.location.hash, "");
+  f.advance(Date.parse(membership.expiresAt) - Date.parse(recorded.now) + 1);
+  await f.controller.refresh();
+  assert.equal(f.root.querySelector(`[data-peer-key="enter:${membership.membershipId}"]`), null);
+});
+
+test("a retired native Space view ignores a late browser handoff response", async t => {
+  let release;
+  const f = fixture(t, async () => new Promise(resolve => { release = resolve; }));
+  f.replies.spaces.connections = [{invitation, membership, state: "active"}];
+  await f.start(); f.root.querySelector(`[data-peer-key="enter:${membership.membershipId}"]`).click();
+  f.controller.render(null); release({status: "opened"}); await flush();
+  assert.equal(f.e("result").textContent, "");
 });

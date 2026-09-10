@@ -408,7 +408,18 @@ export interface MemoryCandidate {
   reviewedAt: string | null;
 }
 
+export interface PeerAccessScope {
+  membershipId: string;
+  credentialId: string;
+  peerId: string;
+  teamId: string;
+  memberId: string;
+  kind: "team" | "room";
+  roomId: string | null;
+}
+
 export interface LocalSession {
+  peerAccess?: PeerAccessScope;
   clientTeamId?: string;
   userId: string;
   displayName: string;
@@ -426,6 +437,7 @@ export type AuthGateState =
   | "authenticated";
 
 export interface AuthenticatedUser {
+  peerAccess?: PeerAccessScope;
   clientTeamId?: string;
   userId: string;
   displayName: string;
@@ -434,6 +446,7 @@ export interface AuthenticatedUser {
 }
 
 export type AuthStatus = {
+  peerOnly?: boolean;
   localNode?: boolean;
   mode: AuthMode;
   state: Exclude<AuthGateState, "loading" | "claim_required">;

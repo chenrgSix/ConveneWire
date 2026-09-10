@@ -212,7 +212,13 @@ operations independently of Device resources and Peer machine authority.
 Actual TLS regressions cover review expiry, dropped responses, concurrent
 confirmation, native reopen, offline replay, cleanup interruption and scope
 widening. Authenticated HTTP tests cover all Owner routes and sanitized entry
-responses. Browser navigation and Peer execution remain later increments.
+responses. The explicit native `POST /api/peers/human-entry/open` operation now
+opens the verified HTTPS Host using `#peerEntry=<credentialId>.<token>`. It
+returns only status/expiry to the Console UI, checks shutdown before launching,
+and cannot expose underlying launch errors. Native Space buttons retain one
+membership/scope, suppress duplicate in-flight clicks and ignore late responses
+after navigation or Console retirement. The browser reviews the short exchange
+before consuming it; Agent export and execution consent remain independent.
 
 The Peer SDK now transports a frozen Participant departure over normal TLS and
 the pinned Host proof. It sends only a fresh `peer.leave` signature and exact

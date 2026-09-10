@@ -17,6 +17,11 @@ Workbench search follows [ADR-0028](../adr/0028-preserve-continuous-web-work.md)
 bounded title/display-number matching occurs only inside authorized Rooms and
 the selected Work scope. Search never changes Task identity, ordering, ownership
 or mutation permissions, and cursors cannot be reused with another search.
+The Room Workbench endpoint additionally authenticates the exact Room and limits
+all projection, filters and pagination to it. Its cursor includes that Room;
+a Peer Room session cannot use the Team endpoint or an unrelated Room, even
+when the underlying Team membership has wider Room ACLs. See
+[Peer Room ceilings](team-room.md#peer-room-ceilings).
 
 - Prefix: `TASK`
 - Implementation: `apps/server/src/task/`, migrations

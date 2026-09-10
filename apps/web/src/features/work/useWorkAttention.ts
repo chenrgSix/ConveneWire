@@ -7,7 +7,8 @@ export const actionableReasons = ["needs_input", "needs_approval", "outcome_unkn
 
 /** One authorized item, not a count derived from a partially loaded page. */
 export function useWorkAttention(teamId: string | null, session: LocalSession | null) {
-  const key = JSON.stringify([teamId, session?.userId, session?.token]);
+  const peerRoomId = session?.peerAccess?.kind === "room" ? session.peerAccess.roomId : null;
+  const key = JSON.stringify([teamId, peerRoomId, session?.userId, session?.token]);
   const keyRef = useRef(key);
   keyRef.current = key;
   const request = useRef<{ key: string; controller: AbortController; done: Promise<void>; dirty: boolean } | null>(null);
@@ -32,7 +33,8 @@ export function useWorkAttention(teamId: string | null, session: LocalSession | 
         const query = new URLSearchParams({ scope: "mine", limit: "1", attention: actionableReasons.join(","), lifecycleState: "draft,ready,active,review" });
         do {
           pending.dirty = false;
-          const page = await jsonRequest<WorkbenchPage>(`/api/teams/${teamId}/work-items?${query}`, { signal: controller.signal }, token);
+          const path = peerRoomId ? `/api/rooms/${peerRoomId}/work-items` : `/api/teams/${teamId}/work-items`;
+          const page = await jsonRequest<WorkbenchPage>(`${path}?${query}`, { signal: controller.signal }, token);
           if (valid()) setState({ key, item: page.items[0] ?? null, failed: false, loading: false });
         } while (valid() && pending.dirty);
       } catch {
@@ -40,7 +42,7 @@ export function useWorkAttention(teamId: string | null, session: LocalSession | 
       } finally { if (request.current === pending) request.current = null; }
     })();
     return pending.done;
-  }, [key, teamId, userId, token]);
+  }, [key, teamId, peerRoomId, userId, token]);
   useEffect(() => {
     void refresh();
     const onFocus = () => void refresh();

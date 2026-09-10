@@ -351,6 +351,15 @@ Peer Go race tests, actual TLS interop, vet and Server build pass. Documentation
 local links and whitespace checks also pass. These are local automatic checks;
 CI, shared-core collaboration E2E and physical acceptance are separate gates.
 
+## Room-scoped inventory
+
+WEB-085 adds a currently authorized Room registry for independent human entry.
+It projects only the Room's participating Agents with current presence and the
+member identities needed for participants/Agent ownership. No Device list is
+returned. This read cannot accept an Export, broaden Room membership or reveal
+another Room's inventory; existing Team list permission checks are unchanged.
+See [Peer Room ceilings](team-room.md#peer-room-ceilings).
+
 ## Registry verification
 
 - Reconnect converges publication without duplicate Agents.

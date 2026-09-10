@@ -27,9 +27,17 @@ const changeHistoryLimit = 256;
 
 export class TeamChangeService {
   private readonly teams = new Map<string, TeamState>();
+  private readonly rooms = new Map<string, { teamId: string; state: TeamState }>();
 
   public notify(teamId: string, hint: TeamChangeHint = { kind: "team" }): number {
     const state = this.state(teamId);
+    if (hint.kind === "team") {
+      for (const room of this.rooms.values()) if (room.teamId === teamId) this.notifyState(room.state, hint);
+    } else this.notifyState(this.roomState(teamId, hint.roomId), hint);
+    return this.notifyState(state, hint);
+  }
+
+  private notifyState(state: TeamState, hint: TeamChangeHint): number {
     state.cursor += 1;
     state.history.push({ cursor: state.cursor, hint });
     if (state.history.length > changeHistoryLimit) state.history.shift();
@@ -51,10 +59,29 @@ export class TeamChangeService {
     after: number,
     options: { signal?: AbortSignal; timeoutMilliseconds?: number } = {}
   ): Promise<TeamChangeCursor> {
-    if (!Number.isSafeInteger(after) || after < 0) {
-      return Promise.reject(new Error("Team change cursor must be a non-negative integer"));
+    return this.waitState(this.state(teamId), after, options);
+  }
+
+  public waitRoom(teamId: string, roomId: string, after: number, options: { signal?: AbortSignal; timeoutMilliseconds?: number } = {}): Promise<TeamChangeCursor> {
+    return this.waitState(this.roomState(teamId, roomId), after, options);
+  }
+
+  private roomState(teamId: string, roomId: string): TeamState {
+    const key = JSON.stringify([teamId, roomId]);
+    let room = this.rooms.get(key);
+    if (!room) {
+      // A new subscription forces one reconciliation, including a possible
+      // change between the initial snapshot and its first Room listener.
+      room = { teamId, state: { cursor: 1, waiters: new Set(), history: [{ cursor: 1, hint: { kind: "team" } }] } };
+      this.rooms.set(key, room);
     }
-    const state = this.state(teamId);
+    return room.state;
+  }
+
+  private waitState(state: TeamState, after: number, options: { signal?: AbortSignal; timeoutMilliseconds?: number }): Promise<TeamChangeCursor> {
+    if (!Number.isSafeInteger(after) || after < 0) {
+      return Promise.reject(new Error("Change cursor must be a non-negative integer"));
+    }
     if (after !== state.cursor) {
       return Promise.resolve(this.result(state, after));
     }

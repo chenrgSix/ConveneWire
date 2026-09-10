@@ -74,6 +74,12 @@ export function registerWorkbenchRoutes({
   principal,
   workbench
 }: ServerRouteContext): void {
+  app.get<{ Params: { roomId: string }; Querystring: Record<string, unknown> }>("/api/rooms/:roomId/work-items", async (request, reply) => {
+    noStore(reply);
+    const actor = principal(request), roomId = request.params.roomId;
+    const member = auth.requireRoomMember(actor, roomId);
+    return workbench.list(actor, member.teamId, queryInput(request.query), roomId);
+  });
   app.get<{
     Params: { teamId: string };
     Querystring: Record<string, unknown>;

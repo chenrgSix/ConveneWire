@@ -242,10 +242,17 @@ export class RoomSynchronization {
   }
 
   private async readRegistry() {
+    if (this.options.session.peerAccess?.kind === "room") {
+      const [registry, settings] = await Promise.all([
+        this.read<{ agents: Agent[]; members: Member[]; devices: Device[] }>(this.roomPath("registry")),
+        this.read<RoomSettings>(this.roomPath("settings"))
+      ]);
+      return { registry, settings };
+    }
     const root = `/api/teams/${this.options.teamId}`;
     const [agents, members, devices, settings] = await Promise.all([
       this.read<Agent[]>(`${root}/agents`), this.read<Member[]>(`${root}/members`),
-      this.read<Device[]>(`${root}/devices`), this.read<RoomSettings>(this.roomPath("settings"))
+      this.options.session.peerAccess ? Promise.resolve([] as Device[]) : this.read<Device[]>(`${root}/devices`), this.read<RoomSettings>(this.roomPath("settings"))
     ]);
     return { registry: { agents, members, devices }, settings };
   }
@@ -268,7 +275,8 @@ export class RoomSynchronization {
       if (document.visibilityState === "hidden") { await this.delay(1_000); continue; }
       this.changeRequest = new AbortController();
       try {
-        const change = await this.read<TeamChangeCursor>(`/api/teams/${this.options.teamId}/changes?after=${cursor}`, this.changeRequest.signal);
+        const path = this.options.session.peerAccess?.kind === "room" ? this.roomPath("changes") : `/api/teams/${this.options.teamId}/changes`;
+        const change = await this.read<TeamChangeCursor>(`${path}?after=${cursor}`, this.changeRequest.signal);
         cursor = change.cursor;
         if (change.changed || change.reset) {
           await this.refreshWork();

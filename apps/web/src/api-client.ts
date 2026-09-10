@@ -41,7 +41,7 @@ export async function jsonRequest<T>(
   token?: string
 ): Promise<T> {
   const generation = webSessionGeneration;
-  const publicEntry = /^\/api\/(?:bootstrap$|local-node\/session$|auth\/(?:status$|setup$|recover-owner$|recover-member$|member-invitations\/claim$|client-entry\/(?:preview|claim)$))/u.test(path);
+  const publicEntry = /^\/api\/(?:bootstrap$|local-node\/session$|peer\/browser-entry\/(?:preview|claim)$|auth\/(?:status$|setup$|recover-owner$|recover-member$|member-invitations\/claim$|client-entry\/(?:preview|claim)$))/u.test(path);
   const requireCurrentSession = () => {
     if (!publicEntry && generation !== webSessionGeneration) {
       throw new StaleWebSessionError();

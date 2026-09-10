@@ -74,3 +74,28 @@ test("Team change cursors aggregate scoped Room hints without losing Team change
     runRoomIds: ["room_c"]
   });
 });
+
+test("Room cursors do not advance for another Room or Team and retain only local hints", async () => {
+  const changes = new TeamChangeService();
+  const initial = await changes.waitRoom("team_one", "room_a", 0);
+  assert.equal(initial.team, true);
+  for (let i = 0; i < 20; i++) {
+    changes.notify("team_one", { kind: "room", roomId: "room_b" });
+    changes.notify("team_other", { kind: "run", roomId: "room_a" });
+  }
+  const unchanged = await changes.waitRoom("team_one", "room_a", initial.cursor, { timeoutMilliseconds: 1 });
+  assert.equal(unchanged.cursor, initial.cursor); assert.equal(unchanged.changed, false);
+  const pending = changes.waitRoom("team_one", "room_a", initial.cursor);
+  changes.notify("team_one", { kind: "run", roomId: "room_a" });
+  const updated = await pending;
+  assert.equal(updated.cursor, initial.cursor + 1); assert.deepEqual(updated.runRoomIds, ["room_a"]);
+  assert.deepEqual(updated.roomIds, []); assert.equal(updated.team, false);
+  changes.notify("team_one");
+  const registry = await changes.waitRoom("team_one", "room_a", updated.cursor);
+  assert.equal(registry.team, true); assert.deepEqual(registry.roomIds, []); assert.deepEqual(registry.runRoomIds, []);
+  assert.equal((await new TeamChangeService().waitRoom("team_one", "room_a", registry.cursor)).reset, true);
+  const controller = new AbortController();
+  const canceled = changes.waitRoom("team_one", "room_a", registry.cursor, { signal: controller.signal });
+  controller.abort(new Error("Room closed"));
+  await assert.rejects(canceled, /Room closed/u);
+});

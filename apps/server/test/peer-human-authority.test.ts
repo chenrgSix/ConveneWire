@@ -107,3 +107,54 @@ test("a Peer Team change wait cannot disclose hints after its human membership i
   const result = await pending;
   assert.equal(result.statusCode, 401, result.body);
 });
+
+test("Peer Room projections retain current Room authority without widening Team inventory or work", async t => {
+  const f = await human(t, true), app = await createServerApp({ databasePath: f.databasePath, clock: f.clock });
+  f.resources.defer(() => app.close());
+  const owner = f.auth.issueWebSession(ownerId, now, expiry), ownerHeaders = { authorization: `Bearer ${owner.secret}` };
+  const headers = { authorization: `Bearer ${f.session.secret}` };
+  // Even a Team membership and ACL in another Room cannot widen this Room credential.
+  const foreign = f.core.getRoomParticipants(otherRoomId);
+  f.core.replaceRoomParticipants(otherRoomId, { ...foreign, memberIds: [...new Set([...foreign.memberIds, f.membership.memberId])] }, now);
+  f.core.createUser({ userId: "user_excludedperson001", displayName: "Excluded person", createdAt: now });
+  f.core.createMember({ memberId: "member_excludedperson001", userId: "user_excludedperson001", teamId, displayName: "Excluded person", role: "member", createdAt: now }, [otherRoomId]);
+  const capabilities = { supportsStart: false, supportsResume: false, supportsInterrupt: false, supportsStreaming: false };
+  for (const [agentId, name, targetRoom] of [["agent_visiblefixture001", "Visible Agent", roomId], ["agent_excludedfixture001", "Excluded Agent", otherRoomId]]) {
+    f.core.createAgent({ agentId: agentId!, teamId, ownerMemberId: ownerMember, deviceId: null, name: name!, role: "Reviewer", integrationMode: "manual", capabilities,
+      enabled: true, presence: "manual", createdAt: now, updatedAt: now });
+    f.database.prepare("DELETE FROM room_agent_participants WHERE agent_id = ?").run(agentId);
+    const participants = f.core.getRoomParticipants(targetRoom!);
+    f.core.replaceRoomParticipants(targetRoom!, { ...participants, agentIds: [...participants.agentIds, agentId!] }, now);
+  }
+  const registry = await app.inject({ url: `/api/rooms/${roomId}/registry`, headers });
+  assert.equal(registry.statusCode, 200, registry.body);
+  assert.deepEqual(registry.json().agents.map((agent: { name: string }) => agent.name), ["Visible Agent"]);
+  assert.equal(registry.body.includes("Excluded"), false); assert.deepEqual(registry.json().devices, []);
+  for (const targetRoom of [roomId, otherRoomId]) {
+    for (const suffix of ["one", "two"]) {
+      const created = await app.inject({ method: "POST", url: `/api/rooms/${targetRoom}/tasks`, headers: ownerHeaders,
+        payload: { title: `${targetRoom === roomId ? "Visible" : "Excluded"} ${suffix}`, goal: "Offline projection fixture" } });
+      assert.equal(created.statusCode, 200, created.body);
+    }
+  }
+  const root = `/api/rooms/${roomId}/work-items`;
+  const page = await app.inject({ url: `${root}?scope=team&limit=1`, headers });
+  assert.equal(page.statusCode, 200, page.body); assert.equal(page.json().items.length, 1); assert.equal(page.body.includes("Excluded"), false);
+  assert.ok(page.json().nextCursor);
+  const second = await app.inject({ url: `${root}?scope=team&limit=1&cursor=${page.json().nextCursor}`, headers });
+  assert.equal(second.statusCode, 200, second.body); assert.equal(second.body.includes("Excluded"), false);
+  for (const filter of [`roomId=${otherRoomId}`, "search=Excluded"]) {
+    const result = await app.inject({ url: `${root}?scope=team&${filter}`, headers });
+    assert.equal(result.statusCode, 200, result.body); assert.deepEqual(result.json().items, []);
+  }
+  for (const suffix of ["registry", "work-items", "changes?after=0"]) assert.equal((await app.inject({ url: `/api/rooms/${otherRoomId}/${suffix}`, headers })).statusCode, 403);
+  const changes = await app.inject({ url: `/api/rooms/${roomId}/changes?after=0`, headers });
+  assert.equal(changes.statusCode, 200, changes.body);
+  assert.equal(changes.body.includes(otherRoomId), false);
+  const pending = app.inject({ url: `/api/rooms/${roomId}/changes?after=${changes.json().cursor}`, headers });
+  await new Promise(resolve => setImmediate(resolve));
+  f.store.revokeMembership(f.membership.membershipId, now);
+  await app.inject({ method: "POST", url: `/api/rooms/${roomId}/messages`, headers: ownerHeaders, payload: { content: "Wake revoked reader", mentions: [] } });
+  assert.equal((await pending).statusCode, 401);
+  for (const suffix of ["registry", "work-items"]) assert.equal((await app.inject({ url: `/api/rooms/${roomId}/${suffix}`, headers })).statusCode, 401);
+});

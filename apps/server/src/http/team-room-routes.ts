@@ -20,6 +20,22 @@ export function registerTeamRoomRoutes({
   teamChanges,
   teamRooms
 }: ServerRouteContext): void {
+  app.get<{ Params: { roomId: string }; Querystring: { after?: string } }>("/api/rooms/:roomId/changes", async (request, reply) => {
+    const roomId = request.params.roomId;
+    const actor = auth.requireRoomMember(principal(request), roomId);
+    const after = request.query.after === undefined ? 0 : Number(request.query.after);
+    if (!Number.isSafeInteger(after) || after < 0) throw new Error("Room change cursor must be a non-negative integer");
+    noStore(reply);
+    const controller = new AbortController();
+    const abort = () => controller.abort(new Error("Room change client disconnected"));
+    request.raw.once("aborted", abort); reply.raw.once("close", abort);
+    try {
+      const changes = await teamChanges.waitRoom(actor.teamId, roomId, after, { signal: controller.signal });
+      auth.requireRoomMember(principal(request), roomId);
+      const roomIds = changes.roomIds.filter(id => id === roomId), runRoomIds = changes.runRoomIds.filter(id => id === roomId);
+      return { ...changes, changed: changes.team || changes.reset || roomIds.length > 0 || runRoomIds.length > 0, roomIds, runRoomIds };
+    } finally { request.raw.off("aborted", abort); reply.raw.off("close", abort); }
+  });
   app.get<{ Querystring: { includeArchived?: string } }>(
     "/api/teams",
     async (request) => teamRooms.listTeams(

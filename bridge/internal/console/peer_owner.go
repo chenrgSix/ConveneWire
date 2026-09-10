@@ -107,6 +107,14 @@ func (s *Service) recoverPeerJoin(response http.ResponseWriter, request *http.Re
 }
 
 func (s *Service) preparePeerHumanEntry(response http.ResponseWriter, request *http.Request) {
+	s.peerHumanEntry(response, request, false)
+}
+
+func (s *Service) openPeerHumanEntry(response http.ResponseWriter, request *http.Request) {
+	s.peerHumanEntry(response, request, true)
+}
+
+func (s *Service) peerHumanEntry(response http.ResponseWriter, request *http.Request, open bool) {
 	var input struct {
 		MembershipID string         `json:"membershipId"`
 		Scope        wire.PeerScope `json:"scope"`
@@ -124,6 +132,22 @@ func (s *Service) preparePeerHumanEntry(response http.ResponseWriter, request *h
 	entry, err := access.HumanEntry(request.Context(), input.MembershipID, input.Scope, input.OperationID)
 	if err != nil {
 		peerOwnerError(response, err)
+		return
+	}
+	if open {
+		s.mu.Lock()
+		if s.closed || request.Context().Err() != nil {
+			s.mu.Unlock()
+			peerOwnerError(response, peer.ErrStore)
+			return
+		}
+		err := s.dependencies.OpenPeerEntry(entry.HostOrigin, entry.Credential.CredentialID, entry.Credential.Token)
+		s.mu.Unlock()
+		if err != nil {
+			writeError(response, http.StatusConflict, "浏览器入口尚未确认打开，请从本机重新进入")
+			return
+		}
+		writeJSON(response, http.StatusOK, map[string]string{"status": "opened", "exchangeExpiresAt": entry.ExchangeExpiresAt})
 		return
 	}
 	// A short, one-use browser entry is intended for this local Owner. Never
