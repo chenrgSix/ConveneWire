@@ -110,6 +110,23 @@ lost-response identity, fractional assessment, exact duplicate events and
 post-revocation content-free settlement with one Host reply and receipt.
 Native execution and reconnect/crash replay remain the next RUN-020 increment.
 
+The native Go transport client now verifies signed polls against its exact live
+connection, Host and current local membership. It publishes only caller-retained
+closed events and rechecks actual local authority after the Host identity wait.
+Settlement instead checks immutable membership history and the original bounded
+capability, so local leave and revoked business access do not erase known truth.
+All responses bind the exact request, sequence and digest; lost acknowledgments
+never change the event or settlement operation. Actual TLS tests cover changed
+delivery proofs, identity/configuration loss during waits, large fractional
+assessment replies, duplicate acknowledgments and post-leave settlement expiry.
+
+Continuous traffic has separate pre-authentication IP limits: 600 Host identity
+challenges and 1,200 combined Run poll/admit/event/settlement requests per minute.
+Invitation admission keeps its existing limit. These bounded buckets prevent
+ordinary Runtime traffic from consuming the invitation budget; body limits and
+every signature, current-authority and audience check still apply. The native
+worker must pace event publication and retain a failed request for retry.
+
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned
 per Run. Default-off consent, local revocation, pairing/revision checks and

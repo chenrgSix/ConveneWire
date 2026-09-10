@@ -9,6 +9,24 @@ import { AuthService } from "../src/security/auth-service.js";
 import { peerClaimDigest } from "../src/data/peer-membership-repository.js";
 import { fixture, now, expiry, ownerId, teamId, roomId, secret } from "./helpers/peer-fixture.js";
 
+test("continuous Peer identity and Run requests do not consume invitation admission attempts", async t => {
+  const f = await fixture(t);
+  const app = await createServerApp({ databasePath: f.databasePath, clock: () => now,
+    anonymousRateLimit: { maximumAttempts: 2 },
+    webAuth: { mode: "trusted-team", publicOrigin: f.identity.browserOrigin, ownerRecoveryToken: "peer-fixture-owner-recovery-0123456789" } });
+  f.resources.defer(() => app.close());
+  const post = (url: string) => app.inject({ method: "POST", url, payload: {} });
+  for (let count = 0; count < 25; count++) {
+    assert.equal((await post("/api/peer/identity")).statusCode, 400);
+    assert.equal((await post("/api/peer/runs/poll")).statusCode, 401);
+  }
+  assert.equal((await post("/api/peer/invitations/preview")).statusCode, 400);
+  assert.equal((await post("/api/peer/invitations/preview")).statusCode, 400);
+  assert.equal((await post("/api/peer/invitations/preview")).statusCode, 429);
+  assert.equal((await post("/api/peer/identity")).statusCode, 400);
+  assert.equal((await post("/api/peer/runs/settle")).statusCode, 401);
+});
+
 test("Peer HTTP admission isolates strict wire decoding, cookies, Device tokens and pinned proof receipts", async t => {
   const f = await fixture(t), origin = f.identity.browserOrigin;
   const auth = new AuthService(f.database, () => now), owner = auth.issueWebSession(ownerId, now, expiry);

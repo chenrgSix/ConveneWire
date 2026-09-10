@@ -4,6 +4,7 @@ import type { PeerAgentOfferRequest, PeerAgentAcceptanceRequest, PeerAgentRevoke
 import type { PeerBrowserEntryRequest, PeerHumanEntryRequest, PeerInvitationClaim, PeerInvitationCreateRequest, PeerInvitationPreviewRequest, PeerClaimChallengeRequest, PeerIdentityRequest } from "@convene-wire/contracts/peer";
 import { decodePeer } from "@convene-wire/contracts/peer-validation";
 import { PeerStoreError } from "../data/peer-membership-repository.js";
+import { PeerTransportRateLimiter } from "../security/peer-transport-rate-limiter.js";
 import { bearerToken, noStore, sessionCookie } from "./http-helpers.js";
 import type { ServerRouteContext } from "./route-context.js";
 
@@ -14,6 +15,11 @@ function body<T>(request: FastifyRequest, kind: string): T {
 
 export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peerDeliveries, peerHumanEntry, peerAgents, peerIngress, principal, clock, limitAnonymous, webAuth,
   routeAgentReplyMentions, advanceDiscussion, pauseDiscussionForInput }: ServerRouteContext): void {
+  const transportLimits = new PeerTransportRateLimiter();
+  const limitTransport = (request: FastifyRequest, kind: "identity" | "run") => {
+    const now = Date.parse(clock());
+    transportLimits.consume(kind, request.ip, Number.isFinite(now) ? now : Date.now());
+  };
   void app.register(async peer => {
     peer.removeContentTypeParser("application/json");
     peer.addContentTypeParser("application/json", { parseAs: "buffer", bodyLimit: 16 * 1024 }, (_request, bytes, done) => done(null, bytes));
@@ -33,19 +39,19 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peer
       void reply.code(status).send({ code });
     });
     peer.post("/api/peer/invitations", async request => peerAdmission.createInvitation(principal(request), body<PeerInvitationCreateRequest>(request, "PeerInvitationCreateRequest"), clock()));
-    const runRequest = (request: FastifyRequest, operation: string) => {
-      limitAnonymous(request, operation);
+    const runRequest = (request: FastifyRequest) => {
+      limitTransport(request, "run");
       if (request.url.includes("?") || request.headers.origin || request.headers.cookie ||
           Object.keys(request.headers).some(name => /^x-(?:agentroom|convenewire|convene-wire|agent-room)-/u.test(name))) {
         throw new PeerStoreError("SCOPE_DENIED");
       }
     };
     peer.post("/api/peer/runs/poll", { bodyLimit: 64 * 1024 }, async request => {
-      runRequest(request, "peer-run-poll");
+      runRequest(request);
       return peerDeliveries.poll(bearerToken(request), body<PeerRunPollRequest>(request, "PeerRunPollRequest"), clock());
     });
     peer.post("/api/peer/runs/events", { bodyLimit: 1024 * 1024 }, async request => {
-      runRequest(request, "peer-run-event");
+      runRequest(request);
       const input = body<PeerRunEventRequest>(request, "PeerRunEventRequest");
       const receipt = peerDeliveries.event(bearerToken(request), input, clock());
       if (input.event.type === "reply") await routeAgentReplyMentions(input.binding.runId);
@@ -54,11 +60,11 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peer
       return receipt;
     });
     peer.post("/api/peer/runs/settle", async request => {
-      runRequest(request, "peer-run-settlement");
+      runRequest(request);
       return peerDeliveries.settle(bearerToken(request), body<PeerRunSettlementRequest>(request, "PeerRunSettlementRequest"), clock());
     });
     peer.post("/api/peer/runs/admit", async request => {
-      runRequest(request, "peer-run-admission");
+      runRequest(request);
       return peerRuns.authorize(bearerToken(request), body<PeerAdmission>(request, "PeerAdmission"), clock());
     });
     peer.post("/api/peer/agents/offers", async request => {
@@ -85,12 +91,13 @@ export function registerPeerAdmissionRoutes({ app, peerAdmission, peerRuns, peer
       peerAdmission.revokeMembership(principal(request), request.params.membershipId, clock());
       return { status: "revoked" };
     });
-    const machineRequest = (request: FastifyRequest) => {
-      limitAnonymous(request, "peer-admission");
+    const machineRequest = (request: FastifyRequest, identity = false) => {
+      if (identity) limitTransport(request, "identity");
+      else limitAnonymous(request, "peer-admission");
       if (request.headers.origin || request.headers.cookie || request.headers.authorization) throw new PeerStoreError("SCOPE_DENIED");
     };
     peer.post("/api/peer/identity", async request => {
-      machineRequest(request);
+      machineRequest(request, true);
       return peerAdmission.identity(body<PeerIdentityRequest>(request, "PeerIdentityRequest"), clock());
     });
     peer.post("/api/peer/human-entry", async request => {
