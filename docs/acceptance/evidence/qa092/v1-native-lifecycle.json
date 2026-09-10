@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9286835ad90dfa600601764f5ef0f4e0d1ae8ef8",
+  "archiveSHA256": "9271934572f6cda456a30f6452855fb442171b249fdbaab5f2cba0fa0cbd70ab",
+  "fixture": "Disposable Team and Room, explicit Node/Bridge/Workspace paths, no configured Runtime executable",
+  "actions": [
+    "Native main-window close button",
+    "Native activation of the verified existing desktop process",
+    "Native application quit shortcut"
+  ],
+  "verified": {
+    "sameProcessAliveAfterMainWindowClose": true,
+    "hubHealthyAfterMainWindowClose": true,
+    "reopenedOriginalTeam": true,
+    "nodeIdentityBytesUnchanged": true,
+    "nativeQuitExitCode": 0,
+    "hubStoppedAfterQuit": true,
+    "ownedProcessesDrainedBeforeDataRemoval": true,
+    "temporaryFixtureRemoved": true
+  },
+  "externalModelCalls": 0,
+  "limits": [
+    "Application-window actions are not system-tray menu evidence",
+    "No configured Agent process in this fixture",
+    "No installation, independent physical owners or Windows acceptance"
+  ]
+}

@@ -17,9 +17,10 @@
   "configuredAgents": 0,
   "cleanup": "Bounded preview finished and drained owned processes before removing extracted application and private data",
   "limits": [
-    "Final-source native quit was attempted after the preview had already ended; it is not counted as a quit observation",
+    "The initial replacement preview ended before its quit request; a subsequent fresh fixture verified final-source native window close, reopen and quit in v1-native-lifecycle.json",
     "Earlier 41cd563f native application quit and Hub stop remain separately retained",
     "Actual tray actions and access-changing Host browser submission remain pending",
     "No installation, independent physical owners, Windows native acceptance or publication"
-  ]
+  ],
+  "subsequentLifecycleEvidence": "v1-native-lifecycle.json"
 }

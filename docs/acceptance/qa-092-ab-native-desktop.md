@@ -54,6 +54,16 @@ records these observations separately from the earlier quit check. The bounded
 preview ended and cleaned its owned processes/data before the final quit request;
 the resulting unavailable-app response is not counted as a quit observation.
 
+A subsequent fresh fixture completed the outstanding window lifecycle observation
+using this same `9286835a` archive. Closing the actual native main-window control
+left its verified process and Hub alive. Native activation reopened the original
+Team. Application quit returned exit code zero, stopped the Hub and preserved the
+exact identity bytes. [Lifecycle assertions](evidence/qa092/v1-native-lifecycle.json)
+record the completed checks; owned processes were drained before the temporary
+extraction and data were removed. This fixture had no configured Agent process.
+These actions close the current-source window lifecycle gap and do not stand in
+for the remaining system-tray menu observations.
+
 ## Final acceptance procedure
 
 Use the exact replacement artifact and explicit disposable profiles for remaining

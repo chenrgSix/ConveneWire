@@ -902,6 +902,9 @@ onboarding route defect, now repaired and covered by six focused checks plus
 actual native Work/Room card observations. QA-092 names the replacement clean
 `9286835a` package and its complete extracted-inventory verification. Its remaining
 tray, scoped access-changing UI and independent physical gates remain open.
+A fresh same-source native fixture also verifies main-window close/reopen retains
+the original Team and identity, and normal application quit stops the Hub with
+exit code zero. It does not claim the unavailable system-tray menu actions.
 
 The [native offline protocol fixture](../../scripts/local-node/fixtures/offline-runtime.go)
 now serves both Codex app-server and Pi JSONL through the actual local adapters.
