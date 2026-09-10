@@ -16,6 +16,13 @@ test("unpaired native execution remains independent of Device connection state",
   assert.equal(stopped.action, "start");
   assert.equal(stopped.tone, "danger");
   assert.equal(stopped.technicalDetail, "identity unavailable");
+  assert.match(stopped.title, /Runtime 已停止/);
+  const paired = connectionPresentation({...state, paired: true, serverUrl: "http://127.0.0.1:48123", connection: {state: "online"}});
+  assert.equal(paired.label, "本地 Team 已连接");
+  assert.match(paired.summary, /远端空间/);
+  const retrying = connectionPresentation({...state, paired: true, connection: {state: "retrying", lastError: "connection refused"}});
+  assert.equal(retrying.action, "none");
+  assert.match(retrying.title, /本地 Team/);
 });
 
 test("online connection presents one calm owner-facing summary", () => {

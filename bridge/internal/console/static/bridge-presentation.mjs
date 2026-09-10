@@ -18,18 +18,32 @@ export function connectionPresentation(state) {
   const normalizedError = technicalDetail.toLowerCase();
   const server = serverLabel(state.serverUrl);
 
-  if (state.localNodeId && !state.paired) {
+  if (state.localNodeId && (!state.paired || !state.bridgeRunning)) {
     return {
       state: state.bridgeRunning ? "running" : "stopped",
       tone: state.bridgeRunning ? "success" : technicalDetail ? "danger" : "neutral",
       label: state.bridgeRunning ? "运行中" : "已停止",
-      title: state.bridgeRunning ? "本机节点正在运行" : "本机节点已停止接收任务",
+      title: state.bridgeRunning ? "本机 Runtime 正在运行" : "本机 Runtime 已停止接收任务",
       summary: state.bridgeRunning
         ? "可以配置本机 Agent，并通过邀请参与跨节点协作。任务仍需双方确认分享范围。"
-        : "本机配置已保留。启动后可继续跨节点协作。",
+        : "本机配置已保留。启动 Runtime 后可继续接收任务；本地 Hub 的托管状态由 Node 管理。",
       server: "本机节点",
       action: state.bridgeRunning ? "none" : "start",
       technicalDetail
+    };
+  }
+
+  if (state.localNodeId) {
+    const online = connection.state === "online";
+    return {
+      state: online ? "online" : connection.state,
+      tone: online ? "success" : technicalDetail ? "warning" : "neutral",
+      label: online ? "本地 Team 已连接" : "本地 Team 连接中",
+      title: online ? "本地任务连接已就绪" : "正在恢复本地 Team 连接",
+      summary: online
+        ? "本机 Runtime 已连接本地 Hub。远端空间的成员关系、连接和 Agent 分享在“远端空间”页单独管理。"
+        : "本机 Runtime 会继续恢复本地 Team 连接。请在“远端空间”页查看各远端连接，必要时重新打开本机 Node。",
+      server: "本地 Hub", action: "none", technicalDetail: online ? "" : technicalDetail
     };
   }
 

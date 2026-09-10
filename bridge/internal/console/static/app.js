@@ -622,6 +622,13 @@ function closeConnectionModal() {
 }
 
 function render(state) {
+  const native = Boolean(state.localNodeId);
+  document.title = native ? "ConveneWire Node" : "ConveneWire Bridge";
+  document.querySelector(".sidebar-brand small").textContent = native ? "Node" : "Bridge";
+  document.querySelector(".brand-mark").textContent = native ? "CW" : "AR";
+  document.querySelector(".sidebar-nav").setAttribute("aria-label", native ? "本机 Node 页面" : "Bridge 页面");
+  document.querySelector('[data-page-panel="settings"] h2').textContent = native ? "本机设置" : "Bridge 设置";
+  elements["start-bridge"].textContent = native ? "启动 Runtime" : "启动 Bridge";
   for (const selector of [".pairing-panel", "#edit-connection", ".client-entry-card"]) {
     document.querySelector(selector)?.classList.toggle("hidden", Boolean(state.localNodeId));
   }
@@ -651,8 +658,8 @@ function render(state) {
     elements["page-title"].textContent = waiting ? "等待 Owner 批准" : "开始使用 Bridge";
   }
   elements["phase-label"].textContent = state.configured && !state.bridgeRunning
-    ? "Bridge 已停止"
-    : (labels[state.phase] || state.phase);
+    ? (native ? "Runtime 已停止" : "Bridge 已停止")
+    : (native && state.bridgeRunning ? "Runtime 运行中" : (labels[state.phase] || state.phase));
   elements.phase.classList.toggle("running", state.bridgeRunning);
   elements.configured.textContent = state.configured ? "已创建" : "未创建";
   elements.paired.textContent = state.paired ? "已保存配对" : "未配对";

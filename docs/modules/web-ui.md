@@ -140,6 +140,13 @@ no horizontal overflow, both Tab directions, Escape and trigger restoration.
 Browser review does not save or restart the Node. Physical network reachability,
 browser/system CA trust and manual network changes remain in QA-092.
 
+The native Console identifies the product as a Node and labels core start/stop
+as Runtime state. Its local Team connection describes only that connector;
+remote membership, connectivity and bilateral Agent authority remain separate
+on the Peer page. The embedded presentation regressions and all 89 Console UI
+checks pass. WEB-085's implemented interfaces now proceed to joint automated
+acceptance in QA-091 and deferred physical/manual acceptance in QA-092.
+
 An explicit `Enter Space` action now asks the native Owner capability to issue
 and open one short browser exchange. The Console receives only opening status
 and exchange expiry. The native opener accepts the verified exact HTTPS origin
