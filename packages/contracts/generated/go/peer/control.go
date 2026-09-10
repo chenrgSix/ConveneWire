@@ -823,6 +823,7 @@ type IndigoPayload struct {
 type PeerLocalConnection struct {
 	Acceptances         []PeerLocalConnectionAcceptance         `json:"acceptances"`
 	AcceptanceSnapshots []PeerLocalConnectionAcceptanceSnapshot `json:"acceptanceSnapshots,omitempty"`
+	Departure           *PeerLocalConnectionDeparture           `json:"departure,omitempty"`
 	Exports             []PeerLocalConnectionExport             `json:"exports"`
 	LocalExports        []PeerLocalConnectionLocalExport        `json:"localExports,omitempty"`
 	Receipt             PeerLocalConnectionReceipt              `json:"receipt"`
@@ -948,6 +949,78 @@ type MagentaCapabilities struct {
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
+type PeerLocalConnectionDeparture struct {
+	CreatedAt string         `json:"createdAt"`
+	Intent    PurpleIntent   `json:"intent"`
+	Receipt   *PurpleReceipt `json:"receipt,omitempty"`
+}
+
+type PurpleIntent struct {
+	Host          FluffyHost        `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   PurpleParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+}
+
+type FluffyHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PurpleParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PurpleReceipt struct {
+	Intent        FluffyIntent   `json:"intent"`
+	Proof         TentacledProof `json:"proof"`
+	RecordedAt    string         `json:"recordedAt"`
+	SchemaVersion int64          `json:"schemaVersion"`
+	State         ReceiptState   `json:"state"`
+}
+
+type FluffyIntent struct {
+	Host          TentacledHost     `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   FluffyParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+}
+
+type TentacledHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type FluffyParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type TentacledProof struct {
+	Payload   HilariousPayload `json:"payload"`
+	Signature string           `json:"signature"`
+}
+
+type HilariousPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
 type PeerLocalConnectionExport struct {
 	AuthorityNodeID   string              `json:"authorityNodeId"`
 	Capabilities      FriskyCapabilities  `json:"capabilities"`
@@ -1017,13 +1090,13 @@ type PeerLocalConnectionReceipt struct {
 	Invitation        PurpleInvitation        `json:"invitation"`
 	MachineCredential PurpleMachineCredential `json:"machineCredential"`
 	Membership        PurpleMembership        `json:"membership"`
-	Proof             TentacledProof          `json:"proof"`
+	Proof             StickyProof             `json:"proof"`
 	SchemaVersion     int64                   `json:"schemaVersion"`
 }
 
 type PurpleInvitation struct {
 	ExpiresAt           string         `json:"expiresAt"`
-	Host                FluffyHost     `json:"host"`
+	Host                StickyHost     `json:"host"`
 	HostOrigin          string         `json:"hostOrigin"`
 	InvitationID        string         `json:"invitationId"`
 	MembershipExpiresAt string         `json:"membershipExpiresAt"`
@@ -1033,7 +1106,7 @@ type PurpleInvitation struct {
 	TeamLabel           string         `json:"teamLabel"`
 }
 
-type FluffyHost struct {
+type StickyHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1075,12 +1148,12 @@ type StickyScope struct {
 	TeamID string  `json:"teamId"`
 }
 
-type TentacledProof struct {
-	Payload   HilariousPayload `json:"payload"`
+type StickyProof struct {
+	Payload   AmbitiousPayload `json:"payload"`
 	Signature string           `json:"signature"`
 }
 
-type HilariousPayload struct {
+type AmbitiousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1104,6 +1177,7 @@ type PeerParticipantState struct {
 type Connection struct {
 	Acceptances         []ConnectionAcceptance         `json:"acceptances"`
 	AcceptanceSnapshots []ConnectionAcceptanceSnapshot `json:"acceptanceSnapshots,omitempty"`
+	Departure           *ConnectionDeparture           `json:"departure,omitempty"`
 	Exports             []ConnectionExport             `json:"exports"`
 	LocalExports        []ConnectionLocalExport        `json:"localExports,omitempty"`
 	Receipt             ConnectionReceipt              `json:"receipt"`
@@ -1119,7 +1193,7 @@ type ConnectionAcceptanceSnapshot struct {
 	HistoryDigest       string                    `json:"historyDigest"`
 	LocalAgentID        string                    `json:"localAgentId"`
 	PeerID              string                    `json:"peerId"`
-	Proof               StickyProof               `json:"proof"`
+	Proof               IndigoProof               `json:"proof"`
 	SchemaVersion       int64                     `json:"schemaVersion"`
 }
 
@@ -1183,12 +1257,12 @@ type Capabilities1 struct {
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
 }
 
-type StickyProof struct {
-	Payload   AmbitiousPayload `json:"payload"`
-	Signature string           `json:"signature"`
+type IndigoProof struct {
+	Payload   CunningPayload `json:"payload"`
+	Signature string         `json:"signature"`
 }
 
-type AmbitiousPayload struct {
+type CunningPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1227,6 +1301,78 @@ type Capabilities2 struct {
 	SupportsStart                bool `json:"supportsStart"`
 	SupportsStreaming            bool `json:"supportsStreaming"`
 	SupportsTaskContextIsolation bool `json:"supportsTaskContextIsolation"`
+}
+
+type ConnectionDeparture struct {
+	CreatedAt string          `json:"createdAt"`
+	Intent    TentacledIntent `json:"intent"`
+	Receipt   *FluffyReceipt  `json:"receipt,omitempty"`
+}
+
+type TentacledIntent struct {
+	Host          IndigoHost           `json:"host"`
+	HostOrigin    string               `json:"hostOrigin"`
+	MembershipID  string               `json:"membershipId"`
+	OperationID   string               `json:"operationId"`
+	Participant   TentacledParticipant `json:"participant"`
+	PeerID        string               `json:"peerId"`
+	SchemaVersion int64                `json:"schemaVersion"`
+}
+
+type IndigoHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type TentacledParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type FluffyReceipt struct {
+	Intent        StickyIntent  `json:"intent"`
+	Proof         IndecentProof `json:"proof"`
+	RecordedAt    string        `json:"recordedAt"`
+	SchemaVersion int64         `json:"schemaVersion"`
+	State         ReceiptState  `json:"state"`
+}
+
+type StickyIntent struct {
+	Host          IndecentHost      `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   StickyParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+}
+
+type IndecentHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type StickyParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type IndecentProof struct {
+	Payload   MagentaPayload `json:"payload"`
+	Signature string         `json:"signature"`
+}
+
+type MagentaPayload struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
 }
 
 type ConnectionExport struct {
@@ -1298,13 +1444,13 @@ type ConnectionReceipt struct {
 	Invitation        FluffyInvitation        `json:"invitation"`
 	MachineCredential FluffyMachineCredential `json:"machineCredential"`
 	Membership        FluffyMembership        `json:"membership"`
-	Proof             IndigoProof             `json:"proof"`
+	Proof             HilariousProof          `json:"proof"`
 	SchemaVersion     int64                   `json:"schemaVersion"`
 }
 
 type FluffyInvitation struct {
 	ExpiresAt           string        `json:"expiresAt"`
-	Host                TentacledHost `json:"host"`
+	Host                HilariousHost `json:"host"`
 	HostOrigin          string        `json:"hostOrigin"`
 	InvitationID        string        `json:"invitationId"`
 	MembershipExpiresAt string        `json:"membershipExpiresAt"`
@@ -1314,7 +1460,7 @@ type FluffyInvitation struct {
 	TeamLabel           string        `json:"teamLabel"`
 }
 
-type TentacledHost struct {
+type HilariousHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1356,12 +1502,12 @@ type IndecentScope struct {
 	TeamID string  `json:"teamId"`
 }
 
-type IndigoProof struct {
-	Payload   CunningPayload `json:"payload"`
-	Signature string         `json:"signature"`
+type HilariousProof struct {
+	Payload   FriskyPayload `json:"payload"`
+	Signature string        `json:"signature"`
 }
 
-type CunningPayload struct {
+type FriskyPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1401,7 +1547,7 @@ type PeerInvitationIssued struct {
 
 type PeerInvitationIssuedInvitation struct {
 	ExpiresAt           string         `json:"expiresAt"`
-	Host                StickyHost     `json:"host"`
+	Host                AmbitiousHost  `json:"host"`
 	HostOrigin          string         `json:"hostOrigin"`
 	InvitationID        string         `json:"invitationId"`
 	MembershipExpiresAt string         `json:"membershipExpiresAt"`
@@ -1411,7 +1557,7 @@ type PeerInvitationIssuedInvitation struct {
 	TeamLabel           string         `json:"teamLabel"`
 }
 
-type StickyHost struct {
+type AmbitiousHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1444,7 +1590,7 @@ type PeerInvitationPreview struct {
 
 type PeerInvitationPreviewInvitation struct {
 	ExpiresAt           string         `json:"expiresAt"`
-	Host                IndigoHost     `json:"host"`
+	Host                CunningHost    `json:"host"`
 	HostOrigin          string         `json:"hostOrigin"`
 	InvitationID        string         `json:"invitationId"`
 	MembershipExpiresAt string         `json:"membershipExpiresAt"`
@@ -1454,7 +1600,7 @@ type PeerInvitationPreviewInvitation struct {
 	TeamLabel           string         `json:"teamLabel"`
 }
 
-type IndigoHost struct {
+type CunningHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1466,11 +1612,11 @@ type AmbitiousScope struct {
 }
 
 type PeerInvitationPreviewProof struct {
-	Payload   MagentaPayload `json:"payload"`
-	Signature string         `json:"signature"`
+	Payload   MischievousPayload `json:"payload"`
+	Signature string             `json:"signature"`
 }
 
-type MagentaPayload struct {
+type MischievousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1550,11 +1696,11 @@ type PeerHumanBindingReceiptParticipant struct {
 }
 
 type PeerHumanBindingReceiptProof struct {
-	Payload   FriskyPayload `json:"payload"`
-	Signature string        `json:"signature"`
+	Payload   BraggadociousPayload `json:"payload"`
+	Signature string               `json:"signature"`
 }
 
-type FriskyPayload struct {
+type BraggadociousPayload struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1610,11 +1756,11 @@ type HumanParticipant struct {
 }
 
 type HumanProof struct {
-	Payload   MischievousPayload `json:"payload"`
-	Signature string             `json:"signature"`
+	Payload   Payload1 `json:"payload"`
+	Signature string   `json:"signature"`
 }
 
-type MischievousPayload struct {
+type Payload1 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1636,18 +1782,18 @@ type Runtime struct {
 }
 
 type RuntimeInvitation struct {
-	ExpiresAt           string       `json:"expiresAt"`
-	Host                IndecentHost `json:"host"`
-	HostOrigin          string       `json:"hostOrigin"`
-	InvitationID        string       `json:"invitationId"`
-	MembershipExpiresAt string       `json:"membershipExpiresAt"`
-	RoomLabel           *string      `json:"roomLabel"`
-	SchemaVersion       int64        `json:"schemaVersion"`
-	Scope               FriskyScope  `json:"scope"`
-	TeamLabel           string       `json:"teamLabel"`
+	ExpiresAt           string      `json:"expiresAt"`
+	Host                MagentaHost `json:"host"`
+	HostOrigin          string      `json:"hostOrigin"`
+	InvitationID        string      `json:"invitationId"`
+	MembershipExpiresAt string      `json:"membershipExpiresAt"`
+	RoomLabel           *string     `json:"roomLabel"`
+	SchemaVersion       int64       `json:"schemaVersion"`
+	Scope               FriskyScope `json:"scope"`
+	TeamLabel           string      `json:"teamLabel"`
 }
 
-type IndecentHost struct {
+type MagentaHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1690,11 +1836,11 @@ type MischievousScope struct {
 }
 
 type RuntimeProof struct {
-	Payload   BraggadociousPayload `json:"payload"`
-	Signature string               `json:"signature"`
+	Payload   Payload2 `json:"payload"`
+	Signature string   `json:"signature"`
 }
 
-type BraggadociousPayload struct {
+type Payload2 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1718,11 +1864,11 @@ type PeerHumanEntryRequest struct {
 }
 
 type PeerHumanEntryRequestProof struct {
-	Payload   Payload1 `json:"payload"`
+	Payload   Payload3 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload1 struct {
+type Payload3 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1766,11 +1912,11 @@ type CredentialScope struct {
 }
 
 type PeerHumanEntryProof struct {
-	Payload   Payload2 `json:"payload"`
+	Payload   Payload4 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload2 struct {
+type Payload4 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1831,11 +1977,11 @@ type PeerIdentityProofHost struct {
 }
 
 type PeerIdentityProofProof struct {
-	Payload   Payload3 `json:"payload"`
+	Payload   Payload5 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload3 struct {
+type Payload5 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1854,16 +2000,16 @@ type PeerLocalHumanBinding struct {
 }
 
 type PeerLocalHumanBindingReceipt struct {
-	Host              HilariousHost         `json:"host"`
+	Host              FriskyHost            `json:"host"`
 	HumanCredential   PurpleHumanCredential `json:"humanCredential"`
 	JoinReceiptDigest string                `json:"joinReceiptDigest"`
 	LocalUserID       string                `json:"localUserId"`
-	Participant       PurpleParticipant     `json:"participant"`
-	Proof             IndecentProof         `json:"proof"`
+	Participant       IndigoParticipant     `json:"participant"`
+	Proof             AmbitiousProof        `json:"proof"`
 	SchemaVersion     int64                 `json:"schemaVersion"`
 }
 
-type HilariousHost struct {
+type FriskyHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1884,17 +2030,17 @@ type BraggadociousScope struct {
 	TeamID string  `json:"teamId"`
 }
 
-type PurpleParticipant struct {
+type IndigoParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type IndecentProof struct {
-	Payload   Payload4 `json:"payload"`
+type AmbitiousProof struct {
+	Payload   Payload6 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload4 struct {
+type Payload6 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1921,16 +2067,16 @@ type BindingElement struct {
 }
 
 type BindingReceipt struct {
-	Host              AmbitiousHost         `json:"host"`
+	Host              MischievousHost       `json:"host"`
 	HumanCredential   FluffyHumanCredential `json:"humanCredential"`
 	JoinReceiptDigest string                `json:"joinReceiptDigest"`
 	LocalUserID       string                `json:"localUserId"`
-	Participant       FluffyParticipant     `json:"participant"`
-	Proof             HilariousProof        `json:"proof"`
+	Participant       IndecentParticipant   `json:"participant"`
+	Proof             CunningProof          `json:"proof"`
 	SchemaVersion     int64                 `json:"schemaVersion"`
 }
 
-type AmbitiousHost struct {
+type MischievousHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -1951,17 +2097,17 @@ type Scope1 struct {
 	TeamID string  `json:"teamId"`
 }
 
-type FluffyParticipant struct {
+type IndecentParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type HilariousProof struct {
-	Payload   Payload5 `json:"payload"`
+type CunningProof struct {
+	Payload   Payload7 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload5 struct {
+type Payload7 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -1992,18 +2138,18 @@ type PeerPendingJoin struct {
 }
 
 type PeerPendingJoinInvitation struct {
-	ExpiresAt           string      `json:"expiresAt"`
-	Host                CunningHost `json:"host"`
-	HostOrigin          string      `json:"hostOrigin"`
-	InvitationID        string      `json:"invitationId"`
-	MembershipExpiresAt string      `json:"membershipExpiresAt"`
-	RoomLabel           *string     `json:"roomLabel"`
-	SchemaVersion       int64       `json:"schemaVersion"`
-	Scope               Scope2      `json:"scope"`
-	TeamLabel           string      `json:"teamLabel"`
+	ExpiresAt           string            `json:"expiresAt"`
+	Host                BraggadociousHost `json:"host"`
+	HostOrigin          string            `json:"hostOrigin"`
+	InvitationID        string            `json:"invitationId"`
+	MembershipExpiresAt string            `json:"membershipExpiresAt"`
+	RoomLabel           *string           `json:"roomLabel"`
+	SchemaVersion       int64             `json:"schemaVersion"`
+	Scope               Scope2            `json:"scope"`
+	TeamLabel           string            `json:"teamLabel"`
 }
 
-type CunningHost struct {
+type BraggadociousHost struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
@@ -2108,11 +2254,11 @@ type Capabilities6 struct {
 }
 
 type PeerAgentOfferRequestProof struct {
-	Payload   Payload6 `json:"payload"`
+	Payload   Payload8 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload6 struct {
+type Payload8 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2135,11 +2281,11 @@ type PeerAgentOfferReceipt struct {
 }
 
 type PeerAgentOfferReceiptProof struct {
-	Payload   Payload7 `json:"payload"`
+	Payload   Payload9 `json:"payload"`
 	Signature string   `json:"signature"`
 }
 
-type Payload7 struct {
+type Payload9 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2245,11 +2391,11 @@ type Capabilities8 struct {
 }
 
 type PeerAgentAcceptanceReceiptProof struct {
-	Payload   Payload8 `json:"payload"`
-	Signature string   `json:"signature"`
+	Payload   Payload10 `json:"payload"`
+	Signature string    `json:"signature"`
 }
 
-type Payload8 struct {
+type Payload10 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2342,11 +2488,11 @@ type Capabilities10 struct {
 }
 
 type PeerAgentSyncRequestProof struct {
-	Payload   Payload9 `json:"payload"`
-	Signature string   `json:"signature"`
+	Payload   Payload11 `json:"payload"`
+	Signature string    `json:"signature"`
 }
 
-type Payload9 struct {
+type Payload11 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2433,11 +2579,11 @@ type Capabilities12 struct {
 }
 
 type PeerAgentSyncReceiptProof struct {
-	Payload   Payload10 `json:"payload"`
+	Payload   Payload12 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload10 struct {
+type Payload12 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2553,33 +2699,33 @@ type PeerRuntimeChallenge struct {
 type PeerRuntimeChallengeBinding struct {
 	ConnectionID  string               `json:"connectionId"`
 	CredentialID  string               `json:"credentialId"`
-	Host          MagentaHost          `json:"host"`
+	Host          Host1                `json:"host"`
 	HostOrigin    string               `json:"hostOrigin"`
 	MemberID      string               `json:"memberId"`
 	MembershipID  string               `json:"membershipId"`
 	OperationID   string               `json:"operationId"`
-	Participant   TentacledParticipant `json:"participant"`
+	Participant   HilariousParticipant `json:"participant"`
 	PeerID        string               `json:"peerId"`
 	SchemaVersion int64                `json:"schemaVersion"`
 	TeamID        string               `json:"teamId"`
 }
 
-type MagentaHost struct {
+type Host1 struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type TentacledParticipant struct {
+type HilariousParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
 type PeerRuntimeChallengeProof struct {
-	Payload   Payload11 `json:"payload"`
+	Payload   Payload13 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload11 struct {
+type Payload13 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2599,11 +2745,11 @@ type PeerRuntimeAuthentication struct {
 }
 
 type PeerRuntimeAuthenticationProof struct {
-	Payload   Payload12 `json:"payload"`
+	Payload   Payload14 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload12 struct {
+type Payload14 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2623,11 +2769,11 @@ type PeerRuntimeReady struct {
 }
 
 type PeerRuntimeReadyProof struct {
-	Payload   Payload13 `json:"payload"`
+	Payload   Payload15 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload13 struct {
+type Payload15 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2655,45 +2801,45 @@ type PeerRuntimeMessage struct {
 }
 
 type PeerRuntimeMessagePayload struct {
-	Binding       *FluffyBinding  `json:"binding,omitempty"`
-	Nonce         *string         `json:"nonce,omitempty"`
-	Proof         *AmbitiousProof `json:"proof,omitempty"`
-	SchemaVersion *int64          `json:"schemaVersion,omitempty"`
-	BindingDigest *string         `json:"bindingDigest,omitempty"`
-	Sequence      *int64          `json:"sequence,omitempty"`
-	Code          *Code           `json:"code,omitempty"`
+	Binding       *FluffyBinding `json:"binding,omitempty"`
+	Nonce         *string        `json:"nonce,omitempty"`
+	Proof         *MagentaProof  `json:"proof,omitempty"`
+	SchemaVersion *int64         `json:"schemaVersion,omitempty"`
+	BindingDigest *string        `json:"bindingDigest,omitempty"`
+	Sequence      *int64         `json:"sequence,omitempty"`
+	Code          *Code          `json:"code,omitempty"`
 }
 
 type FluffyBinding struct {
-	ConnectionID  string            `json:"connectionId"`
-	CredentialID  string            `json:"credentialId"`
-	Host          FriskyHost        `json:"host"`
-	HostOrigin    string            `json:"hostOrigin"`
-	MemberID      string            `json:"memberId"`
-	MembershipID  string            `json:"membershipId"`
-	OperationID   string            `json:"operationId"`
-	Participant   StickyParticipant `json:"participant"`
-	PeerID        string            `json:"peerId"`
-	SchemaVersion int64             `json:"schemaVersion"`
-	TeamID        string            `json:"teamId"`
+	ConnectionID  string               `json:"connectionId"`
+	CredentialID  string               `json:"credentialId"`
+	Host          Host2                `json:"host"`
+	HostOrigin    string               `json:"hostOrigin"`
+	MemberID      string               `json:"memberId"`
+	MembershipID  string               `json:"membershipId"`
+	OperationID   string               `json:"operationId"`
+	Participant   AmbitiousParticipant `json:"participant"`
+	PeerID        string               `json:"peerId"`
+	SchemaVersion int64                `json:"schemaVersion"`
+	TeamID        string               `json:"teamId"`
 }
 
-type FriskyHost struct {
+type Host2 struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type StickyParticipant struct {
+type AmbitiousParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type AmbitiousProof struct {
-	Payload   Payload14 `json:"payload"`
+type MagentaProof struct {
+	Payload   Payload16 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload14 struct {
+type Payload16 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2733,31 +2879,31 @@ type PeerLeaveRequest struct {
 }
 
 type PeerLeaveRequestIntent struct {
-	Host          MischievousHost   `json:"host"`
-	HostOrigin    string            `json:"hostOrigin"`
-	MembershipID  string            `json:"membershipId"`
-	OperationID   string            `json:"operationId"`
-	Participant   IndigoParticipant `json:"participant"`
-	PeerID        string            `json:"peerId"`
-	SchemaVersion int64             `json:"schemaVersion"`
+	Host          Host3              `json:"host"`
+	HostOrigin    string             `json:"hostOrigin"`
+	MembershipID  string             `json:"membershipId"`
+	OperationID   string             `json:"operationId"`
+	Participant   CunningParticipant `json:"participant"`
+	PeerID        string             `json:"peerId"`
+	SchemaVersion int64              `json:"schemaVersion"`
 }
 
-type MischievousHost struct {
+type Host3 struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type IndigoParticipant struct {
+type CunningParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
 type PeerLeaveRequestProof struct {
-	Payload   Payload15 `json:"payload"`
+	Payload   Payload17 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload15 struct {
+type Payload17 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2775,35 +2921,107 @@ type PeerLeaveReceipt struct {
 	Proof         PeerLeaveReceiptProof  `json:"proof"`
 	RecordedAt    string                 `json:"recordedAt"`
 	SchemaVersion int64                  `json:"schemaVersion"`
-	State         PeerLeaveReceiptState  `json:"state"`
+	State         ReceiptState           `json:"state"`
 }
 
 type PeerLeaveReceiptIntent struct {
-	Host          BraggadociousHost   `json:"host"`
-	HostOrigin    string              `json:"hostOrigin"`
-	MembershipID  string              `json:"membershipId"`
-	OperationID   string              `json:"operationId"`
-	Participant   IndecentParticipant `json:"participant"`
-	PeerID        string              `json:"peerId"`
-	SchemaVersion int64               `json:"schemaVersion"`
+	Host          Host4              `json:"host"`
+	HostOrigin    string             `json:"hostOrigin"`
+	MembershipID  string             `json:"membershipId"`
+	OperationID   string             `json:"operationId"`
+	Participant   MagentaParticipant `json:"participant"`
+	PeerID        string             `json:"peerId"`
+	SchemaVersion int64              `json:"schemaVersion"`
 }
 
-type BraggadociousHost struct {
+type Host4 struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
-type IndecentParticipant struct {
+type MagentaParticipant struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
 }
 
 type PeerLeaveReceiptProof struct {
-	Payload   Payload16 `json:"payload"`
+	Payload   Payload18 `json:"payload"`
 	Signature string    `json:"signature"`
 }
 
-type Payload16 struct {
+type Payload18 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerLocalDeparture struct {
+	CreatedAt string                     `json:"createdAt"`
+	Intent    PeerLocalDepartureIntent   `json:"intent"`
+	Receipt   *PeerLocalDepartureReceipt `json:"receipt,omitempty"`
+}
+
+type PeerLocalDepartureIntent struct {
+	Host          Host5             `json:"host"`
+	HostOrigin    string            `json:"hostOrigin"`
+	MembershipID  string            `json:"membershipId"`
+	OperationID   string            `json:"operationId"`
+	Participant   FriskyParticipant `json:"participant"`
+	PeerID        string            `json:"peerId"`
+	SchemaVersion int64             `json:"schemaVersion"`
+}
+
+type Host5 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type FriskyParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLocalDepartureReceipt struct {
+	Intent        IndigoIntent `json:"intent"`
+	Proof         FriskyProof  `json:"proof"`
+	RecordedAt    string       `json:"recordedAt"`
+	SchemaVersion int64        `json:"schemaVersion"`
+	State         ReceiptState `json:"state"`
+}
+
+type IndigoIntent struct {
+	Host          Host6                  `json:"host"`
+	HostOrigin    string                 `json:"hostOrigin"`
+	MembershipID  string                 `json:"membershipId"`
+	OperationID   string                 `json:"operationId"`
+	Participant   MischievousParticipant `json:"participant"`
+	PeerID        string                 `json:"peerId"`
+	SchemaVersion int64                  `json:"schemaVersion"`
+}
+
+type Host6 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type MischievousParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type FriskyProof struct {
+	Payload   Payload19 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload19 struct {
 	AudienceNodeID  string  `json:"audienceNodeId"`
 	ExpiresAt       string  `json:"expiresAt"`
 	IssuedAt        string  `json:"issuedAt"`
@@ -2923,12 +3141,18 @@ const (
 	TypePeerProof           PeerControlMessageType = "peer.proof"
 )
 
+type ReceiptState string
+
+const (
+	TentacledRevoked ReceiptState = "revoked"
+)
+
 type PeerLocalConnectionState string
 
 const (
-	Left             PeerLocalConnectionState = "left"
-	TentacledActive  PeerLocalConnectionState = "active"
-	TentacledRevoked PeerLocalConnectionState = "revoked"
+	Left            PeerLocalConnectionState = "left"
+	StickyRevoked   PeerLocalConnectionState = "revoked"
+	TentacledActive PeerLocalConnectionState = "active"
 )
 
 type PeerHumanBindingCredentialAudience string
@@ -2946,10 +3170,4 @@ const (
 	TypePeerRuntimeChallenge PeerRuntimeMessageType = "peer.runtime.challenge"
 	TypePeerRuntimeHeartbeat PeerRuntimeMessageType = "peer.runtime.heartbeat"
 	TypePeerRuntimeReady     PeerRuntimeMessageType = "peer.runtime.ready"
-)
-
-type PeerLeaveReceiptState string
-
-const (
-	StickyRevoked PeerLeaveReceiptState = "revoked"
 )

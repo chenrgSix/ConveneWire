@@ -36,6 +36,7 @@ type LocalConnection struct {
 	Acceptances         []wire.RemoteAgentAcceptance `json:"acceptances"`
 	LocalExports        []LocalExport                `json:"localExports,omitempty"`
 	AcceptanceSnapshots []ExportSyncReceipt          `json:"acceptanceSnapshots,omitempty"`
+	Departure           *LocalDeparture              `json:"departure,omitempty"`
 }
 type State struct {
 	SchemaVersion int64                 `json:"schemaVersion"`
@@ -199,7 +200,7 @@ func transition(previous, next State, now time.Time) error {
 			continue
 		}
 		old := previous.Connections[i]
-		if acceptanceSnapshotTransition(old, c, now) != nil {
+		if acceptanceSnapshotTransition(old, c, now) != nil || departureTransition(old, c, now) != nil {
 			return ErrStore
 		}
 		if len(c.LocalExports) < len(old.LocalExports) {

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	wire "convenewire.dev/contracts/generated/go/peer"
@@ -54,19 +53,14 @@ type OwnerOperations interface {
 // OwnerAccess is provided only to authenticated native Console actions.
 // Runtime connectors never receive this object or its separate human vault.
 type OwnerAccess struct {
-	root          string
-	store         *Store
-	signer        *Signer
-	human         *HumanVault
-	journal       *JoinJournal
-	checkIdentity func() error
-	clock         func() time.Time
-	mu            sync.Mutex
-	ctx           context.Context
-	cancel        context.CancelFunc
-	closed        bool
-	active        sync.WaitGroup
-	joins         map[string]*ownerJoinOperation
+	*ownerLifetime
+	root    string
+	store   *Store
+	signer  *Signer
+	human   *HumanVault
+	journal *JoinJournal
+	clock   func() time.Time
+	joins   map[string]*ownerJoinOperation
 }
 
 type ownerJoinOperation struct {
@@ -90,49 +84,8 @@ func NewOwnerAccess(root string, store *Store, signer *Signer, checkIdentity fun
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithCancel(context.Background())
-	return &OwnerAccess{root: root, store: store, signer: signer, human: human, journal: journal, checkIdentity: checkIdentity, clock: time.Now,
-		ctx: ctx, cancel: cancel, joins: map[string]*ownerJoinOperation{}}, nil
-}
-
-func (o *OwnerAccess) Close() {
-	o.mu.Lock()
-	o.closed = true
-	o.cancel()
-	o.mu.Unlock()
-	o.active.Wait()
-}
-
-func (o *OwnerAccess) check() error {
-	o.mu.Lock()
-	closed := o.closed
-	o.mu.Unlock()
-	if closed {
-		return context.Canceled
-	}
-	return o.checkIdentity()
-}
-
-func (o *OwnerAccess) begin(ctx context.Context) (context.Context, func(), error) {
-	o.mu.Lock()
-	if o.closed {
-		o.mu.Unlock()
-		return nil, nil, context.Canceled
-	}
-	o.active.Add(1)
-	o.mu.Unlock()
-	scoped, cancel := context.WithCancel(ctx)
-	stop := context.AfterFunc(o.ctx, cancel)
-	done := func() { stop(); cancel(); o.active.Done() }
-	if err := o.check(); err != nil {
-		done()
-		return nil, nil, err
-	}
-	if err := scoped.Err(); err != nil {
-		done()
-		return nil, nil, err
-	}
-	return scoped, done, nil
+	return &OwnerAccess{ownerLifetime: newOwnerLifetime(checkIdentity), root: root, store: store, signer: signer,
+		human: human, journal: journal, clock: time.Now, joins: map[string]*ownerJoinOperation{}}, nil
 }
 
 func (o *OwnerAccess) join(ctx context.Context, id string, action func() (JoinOutcome, error)) (JoinOutcome, error) {

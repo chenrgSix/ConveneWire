@@ -40,6 +40,17 @@ func TestNativeHumanVaultFailureDoesNotBlockRuntimeResources(t *testing.T) {
 	if _, err := node.PeerOwnerAccess(); err == nil {
 		t.Fatal("corrupt human state accepted")
 	}
+	departures, err := node.PeerDepartures()
+	if err != nil {
+		t.Fatal("corrupt human state blocked departure capability", err)
+	}
+	if list, err := departures.List(); err != nil || len(list) != 0 {
+		t.Fatal("native departure inventory", err)
+	}
+	again, err := node.PeerDepartures()
+	if err != nil || departures != again {
+		t.Fatal("departure observer changed", err)
+	}
 	resources, err := openNativeResources(ctx, node, cfg, credential, ids)
 	if err != nil {
 		t.Fatal("human state blocked Device work", err)
@@ -53,5 +64,9 @@ func TestNativeHumanVaultFailureDoesNotBlockRuntimeResources(t *testing.T) {
 	}
 	if _, err := node.PeerOwnerAccess(); err == nil {
 		t.Fatal("failed human observer reopened as fresh identity")
+	}
+	node.Close()
+	if _, err := departures.List(); err == nil {
+		t.Fatal("retained departure capability survived close")
 	}
 }

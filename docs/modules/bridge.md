@@ -171,7 +171,7 @@ operations independently of Device resources and Peer machine authority.
 Actual TLS regressions cover review expiry, dropped responses, concurrent
 confirmation, native reopen, offline replay, cleanup interruption and scope
 widening. Authenticated HTTP tests cover all Owner routes and sanitized entry
-responses. Browser navigation and Participant leave remain later increments.
+responses. Browser navigation and Peer execution remain later increments.
 
 The Peer SDK now transports a frozen Participant departure over normal TLS and
 the pinned Host proof. It sends only a fresh `peer.leave` signature and exact
@@ -180,8 +180,23 @@ nonce, audience, revoked-only state and signed recording time. An actual Go/Host
 TLS test drops the first committed response, rejects the old Runtime heartbeat,
 then recovers the same receipt after credential expiry. Native TLS tests also
 verify that departure invalidates an existing Room-scoped browser session.
-The native Owner's durable local fence and departure recovery UI are the next
-composition increment; this transport alone does not initiate local withdrawal.
+Native Console now exposes departure inventory, initiation and exact recovery.
+Initiation atomically stores the local withdrawal and frozen Host intent, then
+invalidates the Peer connector before waiting for the Host. A failed Host request
+returns a pending status while local access stays stopped. Confirmation requires
+the exact signed receipt; later recovery returns it offline. Repeated initiation
+keeps one operation and one local state revision. The original receipt and intent
+cannot be removed, substituted or used to reactivate the connection.
+
+Departure has its own native Owner capability and shares installation cancellation
+and drain semantics with join/entry operations. It requires neither a human vault
+nor Runtime configuration. Local withdrawal also blocks human entry even if that
+vault still retains a historical binding. Actual TLS and reopen tests cover
+offline initiation, broken human storage, response loss, concurrent initiation,
+one Host receipt and rejected state/receipt replacement. The two-Host connector
+test uses this durable departure path. Authenticated Console regressions verify
+local invalidation before Host wait; the bundled fixture reads the actual native
+departure inventory. Product controls remain WEB-085 work.
 
 ## Local Node supervision
 

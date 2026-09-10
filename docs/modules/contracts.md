@@ -76,6 +76,13 @@ that grants a capability: replay can only repeat the exact revocation. Both
 languages enforce closed fields and normal proof freshness. The Host stores at
 most one departure per membership and rejects substituted operations or pins.
 
+Optional private `PeerLocalConnection.departure` retains the frozen intent,
+local creation time and, once verified, the Host receipt. The first departure
+and local non-active state commit together. Existing connections without this
+field remain readable. The Go store requires exact native/membership pins,
+unique Owner operations, immutable intent and receipt retention; only a fresh
+Host proof can add the confirmation. This field cannot grant or restore access.
+
 The domain-separated Ed25519 transcript binds every proof field, including the
 semantic subject digest, recipient, operation, nonce and expiry. Proof lifetime
 is at most 30 seconds with five seconds of future clock skew; this does not

@@ -39,6 +39,9 @@ type NativeNode struct {
 	ownerAccess            *peer.OwnerAccess
 	ownerAccessError       error
 	ownerAccessInitialized bool
+	departures             *peer.Departure
+	departureError         error
+	departureInitialized   bool
 }
 
 func NewNativeNode(root string, identity localwire.LocalNodeIdentity) (*NativeNode, error) {

@@ -105,8 +105,16 @@ Retries refresh the Host proof while preserving that recording time and never
 increment membership revision again. Missing Room ACL or expired business
 credentials do not prevent self-revocation. Changed operations and cross-member
 pin substitution fail before side effects; an injected receipt-write failure
-rolls back the whole revocation. Local departure fencing and its Owner controls
-remain BRG-081 work.
+rolls back the whole revocation.
+
+The Participant stores optional `departure` in the same private connection
+record as its local non-active state. One CAS update therefore establishes both
+the immediate local fence and exact recoverable operation. No separate human
+vault write or Host response is required; a crash cannot expose an active
+connection with only a pending departure file elsewhere. The Host receipt is
+added only after fresh verification and remains immutable. Concurrent same-intent
+submissions preserve one revision; changed intent and withdrawal revival fail.
+Owner inventory distinguishes pending Host revocation from a confirmed receipt.
 
 ## Authority partition ownership
 

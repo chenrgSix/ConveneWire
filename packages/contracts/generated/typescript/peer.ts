@@ -843,6 +843,7 @@ export interface IndigoPayload {
 export interface PeerLocalConnection {
   acceptances:          PeerLocalConnectionAcceptance[];
   acceptanceSnapshots?: PeerLocalConnectionAcceptanceSnapshot[];
+  departure?:           PeerLocalConnectionDeparture;
   exports:              PeerLocalConnectionExport[];
   localExports?:        PeerLocalConnectionLocalExport[];
   receipt:              PeerLocalConnectionReceipt;
@@ -968,6 +969,80 @@ export interface MagentaCapabilities {
   supportsTaskContextIsolation: boolean;
 }
 
+export interface PeerLocalConnectionDeparture {
+  createdAt: string;
+  intent:    PurpleIntent;
+  receipt?:  PurpleReceipt;
+}
+
+export interface PurpleIntent {
+  host:          FluffyHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   PurpleParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface FluffyHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PurpleParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PurpleReceipt {
+  intent:        FluffyIntent;
+  proof:         TentacledProof;
+  recordedAt:    string;
+  schemaVersion: number;
+  state:         ReceiptState;
+}
+
+export interface FluffyIntent {
+  host:          TentacledHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   FluffyParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface TentacledHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FluffyParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface TentacledProof {
+  payload:   HilariousPayload;
+  signature: string;
+}
+
+export interface HilariousPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export type ReceiptState = "revoked";
+
 export interface PeerLocalConnectionExport {
   authorityNodeId:   string;
   capabilities:      FriskyCapabilities;
@@ -1037,13 +1112,13 @@ export interface PeerLocalConnectionReceipt {
   invitation:        PurpleInvitation;
   machineCredential: PurpleMachineCredential;
   membership:        PurpleMembership;
-  proof:             TentacledProof;
+  proof:             StickyProof;
   schemaVersion:     number;
 }
 
 export interface PurpleInvitation {
   expiresAt:           string;
-  host:                FluffyHost;
+  host:                StickyHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -1053,7 +1128,7 @@ export interface PurpleInvitation {
   teamLabel:           string;
 }
 
-export interface FluffyHost {
+export interface StickyHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1095,12 +1170,12 @@ export interface StickyScope {
   teamId: string;
 }
 
-export interface TentacledProof {
-  payload:   HilariousPayload;
+export interface StickyProof {
+  payload:   AmbitiousPayload;
   signature: string;
 }
 
-export interface HilariousPayload {
+export interface AmbitiousPayload {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1126,6 +1201,7 @@ export interface PeerParticipantState {
 export interface Connection {
   acceptances:          ConnectionAcceptance[];
   acceptanceSnapshots?: ConnectionAcceptanceSnapshot[];
+  departure?:           ConnectionDeparture;
   exports:              ConnectionExport[];
   localExports?:        ConnectionLocalExport[];
   receipt:              ConnectionReceipt;
@@ -1141,7 +1217,7 @@ export interface ConnectionAcceptanceSnapshot {
   historyDigest:       string;
   localAgentId:        string;
   peerId:              string;
-  proof:               StickyProof;
+  proof:               IndigoProof;
   schemaVersion:       number;
 }
 
@@ -1205,12 +1281,12 @@ export interface Capabilities1 {
   supportsTaskContextIsolation: boolean;
 }
 
-export interface StickyProof {
-  payload:   AmbitiousPayload;
+export interface IndigoProof {
+  payload:   CunningPayload;
   signature: string;
 }
 
-export interface AmbitiousPayload {
+export interface CunningPayload {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1249,6 +1325,78 @@ export interface Capabilities2 {
   supportsStart:                boolean;
   supportsStreaming:            boolean;
   supportsTaskContextIsolation: boolean;
+}
+
+export interface ConnectionDeparture {
+  createdAt: string;
+  intent:    TentacledIntent;
+  receipt?:  FluffyReceipt;
+}
+
+export interface TentacledIntent {
+  host:          IndigoHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   TentacledParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface IndigoHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface TentacledParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FluffyReceipt {
+  intent:        StickyIntent;
+  proof:         IndecentProof;
+  recordedAt:    string;
+  schemaVersion: number;
+  state:         ReceiptState;
+}
+
+export interface StickyIntent {
+  host:          IndecentHost;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   StickyParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface IndecentHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface StickyParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface IndecentProof {
+  payload:   MagentaPayload;
+  signature: string;
+}
+
+export interface MagentaPayload {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
 }
 
 export interface ConnectionExport {
@@ -1320,13 +1468,13 @@ export interface ConnectionReceipt {
   invitation:        FluffyInvitation;
   machineCredential: FluffyMachineCredential;
   membership:        FluffyMembership;
-  proof:             IndigoProof;
+  proof:             HilariousProof;
   schemaVersion:     number;
 }
 
 export interface FluffyInvitation {
   expiresAt:           string;
-  host:                TentacledHost;
+  host:                HilariousHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -1336,7 +1484,7 @@ export interface FluffyInvitation {
   teamLabel:           string;
 }
 
-export interface TentacledHost {
+export interface HilariousHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1378,12 +1526,12 @@ export interface IndecentScope {
   teamId: string;
 }
 
-export interface IndigoProof {
-  payload:   CunningPayload;
+export interface HilariousProof {
+  payload:   FriskyPayload;
   signature: string;
 }
 
-export interface CunningPayload {
+export interface FriskyPayload {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1423,7 +1571,7 @@ export interface PeerInvitationIssued {
 
 export interface PeerInvitationIssuedInvitation {
   expiresAt:           string;
-  host:                StickyHost;
+  host:                AmbitiousHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -1433,7 +1581,7 @@ export interface PeerInvitationIssuedInvitation {
   teamLabel:           string;
 }
 
-export interface StickyHost {
+export interface AmbitiousHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1466,7 +1614,7 @@ export interface PeerInvitationPreview {
 
 export interface PeerInvitationPreviewInvitation {
   expiresAt:           string;
-  host:                IndigoHost;
+  host:                CunningHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -1476,7 +1624,7 @@ export interface PeerInvitationPreviewInvitation {
   teamLabel:           string;
 }
 
-export interface IndigoHost {
+export interface CunningHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1488,11 +1636,11 @@ export interface AmbitiousScope {
 }
 
 export interface PeerInvitationPreviewProof {
-  payload:   MagentaPayload;
+  payload:   MischievousPayload;
   signature: string;
 }
 
-export interface MagentaPayload {
+export interface MischievousPayload {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1574,11 +1722,11 @@ export interface PeerHumanBindingReceiptParticipant {
 }
 
 export interface PeerHumanBindingReceiptProof {
-  payload:   FriskyPayload;
+  payload:   BraggadociousPayload;
   signature: string;
 }
 
-export interface FriskyPayload {
+export interface BraggadociousPayload {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1634,11 +1782,11 @@ export interface HumanParticipant {
 }
 
 export interface HumanProof {
-  payload:   MischievousPayload;
+  payload:   Payload1;
   signature: string;
 }
 
-export interface MischievousPayload {
+export interface Payload1 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1661,7 +1809,7 @@ export interface Runtime {
 
 export interface RuntimeInvitation {
   expiresAt:           string;
-  host:                IndecentHost;
+  host:                MagentaHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -1671,7 +1819,7 @@ export interface RuntimeInvitation {
   teamLabel:           string;
 }
 
-export interface IndecentHost {
+export interface MagentaHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1714,11 +1862,11 @@ export interface MischievousScope {
 }
 
 export interface RuntimeProof {
-  payload:   BraggadociousPayload;
+  payload:   Payload2;
   signature: string;
 }
 
-export interface BraggadociousPayload {
+export interface Payload2 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1742,11 +1890,11 @@ export interface PeerHumanEntryRequest {
 }
 
 export interface PeerHumanEntryRequestProof {
-  payload:   Payload1;
+  payload:   Payload3;
   signature: string;
 }
 
-export interface Payload1 {
+export interface Payload3 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1790,11 +1938,11 @@ export interface CredentialScope {
 }
 
 export interface PeerHumanEntryProof {
-  payload:   Payload2;
+  payload:   Payload4;
   signature: string;
 }
 
-export interface Payload2 {
+export interface Payload4 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1855,11 +2003,11 @@ export interface PeerIdentityProofHost {
 }
 
 export interface PeerIdentityProofProof {
-  payload:   Payload3;
+  payload:   Payload5;
   signature: string;
 }
 
-export interface Payload3 {
+export interface Payload5 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1878,16 +2026,16 @@ export interface PeerLocalHumanBinding {
 }
 
 export interface PeerLocalHumanBindingReceipt {
-  host:              HilariousHost;
+  host:              FriskyHost;
   humanCredential:   PurpleHumanCredential;
   joinReceiptDigest: string;
   localUserId:       string;
-  participant:       PurpleParticipant;
-  proof:             IndecentProof;
+  participant:       IndigoParticipant;
+  proof:             AmbitiousProof;
   schemaVersion:     number;
 }
 
-export interface HilariousHost {
+export interface FriskyHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1908,17 +2056,17 @@ export interface BraggadociousScope {
   teamId: string;
 }
 
-export interface PurpleParticipant {
+export interface IndigoParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface IndecentProof {
-  payload:   Payload4;
+export interface AmbitiousProof {
+  payload:   Payload6;
   signature: string;
 }
 
-export interface Payload4 {
+export interface Payload6 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -1945,16 +2093,16 @@ export interface BindingElement {
 }
 
 export interface BindingReceipt {
-  host:              AmbitiousHost;
+  host:              MischievousHost;
   humanCredential:   FluffyHumanCredential;
   joinReceiptDigest: string;
   localUserId:       string;
-  participant:       FluffyParticipant;
-  proof:             HilariousProof;
+  participant:       IndecentParticipant;
+  proof:             CunningProof;
   schemaVersion:     number;
 }
 
-export interface AmbitiousHost {
+export interface MischievousHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -1975,17 +2123,17 @@ export interface Scope1 {
   teamId: string;
 }
 
-export interface FluffyParticipant {
+export interface IndecentParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface HilariousProof {
-  payload:   Payload5;
+export interface CunningProof {
+  payload:   Payload7;
   signature: string;
 }
 
-export interface Payload5 {
+export interface Payload7 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2017,7 +2165,7 @@ export interface PeerPendingJoin {
 
 export interface PeerPendingJoinInvitation {
   expiresAt:           string;
-  host:                CunningHost;
+  host:                BraggadociousHost;
   hostOrigin:          string;
   invitationId:        string;
   membershipExpiresAt: string;
@@ -2027,7 +2175,7 @@ export interface PeerPendingJoinInvitation {
   teamLabel:           string;
 }
 
-export interface CunningHost {
+export interface BraggadociousHost {
   nodeId:    string;
   publicKey: string;
 }
@@ -2132,11 +2280,11 @@ export interface Capabilities6 {
 }
 
 export interface PeerAgentOfferRequestProof {
-  payload:   Payload6;
+  payload:   Payload8;
   signature: string;
 }
 
-export interface Payload6 {
+export interface Payload8 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2159,11 +2307,11 @@ export interface PeerAgentOfferReceipt {
 }
 
 export interface PeerAgentOfferReceiptProof {
-  payload:   Payload7;
+  payload:   Payload9;
   signature: string;
 }
 
-export interface Payload7 {
+export interface Payload9 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2269,11 +2417,11 @@ export interface Capabilities8 {
 }
 
 export interface PeerAgentAcceptanceReceiptProof {
-  payload:   Payload8;
+  payload:   Payload10;
   signature: string;
 }
 
-export interface Payload8 {
+export interface Payload10 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2366,11 +2514,11 @@ export interface Capabilities10 {
 }
 
 export interface PeerAgentSyncRequestProof {
-  payload:   Payload9;
+  payload:   Payload11;
   signature: string;
 }
 
-export interface Payload9 {
+export interface Payload11 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2457,11 +2605,11 @@ export interface Capabilities12 {
 }
 
 export interface PeerAgentSyncReceiptProof {
-  payload:   Payload10;
+  payload:   Payload12;
   signature: string;
 }
 
-export interface Payload10 {
+export interface Payload12 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2577,33 +2725,33 @@ export interface PeerRuntimeChallenge {
 export interface PeerRuntimeChallengeBinding {
   connectionId:  string;
   credentialId:  string;
-  host:          MagentaHost;
+  host:          Host1;
   hostOrigin:    string;
   memberId:      string;
   membershipId:  string;
   operationId:   string;
-  participant:   TentacledParticipant;
+  participant:   HilariousParticipant;
   peerId:        string;
   schemaVersion: number;
   teamId:        string;
 }
 
-export interface MagentaHost {
+export interface Host1 {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface TentacledParticipant {
+export interface HilariousParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
 export interface PeerRuntimeChallengeProof {
-  payload:   Payload11;
+  payload:   Payload13;
   signature: string;
 }
 
-export interface Payload11 {
+export interface Payload13 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2623,11 +2771,11 @@ export interface PeerRuntimeAuthentication {
 }
 
 export interface PeerRuntimeAuthenticationProof {
-  payload:   Payload12;
+  payload:   Payload14;
   signature: string;
 }
 
-export interface Payload12 {
+export interface Payload14 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2647,11 +2795,11 @@ export interface PeerRuntimeReady {
 }
 
 export interface PeerRuntimeReadyProof {
-  payload:   Payload13;
+  payload:   Payload15;
   signature: string;
 }
 
-export interface Payload13 {
+export interface Payload15 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2681,7 +2829,7 @@ export interface PeerRuntimeMessage {
 export interface PeerRuntimeMessagePayload {
   binding?:       FluffyBinding;
   nonce?:         string;
-  proof?:         AmbitiousProof;
+  proof?:         MagentaProof;
   schemaVersion?: number;
   bindingDigest?: string;
   sequence?:      number;
@@ -2691,33 +2839,33 @@ export interface PeerRuntimeMessagePayload {
 export interface FluffyBinding {
   connectionId:  string;
   credentialId:  string;
-  host:          FriskyHost;
+  host:          Host2;
   hostOrigin:    string;
   memberId:      string;
   membershipId:  string;
   operationId:   string;
-  participant:   StickyParticipant;
+  participant:   AmbitiousParticipant;
   peerId:        string;
   schemaVersion: number;
   teamId:        string;
 }
 
-export interface FriskyHost {
+export interface Host2 {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface StickyParticipant {
+export interface AmbitiousParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface AmbitiousProof {
-  payload:   Payload14;
+export interface MagentaProof {
+  payload:   Payload16;
   signature: string;
 }
 
-export interface Payload14 {
+export interface Payload16 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2759,31 +2907,31 @@ export interface PeerLeaveRequest {
 }
 
 export interface PeerLeaveRequestIntent {
-  host:          MischievousHost;
+  host:          Host3;
   hostOrigin:    string;
   membershipId:  string;
   operationId:   string;
-  participant:   IndigoParticipant;
+  participant:   CunningParticipant;
   peerId:        string;
   schemaVersion: number;
 }
 
-export interface MischievousHost {
+export interface Host3 {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface IndigoParticipant {
+export interface CunningParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
 export interface PeerLeaveRequestProof {
-  payload:   Payload15;
+  payload:   Payload17;
   signature: string;
 }
 
-export interface Payload15 {
+export interface Payload17 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2801,35 +2949,35 @@ export interface PeerLeaveReceipt {
   proof:         PeerLeaveReceiptProof;
   recordedAt:    string;
   schemaVersion: number;
-  state:         PeerLeaveReceiptState;
+  state:         ReceiptState;
 }
 
 export interface PeerLeaveReceiptIntent {
-  host:          BraggadociousHost;
+  host:          Host4;
   hostOrigin:    string;
   membershipId:  string;
   operationId:   string;
-  participant:   IndecentParticipant;
+  participant:   MagentaParticipant;
   peerId:        string;
   schemaVersion: number;
 }
 
-export interface BraggadociousHost {
+export interface Host4 {
   nodeId:    string;
   publicKey: string;
 }
 
-export interface IndecentParticipant {
+export interface MagentaParticipant {
   nodeId:    string;
   publicKey: string;
 }
 
 export interface PeerLeaveReceiptProof {
-  payload:   Payload16;
+  payload:   Payload18;
   signature: string;
 }
 
-export interface Payload16 {
+export interface Payload18 {
   audienceNodeId:  string;
   expiresAt:       string;
   issuedAt:        string;
@@ -2842,5 +2990,75 @@ export interface Payload16 {
   subjectDigest:   string;
 }
 
-export type PeerLeaveReceiptState = "revoked";
+export interface PeerLocalDeparture {
+  createdAt: string;
+  intent:    PeerLocalDepartureIntent;
+  receipt?:  PeerLocalDepartureReceipt;
+}
+
+export interface PeerLocalDepartureIntent {
+  host:          Host5;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   FriskyParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface Host5 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FriskyParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLocalDepartureReceipt {
+  intent:        IndigoIntent;
+  proof:         FriskyProof;
+  recordedAt:    string;
+  schemaVersion: number;
+  state:         ReceiptState;
+}
+
+export interface IndigoIntent {
+  host:          Host6;
+  hostOrigin:    string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   MischievousParticipant;
+  peerId:        string;
+  schemaVersion: number;
+}
+
+export interface Host6 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface MischievousParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface FriskyProof {
+  payload:   Payload19;
+  signature: string;
+}
+
+export interface Payload19 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
 

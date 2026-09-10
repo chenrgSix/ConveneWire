@@ -174,10 +174,13 @@ func TestNativePeerConnectorsUseTwoRealHostsSyncGrantsAndIsolateRevocation(t *te
 	if counts := other.control(t, map[string]any{"action": "stats"}); counts["runtimeUpgrades"] != 1 {
 		t.Fatal("one Peer failure restarted the other", counts)
 	}
-	state, _ = store.Read()
-	state.Connections[1].State = "left"
-	state.Revision++
-	if err := store.Update(state.Revision-1, state, now); err != nil {
+	departures, err := NewDeparture(filepath.Dir(store.directory), store, client.signer, func() error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer departures.Close()
+	departures.clock = client.clock
+	if _, err := departures.Prepare(ctx, second.Membership.MembershipID, "op_connectordeparture001"); err != nil {
 		t.Fatal(err)
 	}
 	c.LocalChange(secondID)
