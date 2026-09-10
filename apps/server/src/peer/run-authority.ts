@@ -91,10 +91,10 @@ export class PeerRunAuthority {
     return request;
   }
 
-  public requireCurrent(binding: PeerExecutionBinding, now: string): PeerRunRequest {
+  public requireCurrent(binding: PeerExecutionBinding, now: string, receiptOnly = false): PeerRunRequest {
     const retained = this.get(binding.runId);
     if (!retained || peerDigest(retained.binding) !== peerDigest(binding)) throw new PeerStoreError("PAYLOAD_CONFLICT");
-    const current = this.current(binding.runId, now).binding;
+    const current = this.current(binding.runId, now, receiptOnly).binding;
     current.requestDigest = binding.requestDigest;
     if (peerDigest(current) !== peerDigest(binding)) throw new PeerStoreError("STALE_AUTHORIZATION");
     return retained;
@@ -117,14 +117,16 @@ export class PeerRunAuthority {
     }).immediate();
   }
 
-  private current(runId: string, now: string) {
+  private current(runId: string, now: string, receiptOnly = false) {
     const run = this.runs.getRun(runId);
-    if (!run || !["queued", "delivered", "working"].includes(run.state) || run.deadlineAt <= now ||
-        this.runs.getCancellationIntent(runId)?.state === "pending") throw new PeerStoreError("STALE_AUTHORIZATION");
+    if (!run || !receiptOnly && (!["queued", "delivered", "working"].includes(run.state) || run.deadlineAt <= now ||
+        this.runs.getCancellationIntent(runId)?.state === "pending" ||
+        this.database.prepare("SELECT 1 FROM peer_run_cancellations WHERE run_id = ?").get(runId))) throw new PeerStoreError("STALE_AUTHORIZATION");
     const room = this.core.getRoom(run.roomId), agent = this.core.getAgent(run.targetAgentId), task = this.tasks.get(run.taskId);
     const requester = this.core.getMember(run.requesterMemberId);
-    if (!room || room.archivedAt || !task || task.roomId !== room.roomId || !["ready", "active", "review"].includes(task.lifecycleState) ||
-        task.schedulingState !== "enabled" || !agent || agent.integrationMode !== "peer" || agent.deviceId || !agent.enabled ||
+    if (!room || room.archivedAt || !task || task.roomId !== room.roomId ||
+        !receiptOnly && (!["ready", "active", "review"].includes(task.lifecycleState) || task.schedulingState !== "enabled") ||
+        !agent || agent.integrationMode !== "peer" || agent.deviceId || !agent.enabled ||
         !task.isDefault && !task.assignments.some(assignment => assignment.agentId === agent.agentId) ||
         agent.teamId !== room.teamId || !this.core.isRoomAgent(room.roomId, agent.agentId) ||
         !requester?.userId || requester.teamId !== room.teamId || !this.core.isRoomMember(room.roomId, requester.memberId)) {

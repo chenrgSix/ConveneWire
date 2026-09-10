@@ -213,6 +213,12 @@ func (c *Client) postMachine(ctx context.Context, path, requestKind string, valu
 	if path == "/api/peer/agents/sync" && requestKind == "PeerAgentSyncRequest" && token != "" {
 		maximum = wire.MaximumJSONBytes
 	}
+	if path == "/api/peer/runs/events" && requestKind == "PeerRunEventRequest" && token != "" {
+		maximum = wire.MaximumJSONBytes
+	}
+	if path == "/api/peer/runs/poll" && requestKind == "PeerRunPollRequest" && token != "" {
+		maximum = 64 * 1024
+	}
 	if err != nil || len(raw) > maximum {
 		return ErrProof
 	}

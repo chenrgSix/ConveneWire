@@ -54,7 +54,7 @@ export class AuthorityService {
   }
 
   /** Reproduce a lost response without storing secrets or granting a new credential. */
-  public peerSecret(domain: "invitation" | "runtime" | "human-binding" | "human-entry", intentDigest: string): string {
+  public peerSecret(domain: "invitation" | "runtime" | "human-binding" | "human-entry" | "run-settlement", intentDigest: string): string {
     if (!/^[a-f0-9]{64}$/u.test(intentDigest)) throw new Error("Invalid Peer intent digest");
     return createHmac("sha256", this.key.export({ format: "der", type: "pkcs8" }))
       .update(`convenewire.peer.secret.v1\0${domain}\0${this.nodeId}\0${intentDigest}`).digest("base64url");

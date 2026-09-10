@@ -27,7 +27,7 @@ const listener = https.createServer({ cert: await readFile(certFile), key: await
     const chunks: Buffer[] = []; let size = 0;
     for await (const chunk of request) {
       const bytes = Buffer.from(chunk); size += bytes.length;
-      const maximum = request.url === "/api/peer/agents/sync" ? 1024 * 1024 : 16 * 1024;
+      const maximum = ["/api/peer/agents/sync", "/api/peer/runs/events"].includes(request.url ?? "") ? 1024 * 1024 : request.url === "/api/peer/runs/poll" ? 64 * 1024 : 16 * 1024;
       if (size > maximum) { response.writeHead(413).end(); return; }
       chunks.push(bytes);
     }
@@ -85,7 +85,7 @@ const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId
 process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret }) + "\n");
 try {
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
-    const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string };
+    const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string };
     if (command.action === "stop") break;
     if (command.action === "clock") now = command.now!;
     else if (command.action === "revoke") peers.revokeMembership(owner, command.membershipId!, now);
@@ -111,6 +111,13 @@ try {
         .createRunsForMessage(owner, message.messageId, now)[0]!;
       const request = new PeerRunAuthority(database, peers, authority).freeze(run.runId, now);
       process.stdout.write(JSON.stringify({ request }) + "\n");
+      continue;
+    }
+    else if (command.action === "run-state") {
+      const runs = new RunRepository(database), run = runs.getRun(command.runId!)!;
+      process.stdout.write(JSON.stringify({ state: run.state, events: runs.listEvents(run.runId).length,
+        replies: runs.listEvents(run.runId).filter(event => event.event.type === "reply").length,
+        settlements: (database.prepare("SELECT count(*) AS n FROM peer_run_settlements WHERE run_id = ?").get(run.runId) as { n: number }).n }) + "\n");
       continue;
     }
     const counts = database.prepare("SELECT count(*) AS memberships FROM peer_memberships").get();

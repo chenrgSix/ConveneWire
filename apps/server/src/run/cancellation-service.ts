@@ -35,6 +35,7 @@ export class CancellationService {
   private readonly retryIntervalMilliseconds: number;
   private readonly sweepBatchSize: number;
   private hostedCancellation: HostedRunCancellation | undefined;
+  private peerCancellation: HostedRunCancellation | undefined;
 
   public constructor(
     private readonly core: CoreRepository,
@@ -68,6 +69,11 @@ export class CancellationService {
     this.hostedCancellation = cancellation;
   }
 
+  public attachPeerCancellation(cancellation: HostedRunCancellation): void {
+    if (this.peerCancellation) throw new Error("Peer Run cancellation is already attached");
+    this.peerCancellation = cancellation;
+  }
+
   public cancel(principal: WebPrincipal, runId: string, reason: string): RunRecord {
     const run = this.runs.getRun(runId);
     if (!run) throw new Error(`Run not found: ${runId}`);
@@ -77,6 +83,10 @@ export class CancellationService {
     }
     if (terminalStates.has(run.state)) return run;
     const target = this.core.getAgent(run.targetAgentId);
+    if (target?.integrationMode === "peer") {
+      if (!this.peerCancellation) throw new Error("Peer Run cancellation is unavailable");
+      return this.peerCancellation.cancel(runId, member.memberId, reason);
+    }
     if (target?.integrationMode === "hosted") {
       if (!this.hostedCancellation || !target.capabilities.supportsInterrupt) {
         throw new Error("Target Hosted Agent does not support interruption");

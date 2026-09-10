@@ -131,6 +131,10 @@ export class PeerRuntimeSession {
     }
   }
 
+  public matches(binding: PeerRuntimeBinding, now: string): boolean {
+    return this.phase === "active" && this.check(now) && peerDigest(binding) === this.bindingDigest;
+  }
+
   public close(): void {
     if (this.phase === "closed") return;
     this.phase = "closed";

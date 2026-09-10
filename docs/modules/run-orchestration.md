@@ -6,9 +6,10 @@ RUN-020 implements the separate bilateral Peer execution path defined by
 Transport attempts do not alter execution identity; changing content or bilateral
 pins for the same qualified Peer Run must conflict with retained evidence.
 The native factory delivered by BRG-081 supplies shared physical resources,
-private Peer Sessions and local approval. Fresh signed admission, Host delivery,
-Participant journals and bounded content-free settlement remain in progress;
-the contract and native SDK alone are not network execution evidence.
+private Peer Sessions and local approval. Fresh signed admission, private
+Participant journals and the Host delivery/event/settlement transport now exist.
+Native connector polling, durable event replay and execution coordination remain
+in progress; Host transport and native SDK checks are not a complete Peer Run.
 
 The Host `PeerRunAuthority` now freezes an already-authorized local Run into one
 immutable Peer request in migration 0103. It derives execution and context from
@@ -24,8 +25,9 @@ machine audience, both Nodes, current bilateral revision/digests, Room and Task
 participation, current requester membership, cancellation, Run state and deadline.
 Ordinary Task assignment and scheduling remain required. The originating Member
 is read from the persisted Run, including its current Peer ceiling when present;
-no synthetic browser session or Device principal is created. This service does
-not yet provide content delivery, Participant start/receipt journals or settlement.
+no synthetic browser session or Device principal is created. This authority
+service supplies admission; the separate delivery service described below owns
+Host content and settlement transactions.
 Discussion requests are explicitly refused until DISC-022 supplies frozen Wave
 and Finalizer context, preserving its existing exclusion rules.
 
@@ -47,7 +49,7 @@ native identity loss before bearer transmission, local leave during the request
 and changed responses. The actual native HTTPS listener passes positive signed
 admission and negative browser/control checks. Fourteen owning HTTP/authority
 tests, seven native-ingress tests, full Peer race/vet and Hub build/bundle pass.
-Automatic content delivery and Run/approval lifecycle wiring remain RUN-020.
+Native polling and Run/approval lifecycle wiring remain RUN-020.
 
 The Participant now retains the exact validated request in its immutable Peer
 Runtime partition. Separate private receive, possible-start and outcome files
@@ -67,8 +69,46 @@ cannot reopen a Run. Requests are limited to 512 KiB and local replies to
 The native partition retains the journal observer across core replacements.
 Observed rollback/deletion, changed ownership, malformed JSON, copied Peer pins
 and linked paths fail closed. OS process fencing remains independently required;
-the journal does not prove that a child has stopped. Network dispatch, lifecycle
-callbacks and remote content/settlement receipts still require integration.
+the journal does not prove that a child has stopped. The native worker still
+must compose this journal with delivery, lifecycle callbacks and remote receipts.
+
+The Host `PeerRunDeliveryService` uses migration 0104 and the shared SQLite
+transaction boundary. `POST /api/peer/runs/poll` requires the exact active,
+mutually proven Peer connection plus a fresh signed intent. It freezes pending
+Host Runs and commits a delivery before returning content. A lost response or
+Host reopen reproduces the original capability and expiry; only its hash and
+metadata are stored. Known Run/digest pairs suppress duplicate offers without
+creating a new execution identity. Changed pins fail closed.
+
+`POST /api/peer/runs/events` verifies the machine audience, Participant signature,
+capability and current binding before a new ordered event can commit. The event
+digest, sanitized Run event and Room reply projection commit together. Duplicate
+events acknowledge the original digest; conflicting or out-of-order sequences
+and late content are rejected. Exact terminal acknowledgments may be reproduced
+under current membership/Room/bilateral authority without reopening the Run.
+The shared transaction boundary publishes notifications only after commit;
+failure of a receipt insert also rolls back the event, message and notification.
+
+`POST /api/peer/runs/settle` instead requires the separately issued settlement
+token and the retained Participant key. A business token cannot substitute after
+revocation. One exact sequence-one terminal/unknown/denied receipt is retained
+per delivery, within the original seven-day expiry. It can record known local
+completion without Result text and cannot read context, start work, extend the
+capability or revive membership. A late receipt preserves the Host's existing
+terminal/unknown state while retaining the Participant's evidence.
+
+Requester cancellation before delivery is final. Any durable delivery is
+possibly received, so cancellation immediately fences admission/content and
+waits up to 30 seconds for evidence before becoming `outcome_unknown`. Grant or
+membership loss enters the same bounded path. Neither a Host terminal state nor
+these records prove local process termination; native cancellation and process
+fencing remain required. All three routes reject browser/control credentials,
+Origin, cookies and query aliases and use the same native HTTPS ingress.
+
+Actual Go-to-Host TLS and Peer WebSocket checks verify the production routes,
+lost-response identity, fractional assessment, exact duplicate events and
+post-revocation content-free settlement with one Host reply and receipt.
+Native execution and reconnect/crash replay remain the next RUN-020 increment.
 
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned

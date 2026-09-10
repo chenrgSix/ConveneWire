@@ -1,4 +1,5 @@
 import type { LocalNodeService } from "../local-node/local-node-service.js";
+import type { PeerRunDeliveryService } from "../peer/run-delivery.js";
 import type { RuntimeApprovalService } from "../run/runtime-approval-service.js";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { ExecutionPlanService } from "../execution/execution-plan-service.js";
@@ -98,6 +99,7 @@ export type PersistedRun = NonNullable<ReturnType<RunRepository["getRun"]>>;
 export interface ServerRouteContext {
   peerRuntime: import("../peer/runtime-sessions.js").PeerRuntimeSessions;
   peerRuns: import("../peer/run-authority.js").PeerRunAuthority;
+  peerDeliveries: PeerRunDeliveryService;
   peerHumanEntry: import("../security/peer-human-entry-service.js").PeerHumanEntryService;
   peerAdmission: import("../security/peer-admission-service.js").PeerAdmissionService;
   peerAgents: import("../registry/peer-agent-service.js").PeerAgentService;

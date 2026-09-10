@@ -5,6 +5,7 @@ import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { registerPeerRuntimeRoutes } from "./http/peer-runtime-routes.js";
 import { PeerRuntimeSessions } from "./peer/runtime-sessions.js";
 import { PeerRunAuthority } from "./peer/run-authority.js";
+import { PeerRunDeliveryService } from "./peer/run-delivery.js";
 import { AuthorityService } from "./security/authority-service.js";
 import { registerAuthorityRoutes } from "./http/authority-routes.js";
 import type { LocalNodeLaunch } from "@convene-wire/contracts/local-node";
@@ -870,6 +871,8 @@ export async function createServerApp(
       }, "Managed Run delivery processed");
     } else if (agent?.integrationMode === "hosted") {
       hostedScheduler.enqueue(run.runId);
+    } else if (agent?.integrationMode === "peer") {
+      peerDeliveries.dispatch(run.runId, clock());
     }
     return runRepository.getRun(run.runId) ?? run;
   };
@@ -1261,9 +1264,14 @@ export async function createServerApp(
   });
 
   const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
+  const peerRuntime = new PeerRuntimeSessions(peerAdmission, authority);
+  const peerRuns = new PeerRunAuthority(database, peerAdmission, authority);
+  const peerDeliveries = new PeerRunDeliveryService(database, peerAdmission, authority, peerRuns, peerRuntime, runRepository);
+  cancellations.attachPeerCancellation({ cancel: (runId, memberId, reason) => peerDeliveries.cancel(runId, memberId, reason, clock()) });
   const routeContext: ServerRouteContext = {
-    peerRuntime: new PeerRuntimeSessions(peerAdmission, authority),
-    peerRuns: new PeerRunAuthority(database, peerAdmission, authority),
+    peerRuntime,
+    peerRuns,
+    peerDeliveries,
     peerAdmission,
     peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => teamChanges.notify(teamId)),
     peerHumanEntry: new PeerHumanEntryService(database, auth, authority, options.peerIngress?.configuration.origin),
@@ -1455,6 +1463,7 @@ export async function createServerApp(
 
   cancellationSweepTimer = setInterval(() => {
     try {
+      peerDeliveries.sweep(clock());
       const sweep = cancellations.sweep();
       if (sweep.expiredRunIds.length > 0 || sweep.sentRunIds.length > 0) {
         app.log.info({
