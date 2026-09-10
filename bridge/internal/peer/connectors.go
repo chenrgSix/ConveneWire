@@ -22,6 +22,7 @@ type ConnectorStatus struct {
 	Attempt         int    `json:"attempt"`
 	ErrorCode       string `json:"errorCode,omitempty"`
 	ExportSyncError string `json:"exportSyncError,omitempty"`
+	RunError        string `json:"runError,omitempty"`
 }
 
 type ConnectorSnapshot struct {
@@ -136,6 +137,9 @@ func (c *Connectors) Run(ctx context.Context) error {
 	if !c.started.CompareAndSwap(false, true) {
 		return ErrConflict
 	}
+	recoveryDone := make(chan struct{})
+	go func() { defer close(recoveryDone); c.recoverRuns(ctx) }()
+	defer func() { <-recoveryDone }()
 	ticker := time.NewTicker(c.pollInterval)
 	defer ticker.Stop()
 	defer func() {
@@ -281,6 +285,9 @@ func (c *Connectors) runWorker(worker *peerWorker) {
 func (c *Connectors) serve(worker *peerWorker, client *Client, connection *RuntimeConnection) {
 	defer connection.Wait()
 	defer connection.Close()
+	runsDone := make(chan struct{})
+	go func() { defer close(runsDone); c.serveRuns(worker, client, connection) }()
+	defer func() { connection.Close(); <-runsDone }()
 	revoked := make(chan struct{})
 	stop := context.AfterFunc(connection.Context(), func() {
 		c.approvals.RevokePeer(connection.Binding().PeerID)

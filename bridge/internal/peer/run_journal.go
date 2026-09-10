@@ -34,6 +34,9 @@ type RunRecord struct {
 type RunOutcome struct {
 	State string `json:"state"`
 	Reply string `json:"reply,omitempty"`
+	// Terminal is the exact deferred status event, retained after process
+	// cleanup and before publication so a crash cannot lose clarification.
+	Terminal json.RawMessage `json:"terminal,omitempty"`
 }
 
 type receivedRun struct {
@@ -362,6 +365,7 @@ func (j *RunJournal) load(runID string) (RunRecord, error) {
 	}
 	if record.Outcome != nil {
 		outcome := *record.Outcome
+		outcome.Terminal = append(json.RawMessage(nil), outcome.Terminal...)
 		copy.Outcome = &outcome
 	}
 	j.observed[runID] = copy
@@ -402,6 +406,16 @@ func validRunOutcome(outcome RunOutcome, started bool) bool {
 	if !utf8.ValidString(outcome.Reply) || len(outcome.Reply) > maximumRunReplyBytes || outcome.State != "completed" && outcome.Reply != "" {
 		return false
 	}
+	if len(outcome.Terminal) != 0 {
+		var event struct {
+			Status        string          `json:"status"`
+			Clarification json.RawMessage `json:"clarification"`
+		}
+		if wire.Decode("PeerRunStatusEvent", outcome.Terminal, &event) != nil || event.Status != outcome.State ||
+			outcome.State == "input_required" && len(event.Clarification) == 0 {
+			return false
+		}
+	}
 	switch outcome.State {
 	case "completed", "failed", "outcome_unknown":
 		return started
@@ -409,6 +423,8 @@ func validRunOutcome(outcome RunOutcome, started bool) bool {
 		return true
 	case "delivery_denied":
 		return !started
+	case "input_required":
+		return started && len(outcome.Terminal) != 0
 	default:
 		return false
 	}

@@ -200,7 +200,19 @@ func (j *RunJournal) AppendEvent(runID string, event json.RawMessage) (RunTransp
 	}
 	state.Events = append(state.Events, append(json.RawMessage(nil), event...))
 	raw, err := json.Marshal(state)
-	if err != nil || len(raw) > wire.MaximumJSONBytes-runReceiptReserve {
+	var kind struct {
+		Type string `json:"type"`
+	}
+	_ = json.Unmarshal(event, &kind)
+	limit := wire.MaximumJSONBytes - runReceiptReserve
+	// Verbose previews cannot consume the space needed for the final reply,
+	// clarification/status and content-free receipts after process cleanup.
+	if kind.Type == "output" || kind.Type == "activity" {
+		limit -= 256 * 1024
+	} else if kind.Type == "reply" {
+		limit -= 64 * 1024
+	}
+	if err != nil || len(raw) > limit {
 		return RunTransportRecord{}, ErrStore
 	}
 	if err := j.saveTransport(record, state); err != nil {

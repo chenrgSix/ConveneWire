@@ -330,7 +330,21 @@ func TestPeerRuntimeProcessFixture(t *testing.T) {
 		return
 	}
 	defer os.Exit(0)
-	_ = os.WriteFile("runtime-started", []byte("started"), 0600)
+	marker, err := os.OpenFile("runtime-started", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		os.Exit(4)
+	}
+	_, _ = marker.WriteString("started\n")
+	_ = marker.Close()
+	if kind == "generic-hold" {
+		for {
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+	if kind == "generic-clarification" {
+		_, _ = os.Stdout.WriteString(`<agentroom-clarification>{"kind":"task","question":"Which region?","choices":["EU","US"]}</agentroom-clarification>`)
+		return
+	}
 	if kind == "generic" {
 		_, _ = os.Stdout.WriteString("peer-completed")
 		return

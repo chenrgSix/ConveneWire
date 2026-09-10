@@ -8,8 +8,10 @@ pins for the same qualified Peer Run must conflict with retained evidence.
 The native factory delivered by BRG-081 supplies shared physical resources,
 private Peer Sessions and local approval. Fresh signed admission, private
 Participant journals and the Host delivery/event/settlement transport now exist.
-Native connector polling, durable event replay and execution coordination remain
-in progress; Host transport and native SDK checks are not a complete Peer Run.
+Native connectors now poll, execute through that factory, retain event/outcome
+evidence and recover transport without replay. Actual restricted Generic child
+and Host TLS checks pass; broader native/package and network coverage remains
+part of RUN-020 and QA-091.
 
 The Host `PeerRunAuthority` now freezes an already-authorized local Run into one
 immutable Peer request in migration 0103. It derives execution and context from
@@ -49,7 +51,7 @@ native identity loss before bearer transmission, local leave during the request
 and changed responses. The actual native HTTPS listener passes positive signed
 admission and negative browser/control checks. Fourteen owning HTTP/authority
 tests, seven native-ingress tests, full Peer race/vet and Hub build/bundle pass.
-Native polling and Run/approval lifecycle wiring remain RUN-020.
+The native coordinator below consumes this admission path.
 
 The Participant retains the exact validated request in its immutable Peer
 Runtime partition. Separate private receive, possible-start and outcome files
@@ -73,8 +75,8 @@ cannot reopen a Run. Requests are limited to 512 KiB and local replies to
 The native partition retains the journal observer across core replacements.
 Observed rollback/deletion, changed ownership, malformed JSON, copied Peer pins
 and linked paths fail closed. OS process fencing remains independently required;
-the journal does not prove that a child has stopped. The native worker still
-must compose these records with actual process and approval lifecycles.
+the journal does not prove that a child has stopped. The native worker composes
+these records with the separate process and approval lifecycles below.
 
 Each delivered Run now also has a private atomic transport checkpoint. Events
 retain their closed payload and original sequence before transmission; retries
@@ -85,12 +87,14 @@ receipt is validated against that exact operation. Historical signature checks
 preserve evidence after proof expiry; they never supply fresh admission.
 
 The checkpoint is limited to 4,096 events and 1 MiB, with 8 KiB reserved for final
-receipts. Overflow preserves previous evidence and still permits settlement.
+receipts. Preview events leave another 256 KiB for the final reply/status; replies
+leave another 64 KiB for a clarification/status. Overflow preserves previous
+evidence and still permits settlement.
 Private-file, ownership, closed-shape and observed append-only history checks
 reject corruption, missing/linked files and rollback. Actual TLS regression
 reopens the Participant after lost event and settlement acknowledgments and
-verifies one Host reply/settlement without a new start. Native adapters are not
-invoked by these transport-journal tests; worker composition remains required.
+verifies one Host reply/settlement without a new start. These journal checks are
+supplemented by the actual adapter and connector regressions described below.
 
 The Host `PeerRunDeliveryService` uses migration 0104 and the shared SQLite
 transaction boundary. `POST /api/peer/runs/poll` requires the exact active,
@@ -128,7 +132,7 @@ Origin, cookies and query aliases and use the same native HTTPS ingress.
 Actual Go-to-Host TLS and Peer WebSocket checks verify the production routes,
 lost-response identity, fractional assessment, exact duplicate events and
 post-revocation content-free settlement with one Host reply and receipt.
-Native execution and reconnect/crash replay remain the next RUN-020 increment.
+The native worker now composes these transport operations with actual execution.
 
 The native Go transport client now verifies signed polls against its exact live
 connection, Host and current local membership. It publishes only caller-retained
@@ -146,6 +150,43 @@ Invitation admission keeps its existing limit. These bounded buckets prevent
 ordinary Runtime traffic from consuming the invitation budget; body limits and
 every signature, current-authority and audience check still apply. The native
 worker must pace event publication and retain a failed request for retry.
+
+Each live connector polls the actual Host and runs at most eight concurrent
+invocations through the shared physical scheduler. It retains the authenticated
+delivery before admission, acknowledges delivery, and writes the one-time start
+claim after queue/freshness checks and immediately before the adapter. A local
+and Host authority check every two seconds cancels a running invocation on loss;
+Codex approval still performs its separate fresh check after the approval wait.
+Connection replacement drains all old invocations before reconciliation can
+consider their records. A retained possible start without an outcome becomes
+`outcome_unknown`, never a new invocation; native core startup independently
+fences the Node process store before any of these workers run.
+
+The coordinator maps only closed Peer events and strips provider Session IDs,
+Room-context receipts and diagnostic details. It redacts nested public text
+before persistence/transmission. Final Runtime status waits for process evidence
+and the immutable local outcome; that outcome also retains the exact deferred
+event. A crash between outcome persistence and publication therefore preserves
+the same sequence, error or clarification. A stopped `input_required` Runtime
+retains its question as business content and leaves the Host Run awaiting human
+input. It cannot become `completed` through a settlement token, and a revoked
+question cannot use content-free settlement to bypass its disclosure boundary.
+
+Background recovery is independent for each Peer and belongs to the core
+lifetime, including left/expired memberships with an unexpired delivery. It
+replays pending content only through current business authority, then retains a
+single content-free settlement. Explicit content denial permits settlement;
+ambiguous network failure preserves pending events for retry. Recovery itself
+never starts an adapter. Native status reports only a bounded Run error code.
+
+Actual Go/Host TLS tests now include automatic connector polling with a real
+restricted Generic child, repeated completed recovery, a retained clarification,
+Host revoke/local leave during a live child, a lost final event acknowledgment,
+and a possible-start recovery with no child replay. Revocation waits for actual
+process evidence before releasing the shared Workspace. Network Codex/Pi,
+complete native packaging, broader cancellation/concurrency and crash scenarios
+still require their RUN-020/QA-091 coverage; no live model call or manual/platform
+acceptance is implied by these checks.
 
 [ADR-0062](../adr/0062-trust-owner-devices-for-central-execution.md) adds an
 owner-local full-trust choice for Codex execution, mirrored to Central and pinned

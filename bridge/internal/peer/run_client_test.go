@@ -25,7 +25,7 @@ func TestPeerRunClientPollsPublishesAndSettlesRevokedHistoryWithoutReplay(t *tes
 	if err != nil || delivery == nil || delivery.Settlement.Binding != binding {
 		t.Fatal("poll actual Host", err)
 	}
-	duplicate, err := client.PollRuns(context.Background(), connection, nil)
+	duplicate, err := client.PollRuns(context.Background(), connection, []wire.PeerRunKnown{})
 	if err != nil || !equalJSON(duplicate, delivery) {
 		t.Fatal("poll changed durable delivery", err)
 	}

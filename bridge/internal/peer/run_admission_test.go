@@ -15,8 +15,12 @@ import (
 
 func executionTLSFixture(t *testing.T) (*peerHTTPFixture, *Client, *Store, string, wire.PeerExecutionBinding, time.Time) {
 	t.Helper()
-	f, client, store, joined, now := runtimeTLSParticipant(t)
-	source := fixtureExportSource()
+	return executionTLSFixtureSource(t, fixtureExportSource(), time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC))
+}
+
+func executionTLSFixtureSource(t *testing.T, source ExportSource, now time.Time) (*peerHTTPFixture, *Client, *Store, string, wire.PeerExecutionBinding, time.Time) {
+	t.Helper()
+	f, client, store, joined, now := runtimeTLSParticipantAt(t, now)
 	exporter, err := NewExporter(store, func(string) (ExportSource, error) { return source, nil })
 	if err != nil {
 		t.Fatal(err)

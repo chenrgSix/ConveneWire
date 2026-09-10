@@ -53,7 +53,11 @@ func TestGoRuntimeIdentityChangeDuringHostProofCannotSendMachineBearer(t *testin
 
 func runtimeTLSParticipant(t *testing.T) (*peerHTTPFixture, *Client, *Store, JoinReceipt, time.Time) {
 	t.Helper()
-	now := time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC)
+	return runtimeTLSParticipantAt(t, time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC))
+}
+
+func runtimeTLSParticipantAt(t *testing.T, now time.Time) (*peerHTTPFixture, *Client, *Store, JoinReceipt, time.Time) {
+	t.Helper()
 	f := peerTLSFixture(t, now)
 	signer, err := NewLocalSigner(localwire.LocalNodeIdentity{SchemaVersion: 1, NodeID: "node_tlsruntime001", OwnerUserID: "user_tlsruntime001",
 		Port: 40391, Secret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"})

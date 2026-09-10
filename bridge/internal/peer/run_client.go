@@ -94,7 +94,7 @@ func (c *Client) PollRuns(ctx context.Context, connection *RuntimeConnection, kn
 	if known == nil {
 		known = []wire.PeerRunKnown{}
 	} else {
-		known = append([]wire.PeerRunKnown(nil), known...)
+		known = append(make([]wire.PeerRunKnown, 0, len(known)), known...)
 	}
 	intent := map[string]any{"schemaVersion": 1, "binding": connection.binding, "knownRuns": known}
 	if !closed("PeerRunPollIntent", intent) {

@@ -259,10 +259,14 @@ effect. Partition tests cover two Peers on one Host, reopen, missing/copied
 receipts and linked Session directories. Owning Peer/core race tests and vet,
 bundled Local Node regression and Windows Peer/core test-binary compilation
 pass. These close BRG-081's native composition; network Run delivery, immutable
-journals, fresh signed admission and settlement remain RUN-020. No live model,
+journals, fresh signed admission and settlement are implemented under RUN-020.
+The connector now owns up to eight concurrent Peer Runs and drains them before
+reconnecting. Per-Peer background recovery survives business departure within
+the original settlement window. See [execution coordination](run-orchestration.md)
+for implemented paths and remaining integration coverage. No live model,
 physical Windows, manual acceptance or external installation is claimed.
 
-RUN-020 adds the fresh Host-admission client consumed by the upcoming Peer Run
+RUN-020 adds the fresh Host-admission client consumed by the native Peer Run
 coordinator. It independently proves the pinned Host before sending the Peer
 machine credential, checks native identity/membership around the network wait,
 and verifies the exact binding, nonce, operation, recipient and proof lifetime.
