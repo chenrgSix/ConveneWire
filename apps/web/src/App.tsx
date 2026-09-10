@@ -1561,6 +1561,10 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
   }
 
   function chooseAgentSetup(target: AgentSetupTarget) {
+    if (target === "local" && isLocalNode) {
+      if (session) void jsonRequest("/api/local-node/open-console", { method: "POST" }, session.token).catch(reportError);
+      return;
+    }
     setAgentSetupTarget(target);
     if (target === "demo") {
       setConnectionMode("demo");
@@ -1845,7 +1849,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
             <section className="work-onboarding">
               <p className="eyebrow">{locale === "zh-CN" ? "从第一个 Agent 开始" : "Start with your first Agent"}</p>
               <h3>{locale === "zh-CN" ? "选择适合你的开始方式" : "Choose how you want to begin"}</h3>
-              <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} locale={locale} onSelect={chooseAgentSetup} />
+              <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} localNode={isLocalNode} locale={locale} onSelect={chooseAgentSetup} />
             </section>
           )}
           <WorkWorkspace
@@ -2004,7 +2008,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
             {readyRoomAgents.length === 0 && (
               <>
                 <p>{locale === "zh-CN" ? "当前房间还没有就绪的 Agent。已注册不等于可以在这里回复，请检查状态和房间授权。" : "No Agent is ready in this Room yet. Check availability and Room access, not just registration."}</p>
-                <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} locale={locale} onSelect={chooseAgentSetup} />
+                <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} localNode={isLocalNode} locale={locale} onSelect={chooseAgentSetup} />
               </>
             )}
             </>}

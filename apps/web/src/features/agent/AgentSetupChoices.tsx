@@ -7,12 +7,14 @@ export type AgentSetupTarget = "hosted" | "local" | "demo";
 interface AgentSetupChoicesProps {
   currentMemberIsOwner: boolean;
   locale: Locale;
+  localNode?: boolean;
   onSelect: (target: AgentSetupTarget) => void;
 }
 
 export function AgentSetupChoices({
   currentMemberIsOwner,
   locale,
+  localNode = false,
   onSelect
 }: AgentSetupChoicesProps) {
   const t = (key: TranslationKey) => translate(locale, key);
@@ -30,9 +32,9 @@ export function AgentSetupChoices({
     label: "01"
   }, {
     target: "local",
-    title: "setupLocalTitle",
-    description: "setupLocalDescription",
-    boundary: "setupLocalBoundary",
+    title: localNode ? "setupNativeLocalTitle" : "setupLocalTitle",
+    description: localNode ? "setupNativeLocalDescription" : "setupLocalDescription",
+    boundary: localNode ? "setupNativeLocalBoundary" : "setupLocalBoundary",
     label: "02"
   }, {
     target: "demo",

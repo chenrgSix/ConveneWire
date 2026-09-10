@@ -235,6 +235,14 @@ be edited through legacy connection settings. Stable Agent IDs survive rename,
 core replacement and subsequent explicit Device attachment. See the
 [shared core boundary](bridge.md#shared-runtime-core) for recovery and validation.
 
+WEB-086 applies that native entry to the empty-Team and empty-Room Agent cards.
+On a Local Node, their explicit action opens the Owner Console and leaves the
+current work/conversation view in place. It never creates a pairing request or
+implicitly binds the selected Team. Remote Host cards keep the existing Bridge
+setup route. Both languages describe the already installed native Console.
+An actual App/Local Node HTTP regression checks both cards and unchanged empty
+binding; six focused entry/onboarding checks and the Hub/Web build pass.
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies
 to the selected Task, including the default conversation. Switching Tasks retires

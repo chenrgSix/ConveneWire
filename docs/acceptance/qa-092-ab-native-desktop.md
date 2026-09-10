@@ -1,11 +1,70 @@
-# QA-092: A/B native desktop evidence
+# QA-092: combined A/B/C manual and physical acceptance
 
-Milestone B implementation is complete. QA-092 remains **ACTIVE** in
-[the task register](../TASKS.md): the native interaction gate is not fully closed.
+Milestones A/B/C implementation and the [QA-091 automated gate](qa-091-node-first-v1.md)
+are complete. QA-092 is now **ACTIVE** in [the task register](../TASKS.md), after
+the deferred implementation boundary. This record preserves historical A/B
+observations separately from current V1 interaction and remaining physical gates.
 
-## Verified local behavior
+## Current V1 interaction
 
-The final unsigned macOS arm64 package contains source
+The clean `41cd563f` package identified by QA-091 was extracted into a new private
+fixture and launched with explicit Node data, Bridge configuration and Workspace
+arguments. It had a disposable Team, Room and no configured Runtime executable.
+The [native local space](evidence/qa092/v1-native-space.jpg) showed the expected
+Team and bound local Runtime. Its native configuration action opened the
+[Agent window](evidence/qa092/v1-native-agents.jpg); closing that window retained
+the same desktop process, healthy Hub and byte-identical identity. Native
+application quit returned zero, stopped the Hub and retained that identity.
+Owned processes were drained before removing the extracted app and private data.
+
+The same binary could not initialize Wails/macOS windows inside the command
+sandbox (SIGABRT during native initialization). The explicitly approved bounded
+fixture succeeded outside that sandbox. An earlier noninteractive preview ended
+on stdin EOF before UI inspection. Neither failed setup is counted as a pass.
+SystemUIServer inspection still timed out; no tray action is inferred from the
+working application menu or configuration button.
+
+This inspection found that empty-Team/Room onboarding still routed the local
+Agent card to legacy managed-Bridge pairing. WEB-086 corrects both entry surfaces
+to open the local Owner Console without pairing or implicit Team binding. Six
+focused checks, including real App/Local Node HTTP for both cards and the remote
+Bridge onboarding regression, pass. The replacement final package is recorded
+separately once its clean source and inventory have been verified.
+
+## Final acceptance procedure
+
+Use the exact replacement artifact and explicit disposable profiles for remaining
+local observations. Do not launch an extracted app without its fixture arguments:
+the UI inspector can relaunch a stopped application with default configuration.
+Verify the owned process is alive before inspecting it. Preserve historical
+evidence rather than silently attributing it to the new binary.
+
+1. Check the actual tray's open-local-space, configure-Agent and quit actions;
+   verify closing a window keeps the Hub, while quit drains the Runtime and Hub.
+2. Inspect independent browser entry and complete the reviewed Host/Participant
+   product interaction: invite, Room ceiling, local Export, exact Host Acceptance,
+   local approval, remote Run, mixed Discussion and revocation. The existing
+   `peer-host-browser-fixture.test.ts` prepares a disposable `Native Host` Team,
+   `Invited Room` and the offered `远端代码审阅` Agent (`agent_browserfixture1`).
+   Its `Uninvited Room` is outside the offer. The remaining Host click grants
+   access only to `Invited Room`; it cannot execute a provider in that fixture.
+3. Use separately consenting human owners and their chosen machines for physical
+   cross-Node acceptance. Record exact Node/source/platform identities and scope;
+   same-computer TLS fixtures do not replace this observation.
+4. On an explicitly authorized Windows test machine, build the same source and
+   run native install/upgrade/uninstall checks with stopped backups. Record native
+   minimum-OS behavior separately. A local macOS archive is not Windows evidence.
+
+The access-changing Host browser click `接纳此 Agent` was previously rejected by
+automatic approval review because it creates Agent access to a Room and the
+specific recipient/resource/scope had not been approved. It remains pending;
+it has not been retried through another UI or API. The reviewable fixture above
+makes the required decision concrete. Actual installation and independent-owner
+consent retain their own gates; live models require a separately bounded budget.
+
+## Historical A/B local behavior
+
+The earlier unsigned A/B macOS arm64 package contains source
 `896f72d08d8600bfae2d7bfffd4181ad0313525c`, native Node 22.23.1, SQLite, Server,
 Web and CLI helpers. Packaging verifies the exact source and macOS target.
 Its ZIP SHA-256 is
@@ -64,19 +123,19 @@ chain is covered separately by the three actual Host/Go-core scenario in
 [WEB-084](web-084-authority-spaces.md).
 
 Native desktop/launcher Go tests and vet, both message-port script tests and
-Space Web regressions passed. The final package was built after those fixes.
+Space Web regressions passed. That A/B package was built after those fixes.
 The browser extension repeatedly timed out even though installation and native
 host diagnostics passed. Opening a blank test-profile window did not restore
 communication. Browser DOM inspection is therefore not claimed.
 The browser connection failed again on 2026-09-10; repeated environment recovery
 was not counted as acceptance evidence.
 
-## Remaining acceptance and test limitations
+## Historical fixture and tool limitations
 
-- Exercise the actual tray menu's open/configure/quit actions. The system-UI
-  inspection tool timed out, so window activation is not counted as tray evidence.
-- Visually inspect the independent browser login page when browser control works.
-  Native dispatch/no-credential evidence above does not replace that visual check.
+At the A/B boundary, actual tray actions and independent browser login inspection
+remained incomplete. WEB-085 later obtained Host and native Console browser
+layout/focus evidence using the in-app browser; this does not retroactively close
+the original native dispatch or independent-owner acceptance gates.
 
 The first bounded manual preview finished and cleaned successfully. A subsequent
 45-minute preview timed out while browser/tool diagnostics continued; its cleanup
@@ -99,5 +158,5 @@ fixture acceptance. Later inspections verified an explicitly started test proces
 before accessing its UI.
 
 All deliberately started test applications and fixture Hosts are stopped. The
-final package and nonsensitive evidence remain. Physical Windows, minimum-OS
+named local packages and nonsensitive evidence remain. Physical Windows, minimum-OS
 hardware, real installation, external models, CI and publication are separate gates.
