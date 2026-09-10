@@ -92,14 +92,11 @@ func run() error {
 	return runWithDesktopInstance(func() (*desktopInstance, error) {
 		return acquireDesktopInstance(initialPairingLink, activation)
 	}, func(instance *desktopInstance) error {
-		bundle := *hubBundle
-		if bundle == "" && !*bridgeOnly && initialPairingLink == "" {
-			executable, err := os.Executable()
-			if err != nil {
-				return err
-			}
-			bundle = bundledLocalHub(executable, *configPath)
+		executable, err := os.Executable()
+		if err != nil {
+			return err
 		}
+		bundle := desktopHubBundle(executable, *hubBundle, *bridgeOnly, initialPairingLink)
 		if bundle != "" {
 			if *bridgeOnly || initialPairingLink != "" {
 				return fmt.Errorf("Local Node mode cannot be combined with remote pairing or --bridge-only")
@@ -306,8 +303,15 @@ func consoleWindowURL(token, pairingLink string) string {
 	return result
 }
 
+func nativeSettingsURL(token, theme string) string {
+	if theme != "light" {
+		theme = "dark"
+	}
+	return consoleWindowURL(token, "") + "&workspace=1&theme=" + theme
+}
+
 func loginArguments(configPath, dataDir, workspace string) []string {
-	arguments := []string{"--background", "--config", configPath}
+	arguments := []string{"--background", "--bridge-only", "--config", configPath}
 	if dataDir != "" {
 		arguments = append(arguments, "--data-dir", dataDir)
 	}

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
+import { JSDOM } from "jsdom";
+import { createNativeWorkspace } from "./static/native-workspace.mjs";
 import {
   configuredPairingEntryView,
   configuredPairingLaunchView,
@@ -48,8 +50,10 @@ test("nested fragment bounds admit the Go private-CA fixture and reject oversize
   }
 });
 
-test("actual embedded page consumes first-load and same-document activations and clears the URL", () => {
+test("actual embedded page consumes first-load and same-document activations and clears the URL", (t) => {
   const source = readFileSync(new URL("./static/app.js", import.meta.url), "utf8");
+  const dom = new JSDOM(readFileSync(new URL("./static/index.html", import.meta.url), "utf8"));
+  t.after(() => dom.window.close());
   const controllers = source.slice(source.indexOf("const query = new URLSearchParams"), source.indexOf("const pageCopy ="));
   const listeners = new Map();
   const storage = new Map();
@@ -62,6 +66,7 @@ test("actual embedded page consumes first-load and same-document activations and
   };
   const context = vm.createContext({
     URLSearchParams, pairingLinkFromHash, pairingOriginFromLink, elements,
+    createNativeWorkspace, document: dom.window.document,
     window: {location, addEventListener: (event, handler) => listeners.set(event, handler)},
     history: {replaceState(_state, _unused, url) { assert.equal(url, "/"); location.hash = ""; location.search = ""; }},
     sessionStorage: {setItem: (key, value) => storage.set(key, value), getItem: (key) => storage.get(key)},

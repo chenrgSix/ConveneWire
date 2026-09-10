@@ -99,7 +99,7 @@ test("real native HTTPS Peer entry confirms once and loads only its Room workspa
   await f.unmount();
   window.history.replaceState(null, "", `/?team=${f.team.teamId}&room=${f.room.roomId}&view=devices`);
   const scoped = f.mount();
-  await scoped.findByText("请在本机 Console 分享 Agent，并等待 Host 接纳。");
+  await scoped.findByText("请在本机设置 分享 Agent，并等待 Host 接纳。");
   assert.equal(scoped.queryByRole("button", { name: /新增智能体|查看设备|设备配对/u }), null);
   f.revoke();
   await f.act(async () => { await assert.rejects(jsonRequest(`/api/rooms/${f.room.roomId}/registry`)); });

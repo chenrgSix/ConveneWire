@@ -23,7 +23,7 @@ export function AccountWorkspace({ session, authMode, locale, theme, onLocale, o
     </section>
     <section className="control-panel">
       <h3>{zh ? "登录恢复" : "Login recovery"}</h3>
-      <p>{session.peerAccess ? (zh ? "请回本机 Console 重新进入此空间。" : "Open this Space again from your local Console.") : authMode !== "trusted-team"
+      <p>{session.peerAccess ? (zh ? "请回本机设置 重新进入此空间。" : "Open this Space again from your local settings.") : authMode !== "trusted-team"
         ? (zh ? "本机模式不使用 Owner 登录恢复密钥。" : "Local mode does not use an Owner login recovery key.")
         : session.canManageOwnerRecovery
           ? (zh ? "更换此中央服务的 Owner 登录恢复密钥。不会修改智能体的 API 配置。" : "Replace this Central's Owner login recovery key without changing Agent API configuration.")

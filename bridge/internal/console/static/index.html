@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ConveneWire Bridge</title>
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/native-workspace.css">
 </head>
 <body>
   <main class="app-shell">
@@ -37,6 +38,10 @@
     </aside>
 
     <section class="app-main">
+      <header class="workspace-settings-header hidden" id="workspace-settings-header">
+        <div><button class="workspace-back" type="button" data-local-workspace-return>← 返回本地空间</button><strong>ConveneWire</strong></div>
+        <span id="workspace-runtime-state">正在读取本机状态…</span>
+      </header>
       <header class="topbar">
         <div>
           <p class="topbar-context" id="page-context">本机执行环境</p>
@@ -44,6 +49,14 @@
         </div>
         <div class="phase" id="phase"><span class="status-dot"></span><span id="phase-label">正在读取状态</span></div>
       </header>
+
+      <nav class="workspace-settings-tabs" aria-label="本机设置">
+        <button class="nav-item" type="button" data-page-target="agents">本机 Agent</button>
+        <button class="nav-item" type="button" data-page-target="peers">远端空间</button>
+        <button class="nav-item" type="button" data-page-target="overview">运行状态</button>
+        <button class="nav-item" type="button" data-page-target="governed">开发权限</button>
+        <button class="nav-item" type="button" data-page-target="settings">通用设置</button>
+      </nav>
 
       <div class="content-scroll">
         <div class="auth-warning hidden" id="auth-warning">
@@ -122,6 +135,10 @@
               <button class="primary" id="add-agent" type="button">添加 Agent</button>
             </div>
             <div class="agent-list detailed-agents" id="agent-list"></div>
+            <div class="workspace-agent-empty hidden" id="workspace-agent-empty">
+              <span aria-hidden="true">✦</span><h3>让你的第一个 Agent 加入工作</h3>
+              <p>点击“添加 Agent”，选择本机的 Codex 或 pi，并设置它使用的工作区。配置完成后，返回空间继续协作。</p>
+            </div>
           </section>
 
           <section class="app-page hidden peer-spaces" data-page-panel="peers" id="peer-spaces-page">

@@ -16,3 +16,22 @@ for(const platform of ['webkit','webview2'])test(`native Space script works with
  dom.window.document.addEventListener('click',event=>event.preventDefault());click();assert.equal(messages.length,1);
  dom.window.close();
 });
+for(const platform of ['webkit','webview2'])test(`native settings returns by a fixed event and carries only appearance on ${platform}`,async()=>{
+ const dom=new JSDOM('<html data-theme="light"><button data-local-workspace-return data-url="https://foreign.example?token=secret"><span>返回</span></button></html>',{url:'http://wails.localhost/?token=private',runScripts:'outside-only'});
+ const messages=[],port={postMessage:message=>messages.push(message)};
+ if(platform==='webkit')dom.window.webkit={messageHandlers:{external:port}};else dom.window.chrome={webview:port};
+ dom.window.eval(script);
+ assert.deepEqual(messages,['wails:event:emit:convenewire.local.theme.light']);
+ const event=new dom.window.MouseEvent('click',{bubbles:true,cancelable:true});
+ dom.window.document.querySelector('span').dispatchEvent(event);
+ assert.equal(event.defaultPrevented,true);
+ assert.equal(messages.at(-1),'wails:event:emit:convenewire.local.workspace');
+ dom.window.document.documentElement.dataset.theme='https://foreign.example';
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(messages.length,2);
+ dom.window.document.documentElement.dataset.theme='dark';
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(messages.at(-1),'wails:event:emit:convenewire.local.theme.dark');
+ assert.ok(messages.every(message=>!message.includes('private')&&!message.includes('secret')&&!message.includes('foreign')));
+ dom.window.close();
+});

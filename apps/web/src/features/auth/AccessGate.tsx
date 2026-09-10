@@ -84,8 +84,8 @@ export function AccessGate({
           </>
         )}
         {peerOnly && state !== "loading" && <>
-          <h1>{locale === "zh-CN" ? "从本机重新进入远端空间" : "Return through your local Console"}</h1>
-          <p>{locale === "zh-CN" ? "请回到本机 Console，在远端空间中点击进入，再确认你的成员身份。" : "Return to your local Console, open the remote Space and confirm your member identity."}</p>
+          <h1>{locale === "zh-CN" ? "从本机重新进入远端空间" : "Return through your local settings"}</h1>
+          <p>{locale === "zh-CN" ? "请回到本机设置，在远端空间中点击进入，再确认你的成员身份。" : "Return to your local settings, open the remote Space and confirm your member identity."}</p>
         </>}
         {!peerOnly && state === "local_bootstrap" && (
           <>

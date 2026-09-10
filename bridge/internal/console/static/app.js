@@ -1,4 +1,5 @@
 import { createClientEntryController } from "./client-entry.mjs";
+import { createNativeWorkspace } from "./native-workspace.mjs";
 import { createPeerSpacesController } from "./peer-spaces.mjs";
 import { createPeerSharingController } from "./peer-sharing.mjs";
 import { createPeerApprovalsController } from "./peer-approvals.mjs";
@@ -91,12 +92,13 @@ const sessionGuide = createSessionGuideController(
 );
 
 const query = new URLSearchParams(window.location.search);
+const nativeWorkspace = createNativeWorkspace({document, query});
 let pendingPairingLink = pairingLinkFromHash(window.location.hash);
 if (query.get("token")) {
   sessionStorage.setItem("agent-room-console-token", query.get("token"));
-  history.replaceState(null, "", window.location.pathname);
+  history.replaceState(null, "", nativeWorkspace.address ?? window.location.pathname);
 } else if (window.location.hash) {
-  history.replaceState(null, "", window.location.pathname);
+  history.replaceState(null, "", nativeWorkspace.address ?? window.location.pathname);
 }
 if (pendingPairingLink) {
   elements["device-pairing-link"].value = pendingPairingLink;
@@ -112,7 +114,7 @@ let expectedPairingDeviceId = null;
 let pairingReview = null;
 let discoveryRunning = false;
 let agentProvisioningDirty = false;
-let activePage = "overview";
+let activePage = nativeWorkspace.initialPage;
 const runtimeTestResults = new Map();
 
 // A WebView may treat a later activation as same-document navigation. Consume
@@ -121,7 +123,7 @@ window.addEventListener("hashchange", consumePairingLaunchHash);
 
 function consumePairingLaunchHash() {
   const incoming = pairingLinkFromHash(window.location.hash);
-  if (window.location.hash) history.replaceState(null, "", window.location.pathname);
+  if (window.location.hash) history.replaceState(null, "", nativeWorkspace.address ?? window.location.pathname);
   if (!incoming) return;
   if (enrollmentActionRunning || currentState?.enrollment?.active) {
     showError(new Error("已有 Device 配对正在进行，请先完成或取消当前配对。"));
@@ -628,6 +630,7 @@ function render(state) {
   document.querySelector(".brand-mark").textContent = native ? "CW" : "AR";
   document.querySelector(".sidebar-nav").setAttribute("aria-label", native ? "本机 Node 页面" : "Bridge 页面");
   document.querySelector('[data-page-panel="settings"] h2').textContent = native ? "本机设置" : "Bridge 设置";
+  nativeWorkspace.render(state);
   elements["start-bridge"].textContent = native ? "启动 Runtime" : "启动 Bridge";
   for (const selector of [".pairing-panel", "#edit-connection", ".client-entry-card"]) {
     document.querySelector(selector)?.classList.toggle("hidden", Boolean(state.localNodeId));

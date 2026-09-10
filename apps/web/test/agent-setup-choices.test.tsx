@@ -26,7 +26,8 @@ test("Agent entry paths explain installation, capability, and demo boundaries in
   assert.match(en, /Simulated replies only/u);
   for (const locale of ["zh-CN", "en"] as const) {
     const native = renderToStaticMarkup(<AgentSetupChoices currentMemberIsOwner localNode locale={locale} onSelect={() => {}} />);
-    assert.match(native, /Console/u);
+    assert.doesNotMatch(native, /Console/u);
+    assert.match(native, locale === "zh-CN" ? /返回当前空间/u : /Return to this space/u);
     assert.match(native, locale === "zh-CN" ? /配置本机 Agent/u : /Configure local Agents/u);
     assert.doesNotMatch(native, /需要在执行工作的电脑安装客户端|Install the client on the computer/u);
   }

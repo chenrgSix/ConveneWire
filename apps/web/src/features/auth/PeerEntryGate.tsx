@@ -72,9 +72,9 @@ export function PeerEntryGate({ entry, onEntered, onCancel }: {
       <p>{window.location.origin}</p>
       {identity && <><p className="client-entry-identity"><strong>{identity.displayName}</strong> · {identity.teamLabel}</p>
         <p>{identity.scope.kind === "room" ? `# ${identity.roomLabel}` : (zh ? "Team 内已授权房间" : "Authorized Rooms in this Team")}</p>
-        <p>{zh ? "继续后，此浏览器使用以上成员身份和范围。本机 Agent 的分享与执行许可仍由本机 Console 管理。" : "Continue with this member identity and scope. Agent sharing and execution permission remain in your local Console."}</p></>}
+        <p>{zh ? "继续后，此浏览器使用以上成员身份和范围。本机 Agent 的分享与执行许可仍由本机设置 管理。" : "Continue with this member identity and scope. Agent sharing and execution permission remain in your local settings."}</p></>}
       {!identity && !error && <p>{zh ? "正在核对远端授权…" : "Checking remote access…"}</p>}
-      {error && <p role="alert">{zh ? "入口已过期、已使用或授权已变化。请回本机 Console 重新进入；不会自动重复登录。" : "Entry expired, was used, or access changed. Open a fresh entry from your local Console; sign-in is never automatically replayed."}</p>}
+      {error && <p role="alert">{zh ? "入口已过期、已使用或授权已变化。请回本机设置 重新进入；不会自动重复登录。" : "Entry expired, was used, or access changed. Open a fresh entry from your local settings; sign-in is never automatically replayed."}</p>}
       <button className="access-primary" type="button" disabled={!identity || busy || error} onClick={() => void enter()}>{busy ? (zh ? "正在进入…" : "Entering…") : (zh ? "确认并进入" : "Confirm and enter")}</button>
       <button className="secondary-action" type="button" disabled={busy} onClick={() => { lifetime.current = null; onCancel(); }}>{attempted ? (zh ? "关闭入口，检查当前登录" : "Close entry and check current sign-in") : (zh ? "取消，保留原登录" : "Cancel; keep current sign-in")}</button>
     </section>

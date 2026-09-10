@@ -224,7 +224,7 @@ export function AgentWorkspace(props: AgentWorkspaceProps) {
       {props.error && !selectedAgent && !flow && <p className="error-banner" role="alert">{props.error}</p>}
       <div className="management-intro">
         <div><p>{zh ? "让合适的智能体加入协作。运行方式与权限，在配置时按需查看。" : "Bring the right Agents into your work. Inspect runtime capabilities and permissions when configuring."}</p></div>
-        {props.peerMember ? <p>{zh ? "请在本机 Console 分享 Agent，并等待 Host 接纳。" : "Share an Agent from your local Console and await Host acceptance."}</p> : <button className="primary-action" onClick={() => selectSetup("choose")} type="button">{zh ? "新增智能体" : "Add an Agent"}</button>}
+        {props.peerMember ? <p>{zh ? "请在本机设置 分享 Agent，并等待 Host 接纳。" : "Share an Agent from your local settings and await Host acceptance."}</p> : <button className="primary-action" onClick={() => selectSetup("choose")} type="button">{zh ? "新增智能体" : "Add an Agent"}</button>}
       </div>
       <div className="inventory-toolbar">
         <input aria-label={zh ? "搜索智能体" : "Search Agents"} placeholder={zh ? "搜索名称、角色或模型" : "Search name, role or model"} type="search" value={search} onChange={(event) => setSearch(event.target.value)} />

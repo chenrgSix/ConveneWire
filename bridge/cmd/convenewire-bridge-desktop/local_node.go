@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"convenewire.dev/bridge/internal/autostart"
@@ -22,12 +23,19 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/icons"
 )
 
-func bundledLocalHub(executable, legacyConfig string) string {
-	// Released remote profiles stay in Bridge mode. Only a fresh profile defaults
-	// to the Local Hub shipped with this application.
-	if _, err := os.Lstat(legacyConfig); !os.IsNotExist(err) {
+func desktopHubBundle(executable, requested string, bridgeOnly bool, pairingLink string) string {
+	if requested != "" {
+		return requested
+	}
+	if bridgeOnly || pairingLink != "" {
 		return ""
 	}
+	return bundledLocalHub(executable)
+}
+
+func bundledLocalHub(executable string) string {
+	// Packaging chooses the product entry. A retained remote profile must not
+	// silently switch an ordinary relaunch back to the compatibility interface.
 	root := filepath.Join(filepath.Dir(executable), "hub")
 	if runtime.GOOS == "darwin" {
 		root = filepath.Join(filepath.Dir(executable), "../Resources/hub")
@@ -106,16 +114,14 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 	window := app.Window.NewWithOptions(application.WebviewWindowOptions{Name: "ConveneWire Local Node", Title: "ConveneWire · 本地空间", URL: entryURL,
 		AllowSimpleEventEmit: true, JS: localSpaceNavigationScript,
 		Width: 1280, Height: 850, MinWidth: 850, MinHeight: 620, BackgroundColour: application.NewRGB(12, 17, 13)})
-	agentWindow := app.Window.NewWithOptions(application.WebviewWindowOptions{Name: "ConveneWire Local Agents", Title: "ConveneWire · 本机 Agent", URL: "/",
-		Width: 980, Height: 780, MinWidth: 760, MinHeight: 620, Hidden: true, BackgroundColour: application.NewRGB(12, 17, 13)})
 	show := func(target *application.WebviewWindow) { target.Show(); target.Restore(); target.Focus() }
-	for _, target := range []*application.WebviewWindow{window, agentWindow} {
-		target.RegisterHook(events.Common.WindowClosing, func(event *application.WindowEvent) { target.Hide(); event.Cancel() })
-	}
+	window.RegisterHook(events.Common.WindowClosing, func(event *application.WindowEvent) { window.Hide(); event.Cancel() })
 	if background && startErr == nil {
 		window.Hide()
 	}
+	var navigation atomic.Uint64
 	openHub := func() {
+		epoch := navigation.Add(1)
 		if startErr != nil {
 			show(window)
 			return
@@ -123,6 +129,9 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 		go func() {
 			entry, err := hub.Entry(ctx)
 			application.InvokeAsync(func() {
+				if ctx.Err() != nil || navigation.Load() != epoch {
+					return
+				}
 				if err != nil {
 					app.Dialog.Error().SetTitle("本地空间不可用").SetMessage(err.Error()).Show()
 					return
@@ -130,21 +139,37 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 				// A changed query forces a document navigation even if only the ticket
 				// fragment would otherwise differ; browser cache never becomes Owner ID.
 				entry = strings.Replace(entry, "/#", fmt.Sprintf("/?desktop=%d#", time.Now().UnixNano()), 1)
+				window.SetTitle("ConveneWire · 本地空间")
 				window.SetURL(entry)
 				show(window)
 			})
 		}()
 	}
+	var themeMu sync.Mutex
+	theme := "dark"
+	for _, appearance := range []string{"light", "dark"} {
+		app.Event.On("convenewire.local.theme."+appearance, func(*application.CustomEvent) {
+			themeMu.Lock()
+			theme = appearance
+			themeMu.Unlock()
+		})
+	}
 	openAgents := func() {
+		navigation.Add(1)
 		if shell == nil {
 			show(window)
 			return
 		}
 		if service := shell.Console(); service != nil {
-			agentWindow.SetURL(consoleWindowURL(service.Token(), ""))
+			themeMu.Lock()
+			appearance := theme
+			themeMu.Unlock()
+			window.SetTitle("ConveneWire · 本机 Agent")
+			window.SetURL(nativeSettingsURL(service.Token(), appearance))
 		}
-		show(agentWindow)
+		show(window)
 	}
+	app.Event.On("convenewire.local.workspace", func(*application.CustomEvent) { openHub() })
 	bindActivationToLoadedPage(window.OnWindowEvent, runtime.GOOS, activation, application.InvokeAsync, func(link string) {
 		if link != "" {
 			app.Dialog.Error().SetTitle("请在 Bridge 模式中配对").SetMessage("本地 Node 保留独立的本机身份；此版本的远端配对请在 Bridge 模式中打开。").Show()

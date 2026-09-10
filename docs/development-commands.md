@@ -379,8 +379,9 @@ The native test also enables HTTPS in its stopped disposable profile, verifies
 local and Peer port conflicts, confirms Owner/control isolation, and checks
 that stop and backup/restore preserve the same identity and TLS configuration.
 
-A fresh packaged profile defaults to the Local Hub. Existing remote profiles
-keep Bridge mode. Explicit desktop flags are `--hub-bundle /absolute/hub`,
+A packaged desktop defaults to the Local Hub, including when an existing remote
+profile is retained. The old profile is not migrated or started implicitly.
+Explicit desktop flags are `--hub-bundle /absolute/hub`,
 `--node-data /absolute/private-node-root`, optional `--workspace /absolute/workspace`,
 and `--bridge-only` for the released remote path.
 

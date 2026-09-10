@@ -336,7 +336,10 @@ holds the private data lease and authenticates child readiness. Hub failure
 stops the existing Console/Bridge core before releasing ownership. Fresh local
 profiles begin with no Agents; Console remains the owner-controlled Runtime
 setup surface. Local mode blocks connection replacement and re-pairing. Existing
-remote profiles and `--bridge-only` keep the released Bridge path. Web navigation
+remote profiles remain untouched. Under [ADR-0069](../adr/0069-unify-native-workspace-navigation.md),
+packaged launches default to the Local Hub; only explicit `--bridge-only` and
+Device pairing launches select the released Bridge path. Local Agent settings
+now use the main window and return through a fresh supervisor-issued entry. Web navigation
 cannot change a local binding or grant execution trust. See
 [supervisor evidence](../acceptance/brg-079-local-node-supervisor.md).
 

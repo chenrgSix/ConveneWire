@@ -1,0 +1,87 @@
+/* Native settings belongs to the workspace; legacy Bridge keeps its own skin. */
+body.native-workspace {
+  --app-bg: #0e1110;
+  --surface: #161b18;
+  --surface-subtle: #131715;
+  --surface-strong: #222a23;
+  --topbar-bg: #0e1110;
+  --line: #2a332c;
+  --line-strong: #3a473d;
+  --text: #edf1eb;
+  --muted: #9ba69b;
+  --faint: #7b897d;
+  --accent: #c7e574;
+  --accent-hover: #d6f18e;
+  --accent-soft: #2b3620;
+  --accent-text: #d9f28f;
+  --accent-border: #667c3f;
+  --on-accent: #1b2511;
+  --hover-bg: #202820;
+  --focus-ring: rgb(199 229 116 / 24%);
+  color-scheme: dark;
+  font-family: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+}
+:root[data-theme="light"] body.native-workspace {
+  --app-bg: #f4f7f3;
+  --surface: #fff;
+  --surface-subtle: #f5f8f3;
+  --surface-strong: #e8efdf;
+  --topbar-bg: #f4f7f3;
+  --line: #d5ddd2;
+  --line-strong: #b7c5af;
+  --text: #233025;
+  --muted: #61725d;
+  --faint: #7d8b76;
+  --accent: #547331;
+  --accent-hover: #456328;
+  --accent-soft: #e7efdd;
+  --accent-text: #365021;
+  --accent-border: #b0c995;
+  --on-accent: #fff;
+  --hover-bg: #eaf0e5;
+  color-scheme: light;
+}
+body.native-workspace .app-shell { display: block; }
+.native-workspace .sidebar,
+.native-workspace #setup-intro,
+.native-workspace #enrollment-form { display: none; }
+.native-workspace .workspace-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-subtle);
+}
+.workspace-settings-header > div { display: flex; align-items: center; gap: 16px; }
+.workspace-settings-header strong { font-size: 14px; letter-spacing: -.02em; }
+.workspace-settings-header span { color: var(--muted); font-size: 12px; }
+.workspace-back { padding: 9px 13px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--text); cursor: pointer; }
+.workspace-back:hover { background: var(--hover-bg); }
+.native-workspace .topbar { border-bottom: 0; padding: 26px 32px 18px; }
+.native-workspace .topbar h1 { font-size: 27px; }
+.native-workspace .topbar-context { color: var(--muted); margin-bottom: 8px; letter-spacing: .05em; }
+.workspace-settings-tabs { display: none; }
+.native-workspace .workspace-settings-tabs { display: flex; gap: 8px; padding: 0 32px 18px; border-bottom: 1px solid var(--line); }
+.workspace-settings-tabs .nav-item { width: auto; white-space: nowrap; padding: 9px 15px; }
+.native-workspace .nav-item.active { background: var(--accent-soft); color: var(--accent-text); box-shadow: none; }
+.native-workspace .content-scroll { padding: 28px 32px 40px; }
+.native-workspace .app-page { max-width: 1080px; margin: 0 auto; }
+.native-workspace #agents-page > .page-heading h2 { font-size: 18px; }
+.native-workspace #agents-page > .page-heading .eyebrow { display: none; }
+.native-workspace .agent-list { gap: 14px; }
+.native-workspace .agent-card, .native-workspace .settings-card, .native-workspace .connection-card { border-radius: 14px; box-shadow: none; }
+.workspace-agent-empty { padding: 48px 24px; border: 1px dashed var(--line-strong); border-radius: 16px; text-align: center; }
+.workspace-agent-empty > span { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 18px; border-radius: 15px; background: var(--accent-soft); color: var(--accent-text); font-size: 25px; }
+.workspace-agent-empty h3 { margin-bottom: 10px; font-size: 20px; }
+.workspace-agent-empty p { max-width: 430px; margin: 0 auto; color: var(--muted); font-size: 14px; }
+@media (max-width: 720px) {
+  .native-workspace .workspace-settings-header { padding: 14px 18px; gap: 12px; }
+  .workspace-settings-header > div { gap: 10px; }
+  .workspace-settings-header > span { display: none; }
+  .native-workspace .topbar { padding: 22px 18px 16px; }
+  .native-workspace .workspace-settings-tabs { padding: 0 18px 14px; overflow-x: auto; flex-shrink: 0; }
+  .native-workspace .workspace-settings-tabs .nav-item { font-size: 12px; padding: 8px 11px; }
+  .native-workspace .content-scroll { padding: 20px 18px 28px; }
+}
