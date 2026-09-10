@@ -178,7 +178,17 @@ func (e *Exporter) Effective(membershipID, localAgentID, roomID string, now time
 		return AcceptanceRecord{}, err
 	}
 	_, connection, found := exportConnection(state, membershipID)
-	if !found || connection.State != "active" || !after(connection.Receipt.Membership.ExpiresAt, now) ||
+	if !found {
+		return AcceptanceRecord{}, ErrExport
+	}
+	return effectiveAcceptance(connection, current, roomID, now)
+}
+
+// Inventory and execution share the retained bilateral intersection. A Run
+// still needs fresh Host admission before executing.
+func effectiveAcceptance(connection LocalConnection, current LocalExport, roomID string, now time.Time) (AcceptanceRecord, error) {
+	localAgentID := current.Offer.Grant.LocalAgentID
+	if connection.State != "active" || !after(connection.Receipt.Membership.ExpiresAt, now) ||
 		!after(connection.Receipt.MachineCredential.ExpiresAt, now) {
 		return AcceptanceRecord{}, ErrExport
 	}

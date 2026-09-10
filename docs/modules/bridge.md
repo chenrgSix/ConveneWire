@@ -322,6 +322,12 @@ same retained Run. Actual TLS tests cover refresh after expiry, loss/retry,
 revocation and local/native changes during the request. This client supplies the
 Host side of the factory callback; local bilateral checks remain mandatory.
 
+The native Owner's sharing inventory also survives Runtime configuration loss
+and pending core replacement. It explicitly reports source unavailability while
+retaining local grants and Host receipts for withdrawal. Its effective Room list
+uses the same retained bilateral checks as execution; it never asserts fresh
+Host admission. See [native sharing inventory](agent-registry.md#native-sharing-inventory).
+
 ## Local Node supervision
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds BRG-079's bundled Hub child

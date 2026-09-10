@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 	"testing"
+	"time"
 
 	"convenewire.dev/bridge/internal/config"
 )
@@ -101,5 +102,53 @@ func TestOwnerInventoryKeepsNewestExportLineageAfterOldLineageWithdrawal(t *test
 	view, err := exporter.OwnerState(now)
 	if err != nil || view.Connections[0].Exports[0].Offer.Grant.ExportID != second.Offer.Grant.ExportID || !view.Connections[0].Exports[0].Current {
 		t.Fatal("old lineage hid the new export", err)
+	}
+}
+
+func TestOwnerInventoryDistinguishesLocalGrantFromRetainedHostAcceptance(t *testing.T) {
+	exporter, store, _, source, entry, host, now := acceptanceFixture(t)
+	state, _ := store.Read()
+	connection := state.Connections[0]
+	room := entry.Offer.Grant.RoomIDS[0]
+	inventory := func(at time.Time) OwnerExportView {
+		t.Helper()
+		state, err := exporter.OwnerState(at)
+		if err != nil || len(state.Connections) != 1 || len(state.Connections[0].Exports) != 1 {
+			t.Fatal("missing owner projection", err)
+		}
+		return state.Connections[0].Exports[0]
+	}
+	initial := inventory(now)
+	if !initial.Current || len(initial.EffectiveRoomIDs) != 0 || initial.Acceptance != nil {
+		t.Fatal("local offer became Host acceptance")
+	}
+	record := fixtureAcceptance(t, connection, entry.Offer, 1)
+	record.Acceptance.ExpiresAt = now.Add(time.Minute).UTC().Format(peerTimeFormat)
+	receipt := signedAcceptanceSnapshot(t, host, []AgentOffer{entry.Offer}, []AcceptanceRecord{record}, now)
+	if err := exporter.installAcceptanceSnapshot(connection.Receipt.Membership.MembershipID, receipt, now); err != nil {
+		t.Fatal(err)
+	}
+	accepted := inventory(now)
+	if !accepted.Current || len(accepted.EffectiveRoomIDs) != 1 || accepted.EffectiveRoomIDs[0] != room || accepted.Acceptance == nil {
+		t.Fatal("missing bilateral projection")
+	}
+	expired := inventory(now.Add(time.Minute))
+	if !expired.Current || len(expired.EffectiveRoomIDs) != 0 || expired.Acceptance == nil {
+		t.Fatal("expired Host acceptance changed local grant or stayed effective")
+	}
+	oldWorkspace := source.Configuration.Workspace
+	source.Configuration.Workspace = t.TempDir()
+	changed := inventory(now)
+	if changed.Current || len(changed.EffectiveRoomIDs) != 0 {
+		t.Fatal("changed Workspace reused old consent")
+	}
+	source.Configuration.Workspace = oldWorkspace
+	saved, _ := store.Read()
+	if _, err := exporter.Withdraw(saved.Revision, connection.Receipt.Membership.MembershipID, entry.Offer.Grant.ExportID, entry.Offer.Grant.Revision, "op_ownerwithdrawstate001", now); err != nil {
+		t.Fatal(err)
+	}
+	withdrawn := inventory(now)
+	if withdrawn.Current || len(withdrawn.EffectiveRoomIDs) != 0 || withdrawn.Acceptance == nil || withdrawn.Offer.Grant.State != "revoked" {
+		t.Fatal("withdrawal hid retained history or stayed effective")
 	}
 }

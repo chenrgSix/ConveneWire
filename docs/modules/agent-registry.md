@@ -351,6 +351,24 @@ Peer Go race tests, actual TLS interop, vet and Server build pass. Documentation
 local links and whitespace checks also pass. These are local automatic checks;
 CI, shared-core collaboration E2E and physical acceptance are separate gates.
 
+## Native sharing inventory
+
+The Owner inventory now distinguishes current local consent from the retained
+bilateral intersection. Each latest local Export includes `effectiveRoomIds`,
+computed by the same digest/revision/capability/expiry checks used by native
+execution. Missing, expired or superseded Host acceptance cannot make a local
+offer effective. Retained acceptance remains visible after withdrawal or a
+configuration change, without implying current Run admission or connectivity.
+
+Console `GET /api/peers/exports` retains the durable inventory when Runtime
+configuration is missing or a core replacement is pending. It returns no
+sources and sets `configurationAvailable: false`; local availability is not
+invented. The Owner can still select the recorded grant/version for withdrawal.
+New sharing continues to require a current reviewed source/configuration digest.
+Owner/acceptance and Console Export regressions pass Go race/vet, including
+withdrawal after configuration loss, Host expiry, changed Workspace and retained
+acceptance history.
+
 ## Room-scoped inventory
 
 WEB-085 adds a currently authorized Room registry for independent human entry.

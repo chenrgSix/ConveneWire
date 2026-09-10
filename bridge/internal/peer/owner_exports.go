@@ -34,9 +34,10 @@ func (s *Sources) Reviews() []SourceReview {
 }
 
 type OwnerExportView struct {
-	Offer      AgentOffer        `json:"offer"`
-	Current    bool              `json:"current"`
-	Acceptance *AcceptanceRecord `json:"acceptance,omitempty"`
+	EffectiveRoomIDs []string          `json:"effectiveRoomIds"`
+	Offer            AgentOffer        `json:"offer"`
+	Current          bool              `json:"current"`
+	Acceptance       *AcceptanceRecord `json:"acceptance,omitempty"`
 }
 
 type OwnerConnectionView struct {
@@ -72,9 +73,16 @@ func (e *Exporter) OwnerState(now time.Time) (OwnerState, error) {
 			}
 		}
 		for id, entry := range latest {
-			v := OwnerExportView{Offer: entry.Offer}
+			v := OwnerExportView{Offer: entry.Offer, EffectiveRoomIDs: []string{}}
 			current, err := e.current(local, id, now)
 			v.Current = err == nil && equalJSON(current, entry)
+			if v.Current {
+				for _, roomID := range entry.Offer.Grant.RoomIDS {
+					if _, err := effectiveAcceptance(local, current, roomID, now); err == nil {
+						v.EffectiveRoomIDs = append(v.EffectiveRoomIDs, roomID)
+					}
+				}
+			}
 			if _, snapshot, found := acceptanceSnapshot(local, id); found && len(snapshot.AcceptanceHistory) > 0 {
 				record := snapshot.AcceptanceHistory[len(snapshot.AcceptanceHistory)-1]
 				v.Acceptance = &record

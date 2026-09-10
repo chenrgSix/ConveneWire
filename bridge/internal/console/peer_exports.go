@@ -27,16 +27,29 @@ func (s *Service) getPeerExports(response http.ResponseWriter, _ *http.Request) 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	_, exporter, sources, err := s.peerExportsLocked()
+	configurationAvailable := err == nil
 	if err != nil {
-		writeError(response, http.StatusConflict, "本机分享状态暂不可用，请刷新")
-		return
+		owner, ok := s.options.NativePeers.(nativePeerExports)
+		if !ok || s.closed || s.owner == nil {
+			writeError(response, http.StatusConflict, "本机分享记录暂不可用，请刷新")
+			return
+		}
+		exporter, err = owner.PeerWithdrawal()
+		if err != nil {
+			writeError(response, http.StatusConflict, "本机分享记录暂不可用，请保留原始数据")
+			return
+		}
 	}
 	state, err := exporter.OwnerState(time.Now())
 	if err != nil {
 		writeError(response, http.StatusConflict, "Peer 记录不可用，请保留原始数据")
 		return
 	}
-	writeJSON(response, http.StatusOK, map[string]any{"state": state, "sources": sources.Reviews()})
+	reviews := []peer.SourceReview{}
+	if configurationAvailable {
+		reviews = sources.Reviews()
+	}
+	writeJSON(response, http.StatusOK, map[string]any{"state": state, "sources": reviews, "configurationAvailable": configurationAvailable})
 }
 
 // Space membership is readable even while Runtime configuration is unavailable

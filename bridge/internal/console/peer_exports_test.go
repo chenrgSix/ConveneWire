@@ -97,12 +97,13 @@ func TestPeerConsoleExportRequiresReviewedConfigurationAndWithdrawsWithoutRuntim
 	service, owner, server, state := peerExportConsoleFixture(t)
 	response := consoleRequest(t, server.URL, service.Token(), http.MethodGet, "/api/peers/exports", nil)
 	var inventory struct {
-		State   peer.OwnerState
-		Sources []peer.SourceReview
+		State                  peer.OwnerState
+		Sources                []peer.SourceReview
+		ConfigurationAvailable bool
 	}
 	err := json.NewDecoder(response.Body).Decode(&inventory)
 	response.Body.Close()
-	if err != nil || response.StatusCode != 200 || len(inventory.Sources) != 1 || !inventory.Sources[0].Available {
+	if err != nil || response.StatusCode != 200 || len(inventory.Sources) != 1 || !inventory.Sources[0].Available || !inventory.ConfigurationAvailable {
 		t.Fatal("native export review", err, response.StatusCode)
 	}
 	source := inventory.Sources[0]
@@ -150,6 +151,14 @@ func TestPeerConsoleExportRequiresReviewedConfigurationAndWithdrawsWithoutRuntim
 	service.configuration = nil
 	service.bridgeRestartPending = true
 	service.mu.Unlock()
+	response = consoleRequest(t, server.URL, service.Token(), http.MethodGet, "/api/peers/exports", nil)
+	err = json.NewDecoder(response.Body).Decode(&inventory)
+	response.Body.Close()
+	if err != nil || response.StatusCode != 200 || inventory.ConfigurationAvailable || len(inventory.Sources) != 0 ||
+		len(inventory.State.Connections[0].Exports) != 1 || inventory.State.Connections[0].Exports[0].Current ||
+		inventory.State.Connections[0].Exports[0].Offer.Grant.State != "active" || inventory.State.Revision != saved.Revision {
+		t.Fatal("Runtime loss hid the durable grant or invented availability", err, response.StatusCode)
+	}
 	withdrawal := map[string]any{"expectedRevision": saved.Revision, "membershipId": membership.MembershipID, "exportId": entry.Offer.Grant.ExportID,
 		"grantRevision": entry.Offer.Grant.Revision, "operationId": "op_consolewithdraw001"}
 	response = consoleRequest(t, server.URL, service.Token(), http.MethodPost, "/api/peers/exports/withdraw", withdrawal)
