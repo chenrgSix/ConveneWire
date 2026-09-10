@@ -31,6 +31,9 @@ type NativeNode struct {
 	store                  *peer.Store
 	storeOnce              sync.Once
 	storeErr               error
+	partitionOnce          sync.Once
+	partitions             *peer.RuntimePartitions
+	partitionError         error
 	peerMu                 sync.Mutex
 	peers                  *peer.Connectors
 	peerError              string
@@ -92,6 +95,17 @@ func (n *NativeNode) peerStore() (*peer.Store, error) {
 		return nil, err
 	}
 	return n.store, nil
+}
+
+func (n *NativeNode) peerPartitions() (*peer.RuntimePartitions, error) {
+	store, err := n.peerStore()
+	if err != nil {
+		return nil, err
+	}
+	n.partitionOnce.Do(func() {
+		n.partitions, n.partitionError = peer.NewRuntimePartitions(n.root, store, n.checkIdentity)
+	})
+	return n.partitions, n.partitionError
 }
 
 type nativeNodeContextKey struct{}

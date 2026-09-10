@@ -45,8 +45,8 @@ again before connection and admission; no network input can supply
 this native context. The real bundled Local Node fixture completes ordinary
 Run/Discussion work with Node-owned process records, restarts without replay,
 and restores the same identity and process owner from backup. Core/Local Node
-race tests, vet and this offline native fixture pass. Peer transport and local
-approval composition remain in progress under BRG-081.
+race tests, vet and this offline native fixture pass. The Peer transport and
+local approval composition are described below.
 
 The Participant approval kernel binds each local decision to the immutable Peer
 execution, reviewed Export revision, opaque live-process owner and exact Runtime
@@ -58,8 +58,8 @@ the Runtime's human-reviewer confirmation. Device trust, Central approval,
 private output and governed execution cannot be combined with this path. An
 owned output pipe permits process exit detection while the parser awaits an
 Owner decision. Focused actual-process tests cover allow/deny/disconnect/exit;
-Peer/Runtime/core/Local Node race tests and vet pass. Transport and authenticated
-Console handlers still need to connect this kernel to real Peer Runs.
+Peer/Runtime/core/Local Node race tests and vet pass. The authenticated Console
+and native factory expose this kernel; network Run dispatch remains RUN-020.
 
 The independent `/ws/peer/runtime` transport now proves both pinned Nodes,
 origin, membership and Runtime credential before activating a connection.
@@ -72,8 +72,8 @@ sending its machine bearer, continuously observes socket closure and cancels
 its connection context immediately. Its channel grants no Run or human rights.
 Actual Go/Host TLS tests cover reconnect, revocation and local leave, and the
 actual native HTTPS ingress covers the separate machine upgrade and shutdown.
-Core connector/Agent composition and authenticated Console handlers are the
-remaining BRG-081 integration work.
+Core connector composition and authenticated Console handlers consume this
+transport; Agent presence and network execution remain RUN-020 work.
 
 Peer storage opens independently and retains one history observer throughout
 the native shell lifetime. Corrupt Peer state fails closed for Peer operations
@@ -211,10 +211,42 @@ Runtime Session fingerprint, separating Pi native IDs and persisted Session keys
 even when one Host reuses the same Room/Task/Agent identifiers across Peers.
 This value cannot come from Agent JSON; source resolution clears any prior Peer
 namespace along with Device authority. Empty namespace preserves the previous
-Device fingerprint and process namespace. The shared-core Peer factory and
-authenticated Run transport still need to consume these SDK boundaries.
+Device fingerprint and process namespace. The native Peer factory now consumes
+these SDK boundaries; authenticated Run transport remains RUN-020 work.
 Owning Runtime/config/Peer/core race tests and vet pass, along with Windows
 Runtime test-binary compilation; this is not Windows physical execution.
+
+Each native Peer Runtime partition has a private immutable receipt binding both
+Node keys, exact Host origin, local User, Peer, membership, Team/Member and the
+original join receipt digest. It contains no machine token or invitation secret.
+Different Peers on the same Host have separate directories and fingerprints.
+Existing incomplete/conflicting directories are not adopted; a cached partition
+cannot be recreated after deletion. Every Session operation rechecks the native
+identity, retained join, partition receipt and private parent directories. The
+native shell retains this observer across core configuration replacement.
+Opening historical storage does not grant current execution authority.
+
+The native connector epoch binds its factory to the same Node process store and
+physical resource gate used by Device connectors. Execution resolves the actual
+stable local Agent, verifies the exact current bilateral grant/Acceptance and
+opens that Peer's Session partition. A required trusted Run-admission callback
+must verify the immutable request and obtain fresh Host authorization. Local
+authority and the partition are rechecked after the network check and after
+resource waiting. Codex uses this same callback through the live local approval
+pool before continuing an approved operation. Device trust, Central approval,
+owner-private/governed requests and unimplemented artifact transfers are rejected
+before invoking an adapter. The resource remains held until process teardown.
+
+Actual offline Generic/Codex child regressions cover shared Device/Peer Workspace
+exclusion, post-wait Host failure, local withdrawal, cancellation, durable
+non-replay, exact local approval and private Session persistence. Both Host
+revocation and local withdrawal during approval prevent the requested side
+effect. Partition tests cover two Peers on one Host, reopen, missing/copied
+receipts and linked Session directories. Owning Peer/core race tests and vet,
+bundled Local Node regression and Windows Peer/core test-binary compilation
+pass. These close BRG-081's native composition; network Run delivery, immutable
+journals, fresh signed admission and settlement remain RUN-020. No live model,
+physical Windows, manual acceptance or external installation is claimed.
 
 ## Local Node supervision
 

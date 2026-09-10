@@ -113,7 +113,7 @@ func RunObservedWithProvisioning(
 		defer native.processes.Close()
 	}
 	if native != nil {
-		return runNativeConnectors(ctx, nativeNodeFromContext(ctx), loaded, identities, observer, func(ctx context.Context) error {
+		return runNativeConnectors(ctx, nativeNodeFromContext(ctx), loaded, identities, native, observer, func(ctx context.Context) error {
 			if connections != nil {
 				return runAuthorities(ctx, loaded, credential, bridgeVersion, observer, identities, *connections, native)
 			}

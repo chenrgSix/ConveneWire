@@ -44,6 +44,8 @@ type peerWorker struct {
 type Connectors struct {
 	store             *Store
 	exporter          *Exporter
+	sources           *Sources
+	runtime           *runtimeFactory
 	approvals         *Approvals
 	newClient         func(string, wire.PeerNodeIdentity) (*Client, error)
 	clock             func() time.Time
@@ -74,7 +76,7 @@ func NewConnectors(store *Store, sources *Sources, signer *Signer, checkIdentity
 	if err != nil {
 		return nil, err
 	}
-	return &Connectors{store: store, exporter: exporter, approvals: &Approvals{}, clock: time.Now, checkIdentity: checkIdentity,
+	return &Connectors{store: store, sources: sources, exporter: exporter, approvals: &Approvals{}, clock: time.Now, checkIdentity: checkIdentity,
 		pollInterval: time.Second, heartbeatInterval: 5 * time.Second, syncInterval: 10 * time.Second, retryInterval: time.Second,
 		wake: make(chan struct{}, 1), workers: map[string]*peerWorker{}, statuses: map[string]ConnectorStatus{}, state: "stopped",
 		newClient: func(origin string, host wire.PeerNodeIdentity) (*Client, error) {

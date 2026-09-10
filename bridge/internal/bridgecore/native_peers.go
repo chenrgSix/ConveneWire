@@ -101,7 +101,7 @@ func (n *NativeNode) PeerWithdrawal() (*peer.Exporter, error) {
 	return peer.NewExporter(store, func(string) (peer.ExportSource, error) { return peer.ExportSource{}, peer.ErrExport })
 }
 
-func (n *NativeNode) newPeerConnectors(cfg config.Config, identities map[string]string) (*peer.Connectors, error) {
+func (n *NativeNode) newPeerConnectors(cfg config.Config, identities map[string]string, resources *nativeResources) (*peer.Connectors, error) {
 	store, err := n.peerStore()
 	if err != nil {
 		return nil, err
@@ -110,17 +110,28 @@ func (n *NativeNode) newPeerConnectors(cfg config.Config, identities map[string]
 	if err != nil {
 		return nil, err
 	}
-	return peer.NewConnectors(store, sources, n.signer, n.checkIdentity)
+	connectors, err := peer.NewConnectors(store, sources, n.signer, n.checkIdentity)
+	if err != nil {
+		return nil, err
+	}
+	partitions, err := n.peerPartitions()
+	if err != nil || resources == nil {
+		return nil, errNativeNode
+	}
+	if err := connectors.BindRuntime(partitions, resources.primary, resources.processes); err != nil {
+		return nil, err
+	}
+	return connectors, nil
 }
 
 // The native core owns both connector families. A Device setup/transport error
 // retries only Device work; a Peer store/transport error stays in Peer status.
 // Configuration replacement and native identity failure drain the whole epoch.
 func runNativeConnectors(ctx context.Context, node *NativeNode, cfg config.Config, identities map[string]string,
-	observer operations.Observer, device func(context.Context) error) error {
+	resources *nativeResources, observer operations.Observer, device func(context.Context) error) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	peers, peerErr := node.newPeerConnectors(cfg, identities)
+	peers, peerErr := node.newPeerConnectors(cfg, identities, resources)
 	node.peerMu.Lock()
 	if node.peers != nil {
 		node.peerMu.Unlock()

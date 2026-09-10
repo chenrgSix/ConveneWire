@@ -75,7 +75,12 @@ func waitNativePeerState(t *testing.T, node *NativeNode, state string) {
 }
 
 func TestNativeConnectorFamiliesIsolateFailuresAndDrainOnIdentityChange(t *testing.T) {
-	base, node, cfg, _, ids := nativeCoreFixture(t)
+	base, node, cfg, credential, ids := nativeCoreFixture(t)
+	resources, err := openNativeResources(base, node, cfg, credential, ids)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resources.processes.Close()
 	ctx, cancel := context.WithCancel(base)
 	defer cancel()
 	attempts := make(chan struct{}, 2)
@@ -83,7 +88,7 @@ func TestNativeConnectorFamiliesIsolateFailuresAndDrainOnIdentityChange(t *testi
 	done := make(chan error, 1)
 	go func() {
 		attempt := 0
-		done <- runNativeConnectors(ctx, node, cfg, ids, operations.Observer{}, func(ctx context.Context) error {
+		done <- runNativeConnectors(ctx, node, cfg, ids, resources, operations.Observer{}, func(ctx context.Context) error {
 			attempt++
 			attempts <- struct{}{}
 			if attempt == 1 {
@@ -134,9 +139,22 @@ func TestNativeConnectorFamiliesIsolateFailuresAndDrainOnIdentityChange(t *testi
 }
 
 func TestNativeConfigurationReplacementDrainsPeerEpoch(t *testing.T) {
-	ctx, node, cfg, _, ids := nativeCoreFixture(t)
-	err := runNativeConnectors(ctx, node, cfg, ids, operations.Observer{}, func(context.Context) error { return connection.ErrConfigurationChanged })
+	ctx, node, cfg, credential, ids := nativeCoreFixture(t)
+	resources, err := openNativeResources(ctx, node, cfg, credential, ids)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resources.processes.Close()
+	first, err := node.peerPartitions()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = runNativeConnectors(ctx, node, cfg, ids, resources, operations.Observer{}, func(context.Context) error { return connection.ErrConfigurationChanged })
 	if !errors.Is(err, connection.ErrConfigurationChanged) || node.PeerStatus().State != "stopped" {
 		t.Fatal("configuration replacement did not drain native epoch", err, node.PeerStatus())
+	}
+	second, err := node.peerPartitions()
+	if err != nil || first != second {
+		t.Fatal("core replacement forgot Peer Runtime partition observer", err)
 	}
 }
