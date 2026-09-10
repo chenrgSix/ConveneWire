@@ -97,6 +97,7 @@ import type { IsolatedWorkspaceLeaseService } from
 export type PersistedRun = NonNullable<ReturnType<RunRepository["getRun"]>>;
 
 export interface ServerRouteContext {
+  peerPresence: import("../registry/peer-presence-service.js").PeerPresenceService;
   peerRuntime: import("../peer/runtime-sessions.js").PeerRuntimeSessions;
   peerRuns: import("../peer/run-authority.js").PeerRunAuthority;
   peerDeliveries: PeerRunDeliveryService;

@@ -5,6 +5,7 @@ import type {
   DevicePresenceRecord
 } from "../data/core-repository.js";
 import { isCanonicalBridgeVersion } from "../domain/bridge-version.js";
+import type { PeerAgentPresenceSource } from "./peer-presence-service.js";
 import type {
   AuthService,
   DevicePrincipal,
@@ -36,7 +37,8 @@ export class PresenceService {
     private readonly auth: AuthService,
     private readonly ttlMilliseconds = 30_000,
     private readonly hostedAgents: HostedAgentPresenceSource =
-      unavailableHostedAgents
+      unavailableHostedAgents,
+    private readonly peerAgents?: PeerAgentPresenceSource
   ) {}
 
   public recordHeartbeat(
@@ -194,6 +196,8 @@ export class PresenceService {
           // successful observation promotes it back to ready.
           presence = "degraded";
         }
+      } else if (agent.integrationMode === "peer") {
+        presence = this.peerAgents?.getAvailability(agent.agentId, now) ?? "offline";
       } else if (agent.integrationMode === "manual") {
         presence = "manual";
       } else if (!agent.deviceId) {

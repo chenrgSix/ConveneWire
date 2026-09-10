@@ -255,8 +255,16 @@ revocation removes projected Room access; removing the Peer human from a Room
 also removes its Agents there. Historical retries do not rematerialize Agents
 or restore manually removed participation. `peer_agent_room_authority` exposes
 the stored current intersection and its expiry; it does not replace fresh
-Participant Run admission. Peer Presence remains offline until the transport
-integration. The in-process executor rejects Peer targets, and fake adapter
+Participant Run admission. RUN-020 now projects Peer reachability from an
+active reciprocally authenticated machine session and a still-enabled bilateral
+Room projection. Pending proof, missing heartbeat, disconnect, membership or
+grant expiry, changed authorization and removed Room participation yield offline.
+Delivered/working Runs yield busy while the connection remains live; otherwise
+the reachable Agent is ready. This observation never grants execution or proves
+local process termination. Run admission and local Runtime policy remain separate.
+Connection, Run and authorization changes refresh the persisted UI/Workbench
+projection; a one-second sweep handles expiry, and startup clears stale liveness.
+Only changed observations notify the Team feed, with existing viewer ceilings. The in-process executor rejects Peer targets, and fake adapter
 dispatch is confined to fake Agents.
 
 The full Server regression passes 732 tests, including projection lifecycle,

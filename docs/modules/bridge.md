@@ -73,7 +73,8 @@ its connection context immediately. Its channel grants no Run or human rights.
 Actual Go/Host TLS tests cover reconnect, revocation and local leave, and the
 actual native HTTPS ingress covers the separate machine upgrade and shutdown.
 Core connector composition and authenticated Console handlers consume this
-transport; Agent presence and network execution remain RUN-020 work.
+transport. RUN-020 connects presence to these authenticated sessions and adds
+the native Run coordinator described below.
 
 Peer storage opens independently and retains one history observer throughout
 the native shell lifetime. Corrupt Peer state fails closed for Peer operations
@@ -95,8 +96,8 @@ Peer storage is reread for local changes, including joins after core startup.
 Configuration replacement drains both connector families, while installation
 identity loss stops both within the core's identity monitor. Local status
 contains classified errors and public connection scope, with no credentials or
-Runtime configuration. Agent presence and execution still require RUN-020's
-separate admission path.
+Runtime configuration. RUN-020 derives Agent presence from this connection;
+execution separately requires current admission.
 
 Actual Go/Host TLS coverage uses two independent Hosts, recovers a dropped
 Export-sync response, observes explicit Host Acceptance, and proves that one

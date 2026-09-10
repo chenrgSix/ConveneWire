@@ -1,5 +1,6 @@
 import { PeerHumanEntryService } from "./security/peer-human-entry-service.js";
 import { PeerAdmissionService } from "./security/peer-admission-service.js";
+import { PeerPresenceService } from "./registry/peer-presence-service.js";
 import { PeerAgentService } from "./registry/peer-agent-service.js";
 import { registerPeerAdmissionRoutes } from "./http/peer-admission-routes.js";
 import { registerPeerRuntimeRoutes } from "./http/peer-runtime-routes.js";
@@ -357,6 +358,9 @@ export async function createServerApp(
   let authority: AuthorityService;
   try { authority = new AuthorityService(database, localNode?.origin ?? trustedOrigins?.browserOrigin ?? "", options.localNode); }
   catch (error) { database.close(); throw error; }
+  const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
+  const peerRuntime = new PeerRuntimeSessions(peerAdmission, authority, teamId => peerPresence.refresh(clock(), teamId));
+  const peerPresence = new PeerPresenceService(database, peerRuntime, teamId => teamChanges.notify(teamId));
   const deploymentTrust = createDeploymentTrustProvider(
     options.deploymentTrustFile,
     trustedOrigins?.publicOrigin
@@ -409,7 +413,8 @@ export async function createServerApp(
     core,
     auth,
     30_000,
-    hostedAgentRepository
+    hostedAgentRepository,
+    peerPresence
   );
   const messages = new MessageService(core, auth);
   const teamWait = new TeamWaitService(core, auth, teamChanges);
@@ -426,6 +431,7 @@ export async function createServerApp(
     database,
     transactions,
     ({ kind, roomId, teamId }) => {
+      peerPresence.refresh(clock(), teamId);
       teamChanges.notify(teamId, { kind, roomId });
     }
   );
@@ -1263,17 +1269,19 @@ export async function createServerApp(
     });
   });
 
-  const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
-  const peerRuntime = new PeerRuntimeSessions(peerAdmission, authority);
   const peerRuns = new PeerRunAuthority(database, peerAdmission, authority);
   const peerDeliveries = new PeerRunDeliveryService(database, peerAdmission, authority, peerRuns, peerRuntime, runRepository);
   cancellations.attachPeerCancellation({ cancel: (runId, memberId, reason) => peerDeliveries.cancel(runId, memberId, reason, clock()) });
   const routeContext: ServerRouteContext = {
     peerRuntime,
+    peerPresence,
     peerRuns,
     peerDeliveries,
     peerAdmission,
-    peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => teamChanges.notify(teamId)),
+    peerAgents: new PeerAgentService(database, auth, authority, peerAdmission, teamId => {
+      peerPresence.refresh(clock(), teamId);
+      teamChanges.notify(teamId);
+    }),
     peerHumanEntry: new PeerHumanEntryService(database, auth, authority, options.peerIngress?.configuration.origin),
     ...(options.peerIngress ? { peerIngress: options.peerIngress } : {}),
     authority,

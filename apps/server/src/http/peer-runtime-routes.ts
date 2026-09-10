@@ -2,10 +2,15 @@ import type { PeerRuntimeSession } from "../peer/runtime-sessions.js";
 import { bearerToken } from "./http-helpers.js";
 import type { ServerRouteContext } from "./route-context.js";
 
-export function registerPeerRuntimeRoutes({ app, peerAdmission, peerRuntime, clock, limitAnonymous }: ServerRouteContext): void {
+export function registerPeerRuntimeRoutes({ app, peerAdmission, peerRuntime, peerPresence, clock, limitAnonymous }: ServerRouteContext): void {
   let sweep: ReturnType<typeof setInterval> | undefined;
   app.addHook("onReady", async () => {
-    sweep = setInterval(() => peerRuntime.sweep(clock()), 1000);
+    peerPresence.refresh(clock());
+    sweep = setInterval(() => {
+      const now = clock();
+      peerRuntime.sweep(now);
+      peerPresence.refresh(now);
+    }, 1000);
     sweep.unref();
   });
   app.addHook("preClose", async () => { clearInterval(sweep); peerRuntime.close(); });

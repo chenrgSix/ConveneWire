@@ -19,7 +19,8 @@ export class PeerRuntimeSessions {
   private readonly counts = new Map<string, number>();
   private stopped = false;
 
-  public constructor(private readonly admission: PeerAdmissionService, private readonly authority: AuthorityService) {}
+  public constructor(private readonly admission: PeerAdmissionService, private readonly authority: AuthorityService,
+    private readonly onChanged: (teamId: string) => void = () => {}) {}
 
   public open(token: string, transport: Transport, now: string): PeerRuntimeSession {
     if (this.stopped || this.all.size >= 128) throw new PeerStoreError("SCOPE_DENIED");
@@ -31,12 +32,16 @@ export class PeerRuntimeSessions {
         const old = this.active.get(principal.peerId);
         this.active.set(principal.peerId, current);
         if (old && old !== current) old.close();
+        this.onChanged(principal.scope.teamId);
       }, current => {
         this.all.delete(current);
         const remaining = (this.counts.get(principal.peerId) ?? 1) - 1;
         if (remaining > 0) this.counts.set(principal.peerId, remaining);
         else this.counts.delete(principal.peerId);
-        if (this.active.get(principal.peerId) === current) this.active.delete(principal.peerId);
+        if (this.active.get(principal.peerId) === current) {
+          this.active.delete(principal.peerId);
+          this.onChanged(principal.scope.teamId);
+        }
       });
     this.all.add(session);
     this.counts.set(principal.peerId, (this.counts.get(principal.peerId) ?? 0) + 1);
@@ -138,8 +143,8 @@ export class PeerRuntimeSession {
   public close(): void {
     if (this.phase === "closed") return;
     this.phase = "closed";
-    this.remove(this);
-    this.transport.close();
+    try { this.remove(this); }
+    finally { this.transport.close(); }
   }
 
   private proof(phase: "challenge" | "ready", now: string) {
