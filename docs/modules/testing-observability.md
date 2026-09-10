@@ -893,11 +893,15 @@ a universal sandbox or protection against an arbitrary malicious Runtime with
 the local OS user's privileges. Native fixtures own their executables, private
 roots and network listeners, and drain children before removing their data.
 The [combined acceptance record](../acceptance/qa-091-node-first-v1.md) identifies
-source `41cd563f`, the final clean-source macOS package and the N1-N8 executable
+source `41cd563f`, its clean-source macOS package and the N1-N8 executable
 evidence separately from earlier module checks. Full Server regression passed
 822 tests with one opt-in preview skipped and zero failures; all 6,215 extracted
 Hub files and empty-PATH native Node/SQLite checks passed. This is an evidence
-map; TASKS.md owns status.
+map; TASKS.md owns status. Final manual inspection found the WEB-086 local
+onboarding route defect, now repaired and covered by six focused checks plus
+actual native Work/Room card observations. QA-092 names the replacement clean
+`9286835a` package and its complete extracted-inventory verification. Its remaining
+tray, scoped access-changing UI and independent physical gates remain open.
 
 The [native offline protocol fixture](../../scripts/local-node/fixtures/offline-runtime.go)
 now serves both Codex app-server and Pi JSONL through the actual local adapters.

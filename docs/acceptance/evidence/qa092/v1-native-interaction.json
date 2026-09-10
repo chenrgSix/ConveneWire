@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9286835ad90dfa600601764f5ef0f4e0d1ae8ef8",
+  "archiveSHA256": "9271934572f6cda456a30f6452855fb442171b249fdbaab5f2cba0fa0cbd70ab",
+  "fixture": "Disposable Team and Room, explicit Node/Bridge/Workspace paths, no configured Runtime executable",
+  "observed": [
+    "Native local workspace shows the expected disposable Team and Runtime binding",
+    "Empty-Team card describes the local Console and opens the actual native Agent window",
+    "Empty-Room card also opens the actual native Agent window",
+    "Owned desktop process and Hub remain alive with unchanged identity after opening Console"
+  ],
+  "screenshots": [
+    "v1-native-onboarding-fixed.jpg",
+    "v1-native-card-console.jpg"
+  ],
+  "externalModelCalls": 0,
+  "configuredAgents": 0,
+  "cleanup": "Bounded preview finished and drained owned processes before removing extracted application and private data",
+  "limits": [
+    "Final-source native quit was attempted after the preview had already ended; it is not counted as a quit observation",
+    "Earlier 41cd563f native application quit and Hub stop remain separately retained",
+    "Actual tray actions and access-changing Host browser submission remain pending",
+    "No installation, independent physical owners, Windows native acceptance or publication"
+  ]
+}

@@ -48,7 +48,12 @@ Fixtures drained their child processes and removed their owned temporary roots.
 The final archive and sanitized evidence remain; credentials, private profiles
 and Runtime journals are not copied into this record.
 
-## Final local package
+## Automated-gate local package
+
+QA-092 found and verified the later WEB-086 onboarding correction. Its
+[replacement final artifact](qa-092-ab-native-desktop.md#current-final-artifact)
+is built from clean source `9286835a`. The archive below remains evidence for
+this automated gate at `41cd563f`; it is not relabeled as the later source.
 
 The clean-source unsigned macOS arm64 artifact is
 `dist/local-node-qa091-41cd563f/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`.
@@ -66,5 +71,6 @@ Later evidence-only commits do not change this archive's source identity.
 
 The CI/release jobs are implemented, but were not executed remotely here.
 Windows native installation/upgrade, minimum-OS hardware, live providers and
-publication remain separate gates. The older A/B archive in QA-092 is historical
-evidence and is not the final V1 artifact above.
+publication remain separate gates. QA-092 also preserves the older A/B archive
+as historical evidence; neither historical archive replaces its current final
+artifact for subsequent manual acceptance.

@@ -28,8 +28,31 @@ This inspection found that empty-Team/Room onboarding still routed the local
 Agent card to legacy managed-Bridge pairing. WEB-086 corrects both entry surfaces
 to open the local Owner Console without pairing or implicit Team binding. Six
 focused checks, including real App/Local Node HTTP for both cards and the remote
-Bridge onboarding regression, pass. The replacement final package is recorded
-separately once its clean source and inventory have been verified.
+Bridge onboarding regression, pass. A final stricter URL-retention assertion also
+passes. The replacement package below contains this correction.
+
+## Current final artifact
+
+The replacement clean-source package is built from
+`9286835ad90dfa600601764f5ef0f4e0d1ae8ef8`:
+`dist/local-node-qa092-9286835a/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`.
+Its size is 75,961,239 bytes and SHA-256 is
+`9271934572f6cda456a30f6452855fb442171b249fdbaab5f2cba0fa0cbd70ab`.
+[Package verification](evidence/qa092/v1-native-package.json) proves safe ZIP paths,
+all 6,215 extracted Hub files, exact clean source/version, native arm64 binaries
+and bundled Node 22.23.1/SQLite execution with an empty PATH. The earlier QA-091
+archive remains the source-specific automated-gate artifact; use this replacement
+for further manual acceptance. Subsequent evidence-only commits do not relabel it.
+
+The replacement ran in a fresh, explicitly configured disposable native fixture.
+Its [corrected onboarding card](evidence/qa092/v1-native-onboarding-fixed.jpg)
+opened the [actual native Console](evidence/qa092/v1-native-card-console.jpg).
+The empty-Room card also opened that window. Health checks retained the owned
+desktop process, Hub and byte-identical Node identity. No Agent was configured
+and no provider was called. [Interaction evidence](evidence/qa092/v1-native-interaction.json)
+records these observations separately from the earlier quit check. The bounded
+preview ended and cleaned its owned processes/data before the final quit request;
+the resulting unavailable-app response is not counted as a quit observation.
 
 ## Final acceptance procedure
 
