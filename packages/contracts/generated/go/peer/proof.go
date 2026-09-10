@@ -73,6 +73,51 @@ func VerifyRunRequest(raw []byte) error {
 	return nil
 }
 
+// RunDeliveryReceiptDigest validates the exact immutable execution/capability
+// and hashes a content-free receipt. It grants no current execution authority.
+func RunDeliveryReceiptDigest(raw []byte) (string, error) {
+	var delivery struct {
+		Request    json.RawMessage `json:"request"`
+		Settlement json.RawMessage `json:"settlement"`
+	}
+	if Decode("PeerRunDelivery", raw, &delivery) != nil {
+		return "", errors.New("invalid Peer delivery")
+	}
+	// Preserve original numeric spellings for semantic execution validation.
+	if json.Unmarshal(raw, &delivery) != nil || VerifyRunRequest(delivery.Request) != nil {
+		return "", errors.New("invalid Peer delivery")
+	}
+	var request struct {
+		Binding PeerExecutionBinding `json:"binding"`
+	}
+	var capability struct {
+		Binding   PeerExecutionBinding `json:"binding"`
+		IssuedAt  string               `json:"issuedAt"`
+		ExpiresAt string               `json:"expiresAt"`
+	}
+	var settlement map[string]any
+	if Decode("PeerRunRequest", delivery.Request, &request) != nil || Decode("PeerSettlementCapability", delivery.Settlement, &capability) != nil || Decode("PeerSettlementCapability", delivery.Settlement, &settlement) != nil {
+		return "", errors.New("invalid Peer delivery")
+	}
+	issued, err := time.Parse(time.RFC3339Nano, capability.IssuedAt)
+	if err != nil {
+		return "", err
+	}
+	expires, err := time.Parse(time.RFC3339Nano, capability.ExpiresAt)
+	if err != nil {
+		return "", err
+	}
+	if capability.Binding != request.Binding || !expires.After(issued) || expires.Sub(issued) > SettlementMaximumSeconds*time.Second {
+		return "", errors.New("invalid Peer delivery")
+	}
+	delete(settlement, "token")
+	value, err := json.Marshal(map[string]any{"domain": "convenewire.peer.delivery.v1", "requestDigest": request.Binding.RequestDigest, "settlement": settlement})
+	if err != nil {
+		return "", err
+	}
+	return Digest(value)
+}
+
 func ProofTranscript(payload PeerProofPayload) ([]byte, error) {
 	data, err := json.Marshal(payload)
 	if err != nil {

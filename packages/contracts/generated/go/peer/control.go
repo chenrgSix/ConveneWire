@@ -3,9 +3,9 @@
 package peercontracts
 
 type PeerScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerNodeIdentity struct {
@@ -71,9 +71,9 @@ type PeerInvitationHost struct {
 }
 
 type PeerInvitationScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerInvitationClaim struct {
@@ -129,9 +129,9 @@ type PeerMembership struct {
 }
 
 type PeerMembershipScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerMachineCredential struct {
@@ -154,9 +154,9 @@ type PeerHumanCredential struct {
 }
 
 type PeerHumanCredentialScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerCapabilities struct {
@@ -693,9 +693,9 @@ type TentacledPayload struct {
 }
 
 type PayloadScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerControlMessageProjection struct {
@@ -766,9 +766,9 @@ type PurpleHost struct {
 }
 
 type PurpleScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerJoinReceiptMachineCredential struct {
@@ -797,9 +797,9 @@ type PeerJoinReceiptMembership struct {
 }
 
 type FluffyScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerJoinReceiptProof struct {
@@ -1112,9 +1112,9 @@ type StickyHost struct {
 }
 
 type TentacledScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PurpleMachineCredential struct {
@@ -1143,9 +1143,9 @@ type PurpleMembership struct {
 }
 
 type StickyScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type StickyProof struct {
@@ -1466,9 +1466,9 @@ type HilariousHost struct {
 }
 
 type IndigoScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type FluffyMachineCredential struct {
@@ -1497,9 +1497,9 @@ type FluffyMembership struct {
 }
 
 type IndecentScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type HilariousProof struct {
@@ -1534,9 +1534,9 @@ type PeerInvitationCreateRequest struct {
 }
 
 type PeerInvitationCreateRequestScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerInvitationIssued struct {
@@ -1563,9 +1563,9 @@ type AmbitiousHost struct {
 }
 
 type HilariousScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerInvitationPreviewRequest struct {
@@ -1606,9 +1606,9 @@ type CunningHost struct {
 }
 
 type AmbitiousScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerInvitationPreviewProof struct {
@@ -1654,9 +1654,9 @@ type PeerHumanBindingCredential struct {
 }
 
 type PeerHumanBindingCredentialScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerHumanBindingReceipt struct {
@@ -1685,9 +1685,9 @@ type PeerHumanBindingReceiptHumanCredential struct {
 }
 
 type CunningScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerHumanBindingReceiptParticipant struct {
@@ -1745,9 +1745,9 @@ type HumanHumanCredential struct {
 }
 
 type MagentaScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type HumanParticipant struct {
@@ -1799,9 +1799,9 @@ type MagentaHost struct {
 }
 
 type FriskyScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type RuntimeMachineCredential struct {
@@ -1830,9 +1830,9 @@ type RuntimeMembership struct {
 }
 
 type MischievousScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type RuntimeProof struct {
@@ -1882,9 +1882,9 @@ type Payload3 struct {
 }
 
 type PeerHumanEntryRequestScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerHumanEntry struct {
@@ -1906,9 +1906,9 @@ type Credential struct {
 }
 
 type CredentialScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerHumanEntryProof struct {
@@ -1947,9 +1947,9 @@ type PeerHumanEntryIdentity struct {
 }
 
 type PeerHumanEntryIdentityScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerIdentityRequest struct {
@@ -2025,9 +2025,9 @@ type PurpleHumanCredential struct {
 }
 
 type BraggadociousScope struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type IndigoParticipant struct {
@@ -2092,9 +2092,9 @@ type FluffyHumanCredential struct {
 }
 
 type Scope1 struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type IndecentParticipant struct {
@@ -2155,9 +2155,9 @@ type BraggadociousHost struct {
 }
 
 type Scope2 struct {
-	Kind   Kind    `json:"kind"`
-	RoomID *string `json:"roomId"`
-	TeamID string  `json:"teamId"`
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
 }
 
 type PeerPendingJoinParticipant struct {
@@ -3320,27 +3320,27 @@ type PeerRunRequestBinding struct {
 }
 
 type PeerRunRequestPayload struct {
-	ContextManifest PayloadContextManifest  `json:"contextManifest"`
-	ContextMessages []PayloadContextMessage `json:"contextMessages"`
-	ContextPlan     *PayloadContextPlan     `json:"contextPlan,omitempty"`
+	ContextManifest PurpleContextManifest     `json:"contextManifest"`
+	ContextMessages []PurpleContextMessage    `json:"contextMessages"`
+	ContextPlan     *PurpleRuntimeContextPlan `json:"contextPlan,omitempty"`
 	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
 	// most nanosecond precision.
-	Deadline          string                `json:"deadline"`
-	Instruction       string                `json:"instruction"`
-	ParentRunID       *string               `json:"parentRunId,omitempty"`
-	RequesterMemberID string                `json:"requesterMemberId"`
-	RoomID            string                `json:"roomId"`
-	RoutingAgents     []PayloadRoutingAgent `json:"routingAgents,omitempty"`
-	RunID             string                `json:"runId"`
-	Session           PayloadSession        `json:"session"`
-	TargetAgentID     string                `json:"targetAgentId"`
-	TargetAgentName   *string               `json:"targetAgentName,omitempty"`
-	TaskID            string                `json:"taskId"`
-	TraceID           string                `json:"traceId"`
-	TriggerMessageID  string                `json:"triggerMessageId"`
+	Deadline          string               `json:"deadline"`
+	Instruction       string               `json:"instruction"`
+	ParentRunID       *string              `json:"parentRunId,omitempty"`
+	RequesterMemberID string               `json:"requesterMemberId"`
+	RoomID            string               `json:"roomId"`
+	RoutingAgents     []PurpleRoutingAgent `json:"routingAgents,omitempty"`
+	RunID             string               `json:"runId"`
+	Session           PurpleSession        `json:"session"`
+	TargetAgentID     string               `json:"targetAgentId"`
+	TargetAgentName   *string              `json:"targetAgentName,omitempty"`
+	TaskID            string               `json:"taskId"`
+	TraceID           string               `json:"traceId"`
+	TriggerMessageID  string               `json:"triggerMessageId"`
 }
 
-type PayloadContextManifest struct {
+type PurpleContextManifest struct {
 	Criteria           []FluffyCriterion `json:"criteria"`
 	CriteriaRevision   int64             `json:"criteriaRevision"`
 	DefinitionRevision int64             `json:"definitionRevision"`
@@ -3388,7 +3388,7 @@ type FluffyTarget struct {
 	RuntimeKind RuntimeKind `json:"runtimeKind"`
 }
 
-type PayloadContextMessage struct {
+type PurpleContextMessage struct {
 	Content   string `json:"content"`
 	MessageID string `json:"messageId"`
 	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
@@ -3397,7 +3397,7 @@ type PayloadContextMessage struct {
 	Sequence   *int64  `json:"sequence,omitempty"`
 }
 
-type PayloadContextPlan struct {
+type PurpleRuntimeContextPlan struct {
 	LongTermMemory *FluffyLongTermProvenanceMemoryPlan `json:"longTermMemory,omitempty"`
 	ResultEvidence *FluffyTaskResultEvidence           `json:"resultEvidence,omitempty"`
 	RoomMemory     *TentacledContextMemoryProjection   `json:"roomMemory,omitempty"`
@@ -3510,23 +3510,987 @@ type StickyContextMemoryProjection struct {
 	Summary          string          `json:"summary"`
 }
 
-type PayloadRoutingAgent struct {
+type PurpleRoutingAgent struct {
 	AgentID string `json:"agentId"`
 	Name    string `json:"name"`
 }
 
-type PayloadSession struct {
+type PurpleSession struct {
 	ContextCursor int64         `json:"contextCursor"`
 	ContextPolicy ContextPolicy `json:"contextPolicy"`
 	ResumePolicy  ResumePolicy  `json:"resumePolicy"`
 	Scope         ScopeEnum     `json:"scope"`
 }
 
-type Kind string
+type PeerRunKnown struct {
+	RequestDigest string `json:"requestDigest"`
+	RunID         string `json:"runId"`
+}
+
+type PeerRunPollIntent struct {
+	Binding       PeerRunPollIntentBinding    `json:"binding"`
+	KnownRuns     []PeerRunPollIntentKnownRun `json:"knownRuns"`
+	SchemaVersion int64                       `json:"schemaVersion"`
+}
+
+type PeerRunPollIntentBinding struct {
+	ConnectionID  string                   `json:"connectionId"`
+	CredentialID  string                   `json:"credentialId"`
+	Host          Host7                    `json:"host"`
+	HostOrigin    string                   `json:"hostOrigin"`
+	MemberID      string                   `json:"memberId"`
+	MembershipID  string                   `json:"membershipId"`
+	OperationID   string                   `json:"operationId"`
+	Participant   BraggadociousParticipant `json:"participant"`
+	PeerID        string                   `json:"peerId"`
+	SchemaVersion int64                    `json:"schemaVersion"`
+	TeamID        string                   `json:"teamId"`
+}
+
+type Host7 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type BraggadociousParticipant struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerRunPollIntentKnownRun struct {
+	RequestDigest string `json:"requestDigest"`
+	RunID         string `json:"runId"`
+}
+
+type PeerRunPollRequest struct {
+	Intent        PeerRunPollRequestIntent `json:"intent"`
+	Proof         PeerRunPollRequestProof  `json:"proof"`
+	SchemaVersion int64                    `json:"schemaVersion"`
+}
+
+type PeerRunPollRequestIntent struct {
+	Binding       IntentBinding    `json:"binding"`
+	KnownRuns     []IntentKnownRun `json:"knownRuns"`
+	SchemaVersion int64            `json:"schemaVersion"`
+}
+
+type IntentBinding struct {
+	ConnectionID  string       `json:"connectionId"`
+	CredentialID  string       `json:"credentialId"`
+	Host          Host8        `json:"host"`
+	HostOrigin    string       `json:"hostOrigin"`
+	MemberID      string       `json:"memberId"`
+	MembershipID  string       `json:"membershipId"`
+	OperationID   string       `json:"operationId"`
+	Participant   Participant1 `json:"participant"`
+	PeerID        string       `json:"peerId"`
+	SchemaVersion int64        `json:"schemaVersion"`
+	TeamID        string       `json:"teamId"`
+}
+
+type Host8 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type Participant1 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type IntentKnownRun struct {
+	RequestDigest string `json:"requestDigest"`
+	RunID         string `json:"runId"`
+}
+
+type PeerRunPollRequestProof struct {
+	Payload   Payload20 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload20 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunDelivery struct {
+	Request       PeerRunDeliveryRequest    `json:"request"`
+	SchemaVersion int64                     `json:"schemaVersion"`
+	Settlement    PeerRunDeliverySettlement `json:"settlement"`
+}
+
+type PeerRunDeliveryRequest struct {
+	Binding       TentacledBinding `json:"binding"`
+	Payload       Payload21        `json:"payload"`
+	SchemaVersion int64            `json:"schemaVersion"`
+}
+
+type TentacledBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type Payload21 struct {
+	ContextManifest FluffyContextManifest     `json:"contextManifest"`
+	ContextMessages []FluffyContextMessage    `json:"contextMessages"`
+	ContextPlan     *FluffyRuntimeContextPlan `json:"contextPlan,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Deadline          string               `json:"deadline"`
+	Instruction       string               `json:"instruction"`
+	ParentRunID       *string              `json:"parentRunId,omitempty"`
+	RequesterMemberID string               `json:"requesterMemberId"`
+	RoomID            string               `json:"roomId"`
+	RoutingAgents     []FluffyRoutingAgent `json:"routingAgents,omitempty"`
+	RunID             string               `json:"runId"`
+	Session           FluffySession        `json:"session"`
+	TargetAgentID     string               `json:"targetAgentId"`
+	TargetAgentName   *string              `json:"targetAgentName,omitempty"`
+	TaskID            string               `json:"taskId"`
+	TraceID           string               `json:"traceId"`
+	TriggerMessageID  string               `json:"triggerMessageId"`
+}
+
+type FluffyContextManifest struct {
+	Criteria           []TentacledCriterion `json:"criteria"`
+	CriteriaRevision   int64                `json:"criteriaRevision"`
+	DefinitionRevision int64                `json:"definitionRevision"`
+	Goal               string               `json:"goal"`
+	Included           TentacledIncluded    `json:"included"`
+	ManifestVersion    ManifestVersion      `json:"manifestVersion"`
+	OmittedCategories  []OmittedCategory    `json:"omittedCategories"`
+	Permissions        TentacledPermissions `json:"permissions"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RecordedAt   string          `json:"recordedAt"`
+	RunID        string          `json:"runId"`
+	Target       TentacledTarget `json:"target"`
+	TaskID       string          `json:"taskId"`
+	TaskRevision int64           `json:"taskRevision"`
+}
+
+type TentacledCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
+}
+
+type TentacledIncluded struct {
+	ArtifactIDS         []string `json:"artifactIds"`
+	ArtifactRevision    int64    `json:"artifactRevision"`
+	MemoryIDS           []string `json:"memoryIds"`
+	MessageIDS          []string `json:"messageIds"`
+	ParentRunIDS        []string `json:"parentRunIds"`
+	RoomContextRevision int64    `json:"roomContextRevision"`
+	TaskMemoryRevision  int64    `json:"taskMemoryRevision"`
+}
+
+type TentacledPermissions struct {
+	FilesystemAccess   Access    `json:"filesystemAccess"`
+	Handoff            Handoff   `json:"handoff"`
+	Interrupt          Interrupt `json:"interrupt"`
+	MaxDurationSeconds *int64    `json:"maxDurationSeconds"`
+	NetworkAccess      Access    `json:"networkAccess"`
+}
+
+type TentacledTarget struct {
+	AgentID     string      `json:"agentId"`
+	RuntimeKind RuntimeKind `json:"runtimeKind"`
+}
+
+type FluffyContextMessage struct {
+	Content   string `json:"content"`
+	MessageID string `json:"messageId"`
+	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
+	SenderID   string  `json:"senderId"`
+	SenderName *string `json:"senderName,omitempty"`
+	Sequence   *int64  `json:"sequence,omitempty"`
+}
+
+type FluffyRuntimeContextPlan struct {
+	LongTermMemory *TentacledLongTermProvenanceMemoryPlan `json:"longTermMemory,omitempty"`
+	ResultEvidence *TentacledTaskResultEvidence           `json:"resultEvidence,omitempty"`
+	RoomMemory     *IndigoContextMemoryProjection         `json:"roomMemory,omitempty"`
+	TaskMemory     *IndecentContextMemoryProjection       `json:"taskMemory,omitempty"`
+}
+
+type TentacledLongTermProvenanceMemoryPlan struct {
+	Room *IndigoLongTermMemoryScopeSnapshot   `json:"room,omitempty"`
+	Task *IndecentLongTermMemoryScopeSnapshot `json:"task,omitempty"`
+}
+
+type IndigoLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                          `json:"activeComplete"`
+	Entries        []IndigoProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                         `json:"revision"`
+}
+
+type IndigoProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type IndecentLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                            `json:"activeComplete"`
+	Entries        []IndecentProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                           `json:"revision"`
+}
+
+type IndecentProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type TentacledTaskResultEvidence struct {
+	ArtifactRefs    []TentacledArtifactReference `json:"artifactRefs"`
+	DeliveryKind    *DeliveryKind                `json:"deliveryKind,omitempty"`
+	FromRevision    *int64                       `json:"fromRevision,omitempty"`
+	HasMore         *bool                        `json:"hasMore,omitempty"`
+	Revision        int64                        `json:"revision"`
+	ThroughRevision *int64                       `json:"throughRevision,omitempty"`
+}
+
+type TentacledArtifactReference struct {
+	ArtifactID       string  `json:"artifactId"`
+	ArtifactRevision *int64  `json:"artifactRevision,omitempty"`
+	Branch           *string `json:"branch,omitempty"`
+	CommitSHA        *string `json:"commitSha,omitempty"`
+	// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+	Content *TentacledPinnedArtifactContent `json:"content,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	CreatedAt         string                               `json:"createdAt"`
+	CreatedByAgentID  *string                              `json:"createdByAgentId,omitempty"`
+	CreatedByMemberID *string                              `json:"createdByMemberId,omitempty"`
+	Path              *string                              `json:"path,omitempty"`
+	Relations         []TentacledArtifactRelationReference `json:"relations,omitempty"`
+	Repository        *string                              `json:"repository,omitempty"`
+	SourceRunID       *string                              `json:"sourceRunId,omitempty"`
+	Summary           string                               `json:"summary"`
+	Title             string                               `json:"title"`
+	Type              ArtifactReferenceType                `json:"type"`
+	WorkspaceRef      *string                              `json:"workspaceRef,omitempty"`
+}
+
+// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+type TentacledPinnedArtifactContent struct {
+	ContentID    string    `json:"contentId"`
+	LogicalAlias string    `json:"logicalAlias"`
+	MediaType    MediaType `json:"mediaType"`
+	Sha256       string    `json:"sha256"`
+	SizeBytes    int64     `json:"sizeBytes"`
+}
+
+// Immutable lineage from the containing source Artifact to older Task evidence.
+type TentacledArtifactRelationReference struct {
+	RelationID       string       `json:"relationId"`
+	TargetArtifactID string       `json:"targetArtifactId"`
+	Type             RelationType `json:"type"`
+}
+
+type IndigoContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type IndecentContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type FluffyRoutingAgent struct {
+	AgentID string `json:"agentId"`
+	Name    string `json:"name"`
+}
+
+type FluffySession struct {
+	ContextCursor int64         `json:"contextCursor"`
+	ContextPolicy ContextPolicy `json:"contextPolicy"`
+	ResumePolicy  ResumePolicy  `json:"resumePolicy"`
+	Scope         ScopeEnum     `json:"scope"`
+}
+
+type PeerRunDeliverySettlement struct {
+	Audience      PeerSettlementCapabilityAudience `json:"audience"`
+	Binding       StickyBinding                    `json:"binding"`
+	CapabilityID  string                           `json:"capabilityId"`
+	ExpiresAt     string                           `json:"expiresAt"`
+	IssuedAt      string                           `json:"issuedAt"`
+	SchemaVersion int64                            `json:"schemaVersion"`
+	Token         string                           `json:"token"`
+}
+
+type StickyBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type PeerRunPollReceipt struct {
+	Delivery      *Delivery               `json:"delivery"`
+	IntentDigest  string                  `json:"intentDigest"`
+	Proof         PeerRunPollReceiptProof `json:"proof"`
+	SchemaVersion int64                   `json:"schemaVersion"`
+}
+
+type Delivery struct {
+	Request       DeliveryRequest    `json:"request"`
+	SchemaVersion int64              `json:"schemaVersion"`
+	Settlement    DeliverySettlement `json:"settlement"`
+}
+
+type DeliveryRequest struct {
+	Binding       IndigoBinding `json:"binding"`
+	Payload       Payload22     `json:"payload"`
+	SchemaVersion int64         `json:"schemaVersion"`
+}
+
+type IndigoBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type Payload22 struct {
+	ContextManifest TentacledContextManifest     `json:"contextManifest"`
+	ContextMessages []TentacledContextMessage    `json:"contextMessages"`
+	ContextPlan     *TentacledRuntimeContextPlan `json:"contextPlan,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	Deadline          string                  `json:"deadline"`
+	Instruction       string                  `json:"instruction"`
+	ParentRunID       *string                 `json:"parentRunId,omitempty"`
+	RequesterMemberID string                  `json:"requesterMemberId"`
+	RoomID            string                  `json:"roomId"`
+	RoutingAgents     []TentacledRoutingAgent `json:"routingAgents,omitempty"`
+	RunID             string                  `json:"runId"`
+	Session           TentacledSession        `json:"session"`
+	TargetAgentID     string                  `json:"targetAgentId"`
+	TargetAgentName   *string                 `json:"targetAgentName,omitempty"`
+	TaskID            string                  `json:"taskId"`
+	TraceID           string                  `json:"traceId"`
+	TriggerMessageID  string                  `json:"triggerMessageId"`
+}
+
+type TentacledContextManifest struct {
+	Criteria           []StickyCriterion `json:"criteria"`
+	CriteriaRevision   int64             `json:"criteriaRevision"`
+	DefinitionRevision int64             `json:"definitionRevision"`
+	Goal               string            `json:"goal"`
+	Included           StickyIncluded    `json:"included"`
+	ManifestVersion    ManifestVersion   `json:"manifestVersion"`
+	OmittedCategories  []OmittedCategory `json:"omittedCategories"`
+	Permissions        StickyPermissions `json:"permissions"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	RecordedAt   string       `json:"recordedAt"`
+	RunID        string       `json:"runId"`
+	Target       StickyTarget `json:"target"`
+	TaskID       string       `json:"taskId"`
+	TaskRevision int64        `json:"taskRevision"`
+}
+
+type StickyCriterion struct {
+	CriterionKey string `json:"criterionKey"`
+	Description  string `json:"description"`
+	Ordinal      int64  `json:"ordinal"`
+	Required     bool   `json:"required"`
+}
+
+type StickyIncluded struct {
+	ArtifactIDS         []string `json:"artifactIds"`
+	ArtifactRevision    int64    `json:"artifactRevision"`
+	MemoryIDS           []string `json:"memoryIds"`
+	MessageIDS          []string `json:"messageIds"`
+	ParentRunIDS        []string `json:"parentRunIds"`
+	RoomContextRevision int64    `json:"roomContextRevision"`
+	TaskMemoryRevision  int64    `json:"taskMemoryRevision"`
+}
+
+type StickyPermissions struct {
+	FilesystemAccess   Access    `json:"filesystemAccess"`
+	Handoff            Handoff   `json:"handoff"`
+	Interrupt          Interrupt `json:"interrupt"`
+	MaxDurationSeconds *int64    `json:"maxDurationSeconds"`
+	NetworkAccess      Access    `json:"networkAccess"`
+}
+
+type StickyTarget struct {
+	AgentID     string      `json:"agentId"`
+	RuntimeKind RuntimeKind `json:"runtimeKind"`
+}
+
+type TentacledContextMessage struct {
+	Content   string `json:"content"`
+	MessageID string `json:"messageId"`
+	// Opaque identifier with a lowercase type prefix and non-semantic suffix.
+	SenderID   string  `json:"senderId"`
+	SenderName *string `json:"senderName,omitempty"`
+	Sequence   *int64  `json:"sequence,omitempty"`
+}
+
+type TentacledRuntimeContextPlan struct {
+	LongTermMemory *StickyLongTermProvenanceMemoryPlan `json:"longTermMemory,omitempty"`
+	ResultEvidence *StickyTaskResultEvidence           `json:"resultEvidence,omitempty"`
+	RoomMemory     *HilariousContextMemoryProjection   `json:"roomMemory,omitempty"`
+	TaskMemory     *AmbitiousContextMemoryProjection   `json:"taskMemory,omitempty"`
+}
+
+type StickyLongTermProvenanceMemoryPlan struct {
+	Room *HilariousLongTermMemoryScopeSnapshot `json:"room,omitempty"`
+	Task *AmbitiousLongTermMemoryScopeSnapshot `json:"task,omitempty"`
+}
+
+type HilariousLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                             `json:"activeComplete"`
+	Entries        []HilariousProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                            `json:"revision"`
+}
+
+type HilariousProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type AmbitiousLongTermMemoryScopeSnapshot struct {
+	ActiveComplete bool                             `json:"activeComplete"`
+	Entries        []AmbitiousProvenanceMemoryEntry `json:"entries"`
+	Revision       int64                            `json:"revision"`
+}
+
+type AmbitiousProvenanceMemoryEntry struct {
+	Content             string                     `json:"content"`
+	MemoryID            string                     `json:"memoryId"`
+	Revision            int64                      `json:"revision"`
+	SourceArtifactIDS   []string                   `json:"sourceArtifactIds"`
+	SourceDiscussionIDS []string                   `json:"sourceDiscussionIds"`
+	SourceMessageIDS    []string                   `json:"sourceMessageIds"`
+	SourceRunIDS        []string                   `json:"sourceRunIds"`
+	State               ProvenanceMemoryEntryState `json:"state"`
+	SupersedesMemoryID  *string                    `json:"supersedesMemoryId,omitempty"`
+	Type                ProvenanceMemoryEntryType  `json:"type"`
+}
+
+type StickyTaskResultEvidence struct {
+	ArtifactRefs    []StickyArtifactReference `json:"artifactRefs"`
+	DeliveryKind    *DeliveryKind             `json:"deliveryKind,omitempty"`
+	FromRevision    *int64                    `json:"fromRevision,omitempty"`
+	HasMore         *bool                     `json:"hasMore,omitempty"`
+	Revision        int64                     `json:"revision"`
+	ThroughRevision *int64                    `json:"throughRevision,omitempty"`
+}
+
+type StickyArtifactReference struct {
+	ArtifactID       string  `json:"artifactId"`
+	ArtifactRevision *int64  `json:"artifactRevision,omitempty"`
+	Branch           *string `json:"branch,omitempty"`
+	CommitSHA        *string `json:"commitSha,omitempty"`
+	// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+	Content *StickyPinnedArtifactContent `json:"content,omitempty"`
+	// Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+	// most nanosecond precision.
+	CreatedAt         string                            `json:"createdAt"`
+	CreatedByAgentID  *string                           `json:"createdByAgentId,omitempty"`
+	CreatedByMemberID *string                           `json:"createdByMemberId,omitempty"`
+	Path              *string                           `json:"path,omitempty"`
+	Relations         []StickyArtifactRelationReference `json:"relations,omitempty"`
+	Repository        *string                           `json:"repository,omitempty"`
+	SourceRunID       *string                           `json:"sourceRunId,omitempty"`
+	Summary           string                            `json:"summary"`
+	Title             string                            `json:"title"`
+	Type              ArtifactReferenceType             `json:"type"`
+	WorkspaceRef      *string                           `json:"workspaceRef,omitempty"`
+}
+
+// Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+type StickyPinnedArtifactContent struct {
+	ContentID    string    `json:"contentId"`
+	LogicalAlias string    `json:"logicalAlias"`
+	MediaType    MediaType `json:"mediaType"`
+	Sha256       string    `json:"sha256"`
+	SizeBytes    int64     `json:"sizeBytes"`
+}
+
+// Immutable lineage from the containing source Artifact to older Task evidence.
+type StickyArtifactRelationReference struct {
+	RelationID       string       `json:"relationId"`
+	TargetArtifactID string       `json:"targetArtifactId"`
+	Type             RelationType `json:"type"`
+}
+
+type HilariousContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type AmbitiousContextMemoryProjection struct {
+	ProjectionKind   *ProjectionKind `json:"projectionKind,omitempty"`
+	Revision         int64           `json:"revision"`
+	SourceCursor     int64           `json:"sourceCursor"`
+	SourceMessageIDS []string        `json:"sourceMessageIds"`
+	Summary          string          `json:"summary"`
+}
+
+type TentacledRoutingAgent struct {
+	AgentID string `json:"agentId"`
+	Name    string `json:"name"`
+}
+
+type TentacledSession struct {
+	ContextCursor int64         `json:"contextCursor"`
+	ContextPolicy ContextPolicy `json:"contextPolicy"`
+	ResumePolicy  ResumePolicy  `json:"resumePolicy"`
+	Scope         ScopeEnum     `json:"scope"`
+}
+
+type DeliverySettlement struct {
+	Audience      PeerSettlementCapabilityAudience `json:"audience"`
+	Binding       IndecentBinding                  `json:"binding"`
+	CapabilityID  string                           `json:"capabilityId"`
+	ExpiresAt     string                           `json:"expiresAt"`
+	IssuedAt      string                           `json:"issuedAt"`
+	SchemaVersion int64                            `json:"schemaVersion"`
+	Token         string                           `json:"token"`
+}
+
+type IndecentBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type PeerRunPollReceiptProof struct {
+	Payload   Payload23 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload23 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunStatusEvent struct {
+	Clarification *PeerRunStatusEventClarification `json:"clarification,omitempty"`
+	Error         *PeerRunStatusEventError         `json:"error,omitempty"`
+	Sequence      int64                            `json:"sequence"`
+	Session       *PeerRunStatusEventSession       `json:"session,omitempty"`
+	Status        Status                           `json:"status"`
+	Type          PeerRunStatusEventType           `json:"type"`
+}
+
+type PeerRunStatusEventClarification struct {
+	Choices  []string  `json:"choices,omitempty"`
+	Kind     ScopeEnum `json:"kind"`
+	Question string    `json:"question"`
+}
+
+type PeerRunStatusEventError struct {
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Retryable bool   `json:"retryable"`
+}
+
+type PeerRunStatusEventSession struct {
+	ContextCursor          int64       `json:"contextCursor"`
+	Disposition            Disposition `json:"disposition"`
+	ResultEvidenceRevision *int64      `json:"resultEvidenceRevision,omitempty"`
+}
+
+type PeerRunReplyEvent struct {
+	Assessment *PeerRunReplyEventAssessment `json:"assessment,omitempty"`
+	Content    string                       `json:"content"`
+	Sequence   int64                        `json:"sequence"`
+	Type       PeerRunReplyEventType        `json:"type"`
+}
+
+type PeerRunReplyEventAssessment struct {
+	Confidence            *float64               `json:"confidence,omitempty"`
+	DisagreementRemaining *DisagreementRemaining `json:"disagreementRemaining,omitempty"`
+	GoalSatisfied         *bool                  `json:"goalSatisfied,omitempty"`
+	NewEvidenceRefs       []string               `json:"newEvidenceRefs,omitempty"`
+	NewInformationAdded   *bool                  `json:"newInformationAdded,omitempty"`
+	OpenQuestions         []PurpleOpenQuestion   `json:"openQuestions,omitempty"`
+	Recommendation        *Recommendation        `json:"recommendation,omitempty"`
+	ResolvedQuestionIDS   []string               `json:"resolvedQuestionIds,omitempty"`
+	ReviewerApproved      *bool                  `json:"reviewerApproved,omitempty"`
+}
+
+type PurpleOpenQuestion struct {
+	ID         string     `json:"id"`
+	Importance Importance `json:"importance"`
+	Question   string     `json:"question"`
+}
+
+type PeerRunOutputEvent struct {
+	Content  string                 `json:"content"`
+	Reset    *bool                  `json:"reset,omitempty"`
+	Sequence int64                  `json:"sequence"`
+	Type     PeerRunOutputEventType `json:"type"`
+}
+
+type PeerRunActivityEvent struct {
+	ActivityID string                   `json:"activityId"`
+	Content    *string                  `json:"content,omitempty"`
+	Kind       PeerRunActivityEventKind `json:"kind"`
+	Label      *string                  `json:"label,omitempty"`
+	Phase      Phase                    `json:"phase"`
+	Reset      *bool                    `json:"reset,omitempty"`
+	Sequence   int64                    `json:"sequence"`
+	Type       PeerRunActivityEventType `json:"type"`
+}
+
+type PeerRunEvent struct {
+	Clarification *PeerRunEventClarification `json:"clarification,omitempty"`
+	Error         *PeerRunEventError         `json:"error,omitempty"`
+	Sequence      int64                      `json:"sequence"`
+	Session       *PeerRunEventSession       `json:"session,omitempty"`
+	Status        *Status                    `json:"status,omitempty"`
+	Type          PeerRunEventType           `json:"type"`
+	Assessment    *PeerRunEventAssessment    `json:"assessment,omitempty"`
+	Content       *string                    `json:"content,omitempty"`
+	Reset         *bool                      `json:"reset,omitempty"`
+	ActivityID    *string                    `json:"activityId,omitempty"`
+	Kind          *PeerRunActivityEventKind  `json:"kind,omitempty"`
+	Label         *string                    `json:"label,omitempty"`
+	Phase         *Phase                     `json:"phase,omitempty"`
+}
+
+type PeerRunEventAssessment struct {
+	Confidence            *float64               `json:"confidence,omitempty"`
+	DisagreementRemaining *DisagreementRemaining `json:"disagreementRemaining,omitempty"`
+	GoalSatisfied         *bool                  `json:"goalSatisfied,omitempty"`
+	NewEvidenceRefs       []string               `json:"newEvidenceRefs,omitempty"`
+	NewInformationAdded   *bool                  `json:"newInformationAdded,omitempty"`
+	OpenQuestions         []FluffyOpenQuestion   `json:"openQuestions,omitempty"`
+	Recommendation        *Recommendation        `json:"recommendation,omitempty"`
+	ResolvedQuestionIDS   []string               `json:"resolvedQuestionIds,omitempty"`
+	ReviewerApproved      *bool                  `json:"reviewerApproved,omitempty"`
+}
+
+type FluffyOpenQuestion struct {
+	ID         string     `json:"id"`
+	Importance Importance `json:"importance"`
+	Question   string     `json:"question"`
+}
+
+type PeerRunEventClarification struct {
+	Choices  []string  `json:"choices,omitempty"`
+	Kind     ScopeEnum `json:"kind"`
+	Question string    `json:"question"`
+}
+
+type PeerRunEventError struct {
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Retryable bool   `json:"retryable"`
+}
+
+type PeerRunEventSession struct {
+	ContextCursor          int64       `json:"contextCursor"`
+	Disposition            Disposition `json:"disposition"`
+	ResultEvidenceRevision *int64      `json:"resultEvidenceRevision,omitempty"`
+}
+
+type PeerRunEventRequest struct {
+	Binding       PeerRunEventRequestBinding `json:"binding"`
+	CapabilityID  string                     `json:"capabilityId"`
+	Event         Event                      `json:"event"`
+	Proof         PeerRunEventRequestProof   `json:"proof"`
+	SchemaVersion int64                      `json:"schemaVersion"`
+}
+
+type PeerRunEventRequestBinding struct {
+	AcceptanceDigest   string `json:"acceptanceDigest"`
+	AcceptanceID       string `json:"acceptanceId"`
+	AcceptanceRevision int64  `json:"acceptanceRevision"`
+	AuthorityNodeID    string `json:"authorityNodeId"`
+	ExportID           string `json:"exportId"`
+	GrantDigest        string `json:"grantDigest"`
+	GrantRevision      int64  `json:"grantRevision"`
+	LocalAgentID       string `json:"localAgentId"`
+	ParticipantNodeID  string `json:"participantNodeId"`
+	PeerID             string `json:"peerId"`
+	ProjectionAgentID  string `json:"projectionAgentId"`
+	RequestDigest      string `json:"requestDigest"`
+	RoomID             string `json:"roomId"`
+	RunID              string `json:"runId"`
+	SchemaVersion      int64  `json:"schemaVersion"`
+	TeamID             string `json:"teamId"`
+}
+
+type Event struct {
+	Clarification *EventClarification       `json:"clarification,omitempty"`
+	Error         *EventError               `json:"error,omitempty"`
+	Sequence      int64                     `json:"sequence"`
+	Session       *EventSession             `json:"session,omitempty"`
+	Status        *Status                   `json:"status,omitempty"`
+	Type          PeerRunEventType          `json:"type"`
+	Assessment    *EventAssessment          `json:"assessment,omitempty"`
+	Content       *string                   `json:"content,omitempty"`
+	Reset         *bool                     `json:"reset,omitempty"`
+	ActivityID    *string                   `json:"activityId,omitempty"`
+	Kind          *PeerRunActivityEventKind `json:"kind,omitempty"`
+	Label         *string                   `json:"label,omitempty"`
+	Phase         *Phase                    `json:"phase,omitempty"`
+}
+
+type EventAssessment struct {
+	Confidence            *float64                `json:"confidence,omitempty"`
+	DisagreementRemaining *DisagreementRemaining  `json:"disagreementRemaining,omitempty"`
+	GoalSatisfied         *bool                   `json:"goalSatisfied,omitempty"`
+	NewEvidenceRefs       []string                `json:"newEvidenceRefs,omitempty"`
+	NewInformationAdded   *bool                   `json:"newInformationAdded,omitempty"`
+	OpenQuestions         []TentacledOpenQuestion `json:"openQuestions,omitempty"`
+	Recommendation        *Recommendation         `json:"recommendation,omitempty"`
+	ResolvedQuestionIDS   []string                `json:"resolvedQuestionIds,omitempty"`
+	ReviewerApproved      *bool                   `json:"reviewerApproved,omitempty"`
+}
+
+type TentacledOpenQuestion struct {
+	ID         string     `json:"id"`
+	Importance Importance `json:"importance"`
+	Question   string     `json:"question"`
+}
+
+type EventClarification struct {
+	Choices  []string  `json:"choices,omitempty"`
+	Kind     ScopeEnum `json:"kind"`
+	Question string    `json:"question"`
+}
+
+type EventError struct {
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Retryable bool   `json:"retryable"`
+}
+
+type EventSession struct {
+	ContextCursor          int64       `json:"contextCursor"`
+	Disposition            Disposition `json:"disposition"`
+	ResultEvidenceRevision *int64      `json:"resultEvidenceRevision,omitempty"`
+}
+
+type PeerRunEventRequestProof struct {
+	Payload   Payload24 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload24 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunEventReceipt struct {
+	BindingDigest string                   `json:"bindingDigest"`
+	CapabilityID  string                   `json:"capabilityId"`
+	EventDigest   string                   `json:"eventDigest"`
+	Proof         PeerRunEventReceiptProof `json:"proof"`
+	SchemaVersion int64                    `json:"schemaVersion"`
+	Sequence      int64                    `json:"sequence"`
+}
+
+type PeerRunEventReceiptProof struct {
+	Payload   Payload25 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload25 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunSettlementRequest struct {
+	Proof         PeerRunSettlementRequestProof      `json:"proof"`
+	SchemaVersion int64                              `json:"schemaVersion"`
+	Settlement    PeerRunSettlementRequestSettlement `json:"settlement"`
+}
+
+type PeerRunSettlementRequestProof struct {
+	Payload   Payload26 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload26 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunSettlementRequestSettlement struct {
+	BindingDigest string              `json:"bindingDigest"`
+	CapabilityID  string              `json:"capabilityId"`
+	OperationID   string              `json:"operationId"`
+	ReceiptDigest string              `json:"receiptDigest"`
+	SchemaVersion int64               `json:"schemaVersion"`
+	Sequence      int64               `json:"sequence"`
+	State         PeerSettlementState `json:"state"`
+}
+
+type PeerRunSettlementReceipt struct {
+	Proof         PeerRunSettlementReceiptProof      `json:"proof"`
+	SchemaVersion int64                              `json:"schemaVersion"`
+	Settlement    PeerRunSettlementReceiptSettlement `json:"settlement"`
+}
+
+type PeerRunSettlementReceiptProof struct {
+	Payload   Payload27 `json:"payload"`
+	Signature string    `json:"signature"`
+}
+
+type Payload27 struct {
+	AudienceNodeID  string  `json:"audienceNodeId"`
+	ExpiresAt       string  `json:"expiresAt"`
+	IssuedAt        string  `json:"issuedAt"`
+	Nonce           string  `json:"nonce"`
+	OperationID     string  `json:"operationId"`
+	Purpose         Purpose `json:"purpose"`
+	SchemaVersion   int64   `json:"schemaVersion"`
+	SignerNodeID    string  `json:"signerNodeId"`
+	SignerPublicKey string  `json:"signerPublicKey"`
+	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type PeerRunSettlementReceiptSettlement struct {
+	BindingDigest string              `json:"bindingDigest"`
+	CapabilityID  string              `json:"capabilityId"`
+	OperationID   string              `json:"operationId"`
+	ReceiptDigest string              `json:"receiptDigest"`
+	SchemaVersion int64               `json:"schemaVersion"`
+	Sequence      int64               `json:"sequence"`
+	State         PeerSettlementState `json:"state"`
+}
+
+type PeerScopeKind string
 
 const (
-	Room Kind = "room"
-	Team Kind = "team"
+	Room PeerScopeKind = "room"
+	Team PeerScopeKind = "team"
 )
 
 type Purpose string
@@ -3541,6 +4505,8 @@ const (
 	PeerConnect       Purpose = "peer.connect"
 	PeerLeave         Purpose = "peer.leave"
 	RunAdmission      Purpose = "run.admission"
+	RunEvent          Purpose = "run.event"
+	RunPoll           Purpose = "run.poll"
 	RunSettlement     Purpose = "run.settlement"
 )
 
@@ -3788,4 +4754,97 @@ type ScopeEnum string
 
 const (
 	Task ScopeEnum = "task"
+)
+
+type Disposition string
+
+const (
+	DispositionStarted Disposition = "started"
+	Recreated          Disposition = "recreated"
+	Resumed            Disposition = "resumed"
+)
+
+type Status string
+
+const (
+	Delivered       Status = "delivered"
+	InputRequired   Status = "input_required"
+	StatusCanceled  Status = "canceled"
+	StatusCompleted Status = "completed"
+	StatusFailed    Status = "failed"
+	Working         Status = "working"
+)
+
+type PeerRunStatusEventType string
+
+const (
+	PurpleStatus PeerRunStatusEventType = "status"
+)
+
+type DisagreementRemaining string
+
+const (
+	DisagreementRemainingHigh   DisagreementRemaining = "high"
+	DisagreementRemainingLow    DisagreementRemaining = "low"
+	DisagreementRemainingMedium DisagreementRemaining = "medium"
+	None                        DisagreementRemaining = "none"
+)
+
+type Importance string
+
+const (
+	ImportanceHigh   Importance = "high"
+	ImportanceLow    Importance = "low"
+	ImportanceMedium Importance = "medium"
+)
+
+type Recommendation string
+
+const (
+	Continue  Recommendation = "continue"
+	Finish    Recommendation = "finish"
+	WaitHuman Recommendation = "wait_human"
+)
+
+type PeerRunReplyEventType string
+
+const (
+	PurpleReply PeerRunReplyEventType = "reply"
+)
+
+type PeerRunOutputEventType string
+
+const (
+	PurpleOutput PeerRunOutputEventType = "output"
+)
+
+type PeerRunActivityEventKind string
+
+const (
+	Reasoning PeerRunActivityEventKind = "reasoning"
+	Tool      PeerRunActivityEventKind = "tool"
+)
+
+type Phase string
+
+const (
+	PhaseCompleted Phase = "completed"
+	PhaseFailed    Phase = "failed"
+	PhaseStarted   Phase = "started"
+	Updated        Phase = "updated"
+)
+
+type PeerRunActivityEventType string
+
+const (
+	PurpleActivity PeerRunActivityEventType = "activity"
+)
+
+type PeerRunEventType string
+
+const (
+	FluffyActivity PeerRunEventType = "activity"
+	FluffyOutput   PeerRunEventType = "output"
+	FluffyReply    PeerRunEventType = "reply"
+	FluffyStatus   PeerRunEventType = "status"
 )

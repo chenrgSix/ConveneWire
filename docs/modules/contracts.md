@@ -48,6 +48,38 @@ Server build and isolated Hub bundling pass. This carrier grants no admission;
 RUN-020 still must connect current signed Host proofs, durable delivery and
 receipt-scoped settlement to it.
 
+The closed Run transport now separates signed polling, execution events and
+content-free settlement. `PeerRunPollIntent` binds the current Peer connection
+and at most 128 known Run/digest pairs. A Host receipt returns at most one
+`PeerRunDelivery`, or an explicit null, and binds the exact poll intent. Polling
+does not change execution identity or replace fresh admission before start.
+Each delivery carries the frozen request and a distinct settlement capability.
+The delivery receipt digest hashes `convenewire.peer.delivery.v1`, the semantic
+request digest and the capability metadata, excluding only its bearer token.
+Both implementations reject mismatched execution pins and lifetimes above seven
+days. The signed delivery must also authenticate the token; a receipt digest
+alone does not authenticate a capability or authorize any operation.
+
+`PeerRunEventRequest` carries the exact binding/capability and one ordered,
+closed status, reply, output or activity event. Its acknowledgment binds the
+event digest and sequence without replaying content. The existing assessment
+and Task clarification schemas are reused. Session evidence excludes provider
+and Runtime-scope identities; error details, development proposals, Device
+policy and owner-private envelopes are not accepted. Only descriptive
+`assessment.confidence` admits binary64 fractions at the exact event path.
+Original authorization counters, context cursors and event sequences retain
+strict safe-integer spelling checks, even beside a fractional confidence value.
+Clarification belongs only to `input_required`, and Session evidence only to
+`working`. Content commits still need current Host business authority.
+
+`PeerRunSettlementRequest` and its signed receipt contain only the existing
+bounded settlement identity, sequence, state and receipt digest. They cannot
+carry Result text, restore membership or renew the capability. Shared signed
+vectors and actual Go/Node checks cover every new carrier, semantic delivery
+conflicts, capability expiry, decimal/path boundaries and forbidden fields.
+These contracts still require the RUN-020 Host/Participant transport handlers;
+schema validation is not execution, credential or settlement admission.
+
 REG-007 adds closed signed offer/receipt and explicit Host accept/revoke
 requests. An offer digest covers its exact grant and bounded display metadata.
 Host acceptance freezes that digest and uses expected Acceptance ID/revision

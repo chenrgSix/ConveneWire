@@ -25,6 +25,13 @@ func main() {
 		if err == nil {
 			canonical, _ := peer.CanonicalJSON([]byte(input.Raw))
 			result["canonical"] = string(canonical)
+			if input.Kind == "PeerRunDelivery" {
+				digest, err := peer.RunDeliveryReceiptDigest([]byte(input.Raw))
+				result["deliveryValid"] = err == nil
+				if err == nil {
+					result["deliveryDigest"] = digest
+				}
+			}
 			if input.Kind == "PeerRunRequest" {
 				result["executionValid"] = peer.VerifyRunRequest([]byte(input.Raw)) == nil
 				var request struct {

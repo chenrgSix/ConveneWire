@@ -28,6 +28,18 @@ export function verifyPeerRunRequest(request) {
   }
 }
 
+/** Content-free receipt identity for one durably bound delivery capability.
+ * Token reproduction never changes receipt identity or extends its lifetime. */
+export function peerRunDeliveryReceiptDigest(delivery) {
+  if (!validatePeer("PeerRunDelivery", delivery)) throw new Error("Invalid Peer delivery");
+  verifyPeerRunRequest(delivery.request);
+  const { token: _token, ...settlement } = delivery.settlement;
+  const issued = Date.parse(settlement.issuedAt), expires = Date.parse(settlement.expiresAt);
+  if (peerDigest(settlement.binding) !== peerDigest(delivery.request.binding) || expires <= issued ||
+      expires - issued > peerSettlementMaximumSeconds * 1000) throw new Error("Invalid Peer delivery");
+  return peerDigest({ domain: "convenewire.peer.delivery.v1", requestDigest: delivery.request.binding.requestDigest, settlement });
+}
+
 export function peerProofTranscript(payload) {
   if (!validatePeer("PeerProofPayload", payload)) throw new Error("Invalid Peer proof payload");
   return canonicalPeerJson({ domain: "convenewire.peer.proof.v1", payload });

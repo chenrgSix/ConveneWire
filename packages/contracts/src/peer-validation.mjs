@@ -14,7 +14,11 @@ export function validatePeer(kind, value) {
 }
 
 export function decodePeer(kind, data) {
-  const value = parsePeerJson(data, { integerOnly: true });
+  // Assessment confidence is descriptive binary64 data. Every authorization
+  // pin and sequence still validates its original exact integer spelling.
+  const fractionalPaths = kind === "PeerRunEventRequest" ? ["/event/assessment/confidence"] :
+    ["PeerRunEvent", "PeerRunReplyEvent"].includes(kind) ? ["/assessment/confidence"] : [];
+  const value = parsePeerJson(data, { integerOnly: true, fractionalPaths });
   if (!validatePeer(kind, value)) throw new Error("Invalid Peer message");
   return value;
 }

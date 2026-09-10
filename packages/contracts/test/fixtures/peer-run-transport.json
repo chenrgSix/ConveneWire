@@ -1,0 +1,417 @@
+{
+  "now": "2026-09-10T02:00:00.000Z",
+  "delivery": {
+    "schemaVersion": 1,
+    "request": {
+      "schemaVersion": 1,
+      "binding": {
+        "schemaVersion": 1,
+        "authorityNodeId": "node_hostfixture001",
+        "participantNodeId": "node_participant001",
+        "peerId": "peer_peerfixture0001",
+        "teamId": "team_peerfixture0001",
+        "roomId": "room_peerfixture0001",
+        "runId": "run_peerfixture0001",
+        "projectionAgentId": "agent_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "acceptanceId": "acceptance_peerfixture0001",
+        "acceptanceRevision": 1,
+        "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestDigest": "89cb5fd193e3e2e7dc026ddde4908d1ea14ea02b1c0b14124ecc27f1051a771c"
+      },
+      "payload": {
+        "runId": "run_peerfixture0001",
+        "traceId": "trace_peerrunfixture001",
+        "roomId": "room_peerfixture0001",
+        "taskId": "task_peerrunfixture001",
+        "triggerMessageId": "msg_peerrunfixture001",
+        "requesterMemberId": "member_peerrunfixture001",
+        "targetAgentId": "agent_peerfixture0001",
+        "instruction": "评审 café / 😀，保持 é 原文",
+        "deadline": "2026-09-10T02:20:00.120Z",
+        "contextMessages": [
+          {
+            "messageId": "msg_peercontext001",
+            "senderId": "member_peerrunfixture001",
+            "senderName": "协作者",
+            "content": "已冻结上下文",
+            "sequence": 1
+          }
+        ],
+        "session": {
+          "scope": "task",
+          "resumePolicy": "resume_or_start",
+          "contextPolicy": "task_isolated_v1",
+          "contextCursor": 1
+        },
+        "contextManifest": {
+          "manifestVersion": "1.0",
+          "runId": "run_peerfixture0001",
+          "taskId": "task_peerrunfixture001",
+          "taskRevision": 1,
+          "definitionRevision": 1,
+          "criteriaRevision": 1,
+          "goal": "校验一次执行",
+          "criteria": [],
+          "target": {
+            "agentId": "agent_peerfixture0001",
+            "runtimeKind": "not_recorded"
+          },
+          "included": {
+            "messageIds": [
+              "msg_peercontext001",
+              "msg_peerrunfixture001"
+            ],
+            "artifactIds": [],
+            "memoryIds": [],
+            "parentRunIds": [],
+            "roomContextRevision": 1,
+            "taskMemoryRevision": 0,
+            "artifactRevision": 0
+          },
+          "permissions": {
+            "filesystemAccess": "local-policy",
+            "networkAccess": "local-policy",
+            "interrupt": "supported",
+            "handoff": "unsupported",
+            "maxDurationSeconds": 1200
+          },
+          "omittedCategories": [
+            "local_paths",
+            "provider_session_ids",
+            "hidden_reasoning"
+          ],
+          "recordedAt": "2026-09-10T02:00:00.120Z"
+        }
+      }
+    },
+    "settlement": {
+      "schemaVersion": 1,
+      "audience": "peer.settlement",
+      "capabilityId": "peersettle_runtransport001",
+      "binding": {
+        "schemaVersion": 1,
+        "authorityNodeId": "node_hostfixture001",
+        "participantNodeId": "node_participant001",
+        "peerId": "peer_peerfixture0001",
+        "teamId": "team_peerfixture0001",
+        "roomId": "room_peerfixture0001",
+        "runId": "run_peerfixture0001",
+        "projectionAgentId": "agent_peerfixture0001",
+        "localAgentId": "agent_peerfixture0001",
+        "exportId": "export_peerfixture0001",
+        "grantRevision": 1,
+        "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "acceptanceId": "acceptance_peerfixture0001",
+        "acceptanceRevision": 1,
+        "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestDigest": "89cb5fd193e3e2e7dc026ddde4908d1ea14ea02b1c0b14124ecc27f1051a771c"
+      },
+      "token": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "issuedAt": "2026-09-10T02:00:00.000Z",
+      "expiresAt": "2026-09-17T02:00:00.000Z"
+    }
+  },
+  "receiptDigest": "9a9549b85089e94312b077d9da27a2a601d9df8f6acf5b18b5e9a7f812502141",
+  "pollRequest": {
+    "schemaVersion": 1,
+    "intent": {
+      "schemaVersion": 1,
+      "binding": {
+        "schemaVersion": 1,
+        "connectionId": "peerconnection_peerfixture0001",
+        "operationId": "op_peerfixture0001",
+        "host": {
+          "nodeId": "node_hostfixture001",
+          "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+        },
+        "participant": {
+          "nodeId": "node_participant001",
+          "publicKey": "Zs1gi5KLiOUODv6qM_rxxDzv4HKUsLh-n-CrpqPPdjM"
+        },
+        "hostOrigin": "https://host.example.test",
+        "peerId": "peer_peerfixture0001",
+        "membershipId": "peermember_peerfixture0001",
+        "credentialId": "peercredential_peerfixture0001",
+        "teamId": "team_peerfixture0001",
+        "memberId": "member_peerfixture0001"
+      },
+      "knownRuns": []
+    },
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.poll",
+        "signerNodeId": "node_participant001",
+        "signerPublicKey": "Zs1gi5KLiOUODv6qM_rxxDzv4HKUsLh-n-CrpqPPdjM",
+        "audienceNodeId": "node_hostfixture001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "4c0e3c8ed763b0f2655ed749fcf2ab117df9c070a3d991c85b2f6d942d52ddc8",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "BSlNPpub_HZu5pfxdpTEZgo2K8npbmfHzyq5SJSYlT0VKmH0GgCLZy6OOjcZFF2CzryuZRKVvuuv6KcJ7ZO5Bg"
+    }
+  },
+  "pollReceipt": {
+    "schemaVersion": 1,
+    "intentDigest": "4c0e3c8ed763b0f2655ed749fcf2ab117df9c070a3d991c85b2f6d942d52ddc8",
+    "delivery": {
+      "schemaVersion": 1,
+      "request": {
+        "schemaVersion": 1,
+        "binding": {
+          "schemaVersion": 1,
+          "authorityNodeId": "node_hostfixture001",
+          "participantNodeId": "node_participant001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "roomId": "room_peerfixture0001",
+          "runId": "run_peerfixture0001",
+          "projectionAgentId": "agent_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requestDigest": "89cb5fd193e3e2e7dc026ddde4908d1ea14ea02b1c0b14124ecc27f1051a771c"
+        },
+        "payload": {
+          "runId": "run_peerfixture0001",
+          "traceId": "trace_peerrunfixture001",
+          "roomId": "room_peerfixture0001",
+          "taskId": "task_peerrunfixture001",
+          "triggerMessageId": "msg_peerrunfixture001",
+          "requesterMemberId": "member_peerrunfixture001",
+          "targetAgentId": "agent_peerfixture0001",
+          "instruction": "评审 café / 😀，保持 é 原文",
+          "deadline": "2026-09-10T02:20:00.120Z",
+          "contextMessages": [
+            {
+              "messageId": "msg_peercontext001",
+              "senderId": "member_peerrunfixture001",
+              "senderName": "协作者",
+              "content": "已冻结上下文",
+              "sequence": 1
+            }
+          ],
+          "session": {
+            "scope": "task",
+            "resumePolicy": "resume_or_start",
+            "contextPolicy": "task_isolated_v1",
+            "contextCursor": 1
+          },
+          "contextManifest": {
+            "manifestVersion": "1.0",
+            "runId": "run_peerfixture0001",
+            "taskId": "task_peerrunfixture001",
+            "taskRevision": 1,
+            "definitionRevision": 1,
+            "criteriaRevision": 1,
+            "goal": "校验一次执行",
+            "criteria": [],
+            "target": {
+              "agentId": "agent_peerfixture0001",
+              "runtimeKind": "not_recorded"
+            },
+            "included": {
+              "messageIds": [
+                "msg_peercontext001",
+                "msg_peerrunfixture001"
+              ],
+              "artifactIds": [],
+              "memoryIds": [],
+              "parentRunIds": [],
+              "roomContextRevision": 1,
+              "taskMemoryRevision": 0,
+              "artifactRevision": 0
+            },
+            "permissions": {
+              "filesystemAccess": "local-policy",
+              "networkAccess": "local-policy",
+              "interrupt": "supported",
+              "handoff": "unsupported",
+              "maxDurationSeconds": 1200
+            },
+            "omittedCategories": [
+              "local_paths",
+              "provider_session_ids",
+              "hidden_reasoning"
+            ],
+            "recordedAt": "2026-09-10T02:00:00.120Z"
+          }
+        }
+      },
+      "settlement": {
+        "schemaVersion": 1,
+        "audience": "peer.settlement",
+        "capabilityId": "peersettle_runtransport001",
+        "binding": {
+          "schemaVersion": 1,
+          "authorityNodeId": "node_hostfixture001",
+          "participantNodeId": "node_participant001",
+          "peerId": "peer_peerfixture0001",
+          "teamId": "team_peerfixture0001",
+          "roomId": "room_peerfixture0001",
+          "runId": "run_peerfixture0001",
+          "projectionAgentId": "agent_peerfixture0001",
+          "localAgentId": "agent_peerfixture0001",
+          "exportId": "export_peerfixture0001",
+          "grantRevision": 1,
+          "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "acceptanceId": "acceptance_peerfixture0001",
+          "acceptanceRevision": 1,
+          "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requestDigest": "89cb5fd193e3e2e7dc026ddde4908d1ea14ea02b1c0b14124ecc27f1051a771c"
+        },
+        "token": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-17T02:00:00.000Z"
+      }
+    },
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.poll",
+        "signerNodeId": "node_hostfixture001",
+        "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "audienceNodeId": "node_participant001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "9f4fcc4f42e244513ec54e6248a4590f3777a56a91431e984f5e956f3190d450",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "mfJ_yEdV1A9vhFyBZ6vHi8luQMvFzNUj7IlH4FkGiIIA9BCPO_mTdmjuuhJCE18OiHGjy-ICNNjE-khPcasXCA"
+    }
+  },
+  "eventRequest": {
+    "schemaVersion": 1,
+    "binding": {
+      "schemaVersion": 1,
+      "authorityNodeId": "node_hostfixture001",
+      "participantNodeId": "node_participant001",
+      "peerId": "peer_peerfixture0001",
+      "teamId": "team_peerfixture0001",
+      "roomId": "room_peerfixture0001",
+      "runId": "run_peerfixture0001",
+      "projectionAgentId": "agent_peerfixture0001",
+      "localAgentId": "agent_peerfixture0001",
+      "exportId": "export_peerfixture0001",
+      "grantRevision": 1,
+      "grantDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "acceptanceId": "acceptance_peerfixture0001",
+      "acceptanceRevision": 1,
+      "acceptanceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "requestDigest": "89cb5fd193e3e2e7dc026ddde4908d1ea14ea02b1c0b14124ecc27f1051a771c"
+    },
+    "capabilityId": "peersettle_runtransport001",
+    "event": {
+      "type": "reply",
+      "sequence": 3,
+      "content": "跨 Node 已完成 café 😀",
+      "assessment": {
+        "goalSatisfied": true,
+        "confidence": 0.875,
+        "recommendation": "finish"
+      }
+    },
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.event",
+        "signerNodeId": "node_participant001",
+        "signerPublicKey": "Zs1gi5KLiOUODv6qM_rxxDzv4HKUsLh-n-CrpqPPdjM",
+        "audienceNodeId": "node_hostfixture001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "7104f3dc84dc9c171143554fe94ce50d4940c1e5095f0a20d9a8311db69365c6",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "2tYCxQXKnx6K7YI8pq115evaDyWr3W9pRGuKpCCE3juRfBrNjQD8vOeIv6HI0Lyjz63TS0tV4yFffkfHKs3GCA"
+    }
+  },
+  "eventReceipt": {
+    "schemaVersion": 1,
+    "bindingDigest": "4e80fd7aeadc3e2b0513eda6f4c94b6b0f55e4fb5a0b7915215d2eb4d6d1e9c6",
+    "capabilityId": "peersettle_runtransport001",
+    "sequence": 3,
+    "eventDigest": "769775de19c2e865573db50cb2f3a9835f43d9dac964846f6045982800812ec2",
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.event",
+        "signerNodeId": "node_hostfixture001",
+        "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "audienceNodeId": "node_participant001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "635b0ff813dee429565f7fa74a7f56fe3ae1abab252364d93ed9cd80b0732686",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "EZrgjQ9ksPKPyntBuD1Np6mbVxud5SHKdRzJeLOvv0wwqBiukmXrBK5JoFZJAUr3wVpotfRWRnC1K5eHROHyCA"
+    }
+  },
+  "settlementRequest": {
+    "schemaVersion": 1,
+    "settlement": {
+      "schemaVersion": 1,
+      "capabilityId": "peersettle_runtransport001",
+      "operationId": "op_runsettlement001",
+      "bindingDigest": "4e80fd7aeadc3e2b0513eda6f4c94b6b0f55e4fb5a0b7915215d2eb4d6d1e9c6",
+      "sequence": 1,
+      "state": "completed",
+      "receiptDigest": "9a9549b85089e94312b077d9da27a2a601d9df8f6acf5b18b5e9a7f812502141"
+    },
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.settlement",
+        "signerNodeId": "node_participant001",
+        "signerPublicKey": "Zs1gi5KLiOUODv6qM_rxxDzv4HKUsLh-n-CrpqPPdjM",
+        "audienceNodeId": "node_hostfixture001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "1c3f63e378959c2379b30966012ab45268b3faf24510cd204470b3594cb06f2f",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "OUa1SWo6hc4FetIdJsiKYXfhub5EuqlhXjxIBtUf6XYsixBvrzM7vUDq_yGrjhDYNXfMuR38mBuusKx7pwfHDw"
+    }
+  },
+  "settlementReceipt": {
+    "schemaVersion": 1,
+    "settlement": {
+      "schemaVersion": 1,
+      "capabilityId": "peersettle_runtransport001",
+      "operationId": "op_runsettlement001",
+      "bindingDigest": "4e80fd7aeadc3e2b0513eda6f4c94b6b0f55e4fb5a0b7915215d2eb4d6d1e9c6",
+      "sequence": 1,
+      "state": "completed",
+      "receiptDigest": "9a9549b85089e94312b077d9da27a2a601d9df8f6acf5b18b5e9a7f812502141"
+    },
+    "proof": {
+      "payload": {
+        "schemaVersion": 1,
+        "purpose": "run.settlement",
+        "signerNodeId": "node_hostfixture001",
+        "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+        "audienceNodeId": "node_participant001",
+        "operationId": "op_runtransport001",
+        "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU",
+        "subjectDigest": "1c3f63e378959c2379b30966012ab45268b3faf24510cd204470b3594cb06f2f",
+        "issuedAt": "2026-09-10T02:00:00.000Z",
+        "expiresAt": "2026-09-10T02:00:30.000Z"
+      },
+      "signature": "upCh5hEkhEMFNtqBwWYft7Thi4C4MrxDn8Y8gDmEIEdf0RzFgMK4uR1MKWCKeeywKBel949rOCx_OgimQVWoBQ"
+    }
+  }
+}

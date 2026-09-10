@@ -15,7 +15,7 @@ function unicode(value) {
 }
 
 /** Strict raw decoding preserves JSON types and rejects duplicate decoded keys. */
-export function parsePeerJson(input, { integerOnly = false } = {}) {
+export function parsePeerJson(input, { integerOnly = false, fractionalPaths = [] } = {}) {
   if (typeof input !== "string" && !(input instanceof Uint8Array)) throw invalid();
   if (input.length > peerJsonMaximumBytes) throw invalid();
   const source = typeof input === "string" ? input : new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(input);
@@ -31,7 +31,7 @@ export function parsePeerJson(input, { integerOnly = false } = {}) {
     }
     throw invalid();
   };
-  const read = (depth) => {
+  const read = (depth, path = "") => {
     if (depth > peerJsonMaximumDepth) throw invalid();
     space();
     const ch = source[position];
@@ -48,8 +48,8 @@ export function parsePeerJson(input, { integerOnly = false } = {}) {
           if (source[position] !== '"') throw invalid();
           const key = string(); space();
           if (source[position++] !== ":" || Object.hasOwn(result, key)) throw invalid();
-          result[key] = read(depth + 1);
-        } else result.push(read(depth + 1));
+          result[key] = read(depth + 1, `${path}/${key.replaceAll("~", "~0").replaceAll("/", "~1")}`);
+        } else result.push(read(depth + 1, `${path}/${result.length}`));
         space();
         const next = source[position++];
         if (next === close) return result;
@@ -60,7 +60,7 @@ export function parsePeerJson(input, { integerOnly = false } = {}) {
     if (!primitive) throw invalid();
     position += primitive[0].length;
     const value = JSON.parse(primitive[0]);
-    if (typeof value === "number" && (!Number.isFinite(value) || (integerOnly && !exactInteger(primitive[0], value)))) throw invalid();
+    if (typeof value === "number" && (!Number.isFinite(value) || (integerOnly && !fractionalPaths.includes(path) && !exactInteger(primitive[0], value)))) throw invalid();
     return value;
   };
   const value = read(0); space();

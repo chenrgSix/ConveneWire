@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/santhosh-tekuri/jsonschema/v6"
-	"io"
 	"math"
 	"strconv"
 	"strings"
@@ -52,21 +51,16 @@ func Decode(kind string, data []byte, result any) error {
 	if err != nil {
 		return err
 	}
-	// Control schemas contain only integer counters. Validate original spellings
-	// before float rounding can promote a fractional or unsafe authorization pin.
+	// Confidence is descriptive binary64 data at one closed event path. Validate
+	// every other original number spelling before rounding authorization pins.
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.UseNumber()
-	for {
-		token, err := decoder.Token()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return ErrJSON
-		}
-		if n, ok := token.(json.Number); ok && !exactInteger(string(n)) {
-			return ErrJSON
-		}
+	var numbers any
+	if decoder.Decode(&numbers) != nil {
+		return ErrJSON
+	}
+	if !validPeerNumbers(kind, numbers, "") {
+		return ErrJSON
 	}
 	if schema.Validate(value) != nil {
 		return errors.New("invalid Peer message")
@@ -76,6 +70,28 @@ func Decode(kind string, data []byte, result any) error {
 		return ErrJSON
 	}
 	return json.Unmarshal(normalized, result)
+}
+
+func validPeerNumbers(kind string, value any, path string) bool {
+	switch v := value.(type) {
+	case map[string]any:
+		for key, child := range v {
+			escaped := strings.ReplaceAll(strings.ReplaceAll(key, "~", "~0"), "/", "~1")
+			if !validPeerNumbers(kind, child, path+"/"+escaped) {
+				return false
+			}
+		}
+	case []any:
+		for index, child := range v {
+			if !validPeerNumbers(kind, child, path+"/"+strconv.Itoa(index)) {
+				return false
+			}
+		}
+	case json.Number:
+		confidence := kind == "PeerRunEventRequest" && path == "/event/assessment/confidence" || (kind == "PeerRunEvent" || kind == "PeerRunReplyEvent") && path == "/assessment/confidence"
+		return confidence || exactInteger(string(v))
+	}
+	return true
 }
 
 func exactInteger(raw string) bool {

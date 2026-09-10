@@ -1,12 +1,12 @@
 // Code generated from JSON Schema; DO NOT EDIT.
 
 export interface PeerScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
 
-export type Kind = "team" | "room";
+export type PeerScopeKind = "team" | "room";
 
 export interface PeerNodeIdentity {
   nodeId:    string;
@@ -35,7 +35,7 @@ export interface PeerProofPayload {
   subjectDigest:   string;
 }
 
-export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement" | "node.identity" | "peer.leave";
+export type Purpose = "invitation.preview" | "invitation.claim" | "peer.connect" | "human.entry" | "agent.export" | "agent.acceptance" | "run.admission" | "run.settlement" | "node.identity" | "peer.leave" | "run.poll" | "run.event";
 
 export interface PeerProof {
   payload:   PeerProofPayloadClass;
@@ -73,7 +73,7 @@ export interface PeerInvitationHost {
 }
 
 export interface PeerInvitationScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -131,7 +131,7 @@ export interface PeerMembership {
 }
 
 export interface PeerMembershipScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -162,7 +162,7 @@ export interface PeerHumanCredential {
 export type PeerHumanCredentialAudience = "peer.human";
 
 export interface PeerHumanCredentialScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -707,7 +707,7 @@ export interface TentacledPayload {
 }
 
 export interface PayloadScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -786,7 +786,7 @@ export interface PurpleHost {
 }
 
 export interface PurpleScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -817,7 +817,7 @@ export interface PeerJoinReceiptMembership {
 }
 
 export interface FluffyScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1134,7 +1134,7 @@ export interface StickyHost {
 }
 
 export interface TentacledScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1165,7 +1165,7 @@ export interface PurpleMembership {
 }
 
 export interface StickyScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1490,7 +1490,7 @@ export interface HilariousHost {
 }
 
 export interface IndigoScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1521,7 +1521,7 @@ export interface FluffyMembership {
 }
 
 export interface IndecentScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1558,7 +1558,7 @@ export interface PeerInvitationCreateRequest {
 }
 
 export interface PeerInvitationCreateRequestScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1587,7 +1587,7 @@ export interface AmbitiousHost {
 }
 
 export interface HilariousScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1630,7 +1630,7 @@ export interface CunningHost {
 }
 
 export interface AmbitiousScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1680,7 +1680,7 @@ export interface PeerHumanBindingCredential {
 export type PeerHumanBindingCredentialAudience = "peer.human-binding";
 
 export interface PeerHumanBindingCredentialScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1711,7 +1711,7 @@ export interface PeerHumanBindingReceiptHumanCredential {
 }
 
 export interface CunningScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1771,7 +1771,7 @@ export interface HumanHumanCredential {
 }
 
 export interface MagentaScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1825,7 +1825,7 @@ export interface MagentaHost {
 }
 
 export interface FriskyScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1856,7 +1856,7 @@ export interface RuntimeMembership {
 }
 
 export interface MischievousScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1908,7 +1908,7 @@ export interface Payload3 {
 }
 
 export interface PeerHumanEntryRequestScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1932,7 +1932,7 @@ export interface Credential {
 }
 
 export interface CredentialScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -1973,7 +1973,7 @@ export interface PeerHumanEntryIdentity {
 }
 
 export interface PeerHumanEntryIdentityScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -2051,7 +2051,7 @@ export interface PurpleHumanCredential {
 }
 
 export interface BraggadociousScope {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -2118,7 +2118,7 @@ export interface FluffyHumanCredential {
 }
 
 export interface Scope1 {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -2181,7 +2181,7 @@ export interface BraggadociousHost {
 }
 
 export interface Scope2 {
-  kind:   Kind;
+  kind:   PeerScopeKind;
   roomId: null | string;
   teamId: string;
 }
@@ -3398,9 +3398,9 @@ export interface PeerRunRequestBinding {
 }
 
 export interface PeerRunRequestPayload {
-  contextManifest: PayloadContextManifest;
-  contextMessages: PayloadContextMessage[];
-  contextPlan?:    PayloadContextPlan;
+  contextManifest: PurpleContextManifest;
+  contextMessages: PurpleContextMessage[];
+  contextPlan?:    PurpleRuntimeContextPlan;
   /**
    * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
    * most nanosecond precision.
@@ -3410,9 +3410,9 @@ export interface PeerRunRequestPayload {
   parentRunId?:      string;
   requesterMemberId: string;
   roomId:            string;
-  routingAgents?:    PayloadRoutingAgent[];
+  routingAgents?:    PurpleRoutingAgent[];
   runId:             string;
-  session:           PayloadSession;
+  session:           PurpleSession;
   targetAgentId:     string;
   targetAgentName?:  string;
   taskId:            string;
@@ -3420,7 +3420,7 @@ export interface PeerRunRequestPayload {
   triggerMessageId:  string;
 }
 
-export interface PayloadContextManifest {
+export interface PurpleContextManifest {
   criteria:           FluffyCriterion[];
   criteriaRevision:   number;
   definitionRevision: number;
@@ -3470,7 +3470,7 @@ export interface FluffyTarget {
   runtimeKind: RuntimeKind;
 }
 
-export interface PayloadContextMessage {
+export interface PurpleContextMessage {
   content:   string;
   messageId: string;
   /**
@@ -3481,7 +3481,7 @@ export interface PayloadContextMessage {
   sequence?:   number;
 }
 
-export interface PayloadContextPlan {
+export interface PurpleRuntimeContextPlan {
   longTermMemory?: FluffyLongTermProvenanceMemoryPlan;
   resultEvidence?: FluffyTaskResultEvidence;
   roomMemory?:     TentacledContextMemoryProjection;
@@ -3602,15 +3602,1031 @@ export interface StickyContextMemoryProjection {
   summary:          string;
 }
 
-export interface PayloadRoutingAgent {
+export interface PurpleRoutingAgent {
   agentId: string;
   name:    string;
 }
 
-export interface PayloadSession {
+export interface PurpleSession {
   contextCursor: number;
   contextPolicy: ContextPolicy;
   resumePolicy:  ResumePolicy;
   scope:         ScopeEnum;
+}
+
+export interface PeerRunKnown {
+  requestDigest: string;
+  runId:         string;
+}
+
+export interface PeerRunPollIntent {
+  binding:       PeerRunPollIntentBinding;
+  knownRuns:     PeerRunPollIntentKnownRun[];
+  schemaVersion: number;
+}
+
+export interface PeerRunPollIntentBinding {
+  connectionId:  string;
+  credentialId:  string;
+  host:          Host7;
+  hostOrigin:    string;
+  memberId:      string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   BraggadociousParticipant;
+  peerId:        string;
+  schemaVersion: number;
+  teamId:        string;
+}
+
+export interface Host7 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface BraggadociousParticipant {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerRunPollIntentKnownRun {
+  requestDigest: string;
+  runId:         string;
+}
+
+export interface PeerRunPollRequest {
+  intent:        PeerRunPollRequestIntent;
+  proof:         PeerRunPollRequestProof;
+  schemaVersion: number;
+}
+
+export interface PeerRunPollRequestIntent {
+  binding:       IntentBinding;
+  knownRuns:     IntentKnownRun[];
+  schemaVersion: number;
+}
+
+export interface IntentBinding {
+  connectionId:  string;
+  credentialId:  string;
+  host:          Host8;
+  hostOrigin:    string;
+  memberId:      string;
+  membershipId:  string;
+  operationId:   string;
+  participant:   Participant1;
+  peerId:        string;
+  schemaVersion: number;
+  teamId:        string;
+}
+
+export interface Host8 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface Participant1 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface IntentKnownRun {
+  requestDigest: string;
+  runId:         string;
+}
+
+export interface PeerRunPollRequestProof {
+  payload:   Payload20;
+  signature: string;
+}
+
+export interface Payload20 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunDelivery {
+  request:       PeerRunDeliveryRequest;
+  schemaVersion: number;
+  settlement:    PeerRunDeliverySettlement;
+}
+
+export interface PeerRunDeliveryRequest {
+  binding:       TentacledBinding;
+  payload:       Payload21;
+  schemaVersion: number;
+}
+
+export interface TentacledBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface Payload21 {
+  contextManifest: FluffyContextManifest;
+  contextMessages: FluffyContextMessage[];
+  contextPlan?:    FluffyRuntimeContextPlan;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline:          string;
+  instruction:       string;
+  parentRunId?:      string;
+  requesterMemberId: string;
+  roomId:            string;
+  routingAgents?:    FluffyRoutingAgent[];
+  runId:             string;
+  session:           FluffySession;
+  targetAgentId:     string;
+  targetAgentName?:  string;
+  taskId:            string;
+  traceId:           string;
+  triggerMessageId:  string;
+}
+
+export interface FluffyContextManifest {
+  criteria:           TentacledCriterion[];
+  criteriaRevision:   number;
+  definitionRevision: number;
+  goal:               string;
+  included:           TentacledIncluded;
+  manifestVersion:    ManifestVersion;
+  omittedCategories:  [OmittedCategory, ...OmittedCategory[]];
+  permissions:        TentacledPermissions;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  recordedAt:   string;
+  runId:        string;
+  target:       TentacledTarget;
+  taskId:       string;
+  taskRevision: number;
+}
+
+export interface TentacledCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export interface TentacledIncluded {
+  artifactIds:         string[];
+  artifactRevision:    number;
+  memoryIds:           string[];
+  messageIds:          string[];
+  parentRunIds:        string[];
+  roomContextRevision: number;
+  taskMemoryRevision:  number;
+}
+
+export interface TentacledPermissions {
+  filesystemAccess:   Access;
+  handoff:            Handoff;
+  interrupt:          Interrupt;
+  maxDurationSeconds: number | null;
+  networkAccess:      Access;
+}
+
+export interface TentacledTarget {
+  agentId:     string;
+  runtimeKind: RuntimeKind;
+}
+
+export interface FluffyContextMessage {
+  content:   string;
+  messageId: string;
+  /**
+   * Opaque identifier with a lowercase type prefix and non-semantic suffix.
+   */
+  senderId:    string;
+  senderName?: string;
+  sequence?:   number;
+}
+
+export interface FluffyRuntimeContextPlan {
+  longTermMemory?: TentacledLongTermProvenanceMemoryPlan;
+  resultEvidence?: TentacledTaskResultEvidence;
+  roomMemory?:     IndigoContextMemoryProjection;
+  taskMemory?:     IndecentContextMemoryProjection;
+}
+
+export interface TentacledLongTermProvenanceMemoryPlan {
+  room?: IndigoLongTermMemoryScopeSnapshot;
+  task?: IndecentLongTermMemoryScopeSnapshot;
+}
+
+export interface IndigoLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [IndigoProvenanceMemoryEntry, ...IndigoProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface IndigoProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface IndecentLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [IndecentProvenanceMemoryEntry, ...IndecentProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface IndecentProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface TentacledTaskResultEvidence {
+  artifactRefs:     [TentacledArtifactReference, ...TentacledArtifactReference[]];
+  deliveryKind?:    DeliveryKind;
+  fromRevision?:    number;
+  hasMore?:         boolean;
+  revision:         number;
+  throughRevision?: number;
+}
+
+export interface TentacledArtifactReference {
+  artifactId:        string;
+  artifactRevision?: number;
+  branch?:           string;
+  commitSha?:        string;
+  /**
+   * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+   */
+  content?: TentacledPinnedArtifactContent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  createdAt:          string;
+  createdByAgentId?:  string;
+  createdByMemberId?: string;
+  path?:              string;
+  relations?:         TentacledArtifactRelationReference[];
+  repository?:        string;
+  sourceRunId?:       string;
+  summary:            string;
+  title:              string;
+  type:               ArtifactReferenceType;
+  workspaceRef?:      string;
+}
+
+/**
+ * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+ */
+export interface TentacledPinnedArtifactContent {
+  contentId:    string;
+  logicalAlias: string;
+  mediaType:    MediaType;
+  sha256:       string;
+  sizeBytes:    number;
+}
+
+/**
+ * Immutable lineage from the containing source Artifact to older Task evidence.
+ */
+export interface TentacledArtifactRelationReference {
+  relationId:       string;
+  targetArtifactId: string;
+  type:             RelationType;
+}
+
+export interface IndigoContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface IndecentContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface FluffyRoutingAgent {
+  agentId: string;
+  name:    string;
+}
+
+export interface FluffySession {
+  contextCursor: number;
+  contextPolicy: ContextPolicy;
+  resumePolicy:  ResumePolicy;
+  scope:         ScopeEnum;
+}
+
+export interface PeerRunDeliverySettlement {
+  audience:      PeerSettlementCapabilityAudience;
+  binding:       StickyBinding;
+  capabilityId:  string;
+  expiresAt:     string;
+  issuedAt:      string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface StickyBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface PeerRunPollReceipt {
+  delivery:      Delivery | null;
+  intentDigest:  string;
+  proof:         PeerRunPollReceiptProof;
+  schemaVersion: number;
+}
+
+export interface Delivery {
+  request:       DeliveryRequest;
+  schemaVersion: number;
+  settlement:    DeliverySettlement;
+}
+
+export interface DeliveryRequest {
+  binding:       IndigoBinding;
+  payload:       Payload22;
+  schemaVersion: number;
+}
+
+export interface IndigoBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface Payload22 {
+  contextManifest: TentacledContextManifest;
+  contextMessages: TentacledContextMessage[];
+  contextPlan?:    TentacledRuntimeContextPlan;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  deadline:          string;
+  instruction:       string;
+  parentRunId?:      string;
+  requesterMemberId: string;
+  roomId:            string;
+  routingAgents?:    TentacledRoutingAgent[];
+  runId:             string;
+  session:           TentacledSession;
+  targetAgentId:     string;
+  targetAgentName?:  string;
+  taskId:            string;
+  traceId:           string;
+  triggerMessageId:  string;
+}
+
+export interface TentacledContextManifest {
+  criteria:           StickyCriterion[];
+  criteriaRevision:   number;
+  definitionRevision: number;
+  goal:               string;
+  included:           StickyIncluded;
+  manifestVersion:    ManifestVersion;
+  omittedCategories:  [OmittedCategory, ...OmittedCategory[]];
+  permissions:        StickyPermissions;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  recordedAt:   string;
+  runId:        string;
+  target:       StickyTarget;
+  taskId:       string;
+  taskRevision: number;
+}
+
+export interface StickyCriterion {
+  criterionKey: string;
+  description:  string;
+  ordinal:      number;
+  required:     boolean;
+}
+
+export interface StickyIncluded {
+  artifactIds:         string[];
+  artifactRevision:    number;
+  memoryIds:           string[];
+  messageIds:          string[];
+  parentRunIds:        string[];
+  roomContextRevision: number;
+  taskMemoryRevision:  number;
+}
+
+export interface StickyPermissions {
+  filesystemAccess:   Access;
+  handoff:            Handoff;
+  interrupt:          Interrupt;
+  maxDurationSeconds: number | null;
+  networkAccess:      Access;
+}
+
+export interface StickyTarget {
+  agentId:     string;
+  runtimeKind: RuntimeKind;
+}
+
+export interface TentacledContextMessage {
+  content:   string;
+  messageId: string;
+  /**
+   * Opaque identifier with a lowercase type prefix and non-semantic suffix.
+   */
+  senderId:    string;
+  senderName?: string;
+  sequence?:   number;
+}
+
+export interface TentacledRuntimeContextPlan {
+  longTermMemory?: StickyLongTermProvenanceMemoryPlan;
+  resultEvidence?: StickyTaskResultEvidence;
+  roomMemory?:     HilariousContextMemoryProjection;
+  taskMemory?:     AmbitiousContextMemoryProjection;
+}
+
+export interface StickyLongTermProvenanceMemoryPlan {
+  room?: HilariousLongTermMemoryScopeSnapshot;
+  task?: AmbitiousLongTermMemoryScopeSnapshot;
+}
+
+export interface HilariousLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [HilariousProvenanceMemoryEntry, ...HilariousProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface HilariousProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface AmbitiousLongTermMemoryScopeSnapshot {
+  activeComplete: boolean;
+  entries:        [AmbitiousProvenanceMemoryEntry, ...AmbitiousProvenanceMemoryEntry[]];
+  revision:       number;
+}
+
+export interface AmbitiousProvenanceMemoryEntry {
+  content:             string;
+  memoryId:            string;
+  revision:            number;
+  sourceArtifactIds:   [string, ...string[]];
+  sourceDiscussionIds: [string, ...string[]];
+  sourceMessageIds:    [string, ...string[]];
+  sourceRunIds:        [string, ...string[]];
+  state:               ProvenanceMemoryEntryState;
+  supersedesMemoryId?: string;
+  type:                ProvenanceMemoryEntryType;
+}
+
+export interface StickyTaskResultEvidence {
+  artifactRefs:     [StickyArtifactReference, ...StickyArtifactReference[]];
+  deliveryKind?:    DeliveryKind;
+  fromRevision?:    number;
+  hasMore?:         boolean;
+  revision:         number;
+  throughRevision?: number;
+}
+
+export interface StickyArtifactReference {
+  artifactId:        string;
+  artifactRevision?: number;
+  branch?:           string;
+  commitSha?:        string;
+  /**
+   * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+   */
+  content?: StickyPinnedArtifactContent;
+  /**
+   * Canonical RFC 3339 date-time using uppercase T, a UTC Z suffix, seconds 00-59, and at
+   * most nanosecond precision.
+   */
+  createdAt:          string;
+  createdByAgentId?:  string;
+  createdByMemberId?: string;
+  path?:              string;
+  relations?:         StickyArtifactRelationReference[];
+  repository?:        string;
+  sourceRunId?:       string;
+  summary:            string;
+  title:              string;
+  type:               ArtifactReferenceType;
+  workspaceRef?:      string;
+}
+
+/**
+ * Immutable content metadata and a path-free logical alias pinned into one Run delivery.
+ */
+export interface StickyPinnedArtifactContent {
+  contentId:    string;
+  logicalAlias: string;
+  mediaType:    MediaType;
+  sha256:       string;
+  sizeBytes:    number;
+}
+
+/**
+ * Immutable lineage from the containing source Artifact to older Task evidence.
+ */
+export interface StickyArtifactRelationReference {
+  relationId:       string;
+  targetArtifactId: string;
+  type:             RelationType;
+}
+
+export interface HilariousContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface AmbitiousContextMemoryProjection {
+  projectionKind?:  ProjectionKind;
+  revision:         number;
+  sourceCursor:     number;
+  sourceMessageIds: string[];
+  summary:          string;
+}
+
+export interface TentacledRoutingAgent {
+  agentId: string;
+  name:    string;
+}
+
+export interface TentacledSession {
+  contextCursor: number;
+  contextPolicy: ContextPolicy;
+  resumePolicy:  ResumePolicy;
+  scope:         ScopeEnum;
+}
+
+export interface DeliverySettlement {
+  audience:      PeerSettlementCapabilityAudience;
+  binding:       IndecentBinding;
+  capabilityId:  string;
+  expiresAt:     string;
+  issuedAt:      string;
+  schemaVersion: number;
+  token:         string;
+}
+
+export interface IndecentBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface PeerRunPollReceiptProof {
+  payload:   Payload23;
+  signature: string;
+}
+
+export interface Payload23 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunStatusEvent {
+  clarification?: PeerRunStatusEventClarification;
+  error?:         PeerRunStatusEventError;
+  sequence:       number;
+  session?:       PeerRunStatusEventSession;
+  status:         Status;
+  type:           PeerRunStatusEventType;
+}
+
+export interface PeerRunStatusEventClarification {
+  choices?: [string, string, ...string[]];
+  kind:     ScopeEnum;
+  question: string;
+}
+
+export interface PeerRunStatusEventError {
+  code:      string;
+  message:   string;
+  retryable: boolean;
+}
+
+export interface PeerRunStatusEventSession {
+  contextCursor:           number;
+  disposition:             Disposition;
+  resultEvidenceRevision?: number;
+}
+
+export type Disposition = "started" | "resumed" | "recreated";
+
+export type Status = "delivered" | "working" | "input_required" | "completed" | "failed" | "canceled";
+
+export type PeerRunStatusEventType = "status";
+
+export interface PeerRunReplyEvent {
+  assessment?: PeerRunReplyEventAssessment;
+  content:     string;
+  sequence:    number;
+  type:        PeerRunReplyEventType;
+}
+
+export interface PeerRunReplyEventAssessment {
+  confidence?:            number;
+  disagreementRemaining?: DisagreementRemaining;
+  goalSatisfied?:         boolean;
+  newEvidenceRefs?:       string[];
+  newInformationAdded?:   boolean;
+  openQuestions?:         PurpleOpenQuestion[];
+  recommendation?:        Recommendation;
+  resolvedQuestionIds?:   string[];
+  reviewerApproved?:      boolean;
+}
+
+export type DisagreementRemaining = "none" | "low" | "medium" | "high";
+
+export interface PurpleOpenQuestion {
+  id:         string;
+  importance: Importance;
+  question:   string;
+}
+
+export type Importance = "low" | "medium" | "high";
+
+export type Recommendation = "continue" | "finish" | "wait_human";
+
+export type PeerRunReplyEventType = "reply";
+
+export interface PeerRunOutputEvent {
+  content:  string;
+  reset?:   boolean;
+  sequence: number;
+  type:     PeerRunOutputEventType;
+}
+
+export type PeerRunOutputEventType = "output";
+
+export interface PeerRunActivityEvent {
+  activityId: string;
+  content?:   string;
+  kind:       PeerRunActivityEventKind;
+  label?:     string;
+  phase:      Phase;
+  reset?:     boolean;
+  sequence:   number;
+  type:       PeerRunActivityEventType;
+}
+
+export type PeerRunActivityEventKind = "reasoning" | "tool";
+
+export type Phase = "started" | "updated" | "completed" | "failed";
+
+export type PeerRunActivityEventType = "activity";
+
+export interface PeerRunEvent {
+  clarification?: PeerRunEventClarification;
+  error?:         PeerRunEventError;
+  sequence:       number;
+  session?:       PeerRunEventSession;
+  status?:        Status;
+  type:           PeerRunEventType;
+  assessment?:    PeerRunEventAssessment;
+  content?:       string;
+  reset?:         boolean;
+  activityId?:    string;
+  kind?:          PeerRunActivityEventKind;
+  label?:         string;
+  phase?:         Phase;
+}
+
+export interface PeerRunEventAssessment {
+  confidence?:            number;
+  disagreementRemaining?: DisagreementRemaining;
+  goalSatisfied?:         boolean;
+  newEvidenceRefs?:       string[];
+  newInformationAdded?:   boolean;
+  openQuestions?:         FluffyOpenQuestion[];
+  recommendation?:        Recommendation;
+  resolvedQuestionIds?:   string[];
+  reviewerApproved?:      boolean;
+}
+
+export interface FluffyOpenQuestion {
+  id:         string;
+  importance: Importance;
+  question:   string;
+}
+
+export interface PeerRunEventClarification {
+  choices?: [string, string, ...string[]];
+  kind:     ScopeEnum;
+  question: string;
+}
+
+export interface PeerRunEventError {
+  code:      string;
+  message:   string;
+  retryable: boolean;
+}
+
+export interface PeerRunEventSession {
+  contextCursor:           number;
+  disposition:             Disposition;
+  resultEvidenceRevision?: number;
+}
+
+export type PeerRunEventType = "status" | "reply" | "output" | "activity";
+
+export interface PeerRunEventRequest {
+  binding:       PeerRunEventRequestBinding;
+  capabilityId:  string;
+  event:         Event;
+  proof:         PeerRunEventRequestProof;
+  schemaVersion: number;
+}
+
+export interface PeerRunEventRequestBinding {
+  acceptanceDigest:   string;
+  acceptanceId:       string;
+  acceptanceRevision: number;
+  authorityNodeId:    string;
+  exportId:           string;
+  grantDigest:        string;
+  grantRevision:      number;
+  localAgentId:       string;
+  participantNodeId:  string;
+  peerId:             string;
+  projectionAgentId:  string;
+  requestDigest:      string;
+  roomId:             string;
+  runId:              string;
+  schemaVersion:      number;
+  teamId:             string;
+}
+
+export interface Event {
+  clarification?: EventClarification;
+  error?:         EventError;
+  sequence:       number;
+  session?:       EventSession;
+  status?:        Status;
+  type:           PeerRunEventType;
+  assessment?:    EventAssessment;
+  content?:       string;
+  reset?:         boolean;
+  activityId?:    string;
+  kind?:          PeerRunActivityEventKind;
+  label?:         string;
+  phase?:         Phase;
+}
+
+export interface EventAssessment {
+  confidence?:            number;
+  disagreementRemaining?: DisagreementRemaining;
+  goalSatisfied?:         boolean;
+  newEvidenceRefs?:       string[];
+  newInformationAdded?:   boolean;
+  openQuestions?:         TentacledOpenQuestion[];
+  recommendation?:        Recommendation;
+  resolvedQuestionIds?:   string[];
+  reviewerApproved?:      boolean;
+}
+
+export interface TentacledOpenQuestion {
+  id:         string;
+  importance: Importance;
+  question:   string;
+}
+
+export interface EventClarification {
+  choices?: [string, string, ...string[]];
+  kind:     ScopeEnum;
+  question: string;
+}
+
+export interface EventError {
+  code:      string;
+  message:   string;
+  retryable: boolean;
+}
+
+export interface EventSession {
+  contextCursor:           number;
+  disposition:             Disposition;
+  resultEvidenceRevision?: number;
+}
+
+export interface PeerRunEventRequestProof {
+  payload:   Payload24;
+  signature: string;
+}
+
+export interface Payload24 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunEventReceipt {
+  bindingDigest: string;
+  capabilityId:  string;
+  eventDigest:   string;
+  proof:         PeerRunEventReceiptProof;
+  schemaVersion: number;
+  sequence:      number;
+}
+
+export interface PeerRunEventReceiptProof {
+  payload:   Payload25;
+  signature: string;
+}
+
+export interface Payload25 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunSettlementRequest {
+  proof:         PeerRunSettlementRequestProof;
+  schemaVersion: number;
+  settlement:    PeerRunSettlementRequestSettlement;
+}
+
+export interface PeerRunSettlementRequestProof {
+  payload:   Payload26;
+  signature: string;
+}
+
+export interface Payload26 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunSettlementRequestSettlement {
+  bindingDigest: string;
+  capabilityId:  string;
+  operationId:   string;
+  receiptDigest: string;
+  schemaVersion: number;
+  sequence:      number;
+  state:         PeerSettlementState;
+}
+
+export interface PeerRunSettlementReceipt {
+  proof:         PeerRunSettlementReceiptProof;
+  schemaVersion: number;
+  settlement:    PeerRunSettlementReceiptSettlement;
+}
+
+export interface PeerRunSettlementReceiptProof {
+  payload:   Payload27;
+  signature: string;
+}
+
+export interface Payload27 {
+  audienceNodeId:  string;
+  expiresAt:       string;
+  issuedAt:        string;
+  nonce:           string;
+  operationId:     string;
+  purpose:         Purpose;
+  schemaVersion:   number;
+  signerNodeId:    string;
+  signerPublicKey: string;
+  subjectDigest:   string;
+}
+
+export interface PeerRunSettlementReceiptSettlement {
+  bindingDigest: string;
+  capabilityId:  string;
+  operationId:   string;
+  receiptDigest: string;
+  schemaVersion: number;
+  sequence:      number;
+  state:         PeerSettlementState;
 }
 
