@@ -1,0 +1,31 @@
+{
+  "definitionsAndAssignmentsMatchSnapshot": true,
+  "restored": {
+    "taskDefinitions": [
+      [
+        "task_default_1lp3W7RJEWvO2TROWXhdsA",
+        "Room work",
+        "Continue work in this Room.",
+        1
+      ],
+      [
+        "task_iaxShu1Z67SZIj39CeTwBQ",
+        "本机完整流程验收",
+        "用离线 Runtime 验证任务、讨论和重启恢复。",
+        2
+      ]
+    ],
+    "assignments": [
+      [
+        "task_iaxShu1Z67SZIj39CeTwBQ",
+        "agent_RxvwthGz20e5OdGYY9vH0A",
+        "contributor"
+      ],
+      [
+        "task_iaxShu1Z67SZIj39CeTwBQ",
+        "agent_hfNCyyvzYTOVL-Fxebbtag",
+        "primary"
+      ]
+    ]
+  }
+}

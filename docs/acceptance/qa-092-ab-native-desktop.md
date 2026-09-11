@@ -7,31 +7,99 @@ observations separately from current V1 interaction and remaining physical gates
 
 ## Current acceptance baseline
 
-The current installed macOS arm64 application is the WEB-088 build from clean
-source `76278906ab17a1614c2b20356168c8a2f6c1e1f3`, version `v0.0.0-local`.
+The current installed macOS arm64 application is the WEB-089 build from clean
+source `d8e2ed673a792cf9d25f4c64f80c43a23e7c9e5a`, version `v0.0.0-local`.
 Its retained archive is
-`dist/local-node-web088-76278906/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`,
-SHA-256 `8891595f51cc9481a9f7283e81a7c7b28fbe2dd7b030d975fba196c744bf0b6e`.
-WEB-087 unified the main window and startup; WEB-088 aligned toolbar appearance.
-OPS-021 subsequently corrected packaging cleanup without changing the installed
-application. The older binaries below retain only their original historical
-observations and are not the baseline for further acceptance.
+`dist/local-node-web089-d8e2ed67/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`,
+SHA-256 `449cbeb7976e933a90051d4f29f3fc0733f43554ef59f8ebaa78ebd0cd08080a`.
+[Installed package verification](evidence/qa092/current-local/installed-package.json)
+covers safe ZIP paths, all 6,215 Hub files, native source/version, bundled
+Node/SQLite with an empty PATH, exact installed contents and stopped owner backup.
+WEB-087 unified the main window and startup; WEB-088 aligned the toolbar;
+WEB-089 repairs task assignment. OPS-021 keeps package staging temporary.
+The previous WEB-088 archive from `76278906` is retained as a verified rollback
+archive, with a new stopped Node snapshot under the private owner backup folder.
+Historical observations below are not relabeled as current-source evidence.
 
 On 2026-09-11 the owner authorized completing baseline alignment and the local
 workflow before returning for cross-Node and platform acceptance. This local
 pass uses the installed bundle with a disposable Node/configuration/Workspace
 and deterministic Codex/Pi executables. It covers native Agent setup, task/Run,
 Discussion, close/reopen, tray quit and recovery, with no external model calls.
-Current-source local evidence is in progress; the broader QA-092 gate stays open.
-The initial native pass configured two offline Agents, passed both native test
-runs, completed one default-Task Run and one Discussion with two contributions
-and one conclusion. It also reproduced an ordinary-Task onboarding defect:
-creation omitted assignments while the composer offered unassigned Agents.
-WEB-089 repairs that explicit assignment flow before the final local pass.
-The test fixture's bounded deadline expired during UI inspection and removed its
-owned processes and files; that expiry supplies no tray/quit/recovery evidence.
-One initial Agent-editor white page recovered through View/Reload and did not
-recur on the next two editor opens; this remains an observed, unconfirmed anomaly.
+Baseline alignment is complete. The local workflow checks below passed; actual
+tray interaction remains unverified, so the whole local physical checklist and
+broader QA-092 gate are not marked complete.
+
+## Current local workflow observations
+
+On 2026-09-12 the installed `d8e2ed67` bundle ran with disposable Node,
+configuration and Workspace arguments. Its two native offline Codex/Pi Agents
+and Team/Room were prepared through the installed Node host's local APIs, then
+the host stopped before the GUI launched. Actual GUI operations created the
+[task with explicit assignments](evidence/qa092/current-local/task-create-assignments.jpg),
+received its [ordinary Run reply](evidence/qa092/current-local/assigned-task-reply.jpg),
+and completed a [two-Agent Discussion](evidence/qa092/current-local/assigned-task-discussion.jpg).
+The Discussion contains two contribution Runs and one conclusion Run, all
+completed. The existing-Task editor then changed the reviewer's assignment to
+contributor; Task revision advanced from 1 to 2 and no new Run was started.
+This is offline transport/orchestration evidence, not model-quality acceptance.
+
+The actual native close control retained the same desktop PID and a ready Hub.
+[Window-close assertions](evidence/qa092/current-local/window-close.json) and
+[reopened Team](evidence/qa092/current-local/native-reopen.jpg) record the sequence.
+An isolated SIGKILL of the desktop's own Hub child produced the expected
+[native failure dialog](evidence/qa092/current-local/native-hub-failure.jpg).
+Application quit returned zero; restarting opened the same Team and records.
+A second normal quit allowed the installed Node host to take a stopped snapshot
+and restore it at the same data path. Reopening the desktop preserved identity,
+configuration, Team, Room, both Tasks, four completed Runs and one completed
+Discussion. The three snapshots
+[before recovery](evidence/qa092/current-local/before-recovery.json),
+[after restart](evidence/qa092/current-local/after-restart.json), and
+[after restore](evidence/qa092/current-local/after-restore.json) are identical,
+including the offline invocation journal: recovery did not replay work.
+[Task definitions and assignments](evidence/qa092/current-local/definition-restore.json)
+also match the stopped source snapshot.
+
+After restoration, [both native self-tests](evidence/qa092/current-local/restored-agent-probes.jpg)
+passed (Codex 19 ms, Pi 13 ms). The Agent editor opened and canceled three times
+without a white page. A deliberately submitted [new request](evidence/qa092/current-local/post-recovery-reply.jpg)
+completed as exactly one additional Run. The
+[final capture](evidence/qa092/current-local/after-new-request.json) has five
+completed Runs and only the two explicit self-tests plus that new Run added to
+the journal. Final native application-menu quit returned zero.
+[Lifecycle assertions](evidence/qa092/current-local/lifecycle.json) record three
+zero-exit shutdowns, backup/restore and preservation of original owner files/Runs.
+
+The owned fixture, its processes and control file were removed. Ordinary launch
+restored the [original owner workspace](evidence/qa092/current-local/owner-workspace-restored.jpg):
+Team `测试环境`, Room `测试房间`, original `本机codex` completed Run and light theme.
+[Final cleanup verification](evidence/qa092/current-local/final-cleanup.json)
+confirms one installed application registration, one desktop and one owned Hub,
+no expanded app in the new package directory, and removal of the owned fixtures.
+No external model calls, cross-Node grants, publication or Windows operations
+were performed in this local pass.
+
+The initial pass on `76278906` had configured both Agents through the actual
+native editor and completed default-Task Run/Discussion
+([initial capture](evidence/qa092/current-local/initial-native-workflow.json)).
+It reproduced an ordinary-Task onboarding defect: creation omitted assignments
+while the composer offered unassigned Agents. WEB-089 repairs it with explicit
+creation/editing controls and local pre-submit validation; 28 focused checks,
+including real App/Server execution, exact committed-response retry and conflict
+preservation, pass. The final affected App/onboarding rerun passes all nine cases.
+TypeScript, Hub/Web build, docs and changed-link checks also pass.
+An initial editor white page on the older binary recovered through View/Reload;
+it did not recur on two subsequent old-binary opens or three current-binary opens.
+No cause or fix for that one observation is claimed. Earlier expired/preparation
+fixtures were cleaned and do not count as exit or recovery passes.
+
+The desktop automation surface exposes the main window and application menu but
+not the system tray. SystemUIServer and ControlCenter inspection timed out;
+Finder Desktop and the application bundle identifier did not expose the tray
+menu either. Therefore actual tray open/configure/quit remains for the final
+physical check. Application-menu quit and source-level callbacks do not replace
+that check. Cross-Node owner consent and platform gates remain separately open.
 
 ## Historical V1 interaction
 

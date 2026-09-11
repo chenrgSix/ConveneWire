@@ -1,0 +1,127 @@
+{
+  "identityDigest": "406cd90b89f69d02039ce4962aa3f99f84ca679d2e595088d104acb6e2f72676",
+  "configurationDigest": "8736f688f5102a64b9271384cf4ae1936c8f20ee7cb40cb1084ff0c1435de892",
+  "teams": [
+    {
+      "team_id": "team_LWBL2hOSMRgYBdrl7mimOg"
+    }
+  ],
+  "rooms": [
+    {
+      "room_id": "room_1lp3W7RJEWvO2TROWXhdsA"
+    }
+  ],
+  "agent_tasks": [
+    {
+      "task_id": "task_default_1lp3W7RJEWvO2TROWXhdsA",
+      "state": "working"
+    },
+    {
+      "task_id": "task_iaxShu1Z67SZIj39CeTwBQ",
+      "state": "open"
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "run_5p_Ty743ZuFOaOJkUfo98g",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_Cpg3QKWbpHS5qHHB814p2w",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_nI2bgx4r1dhVHEoG2nxrhA",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_oomG5RYcHQiSmdiHo1_xwA",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_z9DdEZO1nR_sAE2-RueS7A",
+      "state": "completed"
+    }
+  ],
+  "discussions": [
+    {
+      "discussion_id": "discussion_Y5as7h7oc2sywBQrs_W2fw",
+      "state": "completed"
+    }
+  ],
+  "runtimeCalls": [
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 3258,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 3984,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "--mode",
+        "json",
+        "--print",
+        "--session-id",
+        "431c173f-b63b-5c65-8071-cd711e068531",
+        "--name",
+        "ConveneWire \u00b7 \u79bb\u7ebf\u5ba1\u9605\u5458 \u00b7 04ee51f7"
+      ],
+      "bytes": 4019,
+      "runtimeKind": "pi"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 5204,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 173,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "--mode",
+        "json",
+        "--print",
+        "--no-session",
+        "--no-tools",
+        "--no-extensions",
+        "--no-skills",
+        "--no-context-files",
+        "--no-approve"
+      ],
+      "bytes": 62,
+      "runtimeKind": "pi"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 3211,
+      "runtimeKind": "codex"
+    }
+  ]
+}

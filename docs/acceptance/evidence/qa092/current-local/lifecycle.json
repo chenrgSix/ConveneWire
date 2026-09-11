@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "d8e2ed673a792cf9d25f4c64f80c43a23e7c9e5a",
+  "archiveSha256": "449cbeb7976e933a90051d4f29f3fc0733f43554ef59f8ebaa78ebd0cd08080a",
+  "installedBinaryMatchesArchive": true,
+  "nativeExitCodes": [
+    0,
+    0,
+    0
+  ],
+  "originalOwnerFilesAndRunsUnchanged": true,
+  "backupCreated": true,
+  "snapshotRestored": true
+}
