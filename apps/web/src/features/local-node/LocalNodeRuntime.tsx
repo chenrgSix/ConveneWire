@@ -38,15 +38,17 @@ export function LocalNodeRuntime({ session, team, teams, locale }: { session: Lo
   }
   const boundName = teams.find((candidate) => candidate.teamId === binding?.teamId)?.name ?? (zh ? "已选 Team" : "selected Team");
   return <section className="local-node-runtime" aria-label={zh ? "本地 Runtime" : "Local Runtime"}>
-    <div><strong>{zh ? "本地空间" : "Local workspace"}</strong><span>{binding?.teamId
+    <div className="local-node-summary"><strong>{zh ? "本地空间" : "Local workspace"}</strong><span>{binding?.teamId
       ? (zh ? `本机 Runtime 已绑定 ${boundName}` : `Local Runtime is bound to ${boundName}`)
       : (zh ? (team ? `将本机 Runtime 连接到 ${team.name}；此版本绑定一个 Team。` : "先配置本机 Agent，再选择要连接的 Team。")
         : (team ? `Connect this computer to ${team.name}. This version binds one Team.` : "Set up local Agents, then choose a Team to connect."))}</span></div>
-    {!binding?.teamId && <button type="button" disabled={busy || !binding} onClick={() => void open(false)}>{zh ? "本机 Agent" : "Local Agents"}</button>}
-    <button type="button" disabled={busy || !binding || (!binding.teamId && !team)} onClick={() => void open(true)}>
-      {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "本机 Agent" : "Local Agents") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
-    </button>
-    <LocalNodeNetwork session={session} locale={locale} />
+    <div className="local-node-actions">
+      {!binding?.teamId && <button className="secondary-action" type="button" disabled={busy || !binding} onClick={() => void open(false)}>{zh ? "本机 Agent" : "Local Agents"}</button>}
+      <button className="secondary-action" type="button" disabled={busy || !binding || (!binding.teamId && !team)} onClick={() => void open(true)}>
+        {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "本机 Agent" : "Local Agents") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
+      </button>
+      <LocalNodeNetwork session={session} locale={locale} />
+    </div>
     {error && <p role="alert">{error}</p>}
   </section>;
 }

@@ -1342,13 +1342,16 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   justify-content: space-between;
   gap: 10px;
   padding: 10px 20px;
-  border-bottom: 1px solid var(--border, #39433e);
+  border-bottom: 1px solid var(--cw-border-subtle);
   font-size: 13px;
 }
-.local-node-runtime > div { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.local-node-runtime span { opacity: .75; }
-.local-node-runtime button { padding: 7px 12px; border-radius: 8px; cursor: pointer; }
-.local-node-runtime p { flex-basis: 100%; margin: 0; color: var(--danger, #e77c71); }
+.local-node-summary { display: flex; flex: 1 1 280px; flex-wrap: wrap; gap: 4px 10px; align-items: center; min-width: 0; }
+.local-node-summary span { color: var(--cw-text-secondary); overflow-wrap: anywhere; }
+.local-node-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.local-node-actions > .secondary-action { appearance: none; min-height: 34px; padding: 7px 12px; font-size: 12px; font-weight: 600; line-height: 18px; }
+.local-node-actions > .secondary-action:focus-visible { outline: 2px solid var(--cw-focus); outline-offset: 2px; }
+.local-node-actions > .secondary-action:disabled { opacity: .45; cursor: default; }
+.local-node-runtime > p { flex-basis: 100%; margin: 0; color: var(--cw-danger); }
 
 .space-directory { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 20px; border-bottom: 1px solid var(--border, #39433e); font-size: 13px; }
 .space-directory a { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border, #39433e); overflow-wrap: anywhere; }

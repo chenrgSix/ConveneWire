@@ -12,7 +12,7 @@ interface Save { revisionDigest: string; reviewDigest: string; selection: Select
 
 export function LocalNodeNetwork({session, locale}: {session: LocalSession; locale: Locale}) {
   const [openToken, setOpenToken] = useState<string | null>(null);
-  return <><button type="button" disabled={!session.token} onClick={() => setOpenToken(session.token ?? null)}>{locale === "zh-CN" ? "网络设置" : "Network settings"}</button>
+  return <><button className="secondary-action" type="button" disabled={!session.token} onClick={() => setOpenToken(session.token ?? null)}>{locale === "zh-CN" ? "网络设置" : "Network settings"}</button>
     {openToken && openToken === session.token && <NetworkDialog key={openToken} token={openToken} locale={locale} onClose={() => setOpenToken(null)} />}</>;
 }
 
