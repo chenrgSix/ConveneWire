@@ -50,10 +50,11 @@ and Runtime journals are not copied into this record.
 
 ## Automated-gate local package
 
-QA-092 found and verified the later WEB-086 onboarding correction. Its
-[replacement final artifact](qa-092-ab-native-desktop.md#current-final-artifact)
-is built from clean source `9286835a`. The archive below remains evidence for
-this automated gate at `41cd563f`; it is not relabeled as the later source.
+QA-092 records the [current installed acceptance baseline](qa-092-ab-native-desktop.md#current-acceptance-baseline)
+and the source-specific evidence for subsequent onboarding, desktop navigation,
+toolbar and Task assignment corrections. The WEB-086 artifact at `9286835a` is
+historical. The archive below remains evidence for this automated gate at
+`41cd563f`; it is not relabeled as the current installed source.
 
 The clean-source unsigned macOS arm64 artifact is
 `dist/local-node-qa091-41cd563f/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`.
@@ -73,4 +74,4 @@ The CI/release jobs are implemented, but were not executed remotely here.
 Windows native installation/upgrade, minimum-OS hardware, live providers and
 publication remain separate gates. QA-092 also preserves the older A/B archive
 as historical evidence; neither historical archive replaces its current final
-artifact for subsequent manual acceptance.
+baseline for subsequent manual acceptance.
