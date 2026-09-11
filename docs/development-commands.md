@@ -373,7 +373,13 @@ then drives the real bundled Hub/Bridge with an empty PATH. No model credentials
 or installed profile are used. `npm run package:local-node` builds a native local
 development desktop ZIP under `dist/local-node-desktop`; append `-- /absolute/new-output`
 to select a fresh output directory. The wrapper cleans its own temporary Hub
-staging directory. It does not install, publish or enable login startup.
+staging directory. On macOS, desktop staging uses a private hidden directory;
+success, build/validation failure and ZIP failure all remove that directory.
+Only the completed ZIP remains in the output directory. Extract it into an
+owned temporary directory for inspection/install, then remove that extraction.
+Keep rollback applications as verified ZIPs alongside their stopped data snapshots,
+so application discovery does not show backup copies as additional clients.
+Packaging does not install, publish or enable login startup.
 
 The native test also enables HTTPS in its stopped disposable profile, verifies
 local and Peer port conflicts, confirms Owner/control isolation, and checks

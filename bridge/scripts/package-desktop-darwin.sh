@@ -49,18 +49,23 @@ if [[ ! "${minimum_macos}" =~ ^[0-9]+\.[0-9]+$ ]]; then
 fi
 
 package="convenewire-bridge-desktop_${version}_darwin_${goarch}"
-staging="${output_dir}/${package}"
-app="${staging}/ConveneWire Bridge.app"
-contents="${app}/Contents"
-binary="${contents}/MacOS/convenewire-bridge-desktop"
-helper="${contents}/Resources/bin/convenewire-bridge"
 archive="${output_dir}/${package}.zip"
-
-if [[ -e "${staging}" || -e "${archive}" ]]; then
+if [[ -e "${output_dir}/${package}" || -e "${archive}" || -L "${archive}" ]]; then
   echo "Desktop package output already exists: ${package}" >&2
   exit 1
 fi
 
+# Keep transient apps out of application discovery and remove them on every exit.
+package_work=$(mktemp -d "${output_dir}/.convenewire-package.XXXXXX")
+trap 'rm -rf -- "${package_work}"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+staging="${package_work}/${package}"
+staged_archive="${package_work}/${package}.zip"
+app="${staging}/ConveneWire Bridge.app"
+contents="${app}/Contents"
+binary="${contents}/MacOS/convenewire-bridge-desktop"
+helper="${contents}/Resources/bin/convenewire-bridge"
 mkdir -p "${contents}/MacOS" "${contents}/Resources/bin"
 sed "s/__VERSION__/${bundle_version}/g" \
   "${bridge_root}/desktop/darwin/Info.plist" > "${contents}/Info.plist"
@@ -142,7 +147,9 @@ if ! strings "${contents}/Resources/bin/convenewire-node" | grep -F "${source_co
 fi
 
 (
-  cd "${output_dir}"
-  COPYFILE_DISABLE=1 zip -qry "${archive}" "${package}"
+  cd "${package_work}"
+  COPYFILE_DISABLE=1 zip -qry "${staged_archive}" "${package}"
 )
+# Publish only a completed archive, without replacing an existing output file.
+ln "${staged_archive}" "${archive}"
 printf '%s\n' "${archive}"

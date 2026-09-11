@@ -37,6 +37,14 @@ publication. Stop the Node and take a recoverable snapshot before upgrading;
 retain the matching old bundle for rollback. SQL checksums and unknown-schema
 rejection remain enforced by the existing Server migration runner.
 
+OPS-021 closes macOS packaging's staging lifecycle. A private hidden directory
+holds the transient application and partial archive; exit traps remove it after
+success or failure. A completed ZIP is the sole output, and existing outputs
+remain protected. Inspection/install extractions must be removed afterward;
+rollback applications are kept as verified archives beside the data snapshots.
+[Local cleanup evidence](../acceptance/ops-021-local-app-cleanup.md) records the
+owner-requested removal of expanded application copies and scoped launch entries.
+
 OPS-020 makes that Hub and lifecycle helper mandatory in both native desktop
 packages and the Windows installer. Before compilation and after staging,
 [desktop Hub admission](../../scripts/local-node/desktop-bundle.mjs) verifies the

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -69,15 +69,26 @@ chmod +x "$target"
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-bridge`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-node`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/hub/hub-manifest.json`));
-      assert.match(await readFile(path.join(expected, packageName, "ConveneWire Bridge.app/Contents/MacOS/convenewire-bridge-desktop"), "utf8"), new RegExp(commit, "u"));
-      assert.match(await readFile(path.join(expected, packageName, "ConveneWire Bridge.app/Contents/Resources/bin/convenewire-bridge"), "utf8"), new RegExp(commit, "u"));
+      for (const executable of ["MacOS/convenewire-bridge-desktop", "Resources/bin/convenewire-bridge"]) {
+        const content = execFileSync("unzip", ["-p", archive, `${packageName}/ConveneWire Bridge.app/Contents/${executable}`], { encoding: "utf8" });
+        assert.match(content, new RegExp(commit, "u"));
+      }
+      assert.deepEqual(await readdir(expected), [`${packageName}.zip`], "completed packaging leaves no discoverable app or staging directory");
       assert.throws(() => execFileSync("bash", [darwinScript], { cwd, env, stdio: "pipe" }), /output already exists/u);
       for (const wrongMinimum of ["11.0", "26.0"]) {
         assert.throws(() => execFileSync("bash", [darwinScript], { cwd, stdio: "pipe",
           env: { ...env, OUTPUT_DIR: `${directory}-${wrongMinimum}`, CW_PATH_TEST_MINIMUM: wrongMinimum }
         }), /Mach-O target does not match macOS 12.0/u);
+        assert.deepEqual(await readdir(path.resolve(cwd, `${directory}-${wrongMinimum}`)), [], "failed validation cleans its partial app");
       }
     }
+    await writeFile(path.join(bin, "zip"), '#!/bin/sh\nprintf partial > "$2"\nexit 46\n', { mode: 0o700 });
+    const failedOutput = path.join(fixture, "failed archive");
+    assert.throws(() => execFileSync("bash", [darwinScript], { cwd: fixture, stdio: "pipe",
+      env: { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, OUTPUT_DIR: failedOutput,
+        RELEASE_TAG: "v0.0.0-path-test", SOURCE_REF: "HEAD", GOARCH: "arm64", CW_PATH_TEST_COMMIT: commit, LOCAL_HUB_BUNDLE: hub }
+    }));
+    assert.deepEqual(await readdir(failedOutput), [], "failed ZIP creation publishes nothing and removes the partial archive and app");
   } finally { await rm(fixture, { recursive: true, force: true }); }
 });
 

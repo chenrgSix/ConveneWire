@@ -1,0 +1,248 @@
+{
+  "expandedAppsRemoved": 38,
+  "archivesVerifiedBeforeDeletion": 38,
+  "newBackupArchives": 22,
+  "allocatedKiBRemoved": 3171880,
+  "allocatedKiBNewArchives": 394312,
+  "oldTemporaryLogsRemoved": 242,
+  "emptyTemporaryDirectoriesRemoved": 16,
+  "activeTemporaryDirectoriesPreserved": 1,
+  "readyHttpStatus": 200,
+  "plans": [
+    {
+      "removedPath": "repository/dist/local-node-ops020-607677e9/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-ops020-607677e9/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-qa091-41cd563f/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-qa091-41cd563f/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-web088-76278906/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-web088-76278906/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-web087-f8675854/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-web087-f8675854/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-qa090/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-qa090/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-qa092-9286835a/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-qa092-9286835a/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-desktop/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-desktop/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/dist/local-node-web087-beb0f148/convenewire-bridge-desktop_0.0.0-local_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/dist/local-node-web087-beb0f148/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/before/installed-old.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/before/installed-old.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9392
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/before/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/before/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9396
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/client/convenewire-bridge-desktop_0.5.2-local.a6d31f3_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.a6d31f3-20260908/client/convenewire-bridge-desktop_0.5.2-local.a6d31f3_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/before/installed-old.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/before/installed-old.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9788
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/before/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/before/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9864
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/client/convenewire-bridge-desktop_0.5.2-local.5d22eec_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.2-local.5d22eec-20260909/client/convenewire-bridge-desktop_0.5.2-local.5d22eec_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.1-20260908/before/installed-old.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.1-20260908/before/installed-old.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 5224
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.1-20260908/before/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.1-20260908/before/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 5224
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.1-20260908/client/convenewire-bridge-desktop_0.5.1_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.1-20260908/client/convenewire-bridge-desktop_0.5.1_darwin_arm64/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 10276
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.3-local.da7349f-20260909/before/installed-old.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.3-local.da7349f-20260909/before/installed-old.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9944
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.3-local.da7349f-20260909/client/convenewire-bridge-desktop_0.5.3-local.da7349f_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.3-local.da7349f-20260909/client/convenewire-bridge-desktop_0.5.3-local.da7349f_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.9-local.85e3156-20260909/before-client/replaced-installed.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.9-local.85e3156-20260909/before-client/replaced-installed.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 10520
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.9-local.85e3156-20260909/client/convenewire-bridge-desktop_0.5.9-local.85e3156_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.9-local.85e3156-20260909/client/convenewire-bridge-desktop_0.5.9-local.85e3156_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/before/replaced-installed.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/before/replaced-installed.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 10444
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/before/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/before/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 10708
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/client/convenewire-bridge-desktop_0.5.5-local.6f8d633_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.5-local.6f8d633-20260909/client/convenewire-bridge-desktop_0.5.5-local.6f8d633_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.6-local.ef61656-20260909/before/replaced-installed.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.6-local.ef61656-20260909/before/replaced-installed.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 9832
+    },
+    {
+      "removedPath": "repository/var/local-upgrades/v0.5.6-local.ef61656-20260909/client/convenewire-bridge-desktop_0.5.6-local.ef61656_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-upgrades/v0.5.6-local.ef61656-20260909/client/convenewire-bridge-desktop_0.5.6-local.ef61656_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/acceptance/qa-v040-mac/app/convenewire-bridge-desktop_0.4.0-qa031.1_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/acceptance/qa-v040-mac/app/convenewire-bridge-desktop_0.4.0-qa031.1_darwin_arm64/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 4240
+    },
+    {
+      "removedPath": "repository/var/local-installs/20260831-05e70d0/convenewire-bridge-desktop_0.4.3-local.05e70d0_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-installs/20260831-05e70d0/convenewire-bridge-desktop_0.4.3-local.05e70d0_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "repository/var/local-installs/20260831-9ff9882/convenewire-bridge-desktop_0.4.2-local.9ff9882_darwin_arm64/ConveneWire Bridge.app",
+      "retainedArchive": "repository/var/local-installs/20260831-9ff9882/convenewire-bridge-desktop_0.4.2-local.9ff9882_darwin_arm64.zip",
+      "newArchive": false,
+      "archiveKiBCreated": 0
+    },
+    {
+      "removedPath": "owner-profile/app-backups/web088-20260911-171335/ConveneWire Bridge.app",
+      "retainedArchive": "owner-profile/app-backups/web088-20260911-171335/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 82076
+    },
+    {
+      "removedPath": "owner-profile/app-backups/web087-20260910-211924/ConveneWire Bridge.app",
+      "retainedArchive": "owner-profile/app-backups/web087-20260910-211924/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 82720
+    },
+    {
+      "removedPath": "owner-profile/app-backups/20260910-202554/ConveneWire Bridge.app",
+      "retainedArchive": "owner-profile/app-backups/20260910-202554/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 10332
+    },
+    {
+      "removedPath": "owner-profile/app-backups/web087-20260910-210616/ConveneWire Bridge.app",
+      "retainedArchive": "owner-profile/app-backups/web087-20260910-210616/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 82096
+    },
+    {
+      "removedPath": "legacy-backups/v0.3.0-rc.1-before-85a6cfb/AgentRoom Bridge.app",
+      "retainedArchive": "legacy-backups/v0.3.0-rc.1-before-85a6cfb/AgentRoom Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 4152
+    },
+    {
+      "removedPath": "legacy-backups/v0.5.0-rc.3-before-brg072.0cE0z1/ConveneWire Bridge.app",
+      "retainedArchive": "legacy-backups/v0.5.0-rc.3-before-brg072.0cE0z1/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 5220
+    },
+    {
+      "removedPath": "legacy-backups/v0.3.0-rc.2-dev.85a6cfb-before-42c8078/AgentRoom Bridge.app",
+      "retainedArchive": "legacy-backups/v0.3.0-rc.2-dev.85a6cfb-before-42c8078/AgentRoom Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 4156
+    },
+    {
+      "removedPath": "legacy-backups/v0.2.0-upgrade-sq4VVN/AgentRoom Bridge.app",
+      "retainedArchive": "legacy-backups/v0.2.0-upgrade-sq4VVN/AgentRoom Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 4044
+    },
+    {
+      "removedPath": "legacy-backups/v0.4.3-before-v0.5.0-rc.3-20260904T021434Z/ConveneWire Bridge.app",
+      "retainedArchive": "legacy-backups/v0.4.3-before-v0.5.0-rc.3-20260904T021434Z/ConveneWire Bridge.app.backup.zip",
+      "newArchive": true,
+      "archiveKiBCreated": 4664
+    }
+  ],
+  "remainingRegisteredApps": [
+    "/Applications/ConveneWire Bridge.app"
+  ],
+  "formalAppAndIdentityAndConfigurationDigestsUnchanged": true,
+  "packagingChecksPassed": 4,
+  "releasePolicyChecksPassed": 26,
+  "nativeRebuildPerformed": false
+}
