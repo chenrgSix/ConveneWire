@@ -252,6 +252,19 @@ the workspace's light/dark appearance. [Installed acceptance](../acceptance/web-
 records the final macOS source and actual navigation/appearance observations. Native API authorization and framing
 restrictions remain unchanged; no Console capability is proxied through the Hub.
 
+WEB-088 uses the shared `secondary-action` visual role for local Agent, Runtime
+binding and network entry. Actions form one right-aligned wrapping group with
+34px controls and visible keyboard focus. The strip uses the shared divider and
+metadata colors; its layout rules no longer target buttons inside the network
+dialog. [Installed light appearance](../acceptance/evidence/web088/native-toolbar-light.jpg)
+and [dark appearance](../acceptance/evidence/web088/native-toolbar-dark.jpg) show
+the actual macOS app from clean source `76278906`.
+[Sanitized evidence](../acceptance/evidence/web088/native-toolbar.json) records
+six focused checks, build/package verification, preserved owner data, same-window
+Agent navigation and network dialog opening/closing without a configuration save.
+The original light preference is restored and the application remains running.
+Windows, remote CI and broader physical acceptance remain outside this style fix.
+
 `TASK-015`, under [ADR-0064](../adr/0064-isolate-task-conversations.md), scopes
 conversation history, backward/forward pagination, pending sends and live replies
 to the selected Task, including the default conversation. Switching Tasks retires

@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "76278906ab17a1614c2b20356168c8a2f6c1e1f3",
+  "releaseVersion": "v0.0.0-local",
+  "platform": "darwin-arm64",
+  "archiveSha256": "8891595f51cc9481a9f7283e81a7c7b28fbe2dd7b030d975fba196c744bf0b6e",
+  "verifiedHubFiles": 6215,
+  "profileFilesUnchanged": true,
+  "runReferencesAndStatesUnchanged": true,
+  "readyHttpStatus": 200,
+  "focusedTestsPassed": 6,
+  "nativeVisualThemes": [
+    "light",
+    "dark"
+  ],
+  "originalLightThemeRestored": true,
+  "agentEntryAndReturn": "same-window",
+  "networkDialog": "opened-and-closed-without-saving",
+  "modelCalls": 0,
+  "desktopProcesses": 1,
+  "directOwnedHubProcesses": 1
+}
