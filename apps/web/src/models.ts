@@ -327,6 +327,7 @@ export interface AgentTask {
   primaryAgentId: string | null;
   isDefault: boolean;
   updatedAt: string;
+  assignments?: Array<{ agentId: string; role: "primary" | "contributor" | "reviewer" }>;
 }
 
 export type ArtifactMediaType =

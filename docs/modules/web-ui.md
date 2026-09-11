@@ -591,6 +591,18 @@ Discussion, and Audit are separate views. Result review controls appear only to
 the Task Owner or Team Owner and never infer permission from the projected next
 action.
 
+Task creation offers explicit primary/contributor/reviewer assignment from the
+current Room roster. Saving a Task or its assignments does not start execution.
+The Room task selector also opens an assignment editor for existing ordinary
+Tasks, including Tasks created before the editor existed. It reads the current
+definition, allows the Task Owner or Team Owner to save through the existing
+definition API, and preserves every other definition field. Version conflicts
+require a fresh review; an uncertain response retries the identical operation
+and payload. Task mention suggestions use the intersection of Room access and
+explicit assignments. Direct mentions and `@all` that include unassigned Agents
+are rejected before submission while preserving the draft. Default Room Tasks
+retain their existing roster behavior; the Server remains the authority.
+
 The detail controller reads one authorized Task and then its Task-scoped Runs,
 Results, Artifacts, and Room Discussion projection. `GET /api/tasks/:taskId/runs`
 and `GET /api/runs/:runId` authorize against the Run's current Room before

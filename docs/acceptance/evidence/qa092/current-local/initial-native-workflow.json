@@ -1,0 +1,128 @@
+{
+  "identityDigest": "48f3424433890b3a33c724fe501fe538201b46c68151def61c33d76d822bd379",
+  "configurationDigest": "efe071825904655ae5d44ecd0418a8df91aba3b3e5fc23b82091a11af1d31cd2",
+  "teams": [
+    {
+      "team_id": "team_cCjVvlajhmRuYLWHMtuGqw"
+    }
+  ],
+  "rooms": [
+    {
+      "room_id": "room_xRU5Gmsyhz5rVxbSZeCPFw"
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "run_6k-Q9y6bxo3622MR3ad2rw",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_J6fXo03iU0MCe-Gbwu66tA",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_V2Yhlv4G8OZ8YYMV7gSj2Q",
+      "state": "completed"
+    },
+    {
+      "run_id": "run_YXgZ5X8dOerAhCjD_7WOBA",
+      "state": "completed"
+    }
+  ],
+  "discussions": [
+    {
+      "discussion_id": "discussion_ZA_jEsyshrH1139e-qGWXw",
+      "state": "completed"
+    }
+  ],
+  "runtimeCalls": [
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 173,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "--mode",
+        "json",
+        "--print",
+        "--no-session",
+        "--no-tools",
+        "--no-extensions",
+        "--no-skills",
+        "--no-context-files",
+        "--no-approve"
+      ],
+      "bytes": 62,
+      "runtimeKind": "pi"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 173,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "--mode",
+        "json",
+        "--print",
+        "--no-session",
+        "--no-tools",
+        "--no-extensions",
+        "--no-skills",
+        "--no-context-files",
+        "--no-approve"
+      ],
+      "bytes": 62,
+      "runtimeKind": "pi"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 3174,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 3944,
+      "runtimeKind": "codex"
+    },
+    {
+      "args": [
+        "--mode",
+        "json",
+        "--print",
+        "--session-id",
+        "4e96f9de-d5dc-505b-a948-85f2b349273b",
+        "--name",
+        "ConveneWire \u00b7 \u79bb\u7ebf\u5ba1\u9605\u5458 \u00b7 7ccae765"
+      ],
+      "bytes": 3967,
+      "runtimeKind": "pi"
+    },
+    {
+      "args": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "bytes": 5164,
+      "runtimeKind": "codex"
+    }
+  ]
+}

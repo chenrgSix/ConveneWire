@@ -109,7 +109,7 @@ async function fixture(t: TestContext) {
   }
   return {
     ...testing, dom, page, firstTask, secondTask, roomId, otherRoomId: otherRoom.roomId as string,
-    teamId, scopeFor, requests, server, openRoomTask,
+    teamId, scopeFor, requests, server, openRoomTask, seed, seedAuthorization,
     setFailMessages(value: boolean) { failMessages = value; },
     currentAuthorization: () => authorization
   };
@@ -248,4 +248,89 @@ test("Work next-step action navigates to the exact Room Task without creating me
   assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, f.roomId);
   assert.equal((f.page.getByRole("textbox", { name: "Message", exact: true }) as HTMLTextAreaElement).value, "");
   assert.equal(f.requests.filter(({ method }) => method !== "GET").length, writesBefore);
+});
+
+
+test("native acceptance regression: explicitly assigned new Task routes a real server Run and existing Tasks can be assigned", async (t) => {
+  const f = await fixture(t);
+  const agent = await f.seed("POST", `/api/teams/${f.teamId}/fake-agents`, { name: "Offline Builder", role: "Implementation" }, f.seedAuthorization);
+  const settings = await f.seed("GET", `/api/rooms/${f.roomId}/settings`, undefined, f.seedAuthorization);
+  const joined = await f.server.inject({ method: "PUT", url: `/api/rooms/${f.roomId}/settings`, headers: { authorization: f.seedAuthorization }, payload: {
+    expectedRevision: settings.room.settingsRevision, memberIds: settings.participants.memberIds, agentIds: [agent.agentId], collaborationPolicy: settings.room.collaborationPolicy
+  } });
+  assert.equal(joined.statusCode, 200, joined.body);
+  f.render(<App />);
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
+  const dialog = f.within(await f.page.findByRole("dialog", { name: "Create long-lived Task" }));
+  f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: "Assigned native task" } });
+  f.fireEvent.change(dialog.getByLabelText("Task goal"), { target: { value: "Run only the fixture Agent" } });
+  f.fireEvent.change(dialog.getByLabelText("Task role: Offline Builder"), { target: { value: "primary" } });
+  f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
+  await f.page.findByRole("heading", { name: "Assigned native task" });
+  const creation = f.requests.find(({ method, url }) => method === "POST" && url.endsWith("/tasks"))!;
+  assert.deepEqual(JSON.parse(creation.body!).assignments, [{ agentId: agent.agentId, role: "primary" }]);
+  f.fireEvent.click(f.page.getByRole("button", { name: "Open this Task in Room" }));
+  const editor = await f.page.findByRole("textbox", { name: "Message", exact: true });
+  f.fireEvent.change(editor, { target: { value: "@Offline Builder verify the fixture task" } });
+  f.fireEvent.click(f.page.getByRole("button", { name: "Send", exact: true }));
+  await f.waitFor(() => assert.equal(f.requests.filter(({ method, url }) => method === "POST" && url.endsWith("/messages")).length, 1));
+  const created = (await f.seed("GET", `/api/rooms/${f.roomId}/tasks`, undefined, f.seedAuthorization) as TaskProjection[]).find(({ title }) => title === "Assigned native task")!;
+  await f.waitFor(async () => {
+    const runs = await f.seed("GET", `/api/tasks/${created.taskId}/runs`, undefined, f.seedAuthorization);
+    assert.equal(runs.length, 1); assert.equal(runs[0].state, "completed");
+  });
+  await f.openRoomTask(f.firstTask);
+  f.fireEvent.click(f.page.getByRole("button", { name: "Task Agents", exact: true }));
+  const existing = f.within(await f.page.findByRole("dialog", { name: "Configure Task Agents" }));
+  f.fireEvent.change(await existing.findByLabelText("Task role: Offline Builder"), { target: { value: "reviewer" } });
+  f.fireEvent.click(existing.getByRole("button", { name: "Save assignments" }));
+  await f.waitFor(() => assert.equal(Boolean(f.page.queryByRole("dialog", { name: "Configure Task Agents" })), false));
+  const saved = await f.seed("GET", `/api/tasks/${f.firstTask.taskId}`, undefined, f.seedAuthorization) as TaskProjection;
+  assert.deepEqual(saved.assignments.map(({ agentId, role }) => ({ agentId, role })), [{ agentId: agent.agentId, role: "reviewer" }]);
+  assert.equal(saved.goal, f.firstTask.goal);
+  assert.equal(saved.taskRevision, f.firstTask.taskRevision + 1);
+  assert.equal((await f.seed("GET", `/api/tasks/${f.firstTask.taskId}/runs`, undefined, f.seedAuthorization)).length, 0);
+  // Lose the response after the real database commit. The retry must use one
+  // operation and must not increment the Task revision twice.
+  const dispatch = globalThis.fetch;
+  let loseResponse = true;
+  const attempts: string[] = [];
+  globalThis.fetch = async (input, init) => {
+    const response = await dispatch(input, init);
+    if (init?.method === "PUT" && String(input).endsWith("/definition")) {
+      attempts.push(String(init.body));
+      if (loseResponse) { loseResponse = false; throw new TypeError("Lost committed response"); }
+    }
+    return response;
+  };
+  f.fireEvent.click(f.page.getByRole("button", { name: "Task Agents", exact: true }));
+  const retryDialog = f.within(await f.page.findByRole("dialog", { name: "Configure Task Agents" }));
+  f.fireEvent.change(await retryDialog.findByLabelText("Task role: Offline Builder"), { target: { value: "primary" } });
+  f.fireEvent.click(retryDialog.getByRole("button", { name: "Save assignments" }));
+  const retry = await retryDialog.findByRole("button", { name: "Retry same save" });
+  assert.equal((retryDialog.getByLabelText("Task role: Offline Builder").closest("fieldset") as HTMLFieldSetElement).disabled, true);
+  f.fireEvent.click(retry);
+  await f.waitFor(() => assert.equal(Boolean(f.page.queryByRole("dialog", { name: "Configure Task Agents" })), false));
+  assert.equal(attempts.length, 2); assert.equal(attempts[0], attempts[1]);
+  const recovered = await f.seed("GET", `/api/tasks/${f.firstTask.taskId}`, undefined, f.seedAuthorization) as TaskProjection;
+  assert.equal(recovered.taskRevision, saved.taskRevision + 1);
+  globalThis.fetch = dispatch;
+
+  // A concurrent definition update cannot be silently overwritten by the old
+  // assignment form. There is no automatic read-and-resubmit on conflict.
+  f.fireEvent.click(f.page.getByRole("button", { name: "Task Agents", exact: true }));
+  const staleDialog = f.within(await f.page.findByRole("dialog", { name: "Configure Task Agents" }));
+  await staleDialog.findByLabelText("Task role: Offline Builder");
+  const concurrent = await f.server.inject({ method: "PUT", url: `/api/tasks/${recovered.taskId}/definition`, headers: { authorization: f.seedAuthorization }, payload: {
+    ...recovered, goal: "A newer owner goal", expectedTaskRevision: recovered.taskRevision, operationId: "op_concurrent_assignment_test"
+  } });
+  assert.equal(concurrent.statusCode, 200, concurrent.body);
+  f.fireEvent.change(staleDialog.getByLabelText("Task role: Offline Builder"), { target: { value: "reviewer" } });
+  f.fireEvent.click(staleDialog.getByRole("button", { name: "Save assignments" }));
+  assert.match((await staleDialog.findByRole("alert")).textContent!, /revision.*may have changed/);
+  const preserved = await f.seed("GET", `/api/tasks/${recovered.taskId}`, undefined, f.seedAuthorization) as TaskProjection;
+  assert.equal(preserved.goal, "A newer owner goal");
+  assert.equal(preserved.assignments[0]!.role, "primary");
+
 });

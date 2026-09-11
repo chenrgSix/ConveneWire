@@ -5,12 +5,35 @@ are complete. QA-092 is now **ACTIVE** in [the task register](../TASKS.md), afte
 the deferred implementation boundary. This record preserves historical A/B
 observations separately from current V1 interaction and remaining physical gates.
 
-The later [WEB-087 installed acceptance](web-087-unified-native-workspace.md)
-supersedes the two-window presentation and retained-profile startup behavior
-described below. Its final source is `beb0f148`; earlier evidence stays attributed
-to its original binary. Broader physical and independent-owner gates remain.
+## Current acceptance baseline
 
-## Current V1 interaction
+The current installed macOS arm64 application is the WEB-088 build from clean
+source `76278906ab17a1614c2b20356168c8a2f6c1e1f3`, version `v0.0.0-local`.
+Its retained archive is
+`dist/local-node-web088-76278906/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`,
+SHA-256 `8891595f51cc9481a9f7283e81a7c7b28fbe2dd7b030d975fba196c744bf0b6e`.
+WEB-087 unified the main window and startup; WEB-088 aligned toolbar appearance.
+OPS-021 subsequently corrected packaging cleanup without changing the installed
+application. The older binaries below retain only their original historical
+observations and are not the baseline for further acceptance.
+
+On 2026-09-11 the owner authorized completing baseline alignment and the local
+workflow before returning for cross-Node and platform acceptance. This local
+pass uses the installed bundle with a disposable Node/configuration/Workspace
+and deterministic Codex/Pi executables. It covers native Agent setup, task/Run,
+Discussion, close/reopen, tray quit and recovery, with no external model calls.
+Current-source local evidence is in progress; the broader QA-092 gate stays open.
+The initial native pass configured two offline Agents, passed both native test
+runs, completed one default-Task Run and one Discussion with two contributions
+and one conclusion. It also reproduced an ordinary-Task onboarding defect:
+creation omitted assignments while the composer offered unassigned Agents.
+WEB-089 repairs that explicit assignment flow before the final local pass.
+The test fixture's bounded deadline expired during UI inspection and removed its
+owned processes and files; that expiry supplies no tray/quit/recovery evidence.
+One initial Agent-editor white page recovered through View/Reload and did not
+recur on the next two editor opens; this remains an observed, unconfirmed anomaly.
+
+## Historical V1 interaction
 
 The clean `41cd563f` package identified by QA-091 was extracted into a new private
 fixture and launched with explicit Node data, Bridge configuration and Workspace
@@ -36,7 +59,7 @@ focused checks, including real App/Local Node HTTP for both cards and the remote
 Bridge onboarding regression, pass. A final stricter URL-retention assertion also
 passes. The replacement package below contains this correction.
 
-## Current final artifact
+## Historical replacement artifact
 
 The replacement clean-source package is built from
 `9286835ad90dfa600601764f5ef0f4e0d1ae8ef8`:
@@ -46,8 +69,8 @@ Its size is 75,961,239 bytes and SHA-256 is
 [Package verification](evidence/qa092/v1-native-package.json) proves safe ZIP paths,
 all 6,215 extracted Hub files, exact clean source/version, native arm64 binaries
 and bundled Node 22.23.1/SQLite execution with an empty PATH. The earlier QA-091
-archive remains the source-specific automated-gate artifact; use this replacement
-for further manual acceptance. Subsequent evidence-only commits do not relabel it.
+archive remains the source-specific automated-gate artifact. This replacement
+was used for the observations below; subsequent commits do not relabel it.
 
 The replacement ran in a fresh, explicitly configured disposable native fixture.
 Its [corrected onboarding card](evidence/qa092/v1-native-onboarding-fixed.jpg)
@@ -69,7 +92,7 @@ extraction and data were removed. This fixture had no configured Agent process.
 These actions close the current-source window lifecycle gap and do not stand in
 for the remaining system-tray menu observations.
 
-## Authorized local installation
+## Historical authorized local installation
 
 On 2026-09-10 the owner explicitly requested a local update and startup. The
 verified `9286835a` replacement was installed in `/Applications/ConveneWire Bridge.app`,
@@ -92,7 +115,7 @@ gates. Earlier disposable acceptance data remains separate from this real profil
 
 ## Final acceptance procedure
 
-Use the exact replacement artifact and explicit disposable profiles for remaining
+Use the current acceptance baseline and explicit disposable profiles for remaining
 local observations. Do not launch an extracted app without its fixture arguments:
 the UI inspector can relaunch a stopped application with default configuration.
 Verify the owned process is alive before inspecting it. Preserve historical

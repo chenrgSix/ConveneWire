@@ -86,6 +86,23 @@ test("scoped composer drafts and explicit message recovery", async (t) => {
     settings = () => json({ room: { roomId: scope.roomId, teamId: scope.teamId }, participants: { agentIds: [builder.agentId, reviewer.agentId] } });
   });
   try {
+    await t.test("task assignments restrict suggestions and reject unassigned exact mentions without losing the draft", async () => {
+      const h = mount({ taskAgentIds: [builder.agentId] });
+      h.type("@");
+      assert.deepEqual(h.result.current.mentionOptions.map(({ agentId }) => agentId), [builder.agentId]);
+      for (const content of ["@Reviewer check", "@all check"]) {
+        h.type(content); await h.submit();
+        assert.equal(requests.length, 0);
+        assert.equal(h.result.current.messageContent, content);
+        assert.match(errors.at(-1)!, /not assigned to this Task/);
+      }
+      h.type("@Builder check"); await h.submit();
+      assert.equal(JSON.parse(requests[0]!.body!).mentionAgentId, builder.agentId);
+      h.type("plain human message"); await h.submit();
+      assert.equal(requests.length, 2);
+      assert.equal(JSON.parse(requests[1]!.body!).mentionAgentId, undefined);
+    });
+
     await t.test("User, Team, Room and Task switches restore only their own drafts and reload never sends", () => {
       const h = mount();
       h.type("original room draft");

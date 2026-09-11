@@ -1,8 +1,9 @@
 import { useEffect, useRef, type FormEvent } from "react";
 
 import { type Locale, type TranslationKey, translate } from "../../i18n.js";
-import type { AgentTask } from "../../models.js";
+import type { Agent, AgentTask } from "../../models.js";
 import { appendCriteriaTemplate, parseTaskCriteria } from "./task-criteria.js";
+import { TaskAssignmentFields, type TaskAssignmentInput } from "./TaskAssignmentFields.js";
 
 interface TaskSelectorProps {
   locale: Locale;
@@ -10,12 +11,14 @@ interface TaskSelectorProps {
   selectedTaskId: string | null;
   tasks: AgentTask[];
   onCreate: () => void;
+  onConfigureAgents?: () => void;
   onSelect: (taskId: string) => void;
 }
 
 export function TaskSelector({
   locale,
   onCreate,
+  onConfigureAgents,
   onSelect,
   selectedTask,
   selectedTaskId,
@@ -47,6 +50,9 @@ export function TaskSelector({
       <button onClick={onCreate} type="button">
         {locale === "zh-CN" ? "+ 新任务" : "+ New Task"}
       </button>
+      {selectedTask && !selectedTask.isDefault && onConfigureAgents && <button onClick={onConfigureAgents} type="button">
+        {locale === "zh-CN" ? "任务 Agent" : "Task Agents"}
+      </button>}
     </div>
   );
 }
@@ -63,6 +69,9 @@ interface TaskCreateDialogProps {
   onGoalChange: (value: string) => void;
   onSubmit: (event: FormEvent) => void | Promise<void>;
   onTitleChange: (value: string) => void;
+  agents?: Agent[];
+  assignments?: TaskAssignmentInput[];
+  onAssignmentsChange?: (value: TaskAssignmentInput[]) => void;
 }
 
 export function TaskCreateDialog({
@@ -76,7 +85,8 @@ export function TaskCreateDialog({
   onSubmit,
   onTitleChange,
   roomName,
-  title
+  title,
+  agents = [], assignments = [], onAssignmentsChange
 }: TaskCreateDialogProps) {
   const t = (key: TranslationKey) => translate(locale, key);
   const returnFocus = useRef(typeof document === "undefined" ? null : document.activeElement);
@@ -160,6 +170,7 @@ export function TaskCreateDialog({
             rows={4}
             value={goal}
           />
+          {onAssignmentsChange && <TaskAssignmentFields agents={agents} value={assignments} onChange={onAssignmentsChange} disabled={busy} locale={locale} />}
           {onCriteriaChange && <details className="task-delivery-options">
             <summary>{locale === "zh-CN" ? "交付要求（可选）" : "Delivery requirements (optional)"}</summary>
             <p>{locale === "zh-CN"

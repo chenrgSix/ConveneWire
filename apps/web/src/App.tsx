@@ -62,6 +62,8 @@ import {
 import { TaskClarifications } from "./features/task/TaskClarifications.js";
 import { MemoryCandidateReview } from "./features/task/MemoryCandidateReview.js";
 import { ArtifactPreviewPanel } from "./features/task/ArtifactPreviewPanel.js";
+import { TaskAssignmentDialog } from "./features/task/TaskAssignmentDialog.js";
+import type { TaskAssignmentInput } from "./features/task/TaskAssignmentFields.js";
 import { TaskCreateDialog, TaskSelector } from "./features/task/TaskControls.js";
 import { parseTaskCriteria } from "./features/task/task-criteria.js";
 import { TaskWorkDetail, type TaskWorkDetailTab } from "./features/work/TaskWorkDetail.js";
@@ -234,6 +236,9 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
   const [agentSetupTarget, setAgentSetupTarget] = useState<AgentSetupTarget | null>(null);
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [taskAssignments, setTaskAssignments] = useState<TaskAssignmentInput[]>([]);
+  const [taskAgentsOpen, setTaskAgentsOpen] = useState(false);
+  useEffect(() => { setTaskAssignments([]); setTaskAgentsOpen(false); }, [selectedRoomId, selectedTaskId]);
   const [lifecycleDialogOpen, setLifecycleDialogOpen] = useState(false);
   const [lifecycleTeams, setLifecycleTeams] = useState<Team[]>([]);
   const [lifecycleRooms, setLifecycleRooms] = useState<Room[]>([]);
@@ -471,6 +476,13 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     const visible = new Set(roomParticipants.agentIds);
     return agents.filter(({ agentId }) => visible.has(agentId));
   }, [agents, roomParticipants.agentIds]);
+  const taskAgents = useMemo(() => {
+    const assigned = selectedTask && !selectedTask.isDefault
+      ? new Set((selectedTask.assignments ?? []).map(({ agentId }) => agentId)) : null;
+    return roomAgents.filter((agent) => agent.enabled !== false && (!assigned || assigned.has(agent.agentId)));
+  }, [roomAgents, selectedTask]);
+  const readyTaskAgents = taskAgents.filter((agent) => agent.presence === "ready");
+  const taskNeedsAgents = Boolean(selectedTask && !selectedTask.isDefault && taskAgents.length === 0);
   const readyAgents = agents.filter((agent) => agent.enabled !== false && agent.presence === "ready").length;
   const readyRoomAgents = roomAgents.filter((agent) => agent.enabled !== false && agent.presence === "ready");
   const hasRealRoomReply = messages.some((message) => message.senderType === "agent" &&
@@ -548,6 +560,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     onError: (next) => { if (isCurrentSession()) setError(next); },
     onRoomStateChanged: refreshRoomState,
     roomAgents,
+    taskAgentIds: selectedTask && !selectedTask.isDefault ? (selectedTask.assignments ?? []).map(({ agentId }) => agentId) : undefined,
     roomAgentsReady: roomSettingsContext === roomContextRef.current,
     roomPolicy: selectedRoomPolicy,
     selectedTeamId,
@@ -1064,7 +1077,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
         `/api/rooms/${selectedRoomId}/tasks`,
         {
           method: "POST",
-          body: JSON.stringify({ title: taskTitle, goal: taskGoal, criteria: parseTaskCriteria(taskCriteria, locale) })
+          body: JSON.stringify({ title: taskTitle, goal: taskGoal, criteria: parseTaskCriteria(taskCriteria, locale), ...(taskAssignments.length ? { assignments: taskAssignments } : {}) })
         },
         session.token
       );
@@ -1078,6 +1091,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
       setTaskTitle("");
       setTaskGoal("");
       setTaskCriteria("");
+      setTaskAssignments([]);
       setTaskDialogOpen(false);
       if (originView === "work") openWorkbenchTask(task.taskId, selectedRoomId);
       else navigate({ taskId: task.taskId, workTaskId: undefined, view: "room" });
@@ -2041,18 +2055,23 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
           <div className="room-dock">
             {!hasRealRoomReply && (
               <div className="first-reply-guide" role="status">
-                <span>{readyRoomAgents.some((agent) => agent.integrationMode !== "fake")
+                <span>{taskNeedsAgents
+                  ? (locale === "zh-CN" ? "先为这个任务指派 Agent，再选择提问对象。" : "Assign Agents to this Task before asking one to work.")
+                  : readyTaskAgents.some((agent) => agent.integrationMode !== "fake")
                   ? (locale === "zh-CN" ? "下一步：选择一个 Agent，写下你的问题并发送，收到第一条真实回复。" : "Next: choose an Agent, write your question and send it to get a real reply.")
-                  : readyRoomAgents.length > 0
+                  : readyTaskAgents.length > 0
                     ? (locale === "zh-CN" ? "当前为演示体验，不会调用真实模型。准备好后可创建中央 Agent 或连接本机 Agent。" : "This is a demo, without real model calls. Add a Central or local Agent when you are ready.")
                     : (locale === "zh-CN" ? "聊天已经可以使用；让 Agent 回复需要先配置并授权到当前房间。" : "Chat is ready. To receive an Agent reply, configure one and grant it access to this Room.")}</span>
                 <button type="button" onClick={() => {
-                  const target = readyRoomAgents.find((agent) => agent.integrationMode !== "fake") ?? readyRoomAgents[0];
+                  if (taskNeedsAgents) { setTaskAgentsOpen(true); return; }
+                  const target = readyTaskAgents.find((agent) => agent.integrationMode !== "fake") ?? readyTaskAgents[0];
                   if (target) {
                     selectMention(target);
                     composerInputRef.current?.focus();
                   } else revealConnectionSetup();
-                }}>{readyRoomAgents.length > 0
+                }}>{taskNeedsAgents
+                  ? (locale === "zh-CN" ? "指派任务 Agent" : "Assign Task Agents")
+                  : readyTaskAgents.length > 0
                   ? (locale === "zh-CN" ? "选择 Agent 提问" : "Ask an Agent")
                   : (locale === "zh-CN" ? "配置 Agent" : "Set up an Agent")}</button>
               </div>
@@ -2111,6 +2130,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
               <TaskSelector
                 locale={locale}
                 onCreate={() => setTaskDialogOpen(true)}
+                onConfigureAgents={() => setTaskAgentsOpen(true)}
                 onSelect={(taskId) => navigate({ taskId: taskId ?? undefined })}
                 selectedTask={selectedTask}
                 selectedTaskId={selectedTaskId}
@@ -2248,9 +2268,17 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
           <button disabled={teamBusy} type="submit">{teamBusy ? t("creating") : t("createRoom")}</button>
         </form>
       </PanelDialog>}
+      {taskAgentsOpen && selectedTask && selectedRoom && session && <TaskAssignmentDialog
+        key={`${selectedTask.taskId}:${session.token}`} taskId={selectedTask.taskId} roomId={selectedRoom.roomId}
+        token={session.token} member={currentMember} agents={roomAgents} locale={locale}
+        onClose={() => setTaskAgentsOpen(false)} onChanged={async () => { await refreshRoomState(); await refreshWorkbenchState(); }}
+      />}
       {taskDialogOpen && selectedRoom && (
         <TaskCreateDialog
           busy={taskBusy}
+          agents={roomAgents}
+          assignments={taskAssignments}
+          onAssignmentsChange={setTaskAssignments}
           criteria={taskCriteria}
           goal={taskGoal}
           locale={locale}

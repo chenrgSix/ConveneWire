@@ -79,6 +79,7 @@ interface RoomComposerInput {
   onError: (error: string | null) => void;
   onRoomStateChanged: () => Promise<void>;
   roomAgents: Agent[];
+  taskAgentIds?: string[] | undefined;
   roomAgentsReady?: boolean;
   roomPolicy: RoomCollaborationPolicy;
   selectedTeamId?: string | null;
@@ -97,6 +98,7 @@ export function useRoomComposer(input: RoomComposerInput) {
     onError,
     onRoomStateChanged,
     roomAgents,
+    taskAgentIds,
     roomAgentsReady = true,
     roomPolicy,
     selectedTeamId,
@@ -222,13 +224,14 @@ export function useRoomComposer(input: RoomComposerInput) {
     if (!mentionSearch) return [];
     const query = mentionSearch.query.toLocaleLowerCase(locale);
     return roomAgents.filter((agent) =>
+      agent.enabled !== false && (!taskAgentIds || taskAgentIds.includes(agent.agentId)) &&
       !mentionAgentIds.includes(agent.agentId) && (
         agent.name.toLocaleLowerCase(locale).includes(query) ||
         agentRoleLabel(agent).toLocaleLowerCase(locale).includes(query) ||
         (agent.configuredModel ?? "").toLocaleLowerCase(locale).includes(query)
       )
     ).slice(0, 8);
-  }, [agentRoleLabel, locale, mentionAgentIds, mentionSearch, roomAgents]);
+  }, [agentRoleLabel, locale, mentionAgentIds, mentionSearch, roomAgents, taskAgentIds]);
   const exactMentionCommands = useMemo(
     () => resolveExactMentionCommands(messageContent, roomAgents, agents),
     [agents, messageContent, roomAgents]
@@ -292,6 +295,12 @@ export function useRoomComposer(input: RoomComposerInput) {
     const resolvedMentionAgentIds = exactCommands.usesAll
       ? exactCommands.agentIds
       : [...new Set([...mentionAgentIds, ...exactCommands.agentIds])];
+    if (taskAgentIds && resolvedMentionAgentIds.some((id) => !taskAgentIds.includes(id))) {
+      onError(locale === "zh-CN"
+        ? "部分提及的 Agent 尚未指派给这个任务。请先配置“任务 Agent”，或明确选择已指派的 Agent；@all 会包含整个房间。"
+        : "Some mentioned Agents are not assigned to this Task. Configure Task Agents or explicitly choose assigned Agents; @all includes the whole Room.");
+      return;
+    }
     if (exactCommands.usesAll && !roomPolicy.allowAll) {
       onError(locale === "zh-CN"
         ? "当前房间设置不允许使用 @all。"
