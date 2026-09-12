@@ -42,6 +42,14 @@ Its health probe validates local listeners and control TLS only; it cannot
 establish public or business readiness. Full delivery and evidence status remain
 in TASKS.md.
 
+Local Relay configuration and pending decisions use the native private root.
+Direct and Relay settings share one serialized revision boundary, including
+cross-mode pending changes. Startup validates both decisions before replacing
+either configuration pointer; interrupted commits retain the original recovery
+semantics. Disabling access preserves the fixed origin and does not authorize a
+silent switch to another domain. A changed CA terms URL requires fresh Owner
+review and retains the existing account and address.
+
 ## Local Node distribution
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by

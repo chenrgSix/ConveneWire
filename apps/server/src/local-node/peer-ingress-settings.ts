@@ -4,6 +4,7 @@ import path from "node:path";
 import { parsePeerJson } from "@convene-wire/contracts/peer-json";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { loadPeerIngressMaterial, parsePeerIngressConfiguration, readPeerPrivateFile, validatePeerIngressCertificate, type PeerIngressMaterial } from "./peer-ingress-configuration.js";
+import { networkSettingsRevision, withNetworkSettingsLock } from "./network-settings-lock.js";
 
 const pendingFile = "peer-ingress.pending.json";
 const invalid = () => new Error("本机网络配置无效或已变化，请刷新后重新审阅。");
@@ -99,19 +100,36 @@ function publicConfiguration(configuration: Configuration | null, cert: Buffer) 
   return {enabled: configuration.enabled, origin: configuration.origin, listenHost: configuration.listenHost, certificateFingerprint, certificateExpiresAt};
 }
 
+async function assertRelayBoundary(root: string, next: Configuration): Promise<void> {
+  const relayRoot = path.join(root, "relay"), staged = path.join(root, "relay.pending.json");
+  const assertCompatible = (input: unknown, message: string) => {
+    const configuration = object(input, ["schemaVersion", "profile", "origin", "enabled", "termsAccepted"]);
+    if (configuration.schemaVersion !== 1 || typeof configuration.enabled !== "boolean" || configuration.termsAccepted !== true) throw invalid();
+    if (configuration.origin !== next.origin || (next.enabled && configuration.enabled)) throw new Error(message);
+  };
+  if (await exists(path.join(relayRoot, "config.json"))) {
+    await directory(relayRoot);
+    assertCompatible(parsePeerJson(await readPeerPrivateFile(relayRoot, "config.json", 128 * 1024)), "此 Node 已绑定便捷接入地址，请先按停机流程处理原有邀请和成员关系。");
+  }
+  if (await exists(staged)) {
+    const value = object(parsePeerJson(await readPeerPrivateFile(root, "relay.pending.json", 128 * 1024)), ["schemaVersion", "baseDigest", "saved"]);
+    assertCompatible(value.saved, "已有冲突的待生效便捷接入配置，请先取消该配置。");
+  }
+}
+
 /** Only the live native Hub under its installation lease constructs this
  * service. Mutations serialize locally; no browser/Peer can supply a root. */
 export class PeerIngressSettings {
-  private queue: Promise<unknown> = Promise.resolve();
   public constructor(private readonly root: string, private readonly running?: PeerIngressMaterial) {
     if (!path.isAbsolute(root)) throw invalid();
   }
   private serialize<T>(work: () => Promise<T>): Promise<T> {
-    const result = this.queue.then(work); this.queue = result.catch(() => {}); return result;
+    return withNetworkSettingsLock(this.root, work);
   }
   private async state() {
     const current = await snapshot(this.root), next = await pending(this.root);
-    return {current, next, revisionDigest: peerDigest({current: current.digest, pending: next ? peerDigest(next) : null})};
+    const relayRevision = await networkSettingsRevision(this.root, "relay");
+    return {current, next, revisionDigest: peerDigest({current: current.digest, pending: next ? peerDigest(next) : null, relayRevision})};
   }
   public status() { return this.serialize(async () => {
     const state = await this.state();
@@ -124,6 +142,7 @@ export class PeerIngressSettings {
     if (v.revisionDigest !== state.revisionDigest) throw invalid();
     const next = candidate(v.selection, state.current.digest, now);
     this.assertOrigin(state.current.configuration, next.configuration);
+    await assertRelayBoundary(this.root, next.configuration);
     return {revisionDigest: state.revisionDigest, reviewDigest: peerDigest(next), ...publicConfiguration(next.configuration, Buffer.from(next.certificatePem))!};
   }); }
   private assertOrigin(previous: Configuration | null, next: Configuration) {
@@ -134,6 +153,7 @@ export class PeerIngressSettings {
     const v = object(input, ["revisionDigest", "reviewDigest", "selection"]), state = await this.state();
     const next = candidate(v.selection, state.current.digest, now), digest = peerDigest(next);
     this.assertOrigin(state.current.configuration, next.configuration);
+    await assertRelayBoundary(this.root, next.configuration);
     if (v.reviewDigest !== digest || (v.revisionDigest !== state.revisionDigest && (!state.next || peerDigest(state.next) !== digest))) throw invalid();
     authorize();
     if (!state.next || peerDigest(state.next) !== digest) await replacePrivate(this.root, pendingFile, Buffer.from(JSON.stringify(next)));
@@ -152,30 +172,43 @@ export class PeerIngressSettings {
 /** Called before starting either listener, under the native installation lease.
  * The config pointer is the sole commit point. Failure never enables a fallback
  * listener or deletes the old material; the stopped Owner can repair the root. */
-export async function applyPendingPeerIngress(root: string, now = new Date()): Promise<void> {
+export function applyPendingPeerIngress(root: string, now = new Date()): Promise<void> {
+  return withNetworkSettingsLock(root, async () => { const commit = await preparePendingPeerIngress(root, now); await commit(); });
+}
+
+/** Prepare under the shared network lock. The combined native startup validates
+ * both plans before invoking either commit closure. */
+export async function preparePendingPeerIngress(root: string, now = new Date()): Promise<() => Promise<void>> {
   await directory(root);
   const next = await pending(root);
-  if (!next) return;
+  if (!next) {
+    const current = await loadPeerIngressMaterial(root, now);
+    if (current) await assertRelayBoundary(root, current.configuration);
+    return async () => {};
+  }
   selection({enabled: next.configuration.enabled, origin: next.configuration.origin, listenHost: next.configuration.listenHost, certificatePem: next.certificatePem, privateKeyPem: next.privateKeyPem}, now);
   const current = await snapshot(root), config = next.configuration;
   const alreadyApplied = peerDigest(current.configuration) === peerDigest(config) && (!config.enabled ||
     (current.cert.equals(Buffer.from(next.certificatePem)) && current.key.equals(Buffer.from(next.privateKeyPem))));
-  if (!alreadyApplied) {
-    if (current.digest !== next.baseDigest || (current.configuration && current.configuration.origin !== config.origin)) throw invalid();
-    const destination = path.join(root, "peer-ingress"), initial = current.configuration === null;
-    const target = initial ? path.join(root, `.peer-ingress-${randomBytes(16).toString("hex")}.tmp`) : destination;
-    if (initial) await mkdir(target, {mode: 0o700});
-    try {
-      await directory(target);
-      if (config.enabled) {
-        await immutablePrivate(target, config.certificateFile, Buffer.from(next.certificatePem));
-        await immutablePrivate(target, config.privateKeyFile, Buffer.from(next.privateKeyPem));
-      }
-      await replacePrivate(target, "config.json", Buffer.from(JSON.stringify(config)));
-      if (initial) await rename(target, destination);
-    } finally { if (initial) await rm(target, {recursive: true, force: true}); }
-    await syncDirectory(root);
-  }
-  await loadPeerIngressMaterial(root, now);
-  await unlink(path.join(root, pendingFile)); await syncDirectory(root);
+  await assertRelayBoundary(root, config);
+  if (!alreadyApplied && (current.digest !== next.baseDigest || (current.configuration && current.configuration.origin !== config.origin))) throw invalid();
+  return async () => {
+    if (!alreadyApplied) {
+      const destination = path.join(root, "peer-ingress"), initial = current.configuration === null;
+      const target = initial ? path.join(root, `.peer-ingress-${randomBytes(16).toString("hex")}.tmp`) : destination;
+      if (initial) await mkdir(target, {mode: 0o700});
+      try {
+        await directory(target);
+        if (config.enabled) {
+          await immutablePrivate(target, config.certificateFile, Buffer.from(next.certificatePem));
+          await immutablePrivate(target, config.privateKeyFile, Buffer.from(next.privateKeyPem));
+        }
+        await replacePrivate(target, "config.json", Buffer.from(JSON.stringify(config)));
+        if (initial) await rename(target, destination);
+      } finally { if (initial) await rm(target, {recursive: true, force: true}); }
+      await syncDirectory(root);
+    }
+    await loadPeerIngressMaterial(root, now);
+    await unlink(path.join(root, pendingFile)); await syncDirectory(root);
+  };
 }
