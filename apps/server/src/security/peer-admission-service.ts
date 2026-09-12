@@ -45,7 +45,8 @@ export class PeerAdmissionService {
   private readonly memberships: PeerMembershipRepository;
   private readonly core: CoreRepository;
   public constructor(private readonly database: Database.Database, private readonly auth: AuthService,
-    private readonly authority: AuthorityService, private readonly origin = authority.browserOrigin) {
+    private readonly authority: AuthorityService, private readonly origin = authority.browserOrigin,
+    private readonly ingressReady: () => boolean = () => true) {
     this.memberships = new PeerMembershipRepository(database);
     this.core = new CoreRepository(database);
   }
@@ -65,6 +66,7 @@ export class PeerAdmissionService {
         const { invitation } = this.memberships.requireInvitationSecret(previous.invitation_id, secret, now);
         return { schemaVersion: 1, invitation, secret };
       }
+      if (!this.ingressReady()) throw new Error("便捷接入尚未就绪，请等待网络连接和证书准备完成后再创建邀请。");
       const team = this.core.getTeam(input.scope.teamId)!;
       const room = input.scope.roomId ? this.core.getRoom(input.scope.roomId) : undefined;
       const invitation = { schemaVersion: 1 as const, invitationId: createOpaqueId("peerinvite"),
@@ -84,6 +86,7 @@ export class PeerAdmissionService {
     this.requireOwner(actor, teamId);
     let invitationSupported = true;
     try { assertPeerOrigin(this.origin); } catch { invitationSupported = false; }
+    invitationSupported = invitationSupported && this.ingressReady();
     const invitations = (this.database.prepare(`SELECT invitation_id FROM peer_invitations
       WHERE json_extract(invitation_json, '$.scope.teamId') = ? ORDER BY created_at DESC, invitation_id`)
       .all(teamId) as Array<{ invitation_id: string }>).map(({ invitation_id }) => {

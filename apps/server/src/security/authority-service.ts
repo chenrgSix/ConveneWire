@@ -15,6 +15,12 @@ const validRequest = validator.getSchema(`${schema.$id}#/$defs/AuthorityProofReq
 const validPayload = validator.getSchema(`${schema.$id}#/$defs/AuthorityProofPayload`)!;
 interface Identity { node_id: string; seed_hex: string | null; public_key: string | null; kind: "unbound" | "central" | "local" }
 
+const localAuthoritySeed = (local: LocalNodeLaunch) => createHash("sha256").update("convenewire.authority.local-seed.v1\0").update(local.identity.secret).digest("hex");
+export function localAuthorityPrivateKey(local: LocalNodeLaunch): KeyObject {
+  return createPrivateKey({key: Buffer.concat([Buffer.from("302e020100300506032b657004220420", "hex"),
+    Buffer.from(localAuthoritySeed(local), "hex")]), format: "der", type: "pkcs8"});
+}
+
 /** Stable Node signer. Callers must establish the authority represented by a proof. */
 export class AuthorityService {
   public readonly nodeId: string;
@@ -25,7 +31,7 @@ export class AuthorityService {
     const identity = database.transaction(() => {
       let row = database.prepare("SELECT * FROM authority_identity WHERE singleton = 1").get() as Identity | undefined;
       if (!row) throw new Error("Authority identity is missing; restore the original identity");
-      const localSeed = local && createHash("sha256").update("convenewire.authority.local-seed.v1\0").update(local.identity.secret).digest("hex");
+      const localSeed = local && localAuthoritySeed(local);
       const seed = localSeed ?? row.seed_hex;
       if (!seed || !/^[0-9a-f]{64}$/u.test(seed)) throw new Error("Authority signing identity is unavailable");
       const key = createPrivateKey({ key: Buffer.concat([Buffer.from("302e020100300506032b657004220420", "hex"), Buffer.from(seed, "hex")]), format: "der", type: "pkcs8" });

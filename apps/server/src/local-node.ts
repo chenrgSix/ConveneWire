@@ -3,12 +3,16 @@ import { resolveBuildIdentity } from "./observability/build-identity.js";
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createPublicKey } from "node:crypto";
 import type { LocalNodeReady } from "@convene-wire/contracts/local-node";
 import { createServerApp } from "./app.js";
 import { parseLocalNodeLaunch } from "./local-node/local-node-service.js";
 import { loadPeerIngressMaterial } from "./local-node/peer-ingress-configuration.js";
 import { PeerIngress } from "./local-node/peer-ingress.js";
-import { applyPendingPeerIngress, PeerIngressSettings } from "./local-node/peer-ingress-settings.js";
+import { PeerIngressSettings } from "./local-node/peer-ingress-settings.js";
+import { localAuthorityPrivateKey } from "./security/authority-service.js";
+import { applyPendingNetworkSettings, disabledRelay, loadRelayProfile, RelaySettings } from "./local-node/relay-settings.js";
+import { RelayRuntime } from "./local-node/relay-runtime.js";
 
 // Secrets travel only over the inherited pipe. EOF is a shutdown request and
 // also handles a supervisor crash on platforms without parent-death signals.
@@ -18,9 +22,11 @@ const input = createInterface({ input: process.stdin, crlfDelay: Infinity });
 let closeRequested = false;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 let shutdown: Promise<void> | undefined;
+let relayRuntime: RelayRuntime | undefined;
 const stop = () => {
   closeRequested = true;
   if (app) shutdown ??= app.close().then(() => { input.close(); process.stdin.destroy(); });
+  else if (relayRuntime) return relayRuntime.close();
   return shutdown;
 };
 process.on("SIGTERM", () => { void stop(); });
@@ -34,16 +40,27 @@ input.on("line", (line) => {
     if (line.length > 4096) throw new Error("Local Node launch message is too large");
     const launch = parseLocalNodeLaunch(JSON.parse(line));
     if (closeRequested) return;
-    await applyPendingPeerIngress(root);
+    const relayKey = localAuthorityPrivateKey(launch);
+    const relayPublicKey = createPublicKey(relayKey).export({format: "der", type: "spki"}).subarray(-32).toString("base64url");
+    const relayConfiguration = await applyPendingNetworkSettings(root, relayPublicKey);
     const ingressMaterial = await loadPeerIngressMaterial(root);
-    const peerIngress = ingressMaterial ? new PeerIngress(ingressMaterial) : undefined;
+    const relayProfile = await loadRelayProfile(root, fileURLToPath(new URL("../../../relay-service.json", import.meta.url)));
+    if (relayConfiguration?.enabled) {
+      if (ingressMaterial?.configuration.enabled) throw new Error("Only one public Node ingress may be enabled");
+      relayRuntime = new RelayRuntime(root, relayConfiguration, launch.identity.nodeId, relayKey);
+      await relayRuntime.initialize();
+    }
+    const peerIngress = relayRuntime?.ingress ?? (ingressMaterial ? new PeerIngress(ingressMaterial) : undefined);
     const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
-    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, peerIngressSettings: new PeerIngressSettings(root, ingressMaterial), localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
+    app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, peerIngressSettings: new PeerIngressSettings(root, ingressMaterial),
+      relaySettings: new RelaySettings(root, relayPublicKey, relayProfile, () => relayRuntime?.status() ?? disabledRelay()),
+      ...(relayRuntime ? {relayLifecycle: relayRuntime} : {}), localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
       ...(peerIngress ? { peerIngress } : {}), webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });
     if (closeRequested) { await stop(); return; }
     await peerIngress?.listen(app.server);
+    relayRuntime?.start();
     if (closeRequested) { await stop(); return; }
     const ready: LocalNodeReady = { schemaVersion: 1, nodeId: launch.identity.nodeId, origin, launchProof: launch.controlToken };
     process.stdout.write(`${JSON.stringify(ready)}\n`);

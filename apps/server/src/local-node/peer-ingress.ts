@@ -1,6 +1,7 @@
 import https from "node:https";
 import type { IncomingMessage, Server as HttpServer } from "node:http";
 import type { Duplex } from "node:stream";
+import type { SecureContext } from "node:tls";
 import type { PeerIngressMaterial } from "./peer-ingress-configuration.js";
 import { parsePeerIngressConfiguration, validatePeerIngressCertificate } from "./peer-ingress-configuration.js";
 
@@ -24,15 +25,25 @@ export class PeerIngress {
   private readonly abort = new AbortController();
   private stopping: Promise<void> | undefined;
 
-  public constructor(private readonly material: PeerIngressMaterial) {
+  public constructor(private readonly material: PeerIngressMaterial, private readonly tunnel?: {
+    context(): SecureContext | null; ready(): boolean;
+  }) {
     this.configuration = Object.freeze(parsePeerIngressConfiguration(material.configuration));
     if (this.configuration.enabled) {
-      if (!material.tls) throw new Error("Peer HTTPS certificate is required");
-      validatePeerIngressCertificate(this.configuration, material.tls.cert, material.tls.key);
+      if (!material.tls && !tunnel) throw new Error("Peer HTTPS certificate is required");
+      if (material.tls) validatePeerIngressCertificate(this.configuration, material.tls.cert, material.tls.key);
     }
   }
 
   public kind(request: IncomingMessage): PeerIngressRequestKind | undefined { return this.requests.get(request); }
+  public invitationReady(): boolean { return this.configuration.enabled && !this.stopping && (!this.tunnel || this.tunnel.ready()); }
+
+  /** Only the owned Relay connector can supply an encrypted byte stream. These
+   * bytes enter the same TLS/parser/authentication boundary as direct sockets. */
+  public acceptTunnel(stream: Duplex): void {
+    if (!this.tunnel || !this.listener || this.stopping || this.sockets.size >= 256) { stream.destroy(); return; }
+    this.listener.emit("connection", stream);
+  }
 
   private classify(request: IncomingMessage, upgrade: boolean): PeerIngressRequestKind | undefined {
     const h = request.headers, rawPath = request.url?.split("?", 1)[0];
@@ -66,7 +77,11 @@ export class PeerIngress {
     if (!this.configuration.enabled) return;
     if (this.attached || !target.listening || this.stopping) throw new Error("Peer HTTPS requires one running local Hub");
     this.attached = true;
-    const listener = https.createServer({ ...this.material.tls!, minVersion: "TLSv1.2", maxHeaderSize: 16 * 1024 }, (request, response) => {
+    const listener = https.createServer({ ...this.material.tls, minVersion: "TLSv1.2", maxHeaderSize: 16 * 1024,
+      ...(this.tunnel ? {SNICallback: (hostname: string, callback: (error: Error | null, context?: SecureContext) => void) => {
+        const context = hostname === new URL(this.configuration.origin).hostname ? this.tunnel!.context() : null;
+        callback(context ? null : new Error("Node certificate is not ready"), context ?? undefined);
+      }} : {})}, (request, response) => {
       const kind = this.classify(request, false);
       if (!kind || this.stopping) {
         response.writeHead(403, { "content-type": "application/json", "cache-control": "no-store", connection: "close" });
@@ -85,6 +100,7 @@ export class PeerIngress {
       this.requests.set(request, kind);
       if (!target.emit("upgrade", request, socket, head)) socket.destroy();
     });
+    if (this.tunnel) return;
     await new Promise<void>((resolve, reject) => {
       const stopped = () => reject(new Error("Peer HTTPS startup stopped"));
       const failed = (error: Error) => { listener.removeListener("close", stopped); reject(error); };

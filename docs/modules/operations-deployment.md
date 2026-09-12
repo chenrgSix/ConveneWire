@@ -50,6 +50,22 @@ semantics. Disabling access preserves the fixed origin and does not authorize a
 silent switch to another domain. A changed CA terms URL requires fresh Owner
 review and retains the existing account and address.
 
+The native Hub now owns `RelayRuntime`, combining the signed outbound connector,
+Node-owned ACME account/certificate cache and the existing Peer ingress. Only
+the local Owner can read or review/save/discard Relay settings. Certificates
+use private atomic files, exact-host validation and bounded same-CA operations;
+an uncertain order is reconciled without blindly creating another order.
+Renewal retains a still-valid certificate. Corrupt or expired certificate state
+fails external readiness while the local workspace remains available.
+
+Readiness requires the control connection, a currently valid certificate and a
+recent signed Node identity response through the actual public route. An
+interrupted connection immediately retires readiness and destroys its stream
+epoch. Invitations remain unavailable until the route is verified. Shutdown
+cancels network work before closing the Hub. Focused settings, ACME, connector,
+actual Relay HTTP/WS and negative ingress tests cover these boundaries; the
+native bundle tests exercise the production dependency closure.
+
 ## Local Node distribution
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by

@@ -263,6 +263,8 @@ export interface ServerAppOptions {
   localNode?: LocalNodeLaunch;
   localNodeSpaceDirectory?: string;
   peerIngressSettings?: import("./local-node/peer-ingress-settings.js").PeerIngressSettings;
+  relaySettings?: import("./local-node/relay-settings.js").RelaySettings;
+  relayLifecycle?: {close(): Promise<void>};
   peerIngress?: PeerIngress;
   anonymousRateLimit?: {
     maximumAttempts: number;
@@ -335,7 +337,7 @@ export async function createServerApp(
   const auth = new AuthService(database, clock);
   let localNode: LocalNodeService | undefined;
   try {
-    if ((options.peerIngress || options.peerIngressSettings) && (!options.localNode || options.trustProxyHops)) throw new Error("Peer HTTPS ingress requires a native Local Node without proxy trust");
+    if ((options.peerIngress || options.peerIngressSettings || options.relaySettings || options.relayLifecycle) && (!options.localNode || options.trustProxyHops)) throw new Error("Peer HTTPS ingress requires a native Local Node without proxy trust");
     if (options.localNode) {
       if (options.webAuth && options.webAuth.mode !== "local") throw new Error("Local Node requires local Web auth");
       localNode = new LocalNodeService(database, core, auth, options.localNode, options.clock?.() ?? new Date().toISOString(), options.localNodeSpaceDirectory);
@@ -359,7 +361,8 @@ export async function createServerApp(
   let authority: AuthorityService;
   try { authority = new AuthorityService(database, localNode?.origin ?? trustedOrigins?.browserOrigin ?? "", options.localNode); }
   catch (error) { database.close(); throw error; }
-  const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin);
+  const peerAdmission = new PeerAdmissionService(database, auth, authority, options.peerIngress?.configuration.origin,
+    options.peerIngress ? () => options.peerIngress!.invitationReady() : options.localNode ? () => false : undefined);
   const peerRuntime = new PeerRuntimeSessions(peerAdmission, authority, teamId => peerPresence.refresh(clock(), teamId));
   const peerPresence = new PeerPresenceService(database, peerRuntime, teamId => teamChanges.notify(teamId));
   const deploymentTrust = createDeploymentTrustProvider(
@@ -1195,6 +1198,7 @@ export async function createServerApp(
   });
 
   app.addHook("preClose", async () => {
+    await options.relayLifecycle?.close();
     await options.peerIngress?.close();
     hostedAgents.shutdown();
   });
@@ -1289,6 +1293,7 @@ export async function createServerApp(
     authority,
     ...(localNode ? { localNode } : {}),
     ...(options.peerIngressSettings ? { peerIngressSettings: options.peerIngressSettings } : {}),
+    ...(options.relaySettings ? { relaySettings: options.relaySettings } : {}),
     app,
     artifactContentBinding,
     artifactDeliveries,
