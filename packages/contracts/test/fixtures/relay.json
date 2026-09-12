@@ -1,0 +1,2082 @@
+{
+  "seed": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "relayOrigin": "https://relay.example.test",
+  "nodeDomain": "nodes.example.test",
+  "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "nodeId": "node_relayfixture01",
+  "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+  "transcript": "convenewire.relay.register.v1\nhttps://relay.example.test\nnodes.example.test\nAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\nnode_relayfixture01\n11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo\n",
+  "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw",
+  "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+  "profile": {
+    "schemaVersion": 1,
+    "id": "fixture-relay",
+    "displayName": "Fixture Relay",
+    "relayOrigin": "https://relay.example.test",
+    "nodeDomain": "nodes.example.test",
+    "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+    "termsUrl": "https://relay.example.test/terms"
+  },
+  "challenge": {
+    "schemaVersion": 1,
+    "type": "challenge",
+    "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+    "expiresAt": "2026-09-12T00:00:30.000Z",
+    "relayOrigin": "https://relay.example.test",
+    "nodeDomain": "nodes.example.test"
+  },
+  "register": {
+    "schemaVersion": 1,
+    "type": "register",
+    "nodeId": "node_relayfixture01",
+    "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+    "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+  },
+  "registered": {
+    "schemaVersion": 1,
+    "type": "registered",
+    "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+    "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "open": {
+    "schemaVersion": 1,
+    "type": "open",
+    "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+    "kind": "tls"
+  },
+  "cases": [
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": true,
+      "description": "RelayServiceProfile valid"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms",
+        "unknown": true
+      },
+      "valid": false,
+      "description": "RelayServiceProfile closed unknown"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires schemaVersion"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires id"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires displayName"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires relayOrigin"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires nodeDomain"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires acmeDirectoryUrl"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile requires termsUrl"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 2,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile wrong version"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": true,
+      "description": "RelayChallenge valid"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "unknown": true
+      },
+      "valid": false,
+      "description": "RelayChallenge closed unknown"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires schemaVersion"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires type"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires nonce"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires expiresAt"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires relayOrigin"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge requires nodeDomain"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "peer.connect",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge wrong type"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 2,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge wrong version"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": true,
+      "description": "RelayRegister valid"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw",
+        "unknown": true
+      },
+      "valid": false,
+      "description": "RelayRegister closed unknown"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister requires schemaVersion"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister requires type"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister requires nodeId"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister requires publicKey"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+      },
+      "valid": false,
+      "description": "RelayRegister requires signature"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "peer.connect",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister wrong type"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 2,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister wrong version"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": true,
+      "description": "RelayRegistered valid"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "unknown": true
+      },
+      "valid": false,
+      "description": "RelayRegistered closed unknown"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered requires schemaVersion"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered requires type"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered requires hostname"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayRegistered requires sessionToken"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "peer.connect",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered wrong type"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 2,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered wrong version"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": true,
+      "description": "RelayOpen valid"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls",
+        "unknown": true
+      },
+      "valid": false,
+      "description": "RelayOpen closed unknown"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen requires schemaVersion"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen requires type"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen requires streamId"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
+      },
+      "valid": false,
+      "description": "RelayOpen requires kind"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "peer.connect",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen wrong type"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 2,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen wrong version"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "http01"
+      },
+      "valid": true,
+      "description": "HTTP01 open"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tcp"
+      },
+      "valid": false,
+      "description": "no arbitrary TCP targets"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls",
+        "target": "127.0.0.1:1234"
+      },
+      "valid": false,
+      "description": "no arbitrary target"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "m21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "derived hostname prefix"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "N21FE31DFA154A261626BF854046FD2271B7BED4B.NODES.EXAMPLE.TEST",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "hostname canonical lowercase"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "服务测试",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": true,
+      "description": "Unicode display is bounded metadata"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "\nservice",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "display control denied"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms",
+        "ownerToken": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
+      },
+      "valid": false,
+      "description": "profile contains no credential"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "UPPER",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "stable lowercase profile ID"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile display bounded"
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "localhost",
+      "valid": false,
+      "description": "domain rejected \"localhost\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "localhost",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"localhost\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "127.0.0.1",
+      "valid": false,
+      "description": "domain rejected \"127.0.0.1\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "127.0.0.1",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"127.0.0.1\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "0x7f.0.0.1",
+      "valid": false,
+      "description": "domain rejected \"0x7f.0.0.1\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "0x7f.0.0.1",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"0x7f.0.0.1\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "[::1]",
+      "valid": false,
+      "description": "domain rejected \"[::1]\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "[::1]",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"[::1]\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "Nodes.example.test",
+      "valid": false,
+      "description": "domain rejected \"Nodes.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "Nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"Nodes.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "nodes.example.test.",
+      "valid": false,
+      "description": "domain rejected \"nodes.example.test.\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test.",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"nodes.example.test.\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "*.example.test",
+      "valid": false,
+      "description": "domain rejected \"*.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "*.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"*.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "_nodes.example.test",
+      "valid": false,
+      "description": "domain rejected \"_nodes.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "_nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"_nodes.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "-nodes.example.test",
+      "valid": false,
+      "description": "domain rejected \"-nodes.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "-nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"-nodes.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "nodes-.example.test",
+      "valid": false,
+      "description": "domain rejected \"nodes-.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes-.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"nodes-.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "nodes..test",
+      "valid": false,
+      "description": "domain rejected \"nodes..test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes..test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"nodes..test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "https://nodes.example.test",
+      "valid": false,
+      "description": "domain rejected \"https://nodes.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "https://nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"https://nodes.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "node\n.example.test",
+      "valid": false,
+      "description": "domain rejected \"node\\n.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "node\n.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"node\\n.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "你好.example.test",
+      "valid": false,
+      "description": "domain rejected \"你好.example.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "你好.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"你好.example.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test",
+      "valid": false,
+      "description": "domain rejected \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddd",
+      "valid": false,
+      "description": "domain rejected \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddd\""
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddd",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "profile domain rejected \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddd\""
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "nodes.example.test",
+      "valid": true,
+      "description": "domain accepted nodes.example.test"
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "xn--fiqs8s.example.test",
+      "valid": true,
+      "description": "domain accepted xn--fiqs8s.example.test"
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddd",
+      "valid": true,
+      "description": "domain accepted aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddd"
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "http://relay.example.test",
+      "valid": false,
+      "description": "origin rejected \"http://relay.example.test\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "http://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"http://relay.example.test\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "wss://relay.example.test",
+      "valid": false,
+      "description": "origin rejected \"wss://relay.example.test\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "wss://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"wss://relay.example.test\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://Relay.example.test",
+      "valid": false,
+      "description": "origin rejected \"https://Relay.example.test\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://Relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://Relay.example.test\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test/",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test/\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test/",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test/\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test/path",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test/path\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test/path",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test/path\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test?x",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test?x\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test?x",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test?x\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test#x",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test#x\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test#x",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test#x\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://u:p@relay.example.test",
+      "valid": false,
+      "description": "origin rejected \"https://u:p@relay.example.test\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://u:p@relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://u:p@relay.example.test\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:443",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test:443\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test:443",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test:443\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:0443",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test:0443\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test:0443",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test:0443\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:0",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test:0\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test:0",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test:0\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:65536",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test:65536\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test:65536",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test:65536\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://127.0.0.1",
+      "valid": false,
+      "description": "origin rejected \"https://127.0.0.1\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://127.0.0.1",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://127.0.0.1\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://[::1]",
+      "valid": false,
+      "description": "origin rejected \"https://[::1]\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://[::1]",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://[::1]\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://localhost",
+      "valid": false,
+      "description": "origin rejected \"https://localhost\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://localhost",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://localhost\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test.",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test.\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test.",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test.\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test\\other",
+      "valid": false,
+      "description": "origin rejected \"https://relay.example.test\\\\other\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test\\other",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://relay.example.test\\\\other\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "valid": false,
+      "description": "origin rejected \"https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\""
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "challenge origin rejected \"https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\""
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test",
+      "valid": true,
+      "description": "origin accepted https://relay.example.test"
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:444",
+      "valid": true,
+      "description": "origin accepted https://relay.example.test:444"
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:65535",
+      "valid": true,
+      "description": "origin accepted https://relay.example.test:65535"
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test:1",
+      "valid": true,
+      "description": "origin accepted https://relay.example.test:1"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "http://ca.example.test/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected http://ca.example.test/directory"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://u:p@ca.example.test/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://u:p@ca.example.test/directory"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test:443/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://ca.example.test:443/directory"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/directory#x",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://ca.example.test/directory#x"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/%ZZ",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://ca.example.test/%ZZ"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/你好",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://ca.example.test/你好"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://CA.example.test/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://CA.example.test/directory"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test:65536/",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "CA URL rejected https://ca.example.test:65536/"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test:8443/acme/directory?version=1",
+        "termsUrl": "https://relay.example.test/"
+      },
+      "valid": true,
+      "description": "HTTPS URLs with explicit nondefault port and query"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "nonce canonical encoding 44"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHhB",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "nonce canonical encoding 43"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "nonce canonical encoding 42"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8A",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "nonce canonical encoding 44"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "publicKey canonical encoding 44"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURB",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "publicKey canonical encoding 43"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "1qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "publicKey canonical encoding 42"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURoA",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "publicKey canonical encoding 44"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw="
+      },
+      "valid": false,
+      "description": "signature canonical encoding 87"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCB"
+      },
+      "valid": false,
+      "description": "signature canonical encoding 86"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "iSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "signature canonical encoding 85"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCwA"
+      },
+      "valid": false,
+      "description": "signature canonical encoding 87"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      },
+      "valid": false,
+      "description": "sessionToken canonical encoding 44"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB"
+      },
+      "valid": false,
+      "description": "sessionToken canonical encoding 43"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "sessionToken canonical encoding 42"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "sessionToken canonical encoding 44"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "streamId canonical encoding 44"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHhB",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "streamId canonical encoding 43"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "streamId canonical encoding 42"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8A",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "streamId canonical encoding 44"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay\n",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in id"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay\n",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in displayName"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test\n",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in relayOrigin"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test\n",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in nodeDomain"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory\n",
+        "termsUrl": "https://relay.example.test/terms"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in acmeDirectoryUrl"
+    },
+    {
+      "kind": "RelayServiceProfile",
+      "value": {
+        "schemaVersion": 1,
+        "id": "fixture-relay",
+        "displayName": "Fixture Relay",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test",
+        "acmeDirectoryUrl": "https://ca.example.test/acme/directory",
+        "termsUrl": "https://relay.example.test/terms\n"
+      },
+      "valid": false,
+      "description": "RelayServiceProfile newline suffix in termsUrl"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge\n",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge newline suffix in type"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\n",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge newline suffix in nonce"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z\n",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge newline suffix in expiresAt"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test\n",
+        "nodeDomain": "nodes.example.test"
+      },
+      "valid": false,
+      "description": "RelayChallenge newline suffix in relayOrigin"
+    },
+    {
+      "kind": "RelayChallenge",
+      "value": {
+        "schemaVersion": 1,
+        "type": "challenge",
+        "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "expiresAt": "2026-09-12T00:00:30.000Z",
+        "relayOrigin": "https://relay.example.test",
+        "nodeDomain": "nodes.example.test\n"
+      },
+      "valid": false,
+      "description": "RelayChallenge newline suffix in nodeDomain"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register\n",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister newline suffix in type"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01\n",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister newline suffix in nodeId"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo\n",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw"
+      },
+      "valid": false,
+      "description": "RelayRegister newline suffix in publicKey"
+    },
+    {
+      "kind": "RelayRegister",
+      "value": {
+        "schemaVersion": 1,
+        "type": "register",
+        "nodeId": "node_relayfixture01",
+        "publicKey": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+        "signature": "UiSzEXGrXim0-TXPtWxqlNS5G_hIXFcTcqG3eHUsuEf7Z9djxpQS1DNLyfIDqfZqNTm2HAZF3PnJXauFIVWUCw\n"
+      },
+      "valid": false,
+      "description": "RelayRegister newline suffix in signature"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered\n",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered newline suffix in type"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test\n",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "valid": false,
+      "description": "RelayRegistered newline suffix in hostname"
+    },
+    {
+      "kind": "RelayRegistered",
+      "value": {
+        "schemaVersion": 1,
+        "type": "registered",
+        "hostname": "n21fe31dfa154a261626bf854046fd2271b7bed4b.nodes.example.test",
+        "sessionToken": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+      },
+      "valid": false,
+      "description": "RelayRegistered newline suffix in sessionToken"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open\n",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen newline suffix in type"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\n",
+        "kind": "tls"
+      },
+      "valid": false,
+      "description": "RelayOpen newline suffix in streamId"
+    },
+    {
+      "kind": "RelayOpen",
+      "value": {
+        "schemaVersion": 1,
+        "type": "open",
+        "streamId": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+        "kind": "tls\n"
+      },
+      "valid": false,
+      "description": "RelayOpen newline suffix in kind"
+    },
+    {
+      "kind": "RelayNodeDomain",
+      "value": "nodes.example.test\n",
+      "valid": false,
+      "description": "RelayNodeDomain newline suffix"
+    },
+    {
+      "kind": "RelayHTTPSOrigin",
+      "value": "https://relay.example.test\n",
+      "valid": false,
+      "description": "RelayHTTPSOrigin newline suffix"
+    }
+  ],
+  "raw": [
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1,\"type\":\"open\",\"type\":\"open\",\"streamId\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"kind\":\"tls\"}",
+      "valid": false
+    },
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1,\"type\":\"open\",\"\\u0074ype\":\"open\",\"streamId\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"kind\":\"tls\"}",
+      "valid": false
+    },
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1.00000000000000001,\"type\":\"open\",\"streamId\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"kind\":\"tls\"}",
+      "valid": false
+    },
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1e0,\"type\":\"open\",\"streamId\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"kind\":\"tls\"}",
+      "valid": true
+    },
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1,\"type\":\"open\",\"streamId\":\"\\ud800\",\"kind\":\"tls\"}",
+      "valid": false
+    },
+    {
+      "kind": "RelayOpen",
+      "raw": "{\"schemaVersion\":1,\"type\":\"open\",\"streamId\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8\",\"kind\":\"tls\"}{}",
+      "valid": false
+    }
+  ]
+}

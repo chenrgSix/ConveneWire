@@ -1,5 +1,44 @@
 # Contracts Module
 
+## Relay access contracts
+
+[ADR-0070](../adr/0070-relay-tunnel-access.md) adds CON-029's independent Relay
+transport objects to the authoritative Peer schema resource. The closed
+`RelayServiceProfile`, `RelayChallenge`, `RelayRegister`, `RelayRegistered` and
+`RelayOpen` types are exported from `@convene-wire/contracts/peer`, with strict
+raw decoding through `@convene-wire/contracts/peer-validation`. They are not
+members of `PeerControlMessage` and cannot grant Peer, Team, Room, Agent or Run
+authority. Existing Peer proof transcripts and validation semantics are unchanged.
+
+Profiles contain only the version, stable provider ID, display name, Relay HTTPS
+origin, Node domain, ACME directory URL and terms URL. Origins are exact lowercase
+ASCII HTTPS origins with no userinfo, path, trailing slash, query, fragment or
+explicit default port. Optional nondefault ports are bounded to 1–65535. Node
+domains have bounded DNS labels, at least two labels, no IP literal, wildcard,
+trailing dot or Unicode, and at most 211 bytes so the derived hostname fits the
+253-byte DNS limit. CA and terms URLs require HTTPS and reject credentials,
+fragments, malformed escapes and invalid ports. Controls, duplicate decoded JSON
+keys, ambiguous integer spellings and noncanonical base64url tokens fail closed
+in both language decoders. Profile installation and Owner consent remain local
+product operations; a schema-valid profile is not trusted configuration.
+
+`@convene-wire/contracts/relay-proof` exports `relayRegistrationTranscript` and
+`relayHostname`. The Go equivalents are `RelayRegistrationTranscript` and
+`RelayHostname` in `convenewire.dev/contracts/generated/go/peer`. The transcript
+binds the exact service origin, domain, 32-byte nonce, Node ID and raw Ed25519
+public key under `convenewire.relay.register.v1`, separated and terminated by
+newlines. It never normalizes supplied identity or origin strings. The stable
+hostname is `n` plus the first 40 lowercase hex characters of SHA-256 over the
+decoded public-key bytes, followed by the Node domain. Session and stream IDs are
+independent canonical 32-byte base64url values; signatures are 64 bytes.
+
+Shared schema fixtures, actual Go/Node decoder and Ed25519 process comparisons
+cover positive registration/address vectors, every changed transcript pin,
+noncanonical keys/tokens, malformed and oversized JSON, exact field closure and
+DNS/HTTPS boundaries. These checks establish wire interoperability. Freshness,
+single-use challenges and stream IDs, route ownership, connection epochs and
+transport backpressure remain the Relay daemon and connector's acceptance gates.
+
 ## Peer collaboration contracts
 
 [ADR-0068](../adr/0068-peer-collaboration-delivery.md) starts CON-028. Peer semantic

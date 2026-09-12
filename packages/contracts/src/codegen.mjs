@@ -1823,6 +1823,7 @@ export async function generateContractTypes(packageRoot) {
     peerTypescript, peerGo, peerSchema: `${JSON.stringify(bundlePeerReferences(peerSchema, peerSchema, schemas), null, 2)}\n`,
     peerValidator: formatGo(await readFile(path.join(packageRoot, "src/go-peer-validator.template"), "utf8")),
     peerProof: formatGo(await readFile(path.join(packageRoot, "src/go-peer-proof.template"), "utf8")),
+    relayProof: formatGo(await readFile(path.join(packageRoot, "src/go-relay-proof.template"), "utf8")),
     peerJson: formatGo(await readFile(path.join(packageRoot, "src/go-peer-json.template"), "utf8")),
     authorityValidator: formatGo(await readFile(path.join(packageRoot, "src/go-authority-validator.template"), "utf8")),
     authorityProof: formatGo(await readFile(path.join(packageRoot, "src/go-authority-proof.template"), "utf8")),

@@ -2,6 +2,12 @@
 
 package peercontracts
 
+type RelayNodeDomain string
+
+type RelayHTTPSOrigin string
+
+type RelayHTTPSURL string
+
 type PeerScope struct {
 	Kind   PeerScopeKind `json:"kind"`
 	RoomID *string       `json:"roomId"`
@@ -4486,6 +4492,47 @@ type PeerRunSettlementReceiptSettlement struct {
 	State         PeerSettlementState `json:"state"`
 }
 
+type RelayServiceProfile struct {
+	ACMEDirectoryURL string `json:"acmeDirectoryUrl"`
+	DisplayName      string `json:"displayName"`
+	ID               string `json:"id"`
+	NodeDomain       string `json:"nodeDomain"`
+	RelayOrigin      string `json:"relayOrigin"`
+	SchemaVersion    int64  `json:"schemaVersion"`
+	TermsURL         string `json:"termsUrl"`
+}
+
+type RelayChallenge struct {
+	ExpiresAt     string             `json:"expiresAt"`
+	NodeDomain    string             `json:"nodeDomain"`
+	Nonce         string             `json:"nonce"`
+	RelayOrigin   string             `json:"relayOrigin"`
+	SchemaVersion int64              `json:"schemaVersion"`
+	Type          RelayChallengeType `json:"type"`
+}
+
+type RelayRegister struct {
+	NodeID        string            `json:"nodeId"`
+	PublicKey     string            `json:"publicKey"`
+	SchemaVersion int64             `json:"schemaVersion"`
+	Signature     string            `json:"signature"`
+	Type          RelayRegisterType `json:"type"`
+}
+
+type RelayRegistered struct {
+	Hostname      string              `json:"hostname"`
+	SchemaVersion int64               `json:"schemaVersion"`
+	SessionToken  string              `json:"sessionToken"`
+	Type          RelayRegisteredType `json:"type"`
+}
+
+type RelayOpen struct {
+	Kind          RelayOpenKind `json:"kind"`
+	SchemaVersion int64         `json:"schemaVersion"`
+	StreamID      string        `json:"streamId"`
+	Type          RelayOpenType `json:"type"`
+}
+
 type PeerScopeKind string
 
 const (
@@ -4847,4 +4894,35 @@ const (
 	FluffyOutput   PeerRunEventType = "output"
 	FluffyReply    PeerRunEventType = "reply"
 	FluffyStatus   PeerRunEventType = "status"
+)
+
+type RelayChallengeType string
+
+const (
+	Challenge RelayChallengeType = "challenge"
+)
+
+type RelayRegisterType string
+
+const (
+	Register RelayRegisterType = "register"
+)
+
+type RelayRegisteredType string
+
+const (
+	Registered RelayRegisteredType = "registered"
+)
+
+type RelayOpenKind string
+
+const (
+	Http01 RelayOpenKind = "http01"
+	TLS    RelayOpenKind = "tls"
+)
+
+type RelayOpenType string
+
+const (
+	Open RelayOpenType = "open"
 )

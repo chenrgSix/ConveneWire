@@ -31,7 +31,8 @@
     "./peer": "./generated/typescript/peer.ts",
     "./peer-schema": "./generated/runtime/peer-schema.json",
     "./peer-validation": "./src/peer-validation.mjs",
-    "./peer-proof": "./src/peer-proof.mjs"
+    "./peer-proof": "./src/peer-proof.mjs",
+    "./relay-proof": "./src/relay-proof.mjs"
   },
   "files": [
     "dist"
@@ -39,7 +40,7 @@
   "scripts": {
     "build": "npm run check:generated && node scripts/build.mjs",
     "check:generated": "node scripts/check-generated.mjs",
-    "check:types": "tsc --noEmit --strict --skipLibCheck --target ES2022 generated/runtime/bridge-validator.d.ts generated/typescript/bridge-messages.ts generated/typescript/pairing-session.ts generated/typescript/task-result.ts generated/typescript/execution-plan.ts src/execution-validation.d.mts src/disclosure-validation.d.mts generated/typescript/local-node.ts generated/typescript/authority.ts src/authority-proof.d.mts src/peer-json.d.mts generated/typescript/peer.ts src/peer-validation.d.mts src/peer-proof.d.mts",
+    "check:types": "tsc --noEmit --strict --skipLibCheck --target ES2022 generated/runtime/bridge-validator.d.ts generated/typescript/bridge-messages.ts generated/typescript/pairing-session.ts generated/typescript/task-result.ts generated/typescript/execution-plan.ts src/execution-validation.d.mts src/disclosure-validation.d.mts generated/typescript/local-node.ts generated/typescript/authority.ts src/authority-proof.d.mts src/peer-json.d.mts generated/typescript/peer.ts src/peer-validation.d.mts src/peer-proof.d.mts src/relay-proof.d.mts",
     "generate": "node scripts/generate.mjs",
     "test": "node ../../scripts/test/run-with-temp-root.mjs -- npm run test:inner",
     "test:inner": "node --test && npm run check:generated && npm run check:types && go test ./generated/go/... ./test/go",

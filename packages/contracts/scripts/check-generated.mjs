@@ -8,6 +8,7 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const generatedRoot = path.join(packageRoot, "generated");
 const expected = await generateContractTypes(packageRoot);
 const actual = {
+  relayProof: await readFile(path.join(generatedRoot, "go", "peer", "relay.go"), "utf8"),
   peerTypescript: await readFile(path.join(generatedRoot, "typescript", "peer.ts"), "utf8"),
   peerGo: await readFile(path.join(generatedRoot, "go", "peer", "control.go"), "utf8"),
   peerValidator: await readFile(path.join(generatedRoot, "go", "peer", "validation.go"), "utf8"),
@@ -90,7 +91,7 @@ if (await readFile(path.join(generatedRoot, "runtime", "peer-schema.json"), "utf
 
 for (const output of [
   "peerTypescript", "peerGo", "peerValidator", "peerProof", "peerSchema",
-  "peerJson",
+  "peerJson", "relayProof",
   "authorityValidator", "authorityProof", "authorityTypescript", "authorityGo", "authoritySchema",
   "localNodeValidator", "localNodeTypescript", "localNodeGo", "localNodeSchema",
   "goDisclosureSchema", "goDisclosureRuntime",

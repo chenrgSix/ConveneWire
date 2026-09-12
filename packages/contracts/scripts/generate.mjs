@@ -20,6 +20,7 @@ await Promise.all([
   mkdir(path.join(generatedRoot, "go", "work"), { recursive: true })
 ]);
 await Promise.all([
+  writeFile(path.join(generatedRoot, "go", "peer", "relay.go"), output.relayProof),
   writeFile(path.join(generatedRoot, "go", "peer", "json.go"), output.peerJson),
   writeFile(path.join(generatedRoot, "go", "peer", "control.go"), output.peerGo),
   writeFile(path.join(generatedRoot, "go", "peer", "control-schema.json"), output.peerSchema),

@@ -1,5 +1,11 @@
 // Code generated from JSON Schema; DO NOT EDIT.
 
+type RelayNodeDomain = string;
+
+type RelayHTTPSOrigin = string;
+
+type RelayHTTPSURL = string;
+
 export interface PeerScope {
   kind:   PeerScopeKind;
   roomId: null | string;
@@ -4629,4 +4635,55 @@ export interface PeerRunSettlementReceiptSettlement {
   sequence:      number;
   state:         PeerSettlementState;
 }
+
+export interface RelayServiceProfile {
+  acmeDirectoryUrl: string;
+  displayName:      string;
+  id:               string;
+  nodeDomain:       string;
+  relayOrigin:      string;
+  schemaVersion:    number;
+  termsUrl:         string;
+}
+
+export interface RelayChallenge {
+  expiresAt:     string;
+  nodeDomain:    string;
+  nonce:         string;
+  relayOrigin:   string;
+  schemaVersion: number;
+  type:          RelayChallengeType;
+}
+
+export type RelayChallengeType = "challenge";
+
+export interface RelayRegister {
+  nodeId:        string;
+  publicKey:     string;
+  schemaVersion: number;
+  signature:     string;
+  type:          RelayRegisterType;
+}
+
+export type RelayRegisterType = "register";
+
+export interface RelayRegistered {
+  hostname:      string;
+  schemaVersion: number;
+  sessionToken:  string;
+  type:          RelayRegisteredType;
+}
+
+export type RelayRegisteredType = "registered";
+
+export interface RelayOpen {
+  kind:          RelayOpenKind;
+  schemaVersion: number;
+  streamId:      string;
+  type:          RelayOpenType;
+}
+
+export type RelayOpenKind = "tls" | "http01";
+
+export type RelayOpenType = "open";
 
