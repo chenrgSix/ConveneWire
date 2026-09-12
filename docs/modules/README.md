@@ -25,6 +25,8 @@ Local Node increment. [ADR-0067](../adr/0067-multi-authority-runtime-foundation.
 defines the Multi-Authority foundation.
 [ADR-0068](../adr/0068-peer-collaboration-delivery.md) starts the authorized Peer
 collaboration and V1 product/delivery work.
+[ADR-0070](../adr/0070-relay-tunnel-access.md) extends optional network access
+with an outbound Relay and Node-owned HTTPS after V1 implementation.
 
 The deployment boundary composes the existing Hub, Web, Go Runtime and
 SQLite. Team Authority owns collaboration writes; the Participant owns local

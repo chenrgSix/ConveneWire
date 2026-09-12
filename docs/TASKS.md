@@ -802,7 +802,7 @@ or a registration receipt alone.
 | FUT-003 | PLANNED | A2A interoperability | External Agent interop is required |
 | FUT-004 | DONE | Promote Artifact and structured-result transport | implemented by TASK-003 when Message-only collaboration proved insufficient |
 | FUT-005 | PLANNED | Attach to an existing visible Runtime Session | Runtime exposes a stable supported contract |
-| FUT-006 | PLANNED | Add an optional Relay/Tunnel network mode | direct-HTTPS onboarding metrics justify a separately accepted transport, privacy, address-ownership, credential-isolation and availability contract |
+| FUT-006 | ACTIVE | Add an optional Relay/Tunnel network mode | Owner authorized lower-friction access; ADR-0070 and the Relay task chain below govern transport, privacy, stable addresses and completion |
 
 ## Authenticated evidence disclosure
 
@@ -869,3 +869,20 @@ Existing implementation dependencies do not require the deferred manual gate.
 | WEB-088 | DONE | Align Local Node toolbar actions with the shared visual system | WEB-087 | Shared secondary button colors, 34px controls, keyboard focus and a right-aligned action group replace native bevels and separated entry points. All six focused Local Runtime/network checks, Web/Hub build and docs checks pass. Clean source 76278906 is packaged and installed; ZIP/source/6,215-file Hub verification and [actual light/dark appearance](modules/web-ui.md#local-node-entry) pass. Same-window Agent entry/return and network dialog opening/closing are checked; original light preference, identity, configurations and completed Run records are preserved. The app is left running |
 | WEB-089 | DONE | Make task Agent assignment explicit in creation and conversation | WEB-088, TASK-012 | [Current local acceptance](acceptance/qa-092-ab-native-desktop.md#current-local-workflow-observations): explicit creation/existing-Task controls use the current definition API, preserve revision/Owner checks and restrict Task mention choices. Twenty-eight focused checks, including real App/Server execution, committed-response retry and definition conflict preservation, plus nine final affected checks, TypeScript, Hub/Web build and docs/links pass. Clean d8e2ed67 is packaged, fully verified and installed with stopped backup; actual native Task assignment, Run, Discussion and role editing pass, with owner data preserved. Remaining physical tray acceptance stays in QA-092 |
 | QA-091 | DONE | Automatically verify the complete Node-first V1 collaboration loop | DISC-022, WEB-085, OPS-020 | [Combined N1-N8 evidence](acceptance/qa-091-node-first-v1.md): scoped invitation/export/acceptance/revoke, shared-core isolation, local approval, Participant crash and both Host restart cuts are mapped to executable local fixtures. Full Server: 822 pass, one opt-in preview skipped, zero failures. Native bundled Codex/Pi Run/Discussion, network activation and restart/restore pass (22.25 s); partial-Wave and pre-Finalizer Host reopen retain exact identities and one conclusion (race 16.16 s plus vet). Prior full Peer race/vet and Web/Console/distribution checks remain separately identified. Clean source 41cd563f builds the QA-091 macOS archive; actual ZIP paths, 6,215 Hub files, source/version/architecture and empty-PATH Node/SQLite pass. Build/docs/links pass, zero external model calls. Combined manual/physical acceptance remains QA-092; no Windows installation, remote CI or publication claim |
+
+## Optional Relay access
+
+The Owner authorized this increment to remove end-user domain, certificate and
+inbound-port setup. It extends V1 without changing the open QA-092 observations.
+The operator supplies the public service; deployment and real CA operations
+retain their explicit operation scope.
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| GOV-046 | DONE | Freeze low-friction Relay access and its trust boundary | GOV-045, OPS-019, OPS-020, WEB-089 | [ADR-0070](adr/0070-relay-tunnel-access.md) defines stable addresses, signed registration, Node-owned HTTPS, independent stream lifecycle, service profiles and the full local acceptance scope; 541-file docs lint, 299 local link targets and whitespace checks pass |
+| CON-029 | PLANNED | Define closed Relay registration and service profile contracts | GOV-046 | Generated TS/Go types, positive/negative/schema and signature/address interoperability evidence required |
+| OPS-022 | PLANNED | Route public TLS and ACME streams through authenticated outbound tunnels | CON-029 | Real Relay service, SNI/HTTP-01 boundaries, wrong-route/replay/limits/backpressure and shutdown/reconnect tests required |
+| OPS-023 | PLANNED | Connect the Local Hub and automatically manage Node certificates | CON-029, OPS-019 | Private state, Owner controls, certificate provisioning/reuse/renewal, dynamic TLS, disable/restart and original ingress boundary regressions required |
+| WEB-090 | PLANNED | Enable convenient access and surface actual network readiness | OPS-023, WEB-089 | Provider review, one-action enable/disable, readiness/failure, fixed-origin constraints, invitation entry and browser evidence required |
+| OPS-024 | PLANNED | Package Relay service configuration and deployment artifacts | OPS-022, OPS-023 | Operator deployment, optional distribution profile, exact bundle inventory, empty-PATH and native compilation checks required |
+| QA-093 | PLANNED | Verify low-friction browser and Peer collaboration through the real Relay | OPS-022, OPS-023, WEB-090, OPS-024 | Two-Node local CA, browser/Peer HTTP/WS, offline Run/Discussion, revoke/reconnect/restore and complete fixture cleanup evidence required; public deployment separately attributed |

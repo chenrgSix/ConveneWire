@@ -17,6 +17,25 @@ public trust-bootstrap artifact consumed by those modules. Caddy still owns
 issuance and private keys; Operations cannot authorize a Device or make a Web
 browser trust a private CA.
 
+## Optional outbound Relay
+
+[ADR-0070](../adr/0070-relay-tunnel-access.md) defines the authorized FUT-006
+increment. Operations owns the Relay deployment and its public service profile;
+the Local Hub owns outbound tunnel lifecycle and private Node ACME/TLS material.
+The Relay routes raw TLS and only the separate HTTP-01 challenge path. It never
+owns Team state, membership, Agent grants or Runtime credentials. The Node
+continues to enforce the existing Peer ingress boundary. Normal forwarding does
+not terminate business TLS, but the domain/CA operator remains trusted against
+active certificate interception; this is not a provider-distrust design.
+
+An operator-provisioned service profile may be embedded in the native bundle.
+The local Owner explicitly enables convenient access and automatic certificates;
+the public service and real CA operation are not silently created by packaging.
+Without a supplied profile, the UI reports that the service is unavailable.
+Stable derived Node addresses, local-only controls, scoped private files,
+certificate renewal, reconnect and shutdown are part of implementation acceptance.
+Full delivery and evidence status remain in TASKS.md.
+
 ## Local Node distribution
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by
