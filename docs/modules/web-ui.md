@@ -1,5 +1,30 @@
 # Web UI
 
+## Convenient Relay access
+
+WEB-090 makes convenient access the first view of the existing local network
+dialog. An operator-supplied profile removes end-user DNS, router and certificate
+configuration. Missing profiles show an unavailable service; the advanced view
+retains manual HTTPS configuration in the same dialog. Remote Spaces do not
+receive local network controls.
+
+The Owner sees the provider, certificate terms and fixed Node address before
+saving a reviewed enable/disable decision for the next startup. Changed CA terms
+require a new review. Polling distinguishes pending configuration from current
+connectivity, certificate issuance, retry and verified public readiness. An
+unconfirmed save retains the exact decision; stale review, session retirement
+and provider changes cannot silently authorize a different configuration.
+Invitation controls rely on Host readiness and retain their existing Room scope.
+
+The affected component suites pass 24 tests; production Web and native Hub
+builds pass. The actual disposable native Hub and Go Relay were inspected in
+the browser at 1280 by 720: [connected state](../acceptance/relay-access/ready.jpg)
+and [saved pending configuration](../acceptance/relay-access/pending.jpg).
+The fixture-only enable review and save succeed, advanced/back navigation
+keeps one dialog, and closing restores focus to Network settings. The dialog
+scrolls for longer pending/provider details. This does not install browser CA
+trust or activate a real public service. Delivery status stays in TASKS.md.
+
 ## Peer invitation and sharing controls
 
 WEB-085 completes the Owner's invitation, remote Space and Agent sharing

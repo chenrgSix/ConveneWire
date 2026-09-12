@@ -24,6 +24,8 @@ async function fixture(t: TestContext) {
   globalThis.fetch = async (path, options) => {
     const url = String(path), body = options?.body ? JSON.parse(String(options.body)) : undefined;
     calls.push({url, body}); assert.equal(new Headers(options?.headers).get("authorization"), "Bearer local-fixture");
+    if (url === "/api/local-node/relay") return Response.json({revisionDigest: "relay-empty", provider: null, saved: {enabled: false, origin: null},
+      running: {state: "disabled", origin: null, errorCode: null, certificateExpiresAt: null}, pending: null});
     if (url.endsWith("/review")) return Response.json(viewFor(body));
     if (url.endsWith("/save")) return save(body);
     if (url.endsWith("/discard")) { state.pending = null; state.revisionDigest = "revision-discarded"; return Response.json({status: "discarded"}); }
@@ -33,7 +35,9 @@ async function fixture(t: TestContext) {
   const view = library.render(<StrictMode><LocalNodeNetwork {...props} /></StrictMode>);
   const screen = library.within(dom.window.document.body);
   return {...library, dom, view, screen, state, calls, props, viewFor, save: (value: typeof save) => {save = value;}, read: (value: typeof read) => {read = value;},
-    async open() { library.fireEvent.click(screen.getByRole("button", {name: "网络设置"})); await library.waitFor(() => assert.equal((screen.getByRole("button", {name: "验证并审阅配置"}) as HTMLButtonElement).closest("fieldset")!.disabled, false)); },
+    async open() { library.fireEvent.click(screen.getByRole("button", {name: "网络设置"}));
+      library.fireEvent.click(screen.getByRole("button", {name: "高级：手动 HTTPS 接入"}));
+      await library.waitFor(() => assert.equal((screen.getByRole("button", {name: "验证并审阅配置"}) as HTMLButtonElement).closest("fieldset")!.disabled, false)); },
     async prepare(enabled = true) {
       library.fireEvent.change(screen.getByLabelText("HTTPS 地址"), {target: {value: "https://localhost:9443"}});
       if (enabled) {

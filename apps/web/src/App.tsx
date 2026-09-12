@@ -1912,7 +1912,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
           {currentMember?.role === "owner" && <div className="management-page-actions">
             <button onClick={() => void openLifecycleDialog()} type="button">{locale === "zh-CN" ? "资源生命周期" : "Resource lifecycle"}</button>
             {session && <PeerHostPanel key={`${selectedTeam.teamId}:${session.userId}:${session.token ?? "cookie"}`} teamId={selectedTeam.teamId}
-              teamName={selectedTeam.name} rooms={rooms} locale={locale} sessionToken={session.token} />}
+              teamName={selectedTeam.name} rooms={rooms} locale={locale} sessionToken={session.token} localNetworkToken={isLocalNode ? session.token : undefined} />}
           </div>}
           <TeamMembersWorkspace
             scopeRoomName={session?.peerAccess?.kind === "room" ? selectedRoom?.name : undefined}

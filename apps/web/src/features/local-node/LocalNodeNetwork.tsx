@@ -3,6 +3,7 @@ import { captureWebSessionScope, isStaleWebSessionError, jsonRequest, webSession
 import type { Locale } from "../../i18n.js";
 import type { LocalSession } from "../../models.js";
 import { PanelDialog } from "../navigation/PanelDialog.js";
+import { RelayNetworkDialog } from "./RelayNetworkDialog.js";
 
 interface Configuration { enabled: boolean; origin: string; listenHost: string; certificateFingerprint: string | null; certificateExpiresAt: string | null }
 interface NetworkState { revisionDigest: string; running: Configuration | null; saved: Configuration | null; pending: (Configuration & {reviewDigest: string}) | null }
@@ -13,10 +14,16 @@ interface Save { revisionDigest: string; reviewDigest: string; selection: Select
 export function LocalNodeNetwork({session, locale}: {session: LocalSession; locale: Locale}) {
   const [openToken, setOpenToken] = useState<string | null>(null);
   return <><button className="secondary-action" type="button" disabled={!session.token} onClick={() => setOpenToken(session.token ?? null)}>{locale === "zh-CN" ? "网络设置" : "Network settings"}</button>
-    {openToken && openToken === session.token && <NetworkDialog key={openToken} token={openToken} locale={locale} onClose={() => setOpenToken(null)} />}</>;
+    {openToken && openToken === session.token && <LocalNetworkDialog key={openToken} token={openToken} locale={locale} onClose={() => setOpenToken(null)} />}</>;
 }
 
-function NetworkDialog({token, locale, onClose}: {token: string; locale: Locale; onClose: () => void}) {
+export function LocalNetworkDialog({token, locale, onClose}: {token: string; locale: Locale; onClose: () => void}) {
+  const [advanced, setAdvanced] = useState(false);
+  return advanced ? <DirectNetworkDialog token={token} locale={locale} onClose={onClose} onBack={() => setAdvanced(false)} />
+    : <RelayNetworkDialog token={token} locale={locale} onClose={onClose} onAdvanced={() => setAdvanced(true)} />;
+}
+
+function DirectNetworkDialog({token, locale, onClose, onBack}: {token: string; locale: Locale; onClose: () => void; onBack: () => void}) {
   const zh = locale === "zh-CN", text = (cn: string, en: string) => zh ? cn : en;
   const [state, setState] = useState<NetworkState | null>(null), [busy, setBusy] = useState(false);
   const [error, setError] = useState(""), [readError, setReadError] = useState(""), [message, setMessage] = useState("");
@@ -100,6 +107,8 @@ function NetworkDialog({token, locale, onClose}: {token: string; locale: Locale;
   </dl> : <p>{text("未配置外部接入。", "External access is not configured.")}</p>;
   return <PanelDialog title={text("本机网络设置", "Local network settings")} locale={locale} onClose={close} error={error || readError} focusKey={review ? "review" : discard ? "discard" : "settings"}>
     <div className="local-network-panel">
+      <button className="secondary-action" type="button" disabled={busy} onClick={onBack}>{text("返回便捷接入", "Back to convenient access")}</button>
+      <h3>{text("手动 HTTPS 接入", "Manual HTTPS access")}</h3>
       <p>{text("让受邀成员通过 HTTPS 访问本机托管的空间。本机 Owner 和控制接口只在回环地址开放。", "Invite members over HTTPS to spaces hosted here. Local Owner and control endpoints remain on loopback.")}</p>
       <section><h3>{text("正在使用", "Currently running")}</h3>{state ? summary(state.running) : <p>{text("正在读取或暂不可用。", "Loading or unavailable.")}</p>}</section>
       {state?.pending && <section><h3>{text("等待重启生效", "Pending next startup")}</h3>{summary(state.pending)}

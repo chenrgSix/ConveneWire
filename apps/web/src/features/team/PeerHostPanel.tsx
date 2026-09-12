@@ -4,25 +4,30 @@ import { captureWebSessionScope, HttpRequestError, isStaleWebSessionError, jsonR
 import type { Locale } from "../../i18n.js";
 import type { Room } from "../../models.js";
 import { PanelDialog } from "../navigation/PanelDialog.js";
+import { LocalNetworkDialog } from "../local-node/LocalNodeNetwork.js";
 import { currentPeerAcceptance, peerOperationId, type PeerHostAccess, type PeerHostOffer } from "./peer-host-model.js";
 
-interface Props { teamId: string; teamName: string; rooms: Room[]; locale: Locale; sessionToken?: string | undefined }
+interface Props { teamId: string; teamName: string; rooms: Room[]; locale: Locale; sessionToken?: string | undefined; localNetworkToken?: string | undefined }
 type Review = { kind: "accept"; item: PeerHostOffer } | { kind: "revoke-agent"; item: PeerHostOffer } |
   { kind: "revoke-membership"; item: PeerHostAccess["memberships"][number] } |
   { kind: "revoke-invitation"; item: PeerHostAccess["invitations"][number] };
 
 export function PeerHostPanel(props: Props) {
   const [open, setOpen] = useState(false);
+  const [networkToken, setNetworkToken] = useState<string | null>(null);
   const title = props.locale === "zh-CN" ? "跨节点协作" : "Node collaboration";
   return <>
     <button type="button" onClick={() => setOpen(true)}>{title}</button>
     {open && <PanelDialog title={title} locale={props.locale} onClose={() => setOpen(false)}>
-      <PeerHostControls key={`${props.teamId}:${props.sessionToken ?? "cookie"}`} {...props} />
+      <PeerHostControls key={`${props.teamId}:${props.sessionToken ?? "cookie"}`} {...props}
+        onOpenNetwork={props.localNetworkToken ? () => { setOpen(false); setNetworkToken(props.localNetworkToken!); } : undefined} />
     </PanelDialog>}
+    {networkToken && networkToken === props.localNetworkToken && <LocalNetworkDialog key={networkToken} token={networkToken} locale={props.locale}
+      onClose={() => { setNetworkToken(null); setOpen(true); }} />}
   </>;
 }
 
-function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken }: Props) {
+function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpenNetwork }: Props & { onOpenNetwork?: (() => void) | undefined }) {
   const zh = locale === "zh-CN";
   const [data, setData] = useState<{ access: PeerHostAccess; offers: PeerHostOffer[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -208,7 +213,8 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken }: Pro
       <div className="panel-header"><h3>{teamName}</h3><button type="button" disabled={busy} onClick={() => void refresh()}>{zh ? "刷新" : "Refresh"}</button></div>
       {!data ? (!loadError && <p role="status">{zh ? "正在读取协作状态…" : "Loading collaboration status…"}</p>) : <>
         <p className="peer-host-origin">{data.access.hostOrigin}</p>
-        {!data.access.invitationSupported && <p role="status">{zh ? "先在本机 Node 配置可访问的 HTTPS 入口，再创建邀请。" : "Configure this Node's reachable HTTPS entry before creating invitations."}</p>}
+        {!data.access.invitationSupported && <><p role="status">{zh ? "网络接入尚未就绪。连接和 HTTPS 证书可用后，即可创建邀请。" : "Network access is not ready. Invitations become available once the connection and HTTPS certificate are ready."}</p>
+          {onOpenNetwork && <button className="secondary-action" type="button" onClick={onOpenNetwork}>{zh ? "打开网络设置" : "Open network settings"}</button>}</>}
         <button type="button" disabled={!data.access.invitationSupported} onClick={() => { setInviting(true); setIssued(null); setPending(null); setNotice(null); }}>{zh ? "创建节点邀请" : "Create Node invitation"}</button>
         <section><h3>{zh ? "远端成员" : "Remote members"}</h3>
           {data.access.memberships.length === 0 && <p>{zh ? "还没有通过节点邀请加入的成员。" : "No members have joined through a Node invitation."}</p>}

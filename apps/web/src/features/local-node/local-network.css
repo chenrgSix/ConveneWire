@@ -7,3 +7,15 @@
 .local-network-details { display: grid; grid-template-columns: minmax(80px, auto) minmax(0, 1fr); gap: 8px 12px; margin: 0; }
 .local-network-details dd { margin: 0; overflow-wrap: anywhere; }
 .local-network-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.relay-network-state { margin: 0; font-weight: 700; }
+.relay-network-ready { color: var(--cw-success); }
+.relay-network-origin { margin: 0; overflow-wrap: anywhere; }
+.relay-network-panel .relay-network-consent { align-items: flex-start; line-height: 1.6; }
+.relay-network-consent input { flex: 0 0 auto; margin-top: 6px; }
+.relay-network-panel section > button { justify-self: start; }
+
+.relay-network-panel h3, .relay-network-panel p { margin: 0; }
+.relay-network-panel p { line-height: 1.6; font-size: 14px; }
+.relay-network-panel h3 { font-size: 16px; }
+.relay-network-panel section { gap: 10px; }
+.relay-network-panel .local-network-details { font-size: 14px; }

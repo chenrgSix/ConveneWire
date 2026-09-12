@@ -49,11 +49,13 @@ test("Host collaboration requires explicit review and retains exact operation an
     Object.defineProperty(dom.window.navigator, "clipboard", { configurable: true, value: { writeText: async (text: string) => { copied.push(text); } } });
     globalThis.fetch = async (input, init) => {
       const path = String(input), method = init?.method ?? "GET";
-      assert.match(path, /^\/api\/peer\//u, "browser never forwards Owner credentials to a remote Host");
+      assert.match(path, /^\/api\/(peer\/|local-node\/relay$)/u, "browser never forwards Owner credentials to a remote Host");
       assert.equal(init?.credentials, "same-origin");
       assert.equal(new Headers(init?.headers).get("authorization"), "Bearer owner-web-only");
       const body = init?.body ? JSON.parse(String(init.body)) : undefined;
       calls.push({ path, method, body });
+      if (path === "/api/local-node/relay") return Response.json({ revisionDigest: "relay-one", provider: null,
+        saved: { enabled: false, origin: null }, running: { state: "disabled", origin: null, errorCode: null, certificateExpiresAt: null }, pending: null });
       if (method !== "GET") return write(path, body);
       if (read) return read(path);
       return Response.json(path.endsWith("/access") ? access : { offers });
@@ -67,8 +69,8 @@ test("Host collaboration requires explicit review and retains exact operation an
       if (previous[key]) Object.defineProperty(globalThis, key, previous[key]); else Reflect.deleteProperty(globalThis, key);
     }
   });
-  const open = async () => {
-    const view = render(<PeerHostPanel {...props} />);
+  const open = async (extra: { localNetworkToken?: string } = {}) => {
+    const view = render(<PeerHostPanel {...props} {...extra} />);
     assert.equal(calls.length, 0, "the closed management panel makes no requests");
     fireEvent.click(page.getByRole("button", { name: "跨节点协作" }));
     await page.findByText("小王");
@@ -192,12 +194,27 @@ test("Host collaboration requires explicit review and retains exact operation an
   await t.test("non-HTTPS Host and unavailable data cannot create invitations or accept Agents", async () => {
     access.invitationSupported = false; access.hostOrigin = "http://127.0.0.1:3000";
     await open();
+    assert.equal(page.queryByRole("button", { name: "打开网络设置" }), null, "remote or Central owners cannot open local controls");
     assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, true);
     read = async () => Response.json({ error: { message: "forbidden" } }, { status: 403 });
     await refresh();
     await page.findByRole("alert");
     assert.equal(page.queryByText("小王"), null);
     assert.equal(page.queryByRole("button", { name: "审阅并接纳" }), null);
+  });
+
+  await t.test("local collaboration opens one network dialog and invitation availability remains owned by the Host", async () => {
+    access.invitationSupported = false; access.hostOrigin = "http://127.0.0.1:3000";
+    await open({ localNetworkToken: "owner-web-only" });
+    assert.equal(calls.some(call => call.path === "/api/local-node/relay"), false);
+    fireEvent.click(page.getByRole("button", { name: "打开网络设置" }));
+    await page.findByRole("heading", { name: "本机网络设置" }); await page.findByText(/此版本尚未配置接入服务/);
+    assert.equal(page.getAllByRole("dialog").length, 1); assert.equal(page.queryByRole("button", { name: "创建节点邀请" }), null);
+    fireEvent.click(page.getByRole("button", { name: "关闭" })); await page.findByRole("button", { name: "创建节点邀请" });
+    assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, true);
+    access.invitationSupported = true; await refresh();
+    assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, false);
+    assert.equal(calls.some(call => call.method !== "GET"), false);
   });
 
   await t.test("late invitation response cannot appear in a different Team or after logout", async () => {
