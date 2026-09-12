@@ -1,0 +1,60 @@
+name: Relay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ops/convenewire-relay/**
+      - packages/contracts/**
+      - scripts/test/run-with-temp-root.mjs
+      - .github/workflows/relay.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - ops/convenewire-relay/**
+      - packages/contracts/**
+      - scripts/test/run-with-temp-root.mjs
+      - .github/workflows/relay.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: relay-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  relay:
+    name: Relay race and deployment configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: ops/convenewire-relay/go.mod
+          cache: false
+
+      - name: Set up Node.js for the disposable test wrapper
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22.23.1
+
+      - name: Check Go formatting
+        run: test -z "$(gofmt -l ops/convenewire-relay)"
+
+      - name: Test Relay with the race detector and vet
+        run: |
+          node scripts/test/run-with-temp-root.mjs --cwd ops/convenewire-relay \
+            --timeout-ms 600000 -- sh -c \
+            'export GOPATH="$CONVENE_WIRE_TEST_RUN_ROOT/go-path"; go test -race ./... && go vet ./...'
+
+      - name: Validate operator Compose configuration without starting containers
+        env:
+          RELAY_ORIGIN: https://relay.example.org
+          RELAY_NODE_DOMAIN: nodes.example.org
+          RELAY_CONTROL_TLS_DIRECTORY: /tmp/convenewire-relay-ci-operator-certificates
+        run: docker compose -f ops/convenewire-relay/compose.example.yaml config --quiet

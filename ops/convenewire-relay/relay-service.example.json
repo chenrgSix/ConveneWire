@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "operator-example",
+  "displayName": "Operator-managed Relay (example only)",
+  "relayOrigin": "https://relay.example.org",
+  "nodeDomain": "nodes.example.org",
+  "acmeDirectoryUrl": "https://ca.example.org/directory",
+  "termsUrl": "https://operator.example.org/relay-terms"
+}

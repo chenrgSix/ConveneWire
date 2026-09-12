@@ -1,0 +1,76 @@
+name: convenewire-relay
+
+services:
+  relay:
+    image: ${RELAY_IMAGE:-convenewire-relay:local}
+    build:
+      context: ../..
+      dockerfile: ops/convenewire-relay/Dockerfile
+    command:
+      - --relay-origin
+      - ${RELAY_ORIGIN:?Set the real public control HTTPS origin}
+      - --node-domain
+      - ${RELAY_NODE_DOMAIN:?Set the dedicated Node wildcard DNS domain}
+      - --tls-listen
+      - :8443
+      - --http-listen
+      - :8080
+      - --tls-cert
+      - /run/control-tls/control-chain.pem
+      - --tls-key
+      - /run/control-tls/control-key.pem
+      - --max-connections
+      - "512"
+      - --max-nodes
+      - "128"
+      - --max-streams-per-node
+      - "32"
+      - --max-stream-bytes
+      - "268435456"
+    ports:
+      - "443:8443/tcp"
+      - "80:8080/tcp"
+    volumes:
+      - type: bind
+        source: ${RELAY_CONTROL_TLS_DIRECTORY:?Set an absolute directory with the operator control certificate and key}
+        target: /run/control-tls
+        read_only: true
+        bind:
+          create_host_path: false
+    user: "65532:65532"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      GOMEMLIMIT: 384MiB
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 4096
+    healthcheck:
+      test:
+        - CMD
+        - /convenewire-relay
+        - healthcheck
+        - --relay-origin
+        - ${RELAY_ORIGIN:?Set the real public control HTTPS origin}
+        - --tls-address
+        - 127.0.0.1:8443
+        - --http-address
+        - 127.0.0.1:8080
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    stop_signal: SIGTERM
+    stop_grace_period: 15s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "3"

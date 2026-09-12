@@ -34,7 +34,13 @@ the public service and real CA operation are not silently created by packaging.
 Without a supplied profile, the UI reports that the service is unavailable.
 Stable derived Node addresses, local-only controls, scoped private files,
 certificate renewal, reconnect and shutdown are part of implementation acceptance.
-Full delivery and evidence status remain in TASKS.md.
+The [standalone daemon](../../ops/convenewire-relay/README.md) provides bounded
+SNI and HTTP-01 routing, signed registration, isolated stream epochs and graceful
+shutdown. The [operator guide](../relay-deployment.md) supplies Docker/Compose,
+control-certificate renewal, public DNS and profile distribution procedures.
+Its health probe validates local listeners and control TLS only; it cannot
+establish public or business readiness. Full delivery and evidence status remain
+in TASKS.md.
 
 ## Local Node distribution
 
