@@ -66,6 +66,18 @@ cancels network work before closing the Hub. Focused settings, ACME, connector,
 actual Relay HTTP/WS and negative ingress tests cover these boundaries; the
 native bundle tests exercise the production dependency closure.
 
+OPS-024 packages an optional public `relay-service.json` in the Hub's existing
+closed inventory. Explicit file selection, or an explicit environment opt-in,
+is required; ambient environment variables cannot inject a service. The selected
+bytes, schema and digest are checked during both native and release inspection.
+Packaging does not enable access. The operator guide and deployment example
+include the dedicated daemon image, bounded Compose resources and health probe.
+The refreshed native build, 10 bundle checks and two lifecycle cases pass on
+macOS arm64, including empty-PATH execution and stopped Relay metadata recovery.
+The observed manifest correctly reports modified development source. No desktop
+application was installed, no image was built and no foreign-platform execution
+or external CI result is claimed by this local evidence.
+
 ## Local Node distribution
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by

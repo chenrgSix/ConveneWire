@@ -68,7 +68,8 @@
     "test:discussion-strong-single": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/bench/strong-discussion.test.mjs scripts/bench/export-review-specimen.test.mjs",
     "bench:discussion-strong-single": "node scripts/test/run-with-temp-root.mjs --timeout-ms 3090000 -- node scripts/bench/strong-discussion-run.mjs --execute-qa078-frozen-twelve",
     "build:local-hub": "npm run build --workspace @convene-wire/server && npm run build --workspace @convene-wire/web",
-    "test:local-hub-bundle": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/local-node/bundle.test.mjs scripts/local-node/desktop-bundle.test.mjs",
+    "test:local-hub-bundle": "node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/local-node/bundle.test.mjs scripts/local-node/desktop-bundle.test.mjs scripts/local-node/relay-profile.test.mjs",
+    "check:relay-profile": "node scripts/local-node/relay-profile.mjs",
     "test:local-node": "node scripts/test/run-with-temp-root.mjs --timeout-ms 300000 -- node --test scripts/local-node/supervisor.test.mjs",
     "package:local-node": "npm run build:local-hub && node scripts/test/run-with-temp-root.mjs --timeout-ms 600000 -- node scripts/local-node/package-desktop.mjs"
   },

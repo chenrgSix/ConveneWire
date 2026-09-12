@@ -1,16 +1,18 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { readFile, writeFile, rename, rm, mkdir, readdir } from "node:fs/promises";
+import { readFile, writeFile, rename, rm, mkdir, readdir, stat } from "node:fs/promises";
+import { createPublicKey } from "node:crypto";
 import { once } from "node:events";
 import net from "node:net";
 import https from "node:https";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import test from "node:test";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 import { buildBundle } from "./bundle.mjs";
+import { relayHostname } from "@convene-wire/contracts/relay-proof";
 
 const exec = promisify(execFile);
 const repository = fileURLToPath(new URL("../../", import.meta.url));
@@ -35,8 +37,8 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
   await exec("go", ["build", "-o", hostBinary, "./cmd/convenewire-node"], { cwd: path.join(repository, "bridge") });
   await exec("go", ["build", "-o", fixtureBinary, fixtureFile], { cwd: root });
   const dataRoot = path.join(root, "node-data");
-  const launch = () => {
-    const host = spawnTestProcess(resources, hostBinary, ["--stdio", "--hub-bundle", bundle, "--data-dir", dataRoot, "--workspace", root], {
+  const launch = (nodeRoot = dataRoot) => {
+    const host = spawnTestProcess(resources, hostBinary, ["--stdio", "--hub-bundle", bundle, "--data-dir", nodeRoot, "--workspace", root], {
       env: { PATH: "", ...(process.platform === "win32" ? { SystemRoot: process.env.SystemRoot } : {}) }, stdio: ["pipe", "pipe", "pipe"]
     });
     let buffer = "";
@@ -76,6 +78,12 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
   const health = await request("/api/health/ready");
   assert.equal(health.status, "ready");
   assert.equal(manifest.releaseVersion, "v0.0.0-local");
+  t.diagnostic(`Native bundle: ${manifest.platform}/${manifest.arch}, Node ${manifest.nodeVersion}, source ${manifest.sourceCommit}, ${manifest.sourceState}`);
+  const defaultRelay = await request("/api/local-node/relay");
+  assert.equal(defaultRelay.provider, null);
+  assert.deepEqual(defaultRelay.saved, { enabled: false, origin: null });
+  assert.deepEqual(defaultRelay.running, { state: "disabled", origin: null, errorCode: null, certificateExpiresAt: null });
+  assert.equal(defaultRelay.pending, null);
   const unboundConsole = new URL((await running.event("console")).consoleUrl);
   const unboundHeaders = { authorization: `Bearer ${unboundConsole.searchParams.get("token")}` };
   const unboundState = await fetch(unboundConsole.origin + "/api/state", { headers: unboundHeaders }).then(response => response.json());
@@ -304,6 +312,59 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
   await until(async () => (await request(`/api/rooms/${room.roomId}/runs`)).find((run) => run.runId === next.runs[0].runId)?.state === "completed", "post-restore Run");
   assert.equal((await readFile(path.join(root, "fixture-calls.jsonl"), "utf8")).trim().split("\n").length, 5);
   await running.stop();
+  await t.test("disabled Relay configuration and private cache survive native backup and restore without starting ACME", async () => {
+    const disabledRoot = path.join(root, "disabled-relay-node");
+    let disabled = launch(disabledRoot);
+    const first = await disabled.event("ready");
+    const firstOwner = await ownerEntry(first);
+    await disabled.stop();
+    const identity = await readFile(path.join(disabledRoot, "identity.json"));
+    const { localAuthorityPrivateKey } = await import(pathToFileURL(path.join(bundle, "apps/server/dist/security/authority-service.js")));
+    const publicKey = createPublicKey(localAuthorityPrivateKey({ identity: JSON.parse(identity) }))
+      .export({ format: "der", type: "spki" }).subarray(-32).toString("base64url");
+    const profile = { schemaVersion: 1, id: "disabled-native-fixture", displayName: "Disabled native fixture",
+      relayOrigin: "https://relay.native.invalid", nodeDomain: "nodes.native.invalid",
+      acmeDirectoryUrl: "https://ca.native.invalid/directory", termsUrl: "https://ca.native.invalid/terms" };
+    const relayOrigin = `https://${relayHostname(publicKey, profile.nodeDomain)}`;
+    const relayRoot = path.join(disabledRoot, "relay");
+    const configuration = Buffer.from(JSON.stringify({ schemaVersion: 1, profile, origin: relayOrigin, enabled: false, termsAccepted: true }));
+    // This deliberately opaque cache must be backed up byte-for-byte and never
+    // parsed while the Owner's saved Relay choice is disabled.
+    const cache = Buffer.from("disabled-native-private-cache-fixture\n");
+    await writeFile(path.join(relayRoot, "config.json"), configuration, { mode: 0o600 });
+    await writeFile(path.join(relayRoot, "certificates.json"), cache, { mode: 0o600 });
+    const checkDisabled = async (entry) => {
+      const localOwner = await ownerEntry(entry);
+      assert.equal(localOwner.user.userId, firstOwner.user.userId);
+      const response = await fetch(entry.origin + "/api/local-node/relay", { headers: {
+        authorization: `Bearer ${localOwner.session.token}`, origin: entry.origin } });
+      assert.equal(response.status, 200);
+      const status = await response.json();
+      assert.deepEqual(status.provider, profile);
+      assert.deepEqual(status.saved, { enabled: false, origin: relayOrigin });
+      assert.deepEqual(status.running, defaultRelay.running);
+      assert.equal(status.pending, null);
+      assert.equal(JSON.stringify(status).includes(cache.toString().trim()), false);
+    };
+    disabled = launch(disabledRoot);
+    await checkDisabled(await disabled.event("ready"));
+    await disabled.stop();
+    const relaySnapshot = path.join(root, "disabled-relay-snapshot");
+    await exec(hostBinary, ["--data-dir", disabledRoot, "--backup", relaySnapshot]);
+    await rename(disabledRoot, path.join(root, "preserved-disabled-relay-node"));
+    await exec(hostBinary, ["--data-dir", disabledRoot, "--restore", relaySnapshot]);
+    assert.deepEqual(await readFile(path.join(disabledRoot, "identity.json")), identity);
+    for (const [name, bytes] of [["config.json", configuration], ["certificates.json", cache]]) {
+      assert.deepEqual(await readFile(path.join(relayRoot, name)), bytes);
+      if (process.platform !== "win32") assert.equal((await stat(path.join(relayRoot, name))).mode & 0o777, 0o600);
+    }
+    disabled = launch(disabledRoot);
+    const recoveredRelay = await disabled.event("ready");
+    assert.equal(recoveredRelay.origin, first.origin);
+    assert.equal(recoveredRelay.nodeId, first.nodeId);
+    await checkDisabled(recoveredRelay);
+    await disabled.stop();
+  });
   if (process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE) {
     const previewFile = path.resolve(process.env.CONVENE_WIRE_LOCAL_NODE_PREVIEW_FILE);
     running = launch();

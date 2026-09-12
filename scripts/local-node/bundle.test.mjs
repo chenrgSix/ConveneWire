@@ -22,7 +22,16 @@ test("native Hub starts without PATH tools; SQLite, static Web and exhaustive ta
   let exited;
   try {
     const output = path.join(root, "hub with spaces");
-    const manifest = await buildBundle(output);
+    const inheritedProfile = process.env.CONVENE_WIRE_RELAY_PROFILE_FILE;
+    let manifest;
+    try {
+      process.env.CONVENE_WIRE_RELAY_PROFILE_FILE = path.join(root, "must-not-implicitly-read.json");
+      manifest = await buildBundle(output);
+    } finally {
+      if (inheritedProfile === undefined) delete process.env.CONVENE_WIRE_RELAY_PROFILE_FILE;
+      else process.env.CONVENE_WIRE_RELAY_PROFILE_FILE = inheritedProfile;
+    }
+    assert.equal(manifest.files.some(item => item.path === "relay-service.json"), false);
     assert.equal(manifest.nodeVersion, process.version);
     assert.ok(manifest.files.some((item) => item.path.includes("/migrations/")));
     assert.ok(!manifest.files.some((item) => /node_modules\/(typescript|tsx|npm)\//u.test(item.path)));

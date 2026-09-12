@@ -359,6 +359,60 @@ desktop ZIP before extraction. Python is used by these ZIP regression checks
 (`python` on Windows, `python3` elsewhere). Native build and launch continue to
 use the current-platform `bundle.mjs verify` admission.
 
+### Optional Relay service profile
+
+OPS-024 lets an operator include one public `RelayServiceProfile` from
+[ADR-0070](adr/0070-relay-tunnel-access.md) in a distribution. The operator
+must already provide the Relay, Node domain and CA configuration; packaging
+does not deploy a service, change DNS, contact a CA or enable access for users.
+The Node Owner still reviews the provider and explicitly accepts the service
+and automatic certificate terms before enabling access.
+
+The profile is a regular JSON file, not a symlink, at most 16 KiB. Its exact
+closed-schema fields are `schemaVersion: 1`, `id`, `displayName`, `relayOrigin`,
+`nodeDomain`, `acmeDirectoryUrl` and `termsUrl`. Origins and service URLs use
+HTTPS. This file is public distribution data: never put tokens, account keys,
+private material or credential-bearing URLs into it. Unknown fields, duplicate
+JSON keys, malformed UTF-8, unsafe URLs and oversized files are rejected.
+
+```sh
+npm run check:relay-profile -- /operator/relay-service.json
+node scripts/local-node/bundle.mjs build dist/relay-hub --relay-profile /operator/relay-service.json
+node scripts/local-node/bundle.mjs verify dist/relay-hub
+npm run package:local-node -- /absolute/new-output --relay-profile /operator/relay-service.json
+```
+
+The selected bytes are copied unchanged to `relay-service.json` at the Hub
+bundle root. The existing exhaustive manifest includes its exact size and
+SHA-256, and both native-target and release-target JavaScript inspection also
+validate its schema. CLI output reports the selected profile digest, or `null`
+when absent. The source commit and clean/modified state continue to describe
+the actual checkout; selecting a profile cannot make a modified build clean.
+Existing saved Node profiles retain their prior service decision when a new
+distribution supplies a different profile.
+
+Library callers pass the explicit `relayProfileFile` option to `buildBundle`.
+By default neither library nor CLI reads `CONVENE_WIRE_RELAY_PROFILE_FILE`;
+an inherited environment variable cannot silently add a provider. CI or a
+local operator may explicitly opt into that environment input for one command:
+
+```sh
+CONVENE_WIRE_RELAY_PROFILE_FILE=/operator/relay-service.json node scripts/local-node/bundle.mjs build dist/relay-hub-env --relay-profile-env
+```
+
+The desktop wrapper accepts the same `--relay-profile-env` flag. Combining it
+with `--relay-profile` is rejected, and the profile environment variable is
+removed before invoking the lower-level native packager. Without either
+option the bundle contains no profile and the UI reports that the service is
+not configured, while advanced manual HTTPS remains available. Temporary Hub
+and desktop staging retain the existing cleanup behavior; no extra app is
+installed or left expanded by selecting a profile.
+
+`npm run test:local-hub-bundle` covers profile parsing, explicit selection,
+missing-profile compatibility, schema and inventory tampering, and native
+bundled contracts/SQLite loading with an empty PATH. It uses a disposable
+profile with test domains and makes no external Relay or CA requests.
+
 ## Local Node desktop and recovery
 
 `node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-ingress-configuration.test.ts test/native-peer-ingress.test.ts test/local-node.test.ts test/peer-human-entry.test.ts`

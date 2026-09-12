@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { copyFile, lstat, mkdir, readdir, readFile, rename, rm, chmod, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readRelayProfile, relayProfileFilename, relayProfileOption } from "./relay-profile.mjs";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const manifestName = "hub-manifest.json";
@@ -17,7 +18,10 @@ async function inventory(root, relative = "") {
     const stat = await lstat(path.join(root, key));
     if (stat.isSymbolicLink() || (!stat.isFile() && !stat.isDirectory())) throw new Error(`Unsupported bundle entry: ${key}`);
     if (stat.isDirectory()) files.push(...await inventory(root, key));
-    else if (key !== manifestName) files.push({ path: key, size: stat.size, sha256: digest(await readFile(path.join(root, key))) });
+    else if (key !== manifestName) {
+      const bytes = key === relayProfileFilename ? (await readRelayProfile(path.join(root, key))).bytes : await readFile(path.join(root, key));
+      files.push({ path: key, size: bytes.length, sha256: digest(bytes) });
+    }
   }
   return files;
 }
@@ -116,9 +120,10 @@ function productionPackages(lock) {
   return result;
 }
 
-export async function buildBundle(output, { root = repository, node = process.execPath, nodeLicense, releaseVersion = "v0.0.0-local" } = {}) {
+export async function buildBundle(output, { root = repository, node = process.execPath, nodeLicense, relayProfileFile, releaseVersion = "v0.0.0-local" } = {}) {
   output = path.resolve(output);
   try { await lstat(output); throw new Error("Hub output already exists"); } catch (error) { if (error.code !== "ENOENT") throw error; }
+  const relayProfile = relayProfileFile === undefined ? undefined : await readRelayProfile(relayProfileFile);
   const nodeVersion = execFileSync(node, ["--version"], { encoding: "utf8" }).trim();
   if (!/^v22\.\d+\.\d+$/u.test(nodeVersion)) throw new Error("Hub requires Node 22");
   const target = JSON.parse(execFileSync(node, ["-p", "JSON.stringify([process.platform,process.arch])"], { encoding: "utf8" }));
@@ -147,6 +152,7 @@ export async function buildBundle(output, { root = repository, node = process.ex
     await copyFile(node, executable);
     await chmod(executable, 0o755);
     await writeFile(path.join(staging, "NODE-LICENSE"), licenseText);
+    if (relayProfile) await writeFile(path.join(staging, relayProfileFilename), relayProfile.bytes, { flag: "wx", mode: 0o644 });
     execFileSync(executable, ["-e", "const D=require('better-sqlite3');const db=new D(':memory:');if(db.prepare('select 42 as n').get().n!==42)process.exit(1);db.close()"],
       { cwd: staging, env: { PATH: "", ...(process.platform === "win32" ? { SystemRoot: process.env.SystemRoot } : {}) }, stdio: "pipe" });
     const manifest = { schemaVersion: 1, releaseVersion, platform: process.platform, arch: process.arch, nodeVersion, sourceCommit, sourceState, files: await inventory(staging) };
@@ -159,7 +165,11 @@ export async function buildBundle(output, { root = repository, node = process.ex
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [command, directory, ...extra] = process.argv.slice(2);
-  if (!directory || extra.length || !["build", "verify"].includes(command)) throw new Error("Usage: bundle.mjs build|verify DIRECTORY");
-  const result = command === "build" ? await buildBundle(directory, { nodeLicense: process.env.CONVENE_WIRE_NODE_LICENSE, releaseVersion: process.env.RELEASE_TAG ?? "v0.0.0-local" }) : await verifyBundle(directory);
-  console.log(JSON.stringify({ platform: result.platform, arch: result.arch, nodeVersion: result.nodeVersion, sourceCommit: result.sourceCommit, files: result.files.length }));
+  if (!directory || !["build", "verify"].includes(command) || (command === "verify" && extra.length)) {
+    throw new Error("Usage: bundle.mjs build DIRECTORY [--relay-profile FILE | --relay-profile-env], or bundle.mjs verify DIRECTORY");
+  }
+  const result = command === "build" ? await buildBundle(directory, { nodeLicense: process.env.CONVENE_WIRE_NODE_LICENSE,
+    releaseVersion: process.env.RELEASE_TAG ?? "v0.0.0-local", relayProfileFile: relayProfileOption(extra) }) : await verifyBundle(directory);
+  console.log(JSON.stringify({ platform: result.platform, arch: result.arch, nodeVersion: result.nodeVersion, sourceCommit: result.sourceCommit,
+    sourceState: result.sourceState, files: result.files.length, relayProfileSha256: result.files.find(entry => entry.path === relayProfileFilename)?.sha256 ?? null }));
 }
