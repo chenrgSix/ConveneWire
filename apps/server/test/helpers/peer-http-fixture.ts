@@ -1,4 +1,4 @@
-/** Disposable TLS facade over the real Server for Go/Node Peer interoperability tests. */
+/** Disposable direct TLS facade or complete native Relay Hub for Go/Node Peer interoperability. */
 import https from "node:https";
 import type { Duplex } from "node:stream";
 import path from "node:path";
@@ -18,96 +18,136 @@ import { AgentTaskRepository } from "../../src/task/task-repository.js";
 import { MessageService } from "../../src/team-room/message-service.js";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import type { DiscussionView } from "../../src/discussion/discussion-orchestrator.js";
+import type { TestContext } from "node:test";
+import { relayRuntimeFixture, untilRelay } from "./relay-runtime-fixture.js";
 
-const [directory, certFile, keyFile, initialNow] = process.argv.slice(2) as [string, string, string, string];
+const [directory, certFile, keyFile, initialNow, transport] = process.argv.slice(2) as [string, string, string, string, string?];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
-let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, dropNextLeave = true, previewRequests = 0, runtimeUpgrades = 0;
-let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
-const runtimeSockets = new Set<Duplex>();
-const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
-  try {
-    if (!app) { response.writeHead(503).end(); return; }
-    const chunks: Buffer[] = []; let size = 0;
-    for await (const chunk of request) {
-      const bytes = Buffer.from(chunk); size += bytes.length;
-      const maximum = ["/api/peer/agents/sync", "/api/peer/runs/events"].includes(request.url ?? "") ? 1024 * 1024 : request.url === "/api/peer/runs/poll" ? 64 * 1024 : 16 * 1024;
-      if (size > maximum) { response.writeHead(413).end(); return; }
-      chunks.push(bytes);
-    }
-    if (request.url === "/api/peer/invitations/preview") previewRequests++;
-    const result = await app.inject({ method: request.method as "POST", url: request.url!, headers: request.headers, payload: Buffer.concat(chunks) });
-    if (request.url === "/api/peer/invitations/claim" && result.statusCode === 200 && dropNextClaim) {
-      dropNextClaim = false;
-      request.socket.destroy(); // Commit succeeded; the Participant receives no receipt.
-      return;
-    }
-    if (request.url === "/api/peer/agents/offers" && result.statusCode === 200 && dropNextOffer) {
-      dropNextOffer = false;
-      request.socket.destroy();
-      return;
-    }
-    if (request.url === "/api/peer/agents/sync" && result.statusCode === 200 && dropNextSync) {
-      dropNextSync = false;
-      request.socket.destroy();
-      return;
-    }
-    if (request.url === "/api/peer/memberships/leave" && result.statusCode === 200 && dropNextLeave) {
-      dropNextLeave = false;
-      request.socket.destroy();
-      return;
-    }
-    response.writeHead(result.statusCode, result.headers as Record<string, string>);
-    response.end(result.rawPayload);
-  } catch { response.writeHead(500).end(); }
-});
-listener.on("upgrade", (request, socket, head) => {
-  if (!app) { socket.destroy(); return; }
-  runtimeUpgrades++;
-  runtimeSockets.add(socket);
-  socket.once("close", () => runtimeSockets.delete(socket));
-  app.server.emit("upgrade", request, socket, head);
-});
-await new Promise<void>((resolve, reject) => { listener.once("error", reject); listener.listen(0, "127.0.0.1", resolve); });
-const address = listener.address();
-if (!address || typeof address === "string") throw new Error("fixture listener address");
-const origin = `https://127.0.0.1:${address.port}`;
-const databasePath = path.join(directory, "host.sqlite");
-const openHost = () => createServerApp({ databasePath, logger: false, clock: () => now,
-  webAuth: { mode: "trusted-team", publicOrigin: origin, ownerRecoveryToken: "peer-local-fixture-owner-0123456789" } });
-app = await openHost();
-await app.ready();
-const database = openDatabase(databasePath);
-const core = new CoreRepository(database), auth = new AuthService(database, () => now);
-const authority = new AuthorityService(database, origin), peers = new PeerAdmissionService(database, auth, authority);
-const agents = new PeerAgentService(database, auth, authority, peers);
-const ownerId = "user_tlsowner001", memberId = "member_tlsowner001", teamId = "team_tlsfixture001", roomId = "room_tlsinvited001";
-core.createUser({ userId: ownerId, displayName: "Fixture Owner", createdAt: now });
-core.createTeamWithOwner({ teamId, name: "TLS Host Team", createdAt: now }, { memberId, userId: ownerId, teamId, displayName: "Fixture Owner", role: "owner", createdAt: now });
-core.createRoom({ roomId, teamId, name: "Invited Room", createdAt: now });
-const expiry = new Date(Date.parse(now) + 24 * 3600_000).toISOString();
-const session = auth.issueWebSession(ownerId, now, expiry), owner = auth.authenticateWebSession(session.secret, now);
-const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId: "op_tlsfixtureinvite001", scope: { kind: "room", teamId, roomId },
-  expiresAt: new Date(Date.parse(now) + 3600_000).toISOString(), membershipExpiresAt: expiry }, now);
-process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret }) + "\n");
+const cleanups: Array<() => void | Promise<void>> = [];
+const context = {after: (cleanup: () => void | Promise<void>) => cleanups.push(cleanup)} as unknown as TestContext;
 try {
+  let now = initialNow, dropNextClaim = true, dropNextOffer = true, dropNextSync = true, dropNextLeave = true, previewRequests = 0, runtimeUpgrades = 0;
+  let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
+  const runtimeSockets = new Set<Duplex>();
+  let relayBase: Awaited<ReturnType<typeof relayRuntimeFixture>> | undefined;
+  let relayNode: Awaited<ReturnType<Awaited<ReturnType<typeof relayRuntimeFixture>>["node"]>> | undefined;
+  if (transport === "relay") {
+    relayBase = await relayRuntimeFixture(context);
+    relayBase.ca.now = Date.parse(now);
+    relayNode = await relayBase.node("GoPeerHost", {configureApp: host => {
+      host.addHook("onRequest", async request => {if (request.url === "/api/peer/invitations/preview") previewRequests++;});
+      host.addHook("onSend", async (request, reply, payload) => {
+        if (reply.statusCode !== 200) return payload;
+        let drop = false;
+        if (request.url === "/api/peer/invitations/claim" && dropNextClaim) {dropNextClaim = false; drop = true;}
+        if (request.url === "/api/peer/agents/offers" && dropNextOffer) {dropNextOffer = false; drop = true;}
+        if (request.url === "/api/peer/agents/sync" && dropNextSync) {dropNextSync = false; drop = true;}
+        if (request.url === "/api/peer/memberships/leave" && dropNextLeave) {dropNextLeave = false; drop = true;}
+        if (drop) request.raw.socket.destroy();
+        return payload;
+      });
+      host.server.on("upgrade", (_request, socket) => {
+        runtimeUpgrades++; runtimeSockets.add(socket); socket.once("close", () => runtimeSockets.delete(socket));
+      });
+    }});
+    relayNode.runtime.start();
+    await untilRelay(() => relayNode!.runtime.status().state === "ready", "Go Peer Relay route did not become ready", 20000);
+  }
+  const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
+    try {
+      if (!app) { response.writeHead(503).end(); return; }
+      const chunks: Buffer[] = []; let size = 0;
+      for await (const chunk of request) {
+        const bytes = Buffer.from(chunk); size += bytes.length;
+        const maximum = ["/api/peer/agents/sync", "/api/peer/runs/events"].includes(request.url ?? "") ? 1024 * 1024 : request.url === "/api/peer/runs/poll" ? 64 * 1024 : 16 * 1024;
+        if (size > maximum) { response.writeHead(413).end(); return; }
+        chunks.push(bytes);
+      }
+      if (request.url === "/api/peer/invitations/preview") previewRequests++;
+      const result = await app.inject({ method: request.method as "POST", url: request.url!, headers: request.headers, payload: Buffer.concat(chunks) });
+      if (request.url === "/api/peer/invitations/claim" && result.statusCode === 200 && dropNextClaim) {
+        dropNextClaim = false;
+        request.socket.destroy(); // Commit succeeded; the Participant receives no receipt.
+        return;
+      }
+      if (request.url === "/api/peer/agents/offers" && result.statusCode === 200 && dropNextOffer) {
+        dropNextOffer = false;
+        request.socket.destroy();
+        return;
+      }
+      if (request.url === "/api/peer/agents/sync" && result.statusCode === 200 && dropNextSync) {
+        dropNextSync = false;
+        request.socket.destroy();
+        return;
+      }
+      if (request.url === "/api/peer/memberships/leave" && result.statusCode === 200 && dropNextLeave) {
+        dropNextLeave = false;
+        request.socket.destroy();
+        return;
+      }
+      response.writeHead(result.statusCode, result.headers as Record<string, string>);
+      response.end(result.rawPayload);
+    } catch { response.writeHead(500).end(); }
+  });
+  listener.on("upgrade", (request, socket, head) => {
+    if (!app) { socket.destroy(); return; }
+    runtimeUpgrades++;
+    runtimeSockets.add(socket);
+    socket.once("close", () => runtimeSockets.delete(socket));
+    app.server.emit("upgrade", request, socket, head);
+  });
+  cleanups.push(async () => {listener.closeAllConnections(); if (listener.listening) await new Promise<void>(resolve => listener.close(() => resolve()));});
+  if (!relayNode) await new Promise<void>((resolve, reject) => { listener.once("error", reject); listener.listen(0, "127.0.0.1", resolve); });
+  const address = listener.address();
+  if (!relayNode && (!address || typeof address === "string")) throw new Error("fixture listener address");
+  const origin = relayNode?.origin ?? `https://127.0.0.1:${(address as {port: number}).port}`;
+  const databasePath = relayNode?.databasePath ?? path.join(directory, "host.sqlite");
+  const openHost = () => createServerApp({ databasePath, logger: false, clock: () => now,
+    webAuth: { mode: "trusted-team", publicOrigin: origin, ownerRecoveryToken: "peer-local-fixture-owner-0123456789" } });
+  app = relayNode?.app ?? await openHost();
+  if (!relayNode) cleanups.push(() => app!.close());
+  await app.ready();
+  const database = openDatabase(databasePath);
+  cleanups.push(() => database.close());
+  const core = new CoreRepository(database), auth = new AuthService(database, () => now);
+  const authority = new AuthorityService(database, origin, relayNode?.launch), peers = new PeerAdmissionService(database, auth, authority);
+  const agents = new PeerAgentService(database, auth, authority, peers);
+  const ownerId = relayNode?.launch.identity.ownerUserId ?? "user_tlsowner001", teamId = relayNode?.team.teamId ?? "team_tlsfixture001",
+    memberId = relayNode ? core.listMembers(teamId).find(member => member.userId === ownerId)!.memberId : "member_tlsowner001",
+    roomId = relayNode?.room.roomId ?? "room_tlsinvited001";
+  if (!relayNode) {
+    core.createUser({ userId: ownerId, displayName: "Fixture Owner", createdAt: now });
+    core.createTeamWithOwner({ teamId, name: "TLS Host Team", createdAt: now }, { memberId, userId: ownerId, teamId, displayName: "Fixture Owner", role: "owner", createdAt: now });
+    core.createRoom({ roomId, teamId, name: "Invited Room", createdAt: now });
+  }
+  const expiry = new Date(Date.parse(now) + 24 * 3600_000).toISOString();
+  const session = auth.issueWebSession(ownerId, now, expiry), owner = auth.authenticateWebSession(session.secret, now);
+  const ownerHeaders = () => relayNode?.ownerHeaders ?? {origin, cookie: `__Host-agentroom_session=${session.secret}`};
+  const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId: "op_tlsfixtureinvite001", scope: { kind: "room", teamId, roomId },
+    expiresAt: new Date(Date.parse(now) + 3600_000).toISOString(), membershipExpiresAt: expiry }, now);
+  process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret,
+    ...(relayBase ? {relayAddress: `127.0.0.1:${relayBase.tlsPort}`, caCertificatePem: relayBase.ca.ca.toString()} : {}) }) + "\n");
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
     const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string; discussionId?: string };
     if (command.action === "stop") break;
-    if (command.action === "clock") now = command.now!;
+    if (command.action === "clock") {now = command.now!; if (relayBase) relayBase.ca.now = Date.parse(now);}
     else if (command.action === "drop-runtime") {
       for (const socket of runtimeSockets) socket.destroy();
     }
     else if (command.action === "restart-host") {
-      const old = app;
-      app = undefined;
-      await old.close();
-      app = await openHost();
-      await app.ready();
+      if (relayNode) {await relayNode.restart(); app = relayNode.app;}
+      else {
+        const old = app;
+        app = undefined;
+        await old.close();
+        app = await openHost();
+        await app.ready();
+      }
     }
     else if (command.action === "revoke") peers.revokeMembership(owner, command.membershipId!, now);
     else if (command.action === "cancel-run") {
       const response = await app.inject({ method: "POST", url: `/api/runs/${command.runId!}/cancel`,
-        headers: { origin, cookie: `__Host-agentroom_session=${session.secret}` }, payload: { reason: "Offline Peer cancellation fixture" } });
+        headers: ownerHeaders(), payload: { reason: "Offline Peer cancellation fixture" } });
       if (response.statusCode !== 200) throw new Error(`fixture cancellation returned ${response.statusCode}`);
     }
     else if (command.action === "accept-agent") {
@@ -135,7 +175,7 @@ try {
       continue;
     }
     else if (command.action === "create-discussion") {
-      const headers = { origin, cookie: `__Host-agentroom_session=${session.secret}` };
+      const headers = ownerHeaders();
       const registered = await app.inject({ method: "POST", url: `/api/teams/${teamId}/fake-agents`, headers,
         payload: { name: "Host offline contributor", role: "Reviewer" } });
       if (registered.statusCode !== 200) throw new Error(registered.body);
@@ -160,7 +200,7 @@ try {
     }
     else if (command.action === "discussion-state") {
       const response = await app.inject({ method: "GET", url: `/api/discussions/${command.discussionId!}`,
-        headers: { cookie: `__Host-agentroom_session=${session.secret}` } });
+        headers: ownerHeaders() });
       if (response.statusCode !== 200) throw new Error(response.body);
       process.stdout.write(response.body + "\n");
       continue;
@@ -180,8 +220,7 @@ try {
     process.stdout.write(JSON.stringify({ ...counts as object, previewRequests, runtimeUpgrades, offers, acceptances, enabledPeers, departures }) + "\n");
   }
 } finally {
-  await app.close();
-  listener.closeIdleConnections();
-  await new Promise<void>(resolve => listener.close(() => resolve()));
-  database.close();
+  const failures: unknown[] = [];
+  for (const cleanup of cleanups.reverse()) {try {await cleanup();} catch (error) {failures.push(error);}}
+  if (failures.length) throw new AggregateError(failures, "Peer fixture cleanup failed");
 }

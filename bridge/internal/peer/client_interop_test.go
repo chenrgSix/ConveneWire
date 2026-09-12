@@ -16,9 +16,11 @@ import (
 	"math/big"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"testing"
 	"time"
 
@@ -31,11 +33,30 @@ type peerHTTPFixture struct {
 	Host           wire.PeerNodeIdentity `json:"host"`
 	Invitation     wire.PeerInvitation   `json:"invitation"`
 	Secret         string                `json:"secret"`
+	RelayAddress   string                `json:"relayAddress"`
+	CACertificate  string                `json:"caCertificatePem"`
 	roots          *x509.CertPool
 	certificatePEM []byte
 	command        *exec.Cmd
 	input          io.WriteCloser
 	lines          *bufio.Scanner
+}
+
+type peerFixtureOutput struct {
+	mu     sync.Mutex
+	buffer bytes.Buffer
+}
+
+func (out *peerFixtureOutput) Write(value []byte) (int, error) {
+	out.mu.Lock()
+	defer out.mu.Unlock()
+	return out.buffer.Write(value)
+}
+
+func (out *peerFixtureOutput) String() string {
+	out.mu.Lock()
+	defer out.mu.Unlock()
+	return out.buffer.String()
 }
 
 func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
@@ -69,6 +90,9 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		t.Fatal(err)
 	}
 	process := exec.Command("node", "--import", "tsx", "apps/server/test/helpers/peer-http-fixture.ts", directory, certFile, keyFile, now.Format(peerTimeFormat))
+	if os.Getenv("CONVENE_WIRE_PEER_RELAY_FIXTURE") == "1" {
+		process.Args = append(process.Args, "relay")
+	}
 	process.Dir = root
 	output, err := process.StdoutPipe()
 	if err != nil {
@@ -78,7 +102,7 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var stderr bytes.Buffer
+	var stderr peerFixtureOutput
 	process.Stderr = &stderr
 	if err = process.Start(); err != nil {
 		t.Fatal(err)
@@ -103,12 +127,18 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 	scanner.Buffer(make([]byte, 4096), 1<<20)
 	ready := make(chan bool, 1)
 	go func() { ready <- scanner.Scan() }()
+	startupTimeout := 30 * time.Second
+	if os.Getenv("CONVENE_WIRE_PEER_RELAY_FIXTURE") == "1" {
+		// Let the fixture's bounded 120-second daemon build report and clean up
+		// before this outer process deadline, including under CI contention.
+		startupTimeout = 150 * time.Second
+	}
 	select {
 	case ok := <-ready:
 		if !ok {
 			t.Fatalf("Peer fixture startup: %s", stderr.String())
 		}
-	case <-time.After(30 * time.Second):
+	case <-time.After(startupTimeout):
 		_ = process.Process.Kill()
 		t.Fatal("Peer fixture startup timeout")
 	}
@@ -117,6 +147,9 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		t.Fatal("invalid Peer fixture readiness")
 	}
 	f.roots = x509.NewCertPool()
+	if f.RelayAddress != "" {
+		certPEM = []byte(f.CACertificate)
+	}
 	f.certificatePEM = certPEM
 	if !f.roots.AppendCertsFromPEM(certPEM) {
 		t.Fatal("fixture CA")
@@ -125,6 +158,25 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 	f.input = input
 	f.lines = scanner
 	return &f
+}
+
+// Fixture-only DNS mapping. The actual public origin, TLS ServerName, CA roots,
+// Host proof and all Peer authorization remain unchanged in the real client.
+func (f *peerHTTPFixture) routeClient(t *testing.T, client *Client) {
+	t.Helper()
+	if f.RelayAddress == "" {
+		return
+	}
+	origin, err := url.Parse(f.Origin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	client.transport.DialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
+		if address != origin.Host {
+			return nil, errors.New("Relay fixture refused non-pinned destination")
+		}
+		return (&net.Dialer{Timeout: 5 * time.Second}).DialContext(ctx, network, f.RelayAddress)
+	}
 }
 func (f *peerHTTPFixture) control(t *testing.T, value any) map[string]int {
 	t.Helper()

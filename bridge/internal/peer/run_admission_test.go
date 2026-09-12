@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -15,7 +16,12 @@ import (
 
 func executionTLSFixture(t *testing.T) (*peerHTTPFixture, *Client, *Store, string, wire.PeerExecutionBinding, time.Time) {
 	t.Helper()
-	return executionTLSFixtureSource(t, fixtureExportSource(), time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC))
+	now := time.Date(2026, 9, 10, 2, 0, 0, 0, time.UTC)
+	if os.Getenv("CONVENE_WIRE_PEER_RELAY_FIXTURE") == "1" {
+		// The ACME fixture generates real certificates with current validity.
+		now = time.Now().UTC().Truncate(time.Millisecond)
+	}
+	return executionTLSFixtureSource(t, fixtureExportSource(), now)
 }
 
 func executionTLSFixtureSource(t *testing.T, source ExportSource, now time.Time) (*peerHTTPFixture, *Client, *Store, string, wire.PeerExecutionBinding, time.Time) {

@@ -327,6 +327,11 @@ func TestPeerRunEventProjectionKeepsNativeSessionPrivateAndRedactsNestedContent(
 }
 
 func TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild(t *testing.T) {
+	assertPeerRunUsesActualHostAndRestrictedNativeChild(t)
+}
+
+func assertPeerRunUsesActualHostAndRestrictedNativeChild(t *testing.T) {
+	t.Helper()
 	f, client, connectors, partition, binding := runExecutionFixture(t)
 	store, membership := connectors.store, partition.receipt.MembershipID
 	connection, err := client.ConnectRuntime(context.Background(), store, membership)

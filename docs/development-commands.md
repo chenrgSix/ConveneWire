@@ -413,6 +413,31 @@ missing-profile compatibility, schema and inventory tampering, and native
 bundled contracts/SQLite loading with an empty PATH. It uses a disposable
 profile with test domains and makes no external Relay or CA requests.
 
+### Relay local verification
+
+The following tests use owned temporary roots, disposable local CA/DNS fixtures
+and the actual Go Relay daemon. They require the locked Node dependencies and
+Go 1.26.7, and do not use a public service, real CA or paid model. Run the Go
+interop and native bundle suites serially to avoid competing cold Go builds.
+
+```sh
+node scripts/test/run-with-temp-root.mjs --timeout-ms 300000 --cwd apps/server -- node --import tsx --test --test-concurrency=1 test/relay-settings.test.ts test/relay-certificates.test.ts test/relay-connector.test.ts test/relay-runtime.test.ts test/relay-readiness.test.ts test/relay-restore.test.ts
+node scripts/test/run-with-temp-root.mjs --timeout-ms 300000 --cwd bridge -- go test -race ./internal/peer -run '^TestGoRelay' -count=1
+node scripts/test/run-with-temp-root.mjs --cwd bridge -- go vet ./internal/peer
+npm run build:local-hub
+npm run test:local-hub-bundle
+npm run test:local-node
+```
+
+For a bounded manual inspection of the production Web, first build the Hub,
+then set `CONVENE_WIRE_RELAY_PREVIEW_FILE` to a new private temporary JSON path
+and run `apps/server/test/relay-browser-fixture.test.ts` through the same wrapper
+with a 600000 ms outer timeout. The private file contains one-use local Owner
+entry URLs. Close its browser tabs and create the sibling `.done` file to stop
+early; normal teardown removes both files, the local services and fixture data.
+The preview does not install or bypass browser certificate trust. Observed
+results and their limits are in [QA-093](acceptance/qa-093-relay-access.md).
+
 ## Local Node desktop and recovery
 
 `node scripts/test/run-with-temp-root.mjs --cwd apps/server -- node --import tsx --test test/peer-ingress-configuration.test.ts test/native-peer-ingress.test.ts test/local-node.test.ts test/peer-human-entry.test.ts`

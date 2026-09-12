@@ -68,6 +68,7 @@ func runtimeTLSParticipantAt(t *testing.T, now time.Time) (*peerHTTPFixture, *Cl
 	if err != nil {
 		t.Fatal(err)
 	}
+	f.routeClient(t, client)
 	t.Cleanup(client.Close)
 	client.clock = func() time.Time { return now }
 	operation := "op_tlsruntimeclaim001"

@@ -16,6 +16,11 @@ import (
 // API. Both remote turns run the actual restricted native Pi process adapter.
 // This proves the Peer/Host protocol path, not physical Device UI acceptance.
 func TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization(t *testing.T) {
+	assertPeerDiscussionUsesNativeSessionsAndFrozenFinalization(t)
+}
+
+func assertPeerDiscussionUsesNativeSessionsAndFrozenFinalization(t *testing.T) {
+	t.Helper()
 	f, client, c, partition, initial := runExecutionFixture(t, "pi")
 	f.control(t, map[string]any{"action": "cancel-run", "runId": initial.RunID})
 	var created struct{ DiscussionID, PeerRunID string }

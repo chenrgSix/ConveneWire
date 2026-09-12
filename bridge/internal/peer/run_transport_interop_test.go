@@ -14,6 +14,11 @@ import (
 // Exercises the production Host routes and registry through actual TLS and its
 // signed Peer WebSocket, before the native execution coordinator is composed.
 func TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost(t *testing.T) {
+	assertPeerRunDeliveryEventsAndRevokedSettlementUseActualHost(t)
+}
+
+func assertPeerRunDeliveryEventsAndRevokedSettlementUseActualHost(t *testing.T) {
+	t.Helper()
 	f, client, store, membershipID, binding, now := executionTLSFixture(t)
 	connection, err := client.ConnectRuntime(context.Background(), store, membershipID)
 	if err != nil {
