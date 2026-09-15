@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-15",
+  "sourceCommit": "acab8a33de113b020eec4b0bbae90ded9140567c",
+  "sourceState": "clean",
+  "releaseVersion": "v0.0.0-local",
+  "platform": "darwin",
+  "arch": "arm64",
+  "hostOS": "macOS 26.6.2 (25G83)",
+  "declaredMinimumOS": "12.0",
+  "minimumOSHardwareTested": false,
+  "archivePath": "dist/local-node-qa092-relay-acab8a33/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+  "archiveBytes": 78320335,
+  "archiveSha256": "f927336198b4b6146bfa045c10e97226ae3cc291ec37dba340561face7f2e487",
+  "manifestSha256": "b04d74a68c69944cd016c50f6a8cbb9b0a0866d691c9d1f566cf1b0aad914911",
+  "hubFilesVerified": 7296,
+  "safeZipPaths": true,
+  "emptyPathRuntime": {
+    "node": "v22.23.1",
+    "sqlite": "3.53.4"
+  },
+  "relayProfileIncluded": false,
+  "installation": {
+    "installedExactMatch": true,
+    "appFiles": 7306,
+    "snapshotFilesVerified": 13,
+    "rollbackZipVerified": true,
+    "rollbackZipSha256": "bbc5885edfe52ac55cb59b6bb5f2d7b6477169ce225e2c71e2ad90bdf0dbcd98"
+  }
+}

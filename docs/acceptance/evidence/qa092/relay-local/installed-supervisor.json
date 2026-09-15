@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "acab8a33de113b020eec4b0bbae90ded9140567c",
+  "suite": "scripts/local-node/supervisor.test.mjs",
+  "execution": "Temporary copy of the existing suite, resolving imports from the repository and substituting the installed Hub and installed convenewire-node for build outputs. Runtime assertions unchanged. The offline protocol executable was built separately from the existing fixture source.",
+  "testsPassed": 2,
+  "testsFailed": 0,
+  "skipped": 0,
+  "suiteDurationMs": 18599.206292,
+  "nativeScenarioDurationMs": 18317.8135,
+  "disabledRelayBackupRestoreDurationMs": 4120.682208,
+  "scenarios": [
+    "Codex and Pi ordinary Run and Discussion with one Finalizer",
+    "native Console and Peer authority negative checks",
+    "single-supervisor lease and port collision rejection",
+    "exact reviewed network save retry and next-startup HTTPS activation",
+    "Peer-only listener rejects Owner/control access",
+    "same-identity restart and stopped backup/restore without replay",
+    "disabled Relay configuration and private certificate cache survive backup/restore without starting ACME"
+  ],
+  "temporaryRootCleaned": true,
+  "externalModelCalls": 0,
+  "publicRelayRequests": 0
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-15",
+  "installedApplicationRegistrations": 1,
+  "installedPath": "/Applications/ConveneWire Bridge.app",
+  "desktopProcesses": 1,
+  "ownedHubProcesses": 1,
+  "fixtureProcessesRemaining": 0,
+  "ownedNativeFixtureRemoved": true,
+  "expandedAppInOutput": false,
+  "packageOutputContainsOnlyArchive": true,
+  "originalOwnerWorkspaceRestored": true,
+  "privateBackupRetained": {
+    "stoppedNodeSnapshot": true,
+    "previousApplicationZip": true,
+    "firstLaunchLog": true
+  },
+  "trayInteraction": "pending_manual_confirmation"
+}

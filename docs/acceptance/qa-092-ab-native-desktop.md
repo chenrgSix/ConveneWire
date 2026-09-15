@@ -7,7 +7,80 @@ observations separately from current V1 interaction and remaining physical gates
 
 ## Current acceptance baseline
 
-The current installed macOS arm64 application is the WEB-089 build from clean
+On 2026-09-15 the owner authorized the latest macOS package and local acceptance.
+The installed arm64 application now comes from clean source
+`acab8a33de113b020eec4b0bbae90ded9140567c`, version `v0.0.0-local`, including
+the Relay/Tunnel implementation. The retained archive is
+`dist/local-node-qa092-relay-acab8a33/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`,
+78,320,335 bytes, SHA-256
+`f927336198b4b6146bfa045c10e97226ae3cc291ec37dba340561face7f2e487`.
+[Package evidence](evidence/qa092/relay-local/installed-package.json) records
+safe ZIP paths, all 7,296 Hub files, exact installed contents, native source/version,
+and bundled Node 22.23.1/SQLite 3.53.4 with an empty PATH. The host is macOS
+26.6.2; the declared 12.0 deployment target is not minimum-OS hardware acceptance.
+
+The application replaced the single `/Applications/ConveneWire Bridge.app`
+installation. A stopped Node snapshot and a verified ZIP of the previous installed
+application were retained in the private owner backup directory. The old archive
+was no longer present at its historical repository path, so the rollback ZIP was
+created from the actual installed application before replacement. No additional
+expanded app was retained. The package contains no Relay service profile:
+convenient access remains disabled, and public deployment/validation is deferred.
+
+## Current local workflow observations
+
+The [installed supervisor suite](evidence/qa092/relay-local/installed-supervisor.json)
+passed both tests in 18.60 seconds. A temporary copy of the existing
+[suite](../../scripts/local-node/supervisor.test.mjs) substituted the installed Hub
+and installed `convenewire-node` for freshly built outputs; its Runtime assertions
+were unchanged. It covers actual offline Codex/Pi Run/Discussion, native Console
+authority negatives, duplicate/port rejection, exact network review/save retry,
+HTTPS activation, Owner/control isolation, and same-identity restart/restore.
+Disabled Relay configuration and private certificate cache also survive restore
+without starting ACME. No public Relay or external model was contacted.
+
+The installed desktop then used an explicitly isolated Node/configuration/Workspace.
+The [actual network dialog](evidence/qa092/relay-local/relay-unconfigured.jpg)
+shows the missing-provider state; advanced manual HTTPS and return navigation work.
+[Both native Agent probes](evidence/qa092/relay-local/agent-probes.jpg) passed in
+the same application window. The temporary offline executable was extended to
+answer the exact readiness instruction: its ordinary reply initially failed the
+probe as expected, and no product validation was relaxed. The real native composer
+submitted [one additional Run](evidence/qa092/relay-local/native-new-run.jpg),
+bringing the fixture to five completed Runs and one completed Discussion.
+
+Closing the window retained the same desktop and Hub PIDs and a healthy listener.
+The tool's direct raise of the hidden window showed a transient `Load failed`
+message; normal single-instance activation refreshed the entry and
+[reopened the healthy workspace](evidence/qa092/relay-local/native-reopened.jpg).
+An isolated Hub-child SIGKILL produced the expected
+[native failure dialog](evidence/qa092/relay-local/hub-failure.jpg).
+Normal application quit returned zero. Both subsequent
+[restart](evidence/qa092/relay-local/after-restart.jpg) and
+[stopped snapshot restore](evidence/qa092/relay-local/after-restore.jpg) reopened
+the same records. [Before recovery](evidence/qa092/relay-local/native-before-close.json),
+[after restart](evidence/qa092/relay-local/native-after-restart.json), and
+[after restore](evidence/qa092/relay-local/native-after-restore.json) match exactly:
+identity, configuration, Team/Room/Task/Run/Discussion rows and the invocation
+journal. Three native quits returned zero; recovery started no additional Run.
+[Lifecycle evidence](evidence/qa092/relay-local/native-lifecycle.json) distinguishes
+these observations from actual tray interaction.
+
+Ordinary launch returned to the [original light workspace](evidence/qa092/relay-local/owner-restored.jpg).
+[Owner preservation](evidence/qa092/relay-local/owner-preservation.json) confirms
+unchanged identity, both configurations, one Team, one Room, one Task and the
+original completed Run. [Final cleanup](evidence/qa092/relay-local/final-cleanup.json)
+confirms removal of the fixture and package staging; one installed application
+registration, one desktop and its Hub remain for the owner.
+
+SystemUIServer inspection still times out, so actual tray open/configure/quit
+requires the requested owner confirmation and is not counted as passed. QA-092
+remains ACTIVE. Independent-owner cross-Node, scoped Host Acceptance, Windows,
+minimum-OS hardware, external-model, CI and publication gates remain separate.
+
+## Historical WEB-089 acceptance baseline
+
+The previous installed macOS arm64 application was the WEB-089 build from clean
 source `d8e2ed673a792cf9d25f4c64f80c43a23e7c9e5a`, version `v0.0.0-local`.
 Its retained archive is
 `dist/local-node-web089-d8e2ed67/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip`,
@@ -30,7 +103,7 @@ Baseline alignment is complete. The local workflow checks below passed; actual
 tray interaction remains unverified, so the whole local physical checklist and
 broader QA-092 gate are not marked complete.
 
-## Current local workflow observations
+## Historical WEB-089 local workflow
 
 On 2026-09-12 the installed `d8e2ed67` bundle ran with disposable Node,
 configuration and Workspace arguments. Its two native offline Codex/Pi Agents

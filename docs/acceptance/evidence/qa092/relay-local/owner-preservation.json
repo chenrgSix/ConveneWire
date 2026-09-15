@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-15",
+  "identityUnchanged": true,
+  "remoteConfigurationUnchanged": true,
+  "localConfigurationUnchanged": true,
+  "tablesByteCanonicalRowsUnchanged": [
+    "teams",
+    "rooms",
+    "agent_tasks",
+    "runs",
+    "discussions"
+  ],
+  "counts": {
+    "teams": 1,
+    "rooms": 1,
+    "agent_tasks": 1,
+    "runs": 1,
+    "discussions": 0
+  },
+  "ownerModelCallsStartedByAcceptance": 0,
+  "originalWorkspaceShown": true,
+  "theme": "light"
+}

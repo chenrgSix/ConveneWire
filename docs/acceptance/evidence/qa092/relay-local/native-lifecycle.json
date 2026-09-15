@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "acab8a33de113b020eec4b0bbae90ded9140567c",
+  "nativeWindowInspected": true,
+  "sameWindowAgentSettings": true,
+  "relayNoProviderStateVisible": true,
+  "advancedManualHttpsRoundTrip": true,
+  "offlineProbeResults": {
+    "codex": {
+      "passed": true,
+      "durationMs": 900
+    },
+    "pi": {
+      "passed": true,
+      "durationMs": 23
+    }
+  },
+  "fixtureAdjustment": "The temporary offline executable replies AGENTROOM_READY to the exact read-only probe instruction. The unchanged ordinary reply first produced RUNTIME_PROBE_REPLY_INVALID; this was a fixture limitation, and no product guard was altered.",
+  "nativeComposerNewRunCompleted": true,
+  "completedRuns": 5,
+  "completedDiscussions": 1,
+  "runtimeInvocationCount": 8,
+  "invocationBreakdown": {
+    "workflowRuns": 5,
+    "probeAttempts": 3
+  },
+  "nativeWindowClose": {
+    "desktopPidUnchanged": true,
+    "hubPidUnchanged": true,
+    "hubHealth": "ready"
+  },
+  "singleInstanceActivation": {
+    "secondaryProcessExitCode": 0,
+    "workspaceRestored": true
+  },
+  "automationObservation": "Raising the hidden window through the desktop tool showed a Load failed message. The normal single-instance activation refreshed the entry and showed a healthy workspace. This does not establish actual tray behavior.",
+  "ownedHubChildKilledForFaultInjection": true,
+  "nativeFailureDialogObserved": true,
+  "applicationQuitExitCodes": [
+    0,
+    0,
+    0
+  ],
+  "sameIdentityRestart": true,
+  "stoppedBackupRestoreAtSamePath": true,
+  "recordsAndJournalMatchAfterRestartAndRestore": true,
+  "trayInteraction": "pending_manual_confirmation",
+  "trayAutomationError": "SystemUIServer inspection: timeoutReached",
+  "externalModelCalls": 0
+}
