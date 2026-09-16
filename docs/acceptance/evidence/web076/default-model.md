@@ -41,6 +41,26 @@ no configuration write. Pi retains explicit-selector support only.
   Codex/Pi execution, Discussion and stopped backup/restore.
 - Documentation lint and diff whitespace checks passed.
 
-Native installed-app evidence will follow the clean implementation commit.
+## Installed macOS verification
+
+The clean implementation commit is `a081d3683034558880be7525db768fa5fa898204`.
+The native arm64 package was verified and installed in place at the existing
+application path. Its 7,306 files match the archive; all 7,296 Hub files and
+empty-PATH Node/SQLite loading passed verification. See
+[package and preservation evidence](installed-package.json).
+
+The existing “本机codex” Agent is ready and now reports `gpt-6-astra`, with a
+non-null metadata timestamp. Both the installed
+[Agent page](installed-model.jpg) and [mention picker](installed-mention.jpg)
+show “配置模型：gpt-6-astra”. The picker was opened without sending a message,
+and its temporary draft was cleared. No model turn was started.
+
+Owner identity, local/remote configuration and canonical rows for Teams, Rooms,
+Tasks, Runs and Discussions were unchanged. The existing single completed Run
+remains the only Run. A stopped snapshot and verified rollback ZIP were retained
+privately; temporary packages, generated schemas and expanded staging apps were
+removed. LaunchServices has one canonical ConveneWire registration, with one
+desktop process and its one Hub process. The app remains open on the Agent page.
+
 These local results do not establish Windows, minimum macOS, CI, public Relay
 or production acceptance.

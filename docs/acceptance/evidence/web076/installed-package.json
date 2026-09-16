@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-16",
+  "sourceCommit": "a081d3683034558880be7525db768fa5fa898204",
+  "sourceState": "clean",
+  "platform": "darwin",
+  "arch": "arm64",
+  "archivePath": "dist/local-node-web076-a081d368/convenewire-bridge-desktop_0.0.0-local_darwin_arm64.zip",
+  "archiveBytes": 78337221,
+  "archiveSha256": "4bcf5e72398590ab64d6180e8add66e15e73ae2d9206f4b82f2843b753e76a9f",
+  "appFiles": 7306,
+  "safeZipPaths": true,
+  "emptyPathRuntimeVerified": true,
+  "relayProfileIncluded": false,
+  "installation": {
+    "installedExactMatch": true,
+    "previousAppMatchedRollbackZip": true,
+    "stoppedSnapshotCreated": true,
+    "canonicalAppPath": "/Applications/ConveneWire Bridge.app"
+  },
+  "hostOS": "macOS 26.6.2 (25G83)",
+  "installedModel": {
+    "name": "本机codex",
+    "presence": "ready",
+    "configured_model": "gpt-6-astra",
+    "model_reported_at": "2026-09-16T04:06:18.727Z"
+  },
+  "ownerPreservation": {
+    "identityUnchanged": true,
+    "localAndRemoteConfigurationUnchanged": true,
+    "tablesCanonicalRowsUnchanged": [
+      "teams",
+      "rooms",
+      "agent_tasks",
+      "runs",
+      "discussions"
+    ],
+    "counts": {
+      "teams": 1,
+      "rooms": 1,
+      "agent_tasks": 1,
+      "runs": 1,
+      "discussions": 0
+    },
+    "ownerModelCallsStarted": 0
+  },
+  "cleanup": {
+    "registeredAppPaths": [
+      "/Applications/ConveneWire Bridge.app"
+    ],
+    "desktopProcesses": 1,
+    "ownedHubProcesses": 1,
+    "temporaryPackageAndSchemaRemoved": true,
+    "expandedStagingAppsRemoved": true
+  }
+}
