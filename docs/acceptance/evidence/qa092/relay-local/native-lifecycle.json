@@ -43,7 +43,11 @@
   "sameIdentityRestart": true,
   "stoppedBackupRestoreAtSamePath": true,
   "recordsAndJournalMatchAfterRestartAndRestore": true,
-  "trayInteraction": "pending_manual_confirmation",
+  "trayInteraction": "passed_owner_confirmed",
   "trayAutomationError": "SystemUIServer inspection: timeoutReached",
-  "externalModelCalls": 0
+  "externalModelCalls": 0,
+  "trayConfirmation": {
+    "date": "2026-09-16",
+    "evidence": "tray-owner-confirmation.json"
+  }
 }

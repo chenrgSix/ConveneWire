@@ -73,10 +73,17 @@ original completed Run. [Final cleanup](evidence/qa092/relay-local/final-cleanup
 confirms removal of the fixture and package staging; one installed application
 registration, one desktop and its Hub remain for the owner.
 
-SystemUIServer inspection still times out, so actual tray open/configure/quit
-requires the requested owner confirmation and is not counted as passed. QA-092
-remains ACTIVE. Independent-owner cross-Node, scoped Host Acceptance, Windows,
-minimum-OS hardware, external-model, CI and publication gates remain separate.
+On 2026-09-16 the owner confirmed that actual tray open-local-space,
+configure-Agent and quit all work. The
+[owner confirmation](evidence/qa092/relay-local/tray-owner-confirmation.json)
+closes the remaining local macOS interaction check for the installed `acab8a33`
+baseline. This is owner-reported physical evidence; the earlier SystemUIServer
+automation timeout and the 2026-09-15 cleanup snapshot remain historical records.
+The latest package and local macOS acceptance are complete.
+
+QA-092 remains ACTIVE for the broader combined acceptance. Independent-owner
+cross-Node, scoped Host Acceptance, Windows, minimum-OS hardware, public Relay,
+external-model, CI and publication gates remain separate.
 
 ## Historical WEB-089 acceptance baseline
 
@@ -256,25 +263,25 @@ gates. Earlier disposable acceptance data remains separate from this real profil
 
 ## Final acceptance procedure
 
-Use the current acceptance baseline and explicit disposable profiles for remaining
-local observations. Do not launch an extracted app without its fixture arguments:
+The current macOS package and local interaction checks, including owner-confirmed
+tray actions on 2026-09-16, are complete. For the remaining observations, use the
+current acceptance baseline and explicit disposable profiles. Do not launch an
+extracted app without its fixture arguments:
 the UI inspector can relaunch a stopped application with default configuration.
 Verify the owned process is alive before inspecting it. Preserve historical
 evidence rather than silently attributing it to the new binary.
 
-1. Check the actual tray's open-local-space, configure-Agent and quit actions;
-   verify closing a window keeps the Hub, while quit drains the Runtime and Hub.
-2. Inspect independent browser entry and complete the reviewed Host/Participant
+1. Inspect independent browser entry and complete the reviewed Host/Participant
    product interaction: invite, Room ceiling, local Export, exact Host Acceptance,
    local approval, remote Run, mixed Discussion and revocation. The existing
    `peer-host-browser-fixture.test.ts` prepares a disposable `Native Host` Team,
    `Invited Room` and the offered `远端代码审阅` Agent (`agent_browserfixture1`).
    Its `Uninvited Room` is outside the offer. The remaining Host click grants
    access only to `Invited Room`; it cannot execute a provider in that fixture.
-3. Use separately consenting human owners and their chosen machines for physical
+2. Use separately consenting human owners and their chosen machines for physical
    cross-Node acceptance. Record exact Node/source/platform identities and scope;
    same-computer TLS fixtures do not replace this observation.
-4. On an explicitly authorized Windows test machine, build the same source and
+3. On an explicitly authorized Windows test machine, build the same source and
    run native install/upgrade/uninstall checks with stopped backups. Record native
    minimum-OS behavior separately. A local macOS archive is not Windows evidence.
 

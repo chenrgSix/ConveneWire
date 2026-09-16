@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-16",
+  "sourceCommit": "acab8a33de113b020eec4b0bbae90ded9140567c",
+  "platform": "darwin",
+  "arch": "arm64",
+  "evidenceType": "owner_reported_physical_interaction",
+  "ownerStatement": "托盘“打开／配置 Agent／退出”都可以",
+  "actions": {
+    "openLocalSpace": "passed",
+    "configureAgent": "passed",
+    "quit": "passed"
+  },
+  "localMacOSAcceptance": "complete",
+  "automatedTrayInteraction": false,
+  "broaderQA092Status": "ACTIVE"
+}
