@@ -26,6 +26,7 @@ import (
 	"convenewire.dev/bridge/internal/identity"
 	"convenewire.dev/bridge/internal/operations"
 	"convenewire.dev/bridge/internal/pairing"
+	bridgeruntime "convenewire.dev/bridge/internal/runtime"
 	contracts "convenewire.dev/contracts/generated/go"
 	execution "convenewire.dev/contracts/generated/go/execution"
 	runtimecontracts "convenewire.dev/contracts/generated/go/runtime"
@@ -307,6 +308,14 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 			return false, err
 		}
 	}
+	// Resolve display metadata before starting the socket heartbeat/handshake.
+	// A slow or unsupported Runtime cannot hold up every configured Agent.
+	modelContext, cancelModels := context.WithTimeout(ctx, 3*time.Second)
+	configuredModels := make(map[string]*string, len(c.Config.Agents))
+	for _, agent := range c.Config.Agents {
+		configuredModels[agent.Name] = bridgeruntime.ConfiguredAgentModel(modelContext, agent)
+	}
+	cancelModels()
 	epoch, err := nextEpoch(c.Config.DataDir)
 	if err != nil {
 		return false, err
@@ -377,7 +386,7 @@ func (c Client) connectOnce(ctx context.Context) (bool, error) {
 			return err
 		}
 		for _, configured := range c.Config.Agents {
-			publication, err := c.agentPublication(configured, identities[configured.Name], prepared)
+			publication, err := c.agentPublication(configured, identities[configured.Name], prepared, configuredModels[configured.Name])
 			if err != nil {
 				return err
 			}

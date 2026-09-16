@@ -2,7 +2,7 @@ import type { Locale } from "../../i18n.js";
 import type { Agent } from "../../models.js";
 
 export function agentModelLabel(agent: Agent, locale: Locale): string {
-  if (!agent.configuredModel?.trim()) return locale === "zh-CN" ? "模型：未上报" : "Model: not reported";
+  if (!agent.configuredModel?.trim()) return locale === "zh-CN" ? "模型：尚未识别" : "Model: not identified";
   const stale = agent.integrationMode === "managed" && agent.presence === "offline";
   const label = locale === "zh-CN"
     ? (stale ? "上次上报模型" : "配置模型")

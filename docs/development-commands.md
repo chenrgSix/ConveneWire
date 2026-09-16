@@ -51,6 +51,7 @@ The contracts Go module pins the selected Go toolchain.
   assertions.
 - `npm run test:bridge` — run all Go Bridge tests with one owned temporary root
   and invocation-scoped Go build and module caches.
+- `CONVENE_WIRE_CODEX_METADATA_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/runtime -run '^TestConfiguredAgentModel'` — optional installed-Codex metadata compatibility check using a disposable home, fake configured model, and only initialization/configuration-read RPCs; no model credentials or turns.
 - `npm run test:bridge-ui` — test embedded Console controllers, including pairing,
   native Space invitations/recovery/browser handoff, local Runtime forms and permission views.
 - `npm run test:qa-evidence` — test the sanitized two-machine acceptance evidence verifier.

@@ -4,6 +4,11 @@
 - Date: 2026-09-08
 - Owner: Registry, Bridge and Web
 
+[ADR-0071](0071-resolve-codex-configured-model.md) amends the argument-only
+acquisition decision for native Codex defaults. The original constraints below
+describe the initial implementation; the display-only and privacy boundaries
+remain in force.
+
 ## Context and decision
 
 The Room owner requested model names beside Agent identities. `WEB-076` adds

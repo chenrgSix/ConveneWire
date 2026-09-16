@@ -74,6 +74,8 @@ func codex() {
 		switch request.Method {
 		case "initialize":
 			respond(map[string]string{"userAgent": "convenewire-offline-fixture"})
+		case "config/read":
+			respond(map[string]any{"config": map[string]string{"model": "fixture-default-codex"}})
 		case "thread/start", "thread/resume":
 			if request.Method == "thread/resume" {
 				if err := json.Unmarshal(request.Params["threadId"], &threadID); err != nil {

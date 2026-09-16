@@ -108,6 +108,13 @@ current Hosted profile model and its creation timestamp without credential
 resolution. This display information neither proves a Run's model nor changes
 model selection, routing or authority (`WEB-076`).
 
+[ADR-0071](../adr/0071-resolve-codex-configured-model.md) extends native Codex
+acquisition to its bounded local `config/read` interface when the normal launch
+command has no explicit model selector. Only the validated effective configuration
+model is published; raw configuration and errors stay local. Resolution happens
+before a connection's handshake and is reused for capability republication.
+Unknown metadata cannot block Agent startup or imply a Run's actual model.
+
 An Owner may disable or re-enable an Agent through
 `PATCH /api/agents/:agentId`. Disablement is fenced while that Agent has active
 Run or Discussion work, preserves Room assignment and history, and remains

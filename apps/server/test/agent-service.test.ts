@@ -109,6 +109,7 @@ test("managed, fake, and manual Agent publications enforce capability ownership"
         supportsStreaming: true
       },
       runtimePolicy: { filesystemAccess: "workspace-write" },
+      configuredModel: "fixture-default-codex",
       workspaceRef: `workspace_${"a".repeat(64)}`,
       workspaceGeneration: "b".repeat(64),
       workspaceAlias: "Payments API",
@@ -122,6 +123,18 @@ test("managed, fake, and manual Agent publications enforce capability ownership"
       runtimePolicy: { filesystemAccess: "read-only" },
       now
     });
+
+    assert.equal(remote.configuredModel, "fixture-default-codex");
+    assert.equal(remote.modelReportedAt, now);
+    assert.equal(republished.configuredModel, null);
+    assert.equal(republished.modelReportedAt, null);
+    assert.equal(repository.getAgent(remote.agentId)?.configuredModel, null);
+    for (const configuredModel of ["sk-private", "/Users/owner/private", "https://provider/model", "a".repeat(121)]) {
+      assert.throws(() => agents.publishDeviceAgent(devicePrincipal, {
+        agentId: remote.agentId, name: "Invalid model", role: "Managed",
+        capabilities: remote.capabilities, configuredModel, now
+      }), /configured model is invalid/u);
+    }
 
     const disabled = agents.setEnabled(principal, remote.agentId, false, now);
     const republishedDisabled = agents.publishDeviceAgent(devicePrincipal, {

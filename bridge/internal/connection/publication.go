@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (c Client) agentPublication(configured config.AgentConfig, agentID string, preparedRuns PreparedRuns) (contracts.AgentPublishMessage, error) {
+func (c Client) agentPublication(configured config.AgentConfig, agentID string, preparedRuns PreparedRuns, configuredModel *string) (contracts.AgentPublishMessage, error) {
 	runtimeScopeID, err := bridgeruntime.AgentRuntimeScopeID(configured)
 	if err != nil {
 		return contracts.AgentPublishMessage{}, fmt.Errorf("resolve Agent Runtime scope: %w", err)
@@ -93,7 +93,7 @@ func (c Client) agentPublication(configured config.AgentConfig, agentID string, 
 			OwnerMemberID:       c.Credential.OwnerMemberID,
 			Role:                configured.Role,
 			RuntimePolicy:       &runtimePolicy,
-			ConfiguredModel:     configured.ConfiguredModel(),
+			ConfiguredModel:     configuredModel,
 			RuntimeScopeID:      &runtimeScopeID,
 			WorkspaceAlias:      &workspaceAlias,
 			WorkspaceRef:        &workspaceSnapshot.WorkspaceRef,

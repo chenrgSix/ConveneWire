@@ -78,6 +78,36 @@ function send(socket: BridgeSocket, value: object): void {
   socket.send(JSON.stringify(value));
 }
 
+test("configured model survives heartbeat and clears when a Bridge cannot identify it", async (t) => {
+  const fixture = await createFixture(t);
+  try {
+    const payload = {
+      agentId, deviceId: fixture.deviceId, ownerMemberId: fixture.ownerMemberId, teamId: fixture.teamId,
+      name: "Model metadata Agent", role: "Protocol Test",
+      capabilities: { invocationMode: "managed", supportsHandoff: false, supportsInterrupt: true,
+        supportsResume: false, supportsStart: true, supportsStreaming: false }
+    };
+    const read = () => {
+      const db = new Database(fixture.databasePath, { readonly: true });
+      try {
+        return db.prepare("SELECT configured_model, model_reported_at FROM agents WHERE agent_id = ?").get(agentId) as {
+          configured_model: string | null; model_reported_at: string | null;
+        };
+      } finally { db.close(); }
+    };
+    await sendAndFlush(fixture.socket, envelope("agent.publish", { ...payload, configuredModel: "fixture-default" }));
+    await waitFor(async () => read().configured_model === "fixture-default");
+    const report = read();
+    assert.ok(report.model_reported_at);
+    await sendAndFlush(fixture.socket, envelope("bridge.heartbeat", { connectionEpoch: 1, deviceId: fixture.deviceId }));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(read(), report);
+    await sendAndFlush(fixture.socket, envelope("agent.publish", payload));
+    await waitFor(async () => read().configured_model === null);
+    assert.deepEqual(read(), { configured_model: null, model_reported_at: null });
+  } finally { await fixture.close(); }
+});
+
 test("execution capability handshake rejects unknown and ambiguous declarations without replacing a live epoch", { timeout: 30_000 }, async (t) => {
   const fixture = await createFixture(t);
   const capability = {

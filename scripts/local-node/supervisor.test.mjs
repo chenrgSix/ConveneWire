@@ -145,6 +145,9 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
     const list = await request(`/api/teams/${team.teamId}/agents`);
     return list.length === 1 && list[0].presence === "ready" ? list : null;
   }, "Agent registration");
+  assert.equal(agents[0].configuredModel, "fixture-default-codex");
+  assert.ok(Number.isFinite(Date.parse(agents[0].modelReportedAt)));
+  await assert.rejects(readFile(path.join(root, "fixture-calls.jsonl")), { code: "ENOENT" });
   const exportReview = await consoleRequest("/api/peers/exports");
   assert.equal(exportReview.status, 200, JSON.stringify(exportReview.body));
   assert.equal(exportReview.body.state.participant.nodeId, ready.nodeId);
@@ -170,6 +173,8 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
     const list = await request(`/api/teams/${team.teamId}/agents`);
     return list.length === 2 && list.every((agent) => agent.presence === "ready") ? list : null;
   }, "two ready Agents");
+  assert.equal(participants.find(agent => agent.name === "Local Solver").configuredModel, "fixture-default-codex");
+  assert.equal(participants.find(agent => agent.name === "Local Reviewer").configuredModel, null);
   const started = await request(`/api/rooms/${room.roomId}/discussions`, {
     goal: "Use the offline fixture to verify that the Owner retains final control of this local discussion.",
     participantAgentIds: participants.map((agent) => agent.agentId), mode: "review", outputMode: "decision_record",

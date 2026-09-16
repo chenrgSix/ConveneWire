@@ -14,7 +14,7 @@ const members: Member[] = [
   { memberId: "member_b", teamId: "team", userId: null, displayName: "小李", role: "member", createdAt: "2026-09-01" }
 ];
 const agents: Agent[] = [
-  { agentId: "agent_a_shared", ownerMemberId: "member_a", name: "开发工程师", role: "Builder", integrationMode: "managed", presence: "ready" },
+  { agentId: "agent_a_shared", ownerMemberId: "member_a", name: "开发工程师", role: "Builder", integrationMode: "managed", presence: "ready", configuredModel: "fixture-default-codex" },
   { agentId: "agent_b_shared", ownerMemberId: "member_b", name: "开发工程师", role: "Reviewer", integrationMode: "manual", presence: "offline" },
   { agentId: "agent_disabled", ownerMemberId: "member_a", name: "停用助手", role: "Reviewer", integrationMode: "hosted", presence: "offline", enabled: false }
 ];
@@ -86,6 +86,9 @@ test("Room settings identifies and filters participants without changing hidden 
     await t.test("role and ID searches explain empty results in both locales", () => {
       render(<Harness locale="en" />);
       const search = page.getByRole("searchbox", { name: "Search name, role, owner or model" });
+      fireEvent.change(search, { target: { value: " FIXTURE-default " } });
+      assert.ok(page.getByText("Configured model: fixture-default-codex"));
+      assert.equal(page.queryByRole("checkbox", { name: /开发工程师 · Reviewer/u }), null);
       fireEvent.change(search, { target: { value: "  builder " } });
       assert.ok(page.getByRole("checkbox", { name: /开发工程师 · Builder/u }));
       assert.equal(page.queryByRole("checkbox", { name: /开发工程师 · Reviewer/u }), null);

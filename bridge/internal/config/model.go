@@ -7,6 +7,26 @@ import (
 
 var reportedModelPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._/-]{0,119}$`)
 
+// SafeModelName is shared by explicit selectors and the local metadata reader.
+// Only this projection may leave the machine, never a raw configuration value.
+func SafeModelName(value string) *string {
+	if !reportedModelPattern.MatchString(value) || strings.HasPrefix(value, "sk-") || strings.HasPrefix(value, "sk_") {
+		return nil
+	}
+	return &value
+}
+
+// UsesDefaultCodexModel recognizes the native preset exactly. Custom commands,
+// profiles and ambiguous selectors must not be executed just to obtain a label.
+func (a AgentConfig) UsesDefaultCodexModel() bool {
+	kind := a.RuntimeKind
+	if kind == "" {
+		kind = a.Adapter
+	}
+	return kind == "codex" && len(a.Command) == 4 && a.Command[0] != "" &&
+		a.Command[1] == "app-server" && a.Command[2] == "--listen" && a.Command[3] == "stdio://"
+}
+
 // ConfiguredModel reports an explicit launch selector, never an inferred runtime
 // default or a model observed in a previous Run. No files or environment are read.
 func (a AgentConfig) ConfiguredModel() *string {
@@ -57,8 +77,5 @@ func (a AgentConfig) ConfiguredModel() *string {
 			return nil // A cycling/fuzzy model set is not one configured model.
 		}
 	}
-	if !reportedModelPattern.MatchString(model) || strings.HasPrefix(model, "sk-") || strings.HasPrefix(model, "sk_") {
-		return nil
-	}
-	return &model
+	return SafeModelName(model)
 }
