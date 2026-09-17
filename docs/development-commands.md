@@ -390,6 +390,11 @@ desktop ZIP before extraction. Python is used by these ZIP regression checks
 (`python` on Windows, `python3` elsewhere). Native build and launch continue to
 use the current-platform `bundle.mjs verify` admission.
 
+On native Windows, run
+`node scripts/test/run-with-temp-root.mjs -- node --test scripts/qa/windows-desktop-archive.test.mjs`
+to verify portable ZIP names, Unicode/hidden files and existing-output/junction
+negatives using Windows PowerShell. Other platforms explicitly skip this test.
+
 ### Optional Relay service profile
 
 OPS-024 lets an operator include one public `RelayServiceProfile` from

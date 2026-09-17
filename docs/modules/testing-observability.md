@@ -885,7 +885,9 @@ actual cross-machine transport and execution separately. Temporary listeners,
 test executables and profiles must be reclaimed after the LAN run.
 
 The owner subsequently authorized the proposed installed-client closure,
-including same-source macOS and native Windows `v0.5.2-lan.1` candidate packages,
+including same-source macOS and native Windows candidate packages,
+initially `v0.5.2-lan.1`. OPS-025 requires rebuilt `v0.5.2-lan.2` candidates after
+the native Windows ZIP writer defect. The authorized scope includes
 actual LAN invitation/export/acceptance/Run/Discussion/revocation and reconnect
 interactions, and native Windows installation/upgrade/uninstall. Keep the existing
 Mac application and owner state recoverable; preflight Windows installation and

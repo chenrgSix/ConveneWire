@@ -208,7 +208,8 @@ if ($LASTEXITCODE -ne 0 -or $cliVersion -ne $ReleaseTag) {
 Invoke-WindowsResourceCheck -Mode verify -ExecutablePath $binary
 Assert-ConveneWireNativeIcon -ExecutablePath $binary -IconPath $productIcon
 
-Compress-Archive -LiteralPath $staging -DestinationPath $archive -CompressionLevel Optimal
+. (Join-Path $PSScriptRoot "windows-desktop-archive.ps1")
+New-ConveneWireDesktopArchive -StagingDirectory $staging -ArchivePath $archive
 if (-not (Test-Path -LiteralPath $archive) -or (Get-Item -LiteralPath $archive).Length -eq 0) {
   throw "Windows Desktop archive was not created"
 }

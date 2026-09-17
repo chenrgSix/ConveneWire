@@ -14,7 +14,7 @@ test("Windows packaging validates generated icons before build and actual icons 
     "& go @buildArguments",
     "Invoke-WindowsResourceCheck -Mode verify -ExecutablePath $binary",
     "Assert-ConveneWireNativeIcon -ExecutablePath $binary -IconPath $productIcon",
-    "Compress-Archive"
+    "New-ConveneWireDesktopArchive -StagingDirectory"
   ].map((marker) => source.indexOf(marker));
   assert.ok(ordered.every((position, index) => position >= 0 && (index === 0 || position > ordered[index - 1])));
   assert.ok(source.includes('"/DIconFile=$productIcon"'));
