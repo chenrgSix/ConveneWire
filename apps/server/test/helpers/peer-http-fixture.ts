@@ -20,6 +20,7 @@ import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import type { DiscussionView } from "../../src/discussion/discussion-orchestrator.js";
 import type { TestContext } from "node:test";
 import { relayRuntimeFixture, untilRelay } from "./relay-runtime-fixture.js";
+import { lanNativePeerFixture } from "./lan-native-peer-fixture.js";
 
 const [directory, certFile, keyFile, initialNow, transport] = process.argv.slice(2) as [string, string, string, string, string?];
 if (!directory || !certFile || !keyFile || !initialNow) throw new Error("fixture arguments required");
@@ -30,11 +31,32 @@ try {
   let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
   const runtimeSockets = new Set<Duplex>();
   let relayBase: Awaited<ReturnType<typeof relayRuntimeFixture>> | undefined;
-  let relayNode: Awaited<ReturnType<Awaited<ReturnType<typeof relayRuntimeFixture>>["node"]>> | undefined;
+  let relayNode: Awaited<ReturnType<Awaited<ReturnType<typeof relayRuntimeFixture>>["node"]>> | Awaited<ReturnType<typeof lanNativePeerFixture>> | undefined;
+  const configureHost = (host: Awaited<ReturnType<typeof createServerApp>>) => {
+    host.addHook("onRequest", async request => {if (request.url === "/api/peer/invitations/preview") previewRequests++;});
+    host.addHook("onSend", async (request, reply, payload) => {
+      if (reply.statusCode !== 200) return payload;
+      let drop = false;
+      if (request.url === "/api/peer/invitations/claim" && dropNextClaim) {dropNextClaim = false; drop = true;}
+      if (request.url === "/api/peer/agents/offers" && dropNextOffer) {dropNextOffer = false; drop = true;}
+      if (request.url === "/api/peer/agents/sync" && dropNextSync) {dropNextSync = false; drop = true;}
+      if (request.url === "/api/peer/memberships/leave" && dropNextLeave) {dropNextLeave = false; drop = true;}
+      if (drop) request.raw.socket.destroy();
+      return payload;
+    });
+    host.server.on("upgrade", (_request, socket) => {
+      runtimeUpgrades++; runtimeSockets.add(socket); socket.once("close", () => runtimeSockets.delete(socket));
+    });
+  };
+  if (transport === "lan") {
+    const native = await lanNativePeerFixture(directory, certFile, keyFile, process.env.CONVENE_WIRE_LAN_HOST ?? "", () => now, configureHost);
+    relayNode = native;
+    cleanups.push(() => native.close());
+  }
   if (transport === "relay") {
     relayBase = await relayRuntimeFixture(context);
     relayBase.ca.now = Date.parse(now);
-    relayNode = await relayBase.node("GoPeerHost", {configureApp: host => {
+    const nativeRelay = await relayBase.node("GoPeerHost", {configureApp: host => {
       host.addHook("onRequest", async request => {if (request.url === "/api/peer/invitations/preview") previewRequests++;});
       host.addHook("onSend", async (request, reply, payload) => {
         if (reply.statusCode !== 200) return payload;
@@ -50,8 +72,9 @@ try {
         runtimeUpgrades++; runtimeSockets.add(socket); socket.once("close", () => runtimeSockets.delete(socket));
       });
     }});
-    relayNode.runtime.start();
-    await untilRelay(() => relayNode!.runtime.status().state === "ready", "Go Peer Relay route did not become ready", 20000);
+    relayNode = nativeRelay;
+    nativeRelay.runtime.start();
+    await untilRelay(() => nativeRelay.runtime.status().state === "ready", "Go Peer Relay route did not become ready", 20000);
   }
   const listener = https.createServer({ cert: await readFile(certFile), key: await readFile(keyFile) }, async (request, response) => {
     try {
@@ -126,7 +149,8 @@ try {
   const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId: "op_tlsfixtureinvite001", scope: { kind: "room", teamId, roomId },
     expiresAt: new Date(Date.parse(now) + 3600_000).toISOString(), membershipExpiresAt: expiry }, now);
   process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret,
-    ...(relayBase ? {relayAddress: `127.0.0.1:${relayBase.tlsPort}`, caCertificatePem: relayBase.ca.ca.toString()} : {}) }) + "\n");
+    ...(relayBase ? {relayAddress: `127.0.0.1:${relayBase.tlsPort}`, caCertificatePem: relayBase.ca.ca.toString()} :
+      transport === "lan" ? {caCertificatePem: await readFile(certFile, "utf8")} : {}) }) + "\n");
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
     const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string; discussionId?: string };
     if (command.action === "stop") break;

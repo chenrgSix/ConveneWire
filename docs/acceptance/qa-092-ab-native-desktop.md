@@ -7,6 +7,38 @@ observations separately from current V1 interaction and remaining physical gates
 
 ## Current acceptance baseline
 
+### Current LAN-only round (2026-09-17)
+
+The owner selected LAN-only verification and authorized control of UU remote
+`session1`, the Windows terminal at `192.168.1.254`. The macOS Host is
+`192.168.1.82`. Both are on the same `/24` network; two ICMP probes succeeded
+with zero loss (2.559–3.566 ms). Windows identifies itself as Windows 11 Pro
+AMD64 with Node 22.20.0; no ConveneWire process was running at inspection.
+
+Three direct Peer preflight scenarios pass with race instrumentation (14.659 s)
+and Peer vet: explicit scoped TLS trust, two-Host connector/revocation isolation,
+and actual Host Run delivery/events/revoked settlement. These remain
+same-machine checks. The new native LAN fixture also passed all four Mac
+preflight cases with race instrumentation (52.837 s). The first physical Windows
+round passed invitation recovery, native Run execution and delivery/revocation;
+Discussion failed when the finalizer reopened the first contribution's Session
+directory. Its Host retained `RUNTIME_SESSION_STATE_INVALID` and a failed
+settlement, rather than losing the settlement receipt. Windows directory
+protection needs repair before the LAN round can pass. Isolated profiles and
+offline children preserve the installed owner profiles.
+[First-round Windows output](evidence/qa092/lan-20260917/windows-result.txt) and
+[Host connection evidence](evidence/qa092/lan-20260917/lan-host.json) retain the
+failed round; failed fixture setup jobs and Mac preflight are explicitly
+distinguishable by source address and exit status. Host job exit status records
+fixture teardown, not the Participant assertion outcome; `windows-result.txt`
+is the authoritative test result.
+Public Relay/CA and release/platform certification are deferred for this round.
+The latest macOS model-display increment is recorded separately under
+[WEB-076](evidence/web076/default-model.md); earlier evidence below retains its
+original source identity.
+
+### Installed macOS baseline (2026-09-15)
+
 On 2026-09-15 the owner authorized the latest macOS package and local acceptance.
 The installed arm64 application now comes from clean source
 `acab8a33de113b020eec4b0bbae90ded9140567c`, version `v0.0.0-local`, including

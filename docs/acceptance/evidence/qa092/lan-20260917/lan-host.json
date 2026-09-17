@@ -1,0 +1,81 @@
+{
+  "host": "192.168.1.82",
+  "participant": "192.168.1.254",
+  "resultReceived": true,
+  "jobs": [
+    {
+      "test": "TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 1
+    },
+    {
+      "test": "TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 1
+    },
+    {
+      "test": "TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 1
+    },
+    {
+      "test": "TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 1
+    },
+    {
+      "test": "TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost",
+      "participantAddress": "192.168.1.82",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    }
+  ],
+  "binarySha256": "59d8c176f4432e71d712d66f9b09d33a55c541e567d035950203f3aeeb0ec5db",
+  "archiveSha256": "06ec290318628b71686e3152730357ea3d6cf8c2607e7f405abc3ab9f84f5adf"
+}

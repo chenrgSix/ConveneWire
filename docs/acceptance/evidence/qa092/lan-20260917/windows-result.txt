@@ -1,0 +1,16 @@
+=== RUN   TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse
+    client_interop_test.go:216: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:63791
+--- PASS: TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse (2.23s)
+=== RUN   TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization
+    discussion_execution_test.go:19: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:63800
+    discussion_execution_test.go:103: Run did not retain a settlement receipt: run_2SVZWnXixd896ES39Eho6w
+--- FAIL: TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization (35.42s)
+=== RUN   TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild
+    run_execution_test.go:330: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:63934
+--- PASS: TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild (4.25s)
+=== RUN   TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost
+    run_transport_interop_test.go:17: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:63944
+--- PASS: TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost (2.59s)
+FAIL
+
+CW_LAN_EXIT=1

@@ -61,6 +61,9 @@ func (out *peerFixtureOutput) String() string {
 
 func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 	t.Helper()
+	if manifest := os.Getenv("CONVENE_WIRE_PEER_LAN_MANIFEST"); manifest != "" {
+		return remoteLANPeerFixture(t, now, manifest)
+	}
 	directory := t.TempDir()
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {

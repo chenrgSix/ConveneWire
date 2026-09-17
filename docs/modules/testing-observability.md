@@ -875,6 +875,15 @@ prepares separately authorized physical acceptance without running it.
 
 ## Node-first V1 completion gates
 
+On 2026-09-17 the owner scoped the current QA-092 round to LAN validation only:
+the macOS Host at `192.168.1.82` and the Windows Participant at `192.168.1.254`,
+operated through the owner's authorized UU `session1` terminal. Use disposable
+identities, data, certificates and offline native children. Public Relay/CA,
+Internet reachability, Windows installation certification and release/CI work
+are outside this round. Same-machine checks are preflight evidence; record
+actual cross-machine transport and execution separately. Temporary listeners,
+test executables and profiles must be reclaimed after the LAN run.
+
 Under [ADR-0068](../adr/0068-peer-collaboration-delivery.md), QA-091 owns the
 automated full Peer product loop and QA-092 consolidates A/B/C manual interaction
 and physical acceptance after implementation. Retain previous partial evidence;

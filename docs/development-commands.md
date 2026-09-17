@@ -62,6 +62,34 @@ The contracts Go module pins the selected Go toolchain.
 - `node scripts/test/run-with-temp-root.mjs -- tsx --test --test-name-pattern 'central approval resumes' tests/e2e/governed-two-bridge-integration.test.ts` — SEC-017 real Central/Bridge process approval with a deterministic Codex protocol fixture, after building Web. No model or installed owner settings are used. Optional `CONVENE_WIRE_APPROVAL_PREVIEW=1` waits for client opt-in and three browser decisions; `CONVENE_WIRE_WORK_EVIDENCE_DIR` retains the sanitized summary. On an offline Go dependency cache, seed the wrapper's task-local `GOMODCACHE` from the existing module download cache before invoking the test.
 - `CONVENE_WIRE_CODEX_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --timeout-ms 60000 -- node --test tests/e2e/codex-approval-protocol.test.mjs` — SEC-018 opt-in installed CLI compatibility check. An isolated `CODEX_HOME` and loopback Responses fixture supply one fixed command; its approval is denied and the target must remain absent. It uses no model service, owner credentials or installed owner configuration. Without the explicit binary variable this test is skipped.
 
+### Physical LAN Peer fixture
+
+After explicit authorization for both devices, prepare a Windows AMD64 Go test
+binary inside the temporary-root wrapper with
+`cd bridge && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go test -c ./internal/peer -o "$CONVENE_WIRE_TEST_RUN_ROOT/peer.test.exe"`.
+From the repository root in that same wrapper, run
+`node scripts/qa/lan-peer-fixture.mjs PRIVATE_HOST_IPV4 PRIVATE_WINDOWS_IPV4 "$CONVENE_WIRE_TEST_RUN_ROOT/peer.test.exe" EVIDENCE_DIRECTORY`.
+Use `--timeout-ms 1500000` for the outer wrapper; the gateway expires after
+20 minutes. Both supplied addresses must be explicit private/loopback IPv4;
+loopback runs are preflight evidence only.
+
+The printed private `lan-access.json` contains the temporary download URL,
+SHA-256 and bearer credential. Transfer only to the authorized Participant,
+verify the archive hash before extraction, then run its `run.mjs` using existing
+Node 22. The Windows executable needs no Go installation. The four allowlisted
+Go scenarios use production Peer clients, restricted offline native children and
+actual native Host PeerIngress, with disposable data and a private TLS leaf;
+the Owner listener stays loopback-only. No models or system trust changes occur.
+
+An authenticated `POST /result` on the download listener accepts the resulting
+`result.txt` once. An authenticated `POST /finish` from the Host stops the
+fixture, writes the source-address/job/digest record, and removes Host temporary
+resources. Verify and remove the exact Participant staging directory and confirm
+its test children stopped. Do not retain manifests, credentials, private keys or
+expanded executables in evidence. The reusable helper's address/auth negatives
+run with `node --test scripts/qa/lan-peer-fixture.test.mjs`; this does not certify
+installed Windows UI, independent human consent, public Relay or release gates.
+
 ## Discussion maintenance tests
 
 - `npm run test:discussion-benchmark` — provider-free regression for all benchmark adapters, packets and synthetic Server/Bridge flows.
