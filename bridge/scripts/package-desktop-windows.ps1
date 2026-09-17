@@ -265,7 +265,7 @@ try {
     }
   }
   $hubManifestPath = Join-Path $staging "hub\hub-manifest.json"
-  $hubManifest = Get-Content -LiteralPath $hubManifestPath -Raw | ConvertFrom-Json
+  $hubManifest = Get-Content -LiteralPath $hubManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
   $hubFiles = @($hubManifest.files) + @([PSCustomObject]@{
     path = "hub-manifest.json";
     size = (Get-Item -LiteralPath $hubManifestPath).Length;

@@ -81,7 +81,8 @@ or external CI result is claimed by this local evidence.
 ## Local Node distribution
 
 OPS-025 replaces Windows PowerShell archive creation with explicit UTF-8 ZIP
-members using forward slashes, including hidden Hub files. Staging links and
+members using forward slashes, including hidden Hub files. Its inventory reader
+also selects UTF-8 explicitly on Windows PowerShell. Staging links and
 existing output are rejected before archive creation; the complete Hub inventory,
 path and digest admission remains unchanged. The native Windows regression
 covers Unicode and hidden payloads, existing-output preservation and junction
