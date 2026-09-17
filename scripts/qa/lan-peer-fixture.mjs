@@ -91,12 +91,14 @@ async function main() {
     const manifest = { address: `${host}:${broker.address().port}`, token, caCertificatePem: cert.toString() };
     const manifestFile = path.join(resources.directory, "lan-fixture.json");
     await writeFile(manifestFile, JSON.stringify(manifest), { mode: 0o600 });
-    const pattern = `^(${lanCases.join("|")})$`;
+    const storageCases = ["TestPeerRuntimePartitionsSeparateSameHostSessionsAndRetainNativePins",
+      "TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority"];
+    const pattern = `^(${[...lanCases, ...storageCases].join("|")})$`;
     const runner = path.join(resources.directory, "run.mjs");
     // Environment is scoped to the child; no install, policy or firewall change.
-    await writeFile(runner, `import {spawnSync} from 'node:child_process';\nimport {mkdirSync,writeFileSync} from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nimport path from 'node:path';\nconst root=path.dirname(fileURLToPath(import.meta.url)),temporary=path.join(root,'temp');\nmkdirSync(temporary,{recursive:true});\nconst result=spawnSync(path.join(root,'peer.test.exe'),['-test.v','-test.timeout=180s','-test.run=${pattern}'],{cwd:root,env:{...process.env,TEMP:temporary,TMP:temporary,CONVENE_WIRE_PEER_LAN_MANIFEST:path.join(root,'lan-fixture.json')},encoding:'utf8',timeout:210000,maxBuffer:1048576});\nconst output=(result.stdout??'')+(result.stderr??'')+'\\nCW_LAN_EXIT='+result.status+'\\n';\nwriteFileSync(path.join(root,'result.txt'),output);\nprocess.stdout.write(output);\nprocess.exitCode=result.status??1;\n`, { mode: 0o600 });
+    await writeFile(runner, `import {spawnSync} from 'node:child_process';\nimport {mkdirSync,writeFileSync} from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nimport path from 'node:path';\nconst root=path.dirname(fileURLToPath(import.meta.url)),temporary=path.join(root,'temp');\nmkdirSync(temporary,{recursive:true});\nconst working=path.join(root,'bridge','internal','peer');\nmkdirSync(working,{recursive:true});\nconst result=spawnSync(path.join(root,'peer.test.exe'),['-test.v','-test.timeout=180s','-test.run=${pattern}'],{cwd:working,env:{...process.env,TEMP:temporary,TMP:temporary,CONVENE_WIRE_PEER_LAN_MANIFEST:path.join(root,'lan-fixture.json')},encoding:'utf8',timeout:210000,maxBuffer:1048576});\nconst output=(result.stdout??'')+(result.stderr??'')+'\\nCW_LAN_EXIT='+result.status+'\\n';\nwriteFileSync(path.join(root,'result.txt'),output);\nprocess.stdout.write(output);\nprocess.exitCode=result.status??1;\n`, { mode: 0o600 });
     const archive = path.join(resources.directory, "lan-peer.zip");
-    execFileSync("python3", ["-c", "import zipfile,sys; z=zipfile.ZipFile(sys.argv[1],'w',zipfile.ZIP_DEFLATED); [(z.write(p,n)) for p,n in [(sys.argv[2],'peer.test.exe'),(sys.argv[3],'lan-fixture.json'),(sys.argv[4],'run.mjs')]]; z.close()", archive, binary, manifestFile, runner]);
+    execFileSync("python3", ["-c", "import zipfile,sys; z=zipfile.ZipFile(sys.argv[1],'w',zipfile.ZIP_DEFLATED); [(z.write(p,n)) for p,n in [(sys.argv[2],'peer.test.exe'),(sys.argv[3],'lan-fixture.json'),(sys.argv[4],'run.mjs'),(sys.argv[5],'packages/contracts/test/fixtures/peer-join.json')]]; z.close()", archive, binary, manifestFile, runner, path.join(repository, 'packages/contracts/test/fixtures/peer-join.json')]);
     const bytes = await readFile(archive), sha256 = createHash("sha256").update(bytes).digest("hex");
     let resultReceived = false;
     const transfer = http.createServer(async (request, response) => {

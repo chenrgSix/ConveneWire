@@ -1,0 +1,32 @@
+=== RUN   TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse
+    client_interop_test.go:216: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:50213
+--- PASS: TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse (8.12s)
+=== RUN   TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization
+    discussion_execution_test.go:19: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:50267
+--- PASS: TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization (9.91s)
+=== RUN   TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild
+    run_execution_test.go:330: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:50298
+--- PASS: TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild (6.81s)
+=== RUN   TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost
+    run_transport_interop_test.go:17: Physical Participant Windows_NT/AMD64 -> https://192.168.1.82:50361
+--- PASS: TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost (4.65s)
+=== RUN   TestPeerRuntimePartitionsSeparateSameHostSessionsAndRetainNativePins
+--- PASS: TestPeerRuntimePartitionsSeparateSameHostSessionsAndRetainNativePins (0.14s)
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/missing_marker
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/copied_marker
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/unknown_field
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/missing_directory
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/linked_sessions
+    runtime_partition_test.go:174: fixture cannot create symlink symlink C:\Users\Admin\AppData\Local\Temp\convenewire-lan-20260917-01\fixed\temp\TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthorityli1543844758\001\private\peer-runtime\peer_partition002 C:\Users\Admin\AppData\Local\Temp\convenewire-lan-20260917-01\fixed\temp\TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthorityli1543844758\001\private\peer-runtime\peer_peerfixture0001\runtime-sessions: A required privilege is not held by the client.
+=== RUN   TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/unprotected_sessions
+--- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority (0.79s)
+    --- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/missing_marker (0.23s)
+    --- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/copied_marker (0.11s)
+    --- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/unknown_field (0.12s)
+    --- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/missing_directory (0.12s)
+    --- SKIP: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/linked_sessions (0.10s)
+    --- PASS: TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority/unprotected_sessions (0.11s)
+PASS
+
+CW_LAN_EXIT=0

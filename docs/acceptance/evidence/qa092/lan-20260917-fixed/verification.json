@@ -1,0 +1,47 @@
+{
+  "sourceBase": "e183e8a951e8e46fabce4e03a90990c8ff97d9d7",
+  "date": "2026-09-17",
+  "changesUnderTest": [
+    "bridge/internal/peer/runtime_partition.go",
+    "bridge/internal/peer/runtime_partition_test.go",
+    "scripts/qa/lan-peer-fixture.mjs"
+  ],
+  "localChecks": {
+    "goRaceStorageAndDiscussion": "PASS 46.219s",
+    "goVetPeer": "PASS",
+    "unauthorizedHTTP": "403",
+    "wrongTokenTLSControl": "closed before Host creation"
+  },
+  "archiveSha256": "3d7882bdf9ddeb49f55305d0b091aa074c6fd2ecbc43a2817a556651179e43f5",
+  "archiveBytes": 8287680,
+  "sourceSha256": {
+    "bridge/internal/peer/runtime_partition.go": "1db24bbd95fc8d18782f258a006b665dcdc313266c3a6602d12ba551b8f3ea5d",
+    "bridge/internal/peer/runtime_partition_test.go": "618bfbb0147e5875e1f589de560fb7e017b0f6a51e93f694ab629871bafbe644",
+    "scripts/qa/lan-peer-fixture.mjs": "5cd3198f0b9a1ed8c5d83efa51cbf7ddfd734b5396b9dc897f29ccd87dc9d44c"
+  },
+  "cleanup": {
+    "macPeerPortsClosed": [
+      50213,
+      50267,
+      50298,
+      50361
+    ],
+    "macWrapperExitCode": 0,
+    "macTemporaryRootsRemoved": true,
+    "macStagedWindowsBinaryRemoved": true,
+    "windowsTestProcesses": 0,
+    "windowsTemporaryDirectoryRemoved": true
+  },
+  "windows": {
+    "os": "Windows 11 Pro",
+    "architecture": "AMD64",
+    "node": "22.20.0",
+    "lanCasesPassed": 4,
+    "storageCasesPassed": 2,
+    "negativeSubcasesPassed": 5,
+    "negativeSubcasesSkipped": [
+      "linked_sessions: creating symlinks requires a privilege not held by this Windows session"
+    ],
+    "exitCode": 0
+  }
+}

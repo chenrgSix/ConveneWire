@@ -24,7 +24,7 @@ round passed invitation recovery, native Run execution and delivery/revocation;
 Discussion failed when the finalizer reopened the first contribution's Session
 directory. Its Host retained `RUNTIME_SESSION_STATE_INVALID` and a failed
 settlement, rather than losing the settlement receipt. Windows directory
-protection needs repair before the LAN round can pass. Isolated profiles and
+protection required repair before the LAN round could pass. Isolated profiles and
 offline children preserve the installed owner profiles.
 [First-round Windows output](evidence/qa092/lan-20260917/windows-result.txt) and
 [Host connection evidence](evidence/qa092/lan-20260917/lan-host.json) retain the
@@ -32,6 +32,35 @@ failed round; failed fixture setup jobs and Mac preflight are explicitly
 distinguishable by source address and exit status. Host job exit status records
 fixture teardown, not the Participant assertion outcome; `windows-result.txt`
 is the authoritative test result.
+BRG-082 now creates the protected Session directory before the first write and
+continues to reject existing invalid directories. The final
+[Windows output](evidence/qa092/lan-20260917-fixed/windows-result.txt) passes all
+four physical LAN scenarios: invitation/claim recovery (8.12 s), Discussion
+with both Host restart cuts and distinct finalizer session (9.91 s), restricted
+native Run (6.81 s), and ordered events/retry/revoked settlement (4.65 s).
+[Host connection evidence](evidence/qa092/lan-20260917-fixed/lan-host.json)
+records four actual Participant connections from `192.168.1.254`; all fixture
+Hosts shut down normally. Two additional Windows storage tests pass, including
+five negative subcases. The linked-directory subcase is explicitly skipped
+because this Windows session lacks symlink creation privilege; it passed in the
+Mac race run. No privilege or system security setting was changed.
+
+[Verification details](evidence/qa092/lan-20260917-fixed/verification.json) pin
+the source base plus changed-file digests and the Windows binary/archive hashes.
+Mac storage/Discussion race tests pass (46.219 s), along with Peer vet and the
+fixture authentication negatives. The
+[Windows terminal](evidence/qa092/lan-20260917-fixed/windows-passed.jpg) shows
+exit code zero and zero remaining test executables. This is actual Windows
+Participant/native-child to Mac Host verification with disposable identities,
+a pinned private certificate and offline responses. It does not attest installed
+Windows desktop interaction, independent human Owner decisions or live models.
+
+The Mac wrapper exited zero and removed its root; all four native Peer ports
+are closed. The only Windows staging directory, including both test packages,
+private manifests and data, was
+[removed](evidence/qa092/lan-20260917-fixed/windows-cleaned.jpg). No additional
+application installation or expanded executable remains from this run.
+
 Public Relay/CA and release/platform certification are deferred for this round.
 The latest macOS model-display increment is recorded separately under
 [WEB-076](evidence/web076/default-model.md); earlier evidence below retains its

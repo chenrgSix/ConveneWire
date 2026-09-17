@@ -180,6 +180,12 @@ func (s peerRuntimeSessionStore) Save(binding bridgeruntime.RuntimeSessionBindin
 	if err := s.check(); err != nil {
 		return err
 	}
+	// Establish the Peer DACL before the generic Session store creates files.
+	// MkdirAll/Chmod alone leaves inherited ACLs on Windows, which the next
+	// Session operation correctly rejects. Existing invalid ACLs stay denied.
+	if err := privatefs.EnsureDirectory(filepath.Join(s.partition.directory, "runtime-sessions")); err != nil {
+		return err
+	}
 	return s.inner.Save(binding)
 }
 func (s peerRuntimeSessionStore) Delete(key bridgeruntime.RuntimeSessionKey) error {

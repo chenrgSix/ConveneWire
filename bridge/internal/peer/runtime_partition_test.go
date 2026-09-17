@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"convenewire.dev/bridge/internal/privatefs"
 	bridgeruntime "convenewire.dev/bridge/internal/runtime"
 	wire "convenewire.dev/contracts/generated/go/peer"
 )
@@ -87,6 +88,9 @@ func TestPeerRuntimePartitionsSeparateSameHostSessionsAndRetainNativePins(t *tes
 	if err := first.Sessions().Save(bridgeruntime.RuntimeSessionBinding{RuntimeSessionKey: key, SessionID: "first-peer-session"}); err != nil {
 		t.Fatal(err)
 	}
+	if err := privatefs.EnsureDirectory(filepath.Join(first.DataDir(), "runtime-sessions")); err != nil {
+		t.Fatal("first Session save did not establish private directory protection", err)
+	}
 	if _, found, err := second.Sessions().Load(key); err != nil || found {
 		t.Fatal("second Peer loaded private Session", err)
 	}
@@ -131,7 +135,7 @@ func TestPeerRuntimePartitionsSeparateSameHostSessionsAndRetainNativePins(t *tes
 }
 
 func TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority(t *testing.T) {
-	for _, mutation := range []string{"missing marker", "copied marker", "unknown field", "missing directory", "linked sessions"} {
+	for _, mutation := range []string{"missing marker", "copied marker", "unknown field", "missing directory", "linked sessions", "unprotected sessions"} {
 		t.Run(mutation, func(t *testing.T) {
 			store, root, state, _ := partitionState(t)
 			partitions, err := NewRuntimePartitions(root, store, func() error { return nil })
@@ -169,6 +173,11 @@ func TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority(t *testing.T)
 				if err != nil {
 					t.Skip("fixture cannot create symlink", err)
 				}
+			case "unprotected sessions":
+				dir := filepath.Join(first.DataDir(), "runtime-sessions")
+				if err = os.Mkdir(dir, 0777); err == nil {
+					err = os.Chmod(dir, 0777)
+				}
 			}
 			if err != nil {
 				t.Fatal(err)
@@ -176,7 +185,13 @@ func TestPeerRuntimePartitionRejectsMissingCopiedOrLinkedAuthority(t *testing.T)
 			if _, _, err := first.Sessions().Load(partitionSessionKey()); err == nil {
 				t.Fatal("invalid Peer partition accepted")
 			}
-			if mutation != "linked sessions" {
+			if err := first.Sessions().Save(bridgeruntime.RuntimeSessionBinding{RuntimeSessionKey: partitionSessionKey(), SessionID: "denied"}); err == nil {
+				t.Fatal("invalid Peer partition accepted a Session write")
+			}
+			if err := first.Sessions().Delete(partitionSessionKey()); err == nil {
+				t.Fatal("invalid Peer partition accepted a Session deletion")
+			}
+			if mutation != "linked sessions" && mutation != "unprotected sessions" {
 				if _, err := partitions.Open(first.receipt.MembershipID); err == nil {
 					t.Fatal("known partition silently recreated or adopted")
 				}

@@ -79,7 +79,9 @@ verify the archive hash before extraction, then run its `run.mjs` using existing
 Node 22. The Windows executable needs no Go installation. The four allowlisted
 Go scenarios use production Peer clients, restricted offline native children and
 actual native Host PeerIngress, with disposable data and a private TLS leaf;
-the Owner listener stays loopback-only. No models or system trust changes occur.
+the Owner listener stays loopback-only. The bundle also runs Session partition
+persistence and negative authority/protection checks, using one public contract
+fixture. No models or system trust changes occur.
 
 An authenticated `POST /result` on the download listener accepts the resulting
 `result.txt` once. An authenticated `POST /finish` from the Host stops the

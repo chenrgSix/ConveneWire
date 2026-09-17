@@ -1,0 +1,33 @@
+{
+  "host": "192.168.1.82",
+  "participant": "192.168.1.254",
+  "resultReceived": true,
+  "jobs": [
+    {
+      "test": "TestGoParticipantJoinsRealServerOverTLSAndRecoversLostClaimResponse",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerDiscussionRunsUseNativeSessionsAndFrozenFinalization",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    },
+    {
+      "test": "TestGoPeerRunDeliveryEventsAndRevokedSettlementUseActualHost",
+      "participantAddress": "192.168.1.254",
+      "finished": true,
+      "exitCode": 0
+    }
+  ],
+  "binarySha256": "7f93aeb4226c4aa5c8d9952419cc7847cbb47c2c8b7c05539e4f1e62ae820dec",
+  "archiveSha256": "3d7882bdf9ddeb49f55305d0b091aa074c6fd2ecbc43a2817a556651179e43f5"
+}

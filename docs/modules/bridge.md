@@ -273,6 +273,12 @@ identity, retained join, partition receipt and private parent directories. The
 native shell retains this observer across core configuration replacement.
 Opening historical storage does not grant current execution authority.
 
+BRG-082 creates a protected Peer Session directory before its first write.
+Windows inherited directory ACLs are insufficient for the subsequent private
+store check; the generic Session writer's `MkdirAll`/`Chmod` cannot establish
+the required protected DACL. Existing unprotected or linked directories remain
+denied on read, write and deletion; this change does not adopt or rewrite them.
+
 The native connector epoch binds its factory to the same Node process store and
 physical resource gate used by Device connectors. Execution resolves the actual
 stable local Agent, verifies the exact current bilateral grant/Acceptance and
