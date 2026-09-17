@@ -1,0 +1,9 @@
+{
+  "stage": "Windows archive regression",
+  "exit": 0,
+  "stdout": "TAP version 13\n# Subtest: native Windows ZIP preserves portable paths, Unicode and hidden Hub files\nok 1 - native Windows ZIP preserves portable paths, Unicode and hidden Hub files\n  ---\n  duration_ms: 469.2298\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 561.4134\n",
+  "stderr": "[convenewire-test-run] root=C:\\Users\\Admin\\AppData\\Local\\Temp\\convene-wire-test-run-8224La\n[convenewire-test-run] cleaned=C:\\Users\\Admin\\AppData\\Local\\Temp\\convene-wire-test-run-8224La\n",
+  "writerSha256": "a668b2693ed4726c8f0971c6b34ff788ddf223bf75e8c33a7a9740da1a1b4a88",
+  "host": "DESKTOP-DEIO79Q",
+  "scope": "Native Windows PowerShell archive regression; no installer or provider calls"
+}

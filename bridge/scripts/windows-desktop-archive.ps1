@@ -25,6 +25,7 @@ function New-ConveneWireDesktopArchive {
     }
   }
 
+  Add-Type -AssemblyName System.IO.Compression
   Add-Type -AssemblyName System.IO.Compression.FileSystem
   $zip = [IO.Compression.ZipFile]::Open(
     $ArchivePath, [IO.Compression.ZipArchiveMode]::Create, [Text.Encoding]::UTF8

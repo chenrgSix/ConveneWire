@@ -86,7 +86,9 @@ also selects UTF-8 explicitly on Windows PowerShell. Staging links and
 existing output are rejected before archive creation; the complete Hub inventory,
 path and digest admission remains unchanged. The native Windows regression
 covers Unicode and hidden payloads, existing-output preservation and junction
-rejection. QA-092 records the actual native packaging and installation result.
+rejection. The [native regression](../acceptance/evidence/qa092/installed-lan-20260917/windows-zip-regression.json)
+passes on Windows PowerShell after explicitly loading both compression assemblies.
+QA-092 records the actual native packaging and installation result.
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by
 OPS-018, implemented by [the native bundle tool](../../scripts/local-node/bundle.mjs)
