@@ -1,0 +1,67 @@
+{
+  "recordedAt": "2026-09-17T08:06:20.856266+00:00",
+  "kind": "owner-reported-manual-acceptance",
+  "ownerStatement": "我帮你测过了，可以",
+  "ownerFollowUp": "你登记就行",
+  "result": "accepted-by-owner",
+  "scope": "Current installed-client LAN acceptance round; no per-case checklist supplied by the owner.",
+  "candidateSourceCommit": "5b67e79310118f844bbb1e7917ae119724a7e60a",
+  "candidateReleaseVersion": "v0.5.2-lan.2",
+  "macOSPackageAndInstallation": {
+    "sourceCommit": "5b67e79310118f844bbb1e7917ae119724a7e60a",
+    "releaseVersion": "v0.5.2-lan.2",
+    "sourceState": "clean",
+    "nodeVersion": "v22.23.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "files": 7296,
+    "zip_sha256": "43591c6d8db90f7d1cfbda782859f4720c39cd65d47777c060a640fca8afbdf4",
+    "archiveBytes": 78337657,
+    "installedFilesMatch": true
+  },
+  "windowsPackage": {
+    "stage": "BUILD_COMPLETE",
+    "sourceCommit": "5b67e79310118f844bbb1e7917ae119724a7e60a",
+    "releaseVersion": "v0.5.2-lan.2",
+    "hashes": [
+      {
+        "name": "convenewire-bridge-desktop_0.5.2-lan.2_windows_amd64.zip",
+        "size": 74483998,
+        "sha256": "7c68307040da73cc75936b3e54476950cc49784f82c54d1231608afe51b28ad0"
+      },
+      {
+        "name": "convenewire-bridge-desktop_0.5.2-lan.2_windows_amd64_setup.exe",
+        "size": 49141775,
+        "sha256": "c950744f744cda285b665bb34fba5098156c299e2917351fba585e93fd8efef9"
+      }
+    ],
+    "hubFiles": 7286,
+    "nodeVersion": "v22.23.1",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "windowsLifecycleObserved": {
+    "ownerFilesBackedUp": 18,
+    "previousAppSha256": "5d5d6c375a00883728628130f85f2fac594d906dd47c54d6d4ffc7d7fccedcab",
+    "completedStages": [
+      {
+        "stage": "BACKUP_VERIFIED",
+        "at": "2026-09-17T07:54:12.635Z"
+      },
+      {
+        "stage": "PREVIOUS_STABLE_0.5.1_INSTALLED_OWNER_UNCHANGED",
+        "at": "2026-09-17T07:54:35.388Z"
+      }
+    ],
+    "candidateInstalled": true,
+    "candidatePayloadHubVersionAndIconChecksPassed": true,
+    "harnessStoppedAt": "Expected default Start Menu shortcut path was absent; inherited menu group not subsequently verified.",
+    "uninstallAndFinalReinstallExecuted": false
+  },
+  "remainingBoundaries": [
+    "Owner confirmation is recorded as reported; individual invitation/export/acceptance/Run/Discussion/revocation GUI cases are not independently attested by this record.",
+    "Windows UU target was offline at follow-up; final shortcut verification and remote temporary-directory cleanup remain pending.",
+    "The owner requested registration only. No further lifecycle execution or cleanup was performed after that instruction; the Mac fixture and temporary transfer service had not been stopped at the last observation.",
+    "Public Relay, minimum-OS certification, independent-owner acceptance, paid models, CI and publication are not covered."
+  ]
+}

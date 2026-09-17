@@ -7,6 +7,36 @@ observations separately from current V1 interaction and remaining physical gates
 
 ## Current acceptance baseline
 
+### Installed-client owner confirmation (2026-09-17)
+
+The owner reported **“我帮你测过了，可以”** and then requested **“你登记就行”**.
+This closes the current round's manual acceptance by owner report. The
+[confirmation and package evidence](evidence/qa092/installed-lan-20260917/owner-confirmation.json)
+records that statement without inferring a per-case GUI checklist.
+
+Both final candidates are `v0.5.2-lan.2`, built from clean source
+`5b67e79310118f844bbb1e7917ae119724a7e60a`. macOS arm64 packaging verifies all
+7,296 Hub files and exact installed contents. Native Windows amd64 packaging
+verifies all 7,286 Hub files, the ZIP and installer; OPS-025's native regression
+passes. The linked evidence pins both archives and the Windows setup SHA-256.
+
+Windows owner backup verified 18 files, followed by a successful stable 0.5.1
+upgrade with unchanged owner files. The candidate upgrade completed and passed
+payload, Hub, version and native-icon checks. The lifecycle harness then stopped
+because its assumed default Start Menu shortcut path was absent. A corrected
+shortcut lookup was prepared, but its execution and the subsequent uninstall and
+reinstall are not evidenced. These checks are not relabeled as passed by the
+owner's general confirmation.
+
+At follow-up, UU showed `DESKTOP-DEIO79Q` offline. Windows temporary-toolchain
+cleanup remains pending. The Mac fixture and temporary transfer service were
+still running at the last observation; final cleanup and restoration to the
+ordinary owner workspace were not performed after the request to record only.
+The retained owner backups remain available. QA-092 stays ACTIVE for these
+outstanding items and broader independent-owner/platform gates; public Relay,
+minimum-OS certification, external models, CI and publication remain outside this
+owner confirmation. Earlier evidence below retains its original scope and source.
+
 ### Current LAN-only round (2026-09-17)
 
 The owner selected LAN-only verification and authorized control of UU remote

@@ -88,7 +88,11 @@ path and digest admission remains unchanged. The native Windows regression
 covers Unicode and hidden payloads, existing-output preservation and junction
 rejection. The [native regression](../acceptance/evidence/qa092/installed-lan-20260917/windows-zip-regression.json)
 passes on Windows PowerShell after explicitly loading both compression assemblies.
-QA-092 records the actual native packaging and installation result.
+The [final package evidence](../acceptance/evidence/qa092/installed-lan-20260917/owner-confirmation.json)
+pins clean `5b67e793` candidates at `v0.5.2-lan.2`: native Windows ZIP/setup and
+all 7,286 Hub files pass, as do the macOS archive and all 7,296 Hub files.
+OPS-025 is complete. QA-092 keeps installation lifecycle observations and the
+owner-reported manual acceptance separate from packaging completion.
 
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a native Hub bundle owned by
 OPS-018, implemented by [the native bundle tool](../../scripts/local-node/bundle.mjs)
