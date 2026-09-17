@@ -884,6 +884,17 @@ are outside this round. Same-machine checks are preflight evidence; record
 actual cross-machine transport and execution separately. Temporary listeners,
 test executables and profiles must be reclaimed after the LAN run.
 
+The owner subsequently authorized the proposed installed-client closure,
+including same-source macOS and native Windows `v0.5.2-lan.1` candidate packages,
+actual LAN invitation/export/acceptance/Run/Discussion/revocation and reconnect
+interactions, and native Windows installation/upgrade/uninstall. Keep the existing
+Mac application and owner state recoverable; preflight Windows installation and
+registration before mutation. Use disposable profiles and offline runtimes for
+collaboration. Clean temporary toolchains, staging, profiles and registrations;
+retain only deliverable archives, necessary stopped backups and sanitized
+evidence. This supersedes the previous lack of Windows-install authorization,
+without authorizing public deployment, remote CI or paid providers.
+
 Under [ADR-0068](../adr/0068-peer-collaboration-delivery.md), QA-091 owns the
 automated full Peer product loop and QA-092 consolidates A/B/C manual interaction
 and physical acceptance after implementation. Retain previous partial evidence;
