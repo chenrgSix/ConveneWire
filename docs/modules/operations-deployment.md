@@ -692,3 +692,9 @@ Desktop ZIP admission checks original archive names before Python normalizes
 Windows separators or truncates NUL characters. Normalized names, traversal,
 case collisions, symbolic links and file/directory conflicts are rejected before
 extraction on both native and Release aggregation workers.
+
+Native process recovery canonicalizes the existing private directory before
+opening admission storage, retaining the same filesystem identity and namespace.
+Parent aliases and Windows path casing do not create a new process owner. Linked
+leaves and missing directories are rejected; saved Node and Bridge paths are not
+rewritten.

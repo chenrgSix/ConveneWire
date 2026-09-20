@@ -104,6 +104,15 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
   assert.equal(unboundState.bridgeRunning, true);
   assert.equal(unboundState.connection.state, "stopped");
   assert.equal(unboundState.localNodeId, ready.nodeId);
+  const waitUnpairedCore = async (label) => until(async () => {
+    const status = await fetch(unboundConsole.origin + "/api/peers/status", { headers: unboundHeaders }).then(response => response.json());
+    const state = await fetch(unboundConsole.origin + "/api/state", { headers: unboundHeaders }).then(response => response.json());
+    if (state.phase === "error" || status.state === "unavailable") {
+      throw new Error(`${label}: ${JSON.stringify({phase: state.phase, error: state.lastError, peerError: status.errorCode})}`);
+    }
+    return status.state === "running";
+  }, label);
+  await waitUnpairedCore("initial unpaired native core");
   assert.equal((await request("/api/local-node")).teamId, null);
   assert.deepEqual(await request("/api/teams"), []);
   assert.equal((await fetch(unboundConsole.origin + "/api/peers/joins", { headers: unboundHeaders })).status, 200);
@@ -112,10 +121,7 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
     body: JSON.stringify({ kind: "codex", name: "Local Solver", role: "Solver", executablePath: fixtureBinary, workspace: root }) });
   const independentAgent = await unboundAdded.json();
   assert.equal(unboundAdded.status, 201, JSON.stringify(independentAgent));
-  await until(async () => {
-    const state = await fetch(unboundConsole.origin + "/api/peers/status", { headers: unboundHeaders }).then(response => response.json());
-    return state.state === "running";
-  }, "unpaired native core restarts after configuring its first Agent");
+  await waitUnpairedCore("unpaired native core restarts after configuring its first Agent");
   await assert.rejects(readFile(path.join(dataRoot, "bridge", "device-credential.json")), { code: "ENOENT" });
   const { team } = await request("/api/teams", { name: "Local fixture Team" });
   const room = await request(`/api/teams/${team.teamId}/rooms`, { name: "Local work" });

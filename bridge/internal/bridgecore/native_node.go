@@ -204,6 +204,10 @@ func openNodeExecutionResources(ctx context.Context, node *NativeNode, cfg confi
 	if err := privatefs.EnsureDirectory(root); err != nil {
 		return nil, err
 	}
+	root, err := canonicalNativeProcessRoot(root)
+	if err != nil {
+		return nil, err
+	}
 	processes, err := admission.OpenNodeProcessStore(ctx, root, admission.NodeProcessOwner{SchemaVersion: 1,
 		NodeID: node.signer.Identity().NodeID, PublicKey: node.signer.Identity().PublicKey, LocalUserID: node.signer.LocalUserID()})
 	if err != nil {
@@ -216,9 +220,31 @@ func openNodeExecutionResources(ctx context.Context, node *NativeNode, cfg confi
 }
 
 func fenceDeviceProcesses(ctx context.Context, root string, owner admission.Owner) error {
+	root, err := canonicalNativeProcessRoot(root)
+	if err != nil {
+		return err
+	}
 	processes, err := admission.OpenGovernedProcessStore(ctx, root, owner)
 	if err != nil {
 		return err
 	}
 	return errors.Join(processes.FenceAll(ctx), processes.Close())
+}
+
+// Admission pins a canonical directory. Resolve parent aliases and Windows
+// casing without accepting a linked leaf or changing the physical namespace.
+func canonicalNativeProcessRoot(root string) (string, error) {
+	before, err := os.Lstat(root)
+	if err != nil || !before.IsDir() || before.Mode()&os.ModeSymlink != 0 {
+		return "", errNativeNode
+	}
+	resolved, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return "", errNativeNode
+	}
+	after, err := os.Lstat(resolved)
+	if err != nil || !os.SameFile(before, after) {
+		return "", errNativeNode
+	}
+	return resolved, nil
 }

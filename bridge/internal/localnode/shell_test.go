@@ -104,7 +104,7 @@ func TestShellConsolePrecedesTeamBindingAndKeepsNativeOwnerAcrossAttachment(t *t
 			}
 			time.Sleep(10 * time.Millisecond)
 		}
-		t.Fatal("native Peer core state", native.PeerStatus())
+		t.Fatal("native Peer core state", native.PeerStatus(), initial.State().LastError)
 	}
 	waitPeers("running")
 	mutate := func(method, route string, input any) *httptest.ResponseRecorder {
