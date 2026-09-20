@@ -1983,3 +1983,27 @@ the resulting approved Result; Bridge does not keep a Runtime active while waiti
 for consent and does not publish private output as an ordinary reply. Existing
 wire contracts are unchanged. Reconnect delivery checks current evidence-consumer
 authority. Windows private storage follows the separate ADR-0058 ACL boundary.
+
+## Original desktop Codex control
+
+The native Local Node owns the [ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md)
+coordinator and its protected adoption journal. It supplies this capability only
+to the Runtime bound to the primary native Hub. Peer/foreign partitions cannot
+acquire it. Existing Workspace scheduling and durable delivery remain authoritative;
+pending native execution blocks new work until settlement or safe return.
+
+The packaged macOS helper mediates the desktop's original stdio connection. An
+owner-only descriptor and capability-authenticated Unix socket expose a closed set
+of operations, never arbitrary native RPC or a network listener. The plan directory
+has one OS lease; normal exit removes owned sockets, and next startup removes only
+a stale owned socket and empty directory. Native Console endpoints require the
+existing owner session and origin boundary. The supervisor's typed local-control
+route commits only opaque adoption/destination data to the Hub.
+
+The coordinator persists submit and return intent before cross-process operations.
+A restart requires renewed review, ambiguous execution cannot replay, and a lost
+Hub acknowledgment cannot hide an unfinished return. Confirmed releases preserve
+a tombstone; canceled provisional reviews remove their local reservation.
+[QA-094](../acceptance/qa-094-codex-desktop-handoff.md) records actual local evidence
+and the supported envelope; [development commands](../development-commands.md#desktop-codex-room-integration)
+cover reproducible checks and cooperative startup.

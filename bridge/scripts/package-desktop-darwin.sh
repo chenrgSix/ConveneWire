@@ -98,6 +98,11 @@ cp -R "${local_hub_bundle}" "${contents}/Resources/hub"
     -ldflags="-s -w -X main.version=${release_tag} -X main.sourceCommit=${source_commit}" \
     -o "${contents}/Resources/bin/convenewire-node" ./cmd/convenewire-node
 )
+(
+  cd "${bridge_root}"
+  CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath \
+    -o "${contents}/Resources/bin/convenewire-codex-desktop" ./cmd/convenewire-codex-desktop
+)
 node "${repository_root}/scripts/local-node/desktop-bundle.mjs" "${contents}/Resources/hub" "${source_commit}" "${release_tag}"
 
 # A dependency can override CGO linker flags. Verify the emitted Mach-O, not

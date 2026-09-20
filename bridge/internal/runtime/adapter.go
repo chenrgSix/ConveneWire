@@ -7,6 +7,7 @@ import (
 )
 
 type Capabilities struct {
+	SupportsDesktopHandoff      bool
 	SupportsResume              bool
 	SupportsStreaming           bool
 	SupportsInterrupt           bool

@@ -40,6 +40,7 @@ export interface LocalNodeBinding {
 export interface LocalNodeControlState {
   binding:          Binding | null;
   consoleRequestId: string;
+  handoffTaskId?:   string;
 }
 
 export interface Binding {
@@ -49,4 +50,33 @@ export interface Binding {
   teamId:        string;
   token:         string;
 }
+
+export interface DesktopHandoffRequest {
+  action:          Action;
+  adoptionId?:     string;
+  audienceDigest?: string;
+  runId?:          string;
+  taskId:          string;
+}
+
+export type Action = "scope" | "confirm" | "validate" | "release";
+
+export interface DesktopHandoffScope {
+  adoptionId:     string;
+  agentId:        string;
+  agentName:      string;
+  audience:       string[];
+  audienceDigest: string;
+  deviceId:       string;
+  nodeId:         string;
+  ownerMemberId:  string;
+  roomId:         string;
+  roomName:       string;
+  state:          State;
+  taskId:         string;
+  taskTitle:      string;
+  teamId:         string;
+}
+
+export type State = "available" | "attached" | "released" | "paused";
 

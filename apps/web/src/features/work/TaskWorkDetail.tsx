@@ -1,3 +1,4 @@
+import { DesktopCodexHandoff } from "../local-node/DesktopCodexHandoff.js";
 import { EvidenceDisclosurePanel } from "./EvidenceDisclosurePanel.js";
 import { TaskCopyControl } from "../task/TaskCopyControl.js";
 import { MarkdownMessage } from "../../MarkdownMessage.js";
@@ -514,6 +515,7 @@ export function TaskWorkDetail({
           {onCopyLink && <button className="work-inline-link" onClick={() => void onCopyLink()} type="button">{text("复制当前链接", "Copy current link", locale)}</button>}
         </div>
       </header>
+      {token && <DesktopCodexHandoff key={`${task.taskId}:${token}`} taskId={task.taskId} token={token} locale={locale} />}
       <div aria-label={text("Task 详情导航", "Task detail navigation", locale)} className="work-tabs" role="tablist">
         {tabs.map((item) => (
           <button

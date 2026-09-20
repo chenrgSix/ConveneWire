@@ -368,39 +368,31 @@ Imported history remains local but can influence newly shared replies, which the
 owner reviews for the exact audience. Adoption never recreates or forks a missing
 or occupied Thread. Release preserves the original conversation.
 
-ADP-020 first verifies the installed provider's cross-client ownership and tool
-compatibility with isolated offline fixtures. Until that capability gate passes,
-ordinary managed Sessions are unchanged and no takeover operation is enabled.
-The local Runtime now provides bounded metadata-only list/read functions scoped
-to the configured Agent workspace; they omit private history and process-local
-ownership claims and are not exposed to Room or Console callers yet.
-[Installed-binary evidence](../acceptance/adp-020-codex-desktop-handoff.md) confirms
-same-ID context continuation and competing-writer rejection, but also reproduces
-missing desktop tool callbacks and delayed release after unsubscribe. Discovery
-success must not be used as an adoption capability flag. A shared loopback
-app-server test also receives callbacks in both clients and allows the source
-to continue without a return operation; shared transport is not exclusive control.
-Further queue fixtures retain the original writer and desktop callback handler
-when the producer does not resume or subscribe. Shared-service queue submission
-also wakes an idle fixture Thread; a separate producer process cannot immediately
-start that idle writer. Native queue additions do not deduplicate client message
-IDs. This is a candidate same-ID route, still dependent on a supported desktop
-connection, execution-time review enforcement and uncertain-outcome settlement.
-Native CLI checks reproduce the same default/shared connection distinction.
-Lost acknowledgments can be correlated to a completed turn by client ID and
-payload without resuming or replaying; pending queue deletion does not cancel a
-consumed turn. Bounded local reconciliation must keep unrelated history private.
-ADP-022 implements the experimental local startup boundary: an owner-only launch
-plan pins the desktop/provider binaries, and a local executable override retains
-the original stdio transport and profile. It exposes no listener or Room RPC.
-The explicit launcher refuses a duplicate desktop instance; normal app launch is
-the rollback path. This startup entry does not grant conversation adoption.
-ADP-023 mediates that single stdio connection and retains the original tool
-callback handler. Its process-local control interface provisionally fences
-desktop writes to one loaded, idle Thread; it routes only the exact continuation
-result, deduplicates operation retries within the connection, and refuses release
-while execution is active or uncertain. An unexpected native turn pauses control.
-Independent queue producers remain outside this fence. Startup drains its owned
-provider group on desktop exit. The mediator is not exposed as a Room/Console
-endpoint; exact review, persistent adoption and recovery remain separate gates.
-Delivery status lives in [TASKS.md](../TASKS.md).
+The verified macOS path mediates the original desktop stdio connection and keeps
+its original dynamic-tool handlers. It lists only conversations already opened
+through the explicit cooperative launcher. The local coordinator pins the exact
+profile, native checkpoint, canonical workspace, model/configuration/tool digest,
+Task/Agent and Room audience before consent and before every turn. Only an idle
+Thread with an empty native queue and no goal is eligible. Read-only or bounded
+workspace-write is supported; prior full-access approval is not inherited.
+
+The Hub sends paired `desktopAdoptionId` / `desktopAudienceDigest` fields with a
+Task ID. The native Codex adapter continues that Thread through the coordinator;
+other adapters and absent/mismatched bindings refuse the request. No start-new,
+fork, Discussion, Peer, private-output or governed-execution fallback is allowed.
+Only that turn's final reply reaches the Room. Original native IDs, paths and old
+transcripts remain local. Server rechecks audience and assignment at delivery and
+content publication, including a redelivery after renewed consent.
+
+Protected local intent and exact-operation receipts survive restart. An unknown
+submission is never resent. Restart pauses adopted bindings for explicit review;
+an uncertain active native turn also retains the existing Node scheduling gate.
+Returning control waits for native idle and an acknowledged Hub release. A lost
+release acknowledgment remains retryable; canceling an unconfirmed review does
+not poison the fresh Task. Confirmed release retains a tombstone to prevent the
+old Task from starting a replacement conversation.
+
+[QA-094 evidence](../acceptance/qa-094-codex-desktop-handoff.md) separates native
+provider/Hub/Runtime integration, isolated desktop startup, browser observation
+and unperformed owner-profile/live-model/platform checks. Delivery status lives
+only in [TASKS.md](../TASKS.md).

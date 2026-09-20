@@ -1,3 +1,5 @@
+import { controlDesktopHandoff, desktopScope } from "./desktop-handoff.js";
+import type { DesktopHandoffRequest } from "@convene-wire/contracts/local-node";
 import { readSpaceDirectory } from "./space-directory.js";
 import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type Database from "better-sqlite3";
@@ -27,6 +29,7 @@ export class LocalNodeService {
   private readonly tickets = new Map<string, number>();
   private readonly key: Buffer;
   private consoleRequestId = "";
+  private handoffTaskId = "";
 
   public constructor(
     private readonly database: Database.Database,
@@ -94,14 +97,30 @@ export class LocalNodeService {
     return { user: this.core.getUser(this.launch.identity.ownerUserId)!, session: { token: session.secret, expiresAt: session.expiresAt } };
   }
 
-  public requestConsole(actor: WebPrincipal) {
+  public requestConsole(actor: WebPrincipal, preserveHandoff = false) {
     this.requireOwner(actor);
+    if (!preserveHandoff) this.handoffTaskId = "";
     this.consoleRequestId = randomBytes(32).toString("base64url");
     return { requested: true };
   }
 
   public controlState(now: string) {
-    return { binding: this.binding(now), consoleRequestId: this.consoleRequestId };
+    return { binding: this.binding(now), consoleRequestId: this.consoleRequestId, ...(this.handoffTaskId ? { handoffTaskId: this.handoffTaskId } : {}) };
+  }
+
+  public handoffStatus(actor: WebPrincipal, taskId: string) {
+    this.requireOwner(actor);
+    return desktopScope(this.database, this.core, taskId);
+  }
+
+  public requestHandoff(actor: WebPrincipal, taskId: string) {
+    this.handoffStatus(actor, taskId);
+    this.handoffTaskId = taskId;
+    return this.requestConsole(actor, true);
+  }
+
+  public handoff(input: DesktopHandoffRequest, now: string) {
+    return controlDesktopHandoff(this.database, this.core, this, input, now);
   }
 
   public spaces() {

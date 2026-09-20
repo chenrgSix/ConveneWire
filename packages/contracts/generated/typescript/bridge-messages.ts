@@ -806,6 +806,8 @@ export interface RunRequestedPayload {
    */
   deadline:                        string;
   deliveryAttemptId:               string;
+  desktopAdoptionId?:              string;
+  desktopAudienceDigest?:          string;
   deviceTrust?:                    PayloadDeviceTrust;
   discussionSupplementalEvidence?: DiscussionSupplementalEvidence;
   idempotencyKey:                  string;

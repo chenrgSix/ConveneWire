@@ -332,3 +332,60 @@ func TestMediatorBackpressuresBriefDesktopStallsWithoutDroppingEvents(t *testing
 		t.Fatal("backpressure did not clear")
 	}
 }
+
+func TestMediatorPinsWorkspaceAndInterruptsOnlyOwnedTurn(t *testing.T) {
+	m, d, p, ctx := mediatorFixture(t)
+	workspace := t.TempDir()
+	d.send(t, requestMessage("load", "thread/resume", map[string]string{"threadId": "selected"}))
+	load := p.receive(t)
+	p.send(t, resultMessage(load["id"], map[string]any{"cwd": workspace, "thread": map[string]any{"id": "selected", "status": map[string]string{"type": "idle"}}}))
+	d.receive(t)
+	fence, err := m.Hold(ctx, "selected")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, input := range []Continuation{
+		{OperationID: "unsafe", Text: "no", Sandbox: "danger-full-access", Workspace: workspace},
+		{OperationID: "foreign", Text: "no", Sandbox: "workspace-write", Workspace: workspace + "/other"},
+	} {
+		if _, err := m.Execute(ctx, fence, input); err == nil {
+			t.Fatal("unreviewed execution scope accepted")
+		}
+	}
+	completed := make(chan error, 1)
+	go func() {
+		_, err := m.Execute(ctx, fence, Continuation{OperationID: "owned", Text: "work", Sandbox: "workspace-write", Workspace: workspace})
+		completed <- err
+	}()
+	start := p.receive(t)
+	params := objectField(start, "params")
+	var policy struct {
+		Type                                 string
+		WritableRoots                        []string
+		NetworkAccess                        bool
+		ExcludeTmpdirEnvVar, ExcludeSlashTmp bool
+	}
+	if json.Unmarshal(params["sandboxPolicy"], &policy) != nil || policy.Type != "workspaceWrite" || len(policy.WritableRoots) != 1 || policy.WritableRoots[0] != workspace || policy.NetworkAccess || !policy.ExcludeTmpdirEnvVar || !policy.ExcludeSlashTmp || stringField(params, "approvalPolicy") != "never" {
+		t.Fatalf("unbounded execution policy: %s", params["sandboxPolicy"])
+	}
+	if err := m.Interrupt(ctx, fence); !errors.Is(err, ErrUnknown) {
+		t.Fatal("interrupted without exact native turn identity")
+	}
+	p.send(t, resultMessage(start["id"], map[string]any{"turn": map[string]string{"id": "owned-turn"}}))
+	event(t, d, p, "turn/started", "selected", "owned-turn", nil)
+	interrupted := make(chan error, 1)
+	go func() { interrupted <- m.Interrupt(ctx, fence) }()
+	stop := p.receive(t)
+	if stringField(stop, "method") != "turn/interrupt" || stringField(objectField(stop, "params"), "turnId") != "owned-turn" || stringField(objectField(stop, "params"), "threadId") != "selected" {
+		t.Fatal("wrong turn interrupted")
+	}
+	p.send(t, resultMessage(stop["id"], map[string]any{}))
+	if err := <-interrupted; err != nil {
+		t.Fatal(err)
+	}
+	event(t, d, p, "turn/completed", "selected", "owned-turn", nil)
+	<-completed
+	if err := m.Release(ctx, fence); err != nil {
+		t.Fatal(err)
+	}
+}

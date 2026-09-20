@@ -1,9 +1,29 @@
+import schema from "@convene-wire/contracts/local-node-schema" with { type: "json" };
+import { Ajv2020 } from "ajv/dist/2020.js";
+import type { DesktopHandoffRequest } from "@convene-wire/contracts/local-node";
 import { parsePeerJson } from "@convene-wire/contracts/peer-json";
 import { bodyObject, noStore, requiredString } from "../http/http-helpers.js";
 import type { ServerRouteContext } from "../http/route-context.js";
 
 export function registerLocalNodeRoutes({ app, localNode, peerIngressSettings, relaySettings, principal, clock, limitAnonymous }: ServerRouteContext): void {
   if (!localNode) return;
+  const validateHandoff = new Ajv2020({ strict: true }).addSchema(schema).getSchema(`${schema.$id}#/$defs/DesktopHandoffRequest`)!;
+  void app.register(async handoff => {
+    handoff.removeContentTypeParser("application/json");
+    handoff.addContentTypeParser("application/json", {parseAs: "buffer", bodyLimit: 4096}, (_request, bytes, done) => done(null, bytes));
+    handoff.post("/api/local-node/control/handoff", async (request, reply) => {
+      noStore(reply); localNode.requireControl(request);
+      const input = parsePeerJson(request.body as Buffer);
+      if (!validateHandoff(input)) throw new Error("Invalid native handoff request");
+      return localNode.handoff(input as DesktopHandoffRequest, clock());
+    });
+  });
+  app.get<{Params: {taskId: string}}>("/api/local-node/tasks/:taskId/codex", async (request, reply) => {
+    noStore(reply); return localNode.handoffStatus(principal(request), request.params.taskId);
+  });
+  app.post<{Params: {taskId: string}}>("/api/local-node/tasks/:taskId/codex/open", async (request, reply) => {
+    noStore(reply); return localNode.requestHandoff(principal(request), request.params.taskId);
+  });
   if (relaySettings) void app.register(async relay => {
     relay.removeContentTypeParser("application/json");
     relay.addContentTypeParser("application/json", {parseAs: "buffer", bodyLimit: 4096}, (_request, bytes, done) => done(null, bytes));

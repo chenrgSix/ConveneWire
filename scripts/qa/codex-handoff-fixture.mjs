@@ -116,7 +116,7 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
       return { ...result, output };
     } finally { clearTimeout(timer); await owned.stop(); }
   }
-  async function client({ shared = false, toolResult, dropQueueAddReply = false, proxyExecutable, proxyPlan, mediatorExecutable } = {}) {
+  async function client({ shared = false, toolResult, dropQueueAddReply = false, proxyExecutable, proxyPlan, mediatorExecutable, handoffHub } = {}) {
     assert.ok(!dropQueueAddReply || shared, "Lost-acknowledgment injection requires the owned shared transport");
     assert.ok(!proxyExecutable || (!shared && path.isAbsolute(proxyExecutable) && path.isAbsolute(proxyPlan)), "Proxy fixtures require explicit private paths and stdio");
     assert.ok(!mediatorExecutable || (!shared && !proxyExecutable && path.isAbsolute(mediatorExecutable)), "Mediator fixtures require their own explicit stdio driver");
@@ -124,7 +124,7 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
     const owned = shared ? undefined : spawnTestProcess(resources, mediatorExecutable ?? proxyExecutable ?? executable,
       ["app-server", "--listen", "stdio://", ...overrides.flatMap(value => ["-c", value])], {
         cwd: workspace, env: { ...environment, ...(proxyExecutable ? { CONVENE_WIRE_CODEX_PROXY_PLAN: proxyPlan } : {}),
-          ...(mediatorExecutable ? { CONVENE_WIRE_CODEX_MEDIATOR_FIXTURE_BIN: executable } : {}) },
+          ...(mediatorExecutable ? { CONVENE_WIRE_CODEX_MEDIATOR_FIXTURE_BIN: executable, ...(handoffHub ? {CONVENE_WIRE_HANDOFF_HUB_FIXTURE: JSON.stringify(handoffHub)} : {}) } : {}) },
         stdio: ["pipe", "pipe", "pipe", ...(mediatorExecutable ? ["pipe"] : [])]
       });
     const child = owned?.process;
@@ -219,7 +219,7 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
             controlBuffer = controlBuffer.slice(end + 1);
             const entry = pending.get(message.id); assert.ok(entry, "Local reply requires a pending operation");
             pending.delete(message.id); clearTimeout(entry.timer);
-            if (message.error) entry.reject(new Error(message.error.message)); else entry.resolve(message.result);
+            if (message.error) entry.reject(new Error(`${entry.method}: ${message.error.message}`)); else entry.resolve(message.result);
           }
         } catch (error) { fail(error); }
       });

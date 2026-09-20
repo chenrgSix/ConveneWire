@@ -52,6 +52,7 @@
 
       <nav class="workspace-settings-tabs" aria-label="本机设置">
         <button class="nav-item" type="button" data-page-target="agents">本机 Agent</button>
+        <button class="nav-item" type="button" data-page-target="handoff">Codex 会话</button>
         <button class="nav-item" type="button" data-page-target="peers">远端空间</button>
         <button class="nav-item" type="button" data-page-target="overview">运行状态</button>
         <button class="nav-item" type="button" data-page-target="governed">开发权限</button>
@@ -129,6 +130,7 @@
             <div class="agent-list overview-agents" id="overview-agent-list"></div>
           </section>
 
+          <section class="app-page hidden" data-page-panel="handoff" id="desktop-handoff-page" aria-label="Codex 会话接管"></section>
           <section class="app-page hidden" data-page-panel="agents" id="agents-page">
             <div class="page-heading">
               <div><p class="eyebrow">本机执行环境</p><h2>已配置的 Agent</h2><p>测试、编辑 Runtime 和查看本机文件策略。</p></div>
@@ -706,7 +708,7 @@
       </section>
       <section class="guide-section" aria-labelledby="codex-session-overview-title">
         <h3 id="codex-session-overview-title">Codex 会话说明</h3>
-        <p>ConveneWire Bridge 与 Codex Desktop/CLI 各自运行本地 App Server；当前 ConveneWire 版本没有启用共享 daemon。App Server 能接受多个连接，不代表 Desktop 已配置为连接 Bridge 的进程。</p>
+        <p>普通 Agent 模式不接管 Codex 桌面会话。macOS 本地 Node 可通过本机接管入口保留原会话 ID；先在任务详情选择“连接已有 Codex 会话”，再在本机确认来源和共享范围。</p>
       </section>
       <section class="guide-section" aria-labelledby="codex-session-terms-title">
         <h3 id="codex-session-terms-title">先分清三个概念</h3>
@@ -736,7 +738,7 @@
       </section>
       <section class="guide-section" aria-labelledby="codex-session-daemon-title">
         <h3 id="codex-session-daemon-title">关于共享 daemon</h3>
-        <p>共享 App Server 是后续可评估的架构方向，不是当前 Bridge 功能。只有 Desktop 能明确连接同一个外部 daemon，并补齐生命周期、取消、审批、工作区和权限隔离后，才适合启用。</p>
+        <p>普通 Agent 模式不接管 Codex 桌面会话。实验性协作入口使用原桌面连接；接管期间请从房间继续该任务，结束后在本机点击“交回 Codex”。状态不明时会暂停，不会自动重发或创建替代会话。</p>
       </section>
       <div class="actions modal-actions">
         <button class="primary" id="acknowledge-codex-session-guide" type="button">知道了</button>

@@ -577,3 +577,27 @@ To restore ordinary startup, quit the experimental desktop after work settles
 and open the existing app normally. No history migration or rollback copy of the
 app is needed. The experimental entry must be used again after quitting; this
 component does not install a persistent launcher, login item or global variable.
+
+## Desktop Codex Room integration
+
+- `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- tsx --test scripts/qa/codex-room-handoff.test.ts` — QA-094 actual native original connection, Local Hub HTTP/WebSocket, Bridge inbox/Runtime, same-ID/history/tool continuation, explicit consent, cancel/review, no duplicate Run, coordinator restart and return. Uses isolated profiles and an auth-free loopback provider; no paid model or owner conversation.
+- `node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test -race ./internal/desktopcodex` — original connection, authenticated Unix control, source-write exclusion, exact-turn interrupt, bounded sandbox, protected journal and lost-acknowledgment recovery.
+- `node scripts/test/run-with-temp-root.mjs -- tsx --test apps/server/test/desktop-handoff.test.ts` — native-only destination confirmation, audience/assignment checks, typed delivery, content withholding, release and provisional cancel.
+- `node scripts/test/run-with-temp-root.mjs --cwd apps/web -- tsx --test test/desktop-codex-handoff.test.tsx` and `npm run test:bridge-ui` — browser Task entry and embedded owner review/consent/return controls.
+- `CONVENE_WIRE_HANDOFF_UI_FIXTURE=1 node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/console -run '^TestDesktopHandoffBrowserFixture$' -v` — opt-in local native Console page with synthetic metadata for browser inspection. Its printed loopback URL uses a fixture credential; POST `/fixture/stop` ends it. No actual Codex connection or owner state.
+
+The macOS desktop archive includes `Resources/bin/convenewire-codex-desktop`.
+In an eligible fresh local Task, choose “连接已有 Codex 会话” / “在本机确认”.
+The native Codex page prepares a pinned cooperative startup plan. After saving
+work and quitting Codex yourself, use “启动 Codex”, open the intended conversation
+there, and return to review its exact audience and permissions. Confirm consent,
+then send the next message from that Task's Room. “交回 Codex” restores original
+input; canceling the initial review leaves the Task available. Saved bindings
+remain manageable from native Agent settings after restart. Launching Codex
+normally rolls back the experimental startup selection.
+
+This workflow is currently verified on macOS arm64 with the pinned provider in
+[QA-094](acceptance/qa-094-codex-desktop-handoff.md). Only already-open idle Threads,
+empty native queues, no goal and matching local workspaces are supported. Setup,
+review and model execution are separate operations; packaging never activates an
+owner profile or grants disclosure consent.

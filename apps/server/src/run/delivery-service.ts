@@ -1,3 +1,4 @@
+import { desktopAdoption, requireDesktopRun } from "../local-node/desktop-handoff.js";
 import { createHash } from "node:crypto";
 
 import type Database from "better-sqlite3";
@@ -33,6 +34,8 @@ export interface DiscussionSupplementalEvidenceOffer {
 }
 
 export interface DeliveryPayload {
+  desktopAdoptionId?: string;
+  desktopAudienceDigest?: string;
   deviceTrust?: { mode: "full"; revision: number };
   centralApproval?: { revision: number };
   conversationWork?: boolean;
@@ -177,6 +180,11 @@ export class DeliveryService {
     }
     if (run?.state === "queued" && Date.parse(run.deadlineAt) <= Date.parse(this.clock())) {
       this.runs.expireQueued(run.roomId, this.clock());
+      return undefined;
+    }
+    try { requireDesktopRun(this.database, this.core, runId); } catch {
+      if (run?.state === "queued") this.runs.applyEvent(runId, { type: "status", sequence: run.lastSequence + 1, status: "failed",
+        error: { code: "DESKTOP_HANDOFF_PAUSED", message: "Codex handoff requires local review.", retryable: false } }, this.clock());
       return undefined;
     }
     const delivery = this.ensure(runId);
@@ -332,6 +340,8 @@ export class DeliveryService {
     }
   }
 
+  public requireDesktopContent(runId: string): void { requireDesktopRun(this.database, this.core, runId); }
+
   public isOwnerPrivate(runId: string): boolean { return this.getByRun(runId)?.payload.ownerPrivateOutput === true; }
 
   public getRuntimeScope(runId: string): string | undefined {
@@ -484,12 +494,14 @@ export class DeliveryService {
         };
     const discussionSupplementalEvidence =
       this.discussionSupplementalEvidenceOffer(run.runId, agent);
+    const adoption = desktopAdoption(this.database, run.taskId);
     const payload: DeliveryPayload = {
-      ...(contextManifest.permissions.centralApprovalRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
+      ...(adoption ? { desktopAdoptionId: adoption.adoption_id, desktopAudienceDigest: JSON.parse(adoption.scope_json).audienceDigest as string } : {}),
+      ...(!adoption && contextManifest.permissions.centralApprovalRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
         ? {centralApproval: {revision: contextManifest.permissions.centralApprovalRevision}} : {}),
-      ...(contextManifest.permissions.deviceTrustRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
+      ...(!adoption && contextManifest.permissions.deviceTrustRevision && !contextManifest.execution && agent.capabilities.ownerPrivateOutput !== true
         ? {deviceTrust: {mode: "full" as const, revision: contextManifest.permissions.deviceTrustRevision}} : {}),
-      ...(agent.capabilities.supportsConversationWork === true &&
+      ...(!adoption && agent.capabilities.supportsConversationWork === true &&
         !contextManifest.permissions.deviceTrustRevision && !contextManifest.permissions.centralApprovalRevision &&
         agent.capabilities.ownerPrivateOutput !== true && !contextManifest.execution &&
         !run.parentRunId && trigger.senderType === "member" &&

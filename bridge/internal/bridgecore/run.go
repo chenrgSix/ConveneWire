@@ -143,6 +143,19 @@ func runConnector(ctx context.Context, loaded config.Config, credential pairing.
 			return nil
 		}
 	}
+	beforeStart := func(ctx context.Context) error {
+		if proof != nil {
+			if err := proof(ctx); err != nil {
+				return err
+			}
+		}
+		if node := nativeNodeFromContext(ctx); node != nil {
+			if desktop, err := node.DesktopHandoff(); err == nil {
+				return desktop.WorkReady()
+			}
+		}
+		return nil
+	}
 	loaded = loaded.WithDeviceExecutionTrust(credential.ServerURL, credential.DeviceID, credential.OwnerMemberID)
 	inbox, err := delivery.Open(filepath.Join(loaded.DataDir, "inbox"))
 	if err != nil {
@@ -167,9 +180,13 @@ func runConnector(ctx context.Context, loaded config.Config, credential pairing.
 			case "generic":
 				adapters[agentID] = bridgeruntime.GenericAdapter{Config: configured}
 			case "codex":
-				adapters[agentID] = bridgeruntime.CodexAdapter{
+				adapter := bridgeruntime.CodexAdapter{
 					Config: configured, Sessions: sessions, Approve: connection.AwaitCentralApproval(loaded, credential),
 				}
+				if node := nativeNodeFromContext(ctx); node != nil && node.checkConfiguration(loaded) == nil {
+					adapter.Desktop, _ = node.DesktopHandoff()
+				}
+				adapters[agentID] = adapter
 			}
 		}
 		if adapters[agentID] != nil {
@@ -200,7 +217,7 @@ func runConnector(ctx context.Context, loaded config.Config, credential pairing.
 		IsPrepareRetryable:      bridgeartifact.IsRetryableMaterialization,
 	}
 	runHandler := delivery.Handler{
-		Inbox: inbox, Gate: gate, BeforeStart: proof,
+		Inbox: inbox, Gate: gate, BeforeStart: beforeStart,
 		OnNew: executor.Execute, OnDuplicate: executor.Replay,
 		OnQueuedCanceled:   executor.CancelQueued,
 		Prepare:            materializer.Materialize,
@@ -240,7 +257,7 @@ func runConnector(ctx context.Context, loaded config.Config, credential pairing.
 				return runnerErr
 			}
 		}
-		runHandler.Governed = &delivery.GovernedHandler{Inbox: inbox, Gate: runHandler.Gate, BeforeStart: proof,
+		runHandler.Governed = &delivery.GovernedHandler{Inbox: inbox, Gate: runHandler.Gate, BeforeStart: beforeStart,
 			Admission: coordinator, Runner: runner, Executor: executor, AllowsAgent: readiness.allows,
 			IsExplicitCancel: runHandler.IsExplicitCancel}
 	}

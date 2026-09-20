@@ -42,6 +42,7 @@ type LocalNodeBinding struct {
 type LocalNodeControlState struct {
 	Binding          *Binding `json:"binding"`
 	ConsoleRequestID string   `json:"consoleRequestId"`
+	HandoffTaskID    *string  `json:"handoffTaskId,omitempty"`
 }
 
 type Binding struct {
@@ -51,3 +52,46 @@ type Binding struct {
 	TeamID        string `json:"teamId"`
 	Token         string `json:"token"`
 }
+
+type DesktopHandoffRequest struct {
+	Action         Action  `json:"action"`
+	AdoptionID     *string `json:"adoptionId,omitempty"`
+	AudienceDigest *string `json:"audienceDigest,omitempty"`
+	RunID          *string `json:"runId,omitempty"`
+	TaskID         string  `json:"taskId"`
+}
+
+type DesktopHandoffScope struct {
+	AdoptionID     string   `json:"adoptionId"`
+	AgentID        string   `json:"agentId"`
+	AgentName      string   `json:"agentName"`
+	Audience       []string `json:"audience"`
+	AudienceDigest string   `json:"audienceDigest"`
+	DeviceID       string   `json:"deviceId"`
+	NodeID         string   `json:"nodeId"`
+	OwnerMemberID  string   `json:"ownerMemberId"`
+	RoomID         string   `json:"roomId"`
+	RoomName       string   `json:"roomName"`
+	State          State    `json:"state"`
+	TaskID         string   `json:"taskId"`
+	TaskTitle      string   `json:"taskTitle"`
+	TeamID         string   `json:"teamId"`
+}
+
+type Action string
+
+const (
+	Confirm  Action = "confirm"
+	Release  Action = "release"
+	Scope    Action = "scope"
+	Validate Action = "validate"
+)
+
+type State string
+
+const (
+	Attached  State = "attached"
+	Available State = "available"
+	Paused    State = "paused"
+	Released  State = "released"
+)

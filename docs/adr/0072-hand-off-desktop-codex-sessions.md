@@ -27,8 +27,8 @@ The first product path is **Room → Connect an existing Codex conversation →
 choose a local conversation → review destination and permissions → continue →
 return control to Codex**. A selected Thread attaches to exactly one Task and
 one local Agent, never a Room-wide shared execution context. The picker shows
-local title, project directory and modification time, with explicit unavailable
-reasons. It does not require copying a Thread ID or editing configuration.
+local title, project directory and current busy state. Detailed review includes
+model, tools and execution limits. It does not require copying a Thread ID or editing configuration.
 
 V1 targets the installed desktop's local persisted conversations and a Room
 hosted by the same Local Node. Cloud/remote-host conversations, CLI-specific
@@ -65,7 +65,8 @@ tested desktop did not connect through the attempted Unix WebSocket URL.
 A private, immutable launch plan pins the desktop executable/archive and native
 Codex executable by SHA-256. The proxy verifies that plan before starting the
 original provider with the desktop's arguments over mediated standard streams. It adds no
-permissions, Thread, model turn or listener. The provider receives its own CLI
+permissions, Thread or model turn. ADP-021 adds the closed owner-only control
+endpoint described below. The provider receives its own CLI
 path for resource discovery. Changed binaries, unsafe plan permissions, a
 recursive proxy target or a requested listener/daemon mode fail before execution.
 
@@ -86,7 +87,7 @@ as desktop replies. The mediator's Go interface is local to the process; it is
 not a network endpoint or an owner-consent substitute. The startup command uses
 this mediator for stdio and owns the native child process group; desktop exit
 drains the connection and that group. Native version checks still execute the
-verified provider directly. No coordinator endpoint is installed by startup.
+verified provider directly. ADP-021 adds the protected local coordinator endpoint described below.
 
 A provisional per-Thread fence rejects desktop mutations before coordinator
 inspection. It can be acquired only for an observed, idle, loaded Thread with no
@@ -231,3 +232,46 @@ removing roots. Do not use consumed model-experiment permissions. Installing a
 candidate, touching an actual ongoing conversation, calling a paid provider or
 publishing a release requires the corresponding explicit scope; this development
 request does not silently authorize those actions.
+
+## Integrated local control and recovery
+
+The experimental macOS implementation uses the existing native supervisor
+channel for destination review and confirmation. A Room Task requests the native
+picker; the browser never receives the Console token or source metadata. The Hub
+persists an opaque adoption marker, exact Task/Agent/Device identity and audience
+fingerprint. Delivery includes that marker even after release, so missing local
+state cannot silently start another conversation. Both dispatch and content
+publication check the current audience and assignment.
+
+The startup mediator exposes a capability-authenticated Unix socket inside an
+owner-only temporary directory. Its owner-only descriptor is next to the immutable
+launch plan; it is never a TCP listener or an arbitrary native RPC tunnel. Closed
+operations list observed conversations, review/hold, continue, inspect settlement,
+interrupt the exact owned turn and release. Metadata comes from the original
+connection, including its effective model, workspace, sandbox and supplied tool
+configuration. Unsupported or incomplete configuration is unavailable. A pending
+native queue or any non-null goal prevents attachment.
+
+The native coordinator persists binding and submission intent before sending a
+turn. The provider connection caches exact operation outcomes. Reconnection to the
+same mediator may retrieve that outcome; a changed epoch or an ambiguous operation
+pauses the binding and never resends. An owner can return control only after the
+native conversation is demonstrably idle; a fresh review is required to resume
+Room control. Scope changes also pause execution. The reviewed execution sandbox
+is at most workspace-write with no network and no automatic approval; original
+desktop tools remain explicitly visible in local disclosure consent. Full-access
+and cached execution approvals are not inherited. Arbitrary external queue writers
+remain outside the mediator's fence; detected interference withholds Room output.
+
+ADP-020 covers native compatibility of this supported envelope. Integration,
+persistent consent, recovery and execution-time authorization belong to ADP-021;
+they are not cyclic prerequisites of the compatibility task. UI and integrated
+acceptance remain WEB-091 and QA-094. Real owner-profile setup and model-backed
+manual acceptance are reported separately from disposable offline verification.
+
+Return has an intermediate durable `releasing` state after the native fence is
+removed and before the Hub acknowledgment. Retrying this state only finishes the
+same Hub release. The Hub distinguishes canceling an unconfirmed review from
+returning an adopted Thread, including a lost confirm acknowledgment. A canceled
+review removes its local reservation; a confirmed release retains the no-fallback
+tombstone. Restart preserves a pending return and pauses other nonterminal states.

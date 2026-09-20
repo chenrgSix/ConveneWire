@@ -45,6 +45,9 @@ func (e RuntimeExecutor) ExecuteAdmitted(ctx context.Context, record Record,
 
 func (e RuntimeExecutor) executeAdapter(ctx context.Context, record Record,
 	adapter bridgeruntime.Adapter, send Sender, resolveArtifacts bool) error {
+	if record.Request.DesktopAdoptionID != nil && (adapter == nil || !adapter.Capabilities().SupportsDesktopHandoff) {
+		return e.failBeforeRuntime(ctx, record, send, "DESKTOP_HANDOFF_UNAVAILABLE", "The original desktop conversation is unavailable; no replacement was started.")
+	}
 	privateMode, _ := adapter.(interface{ OwnerPrivateOutput() bool })
 	localPrivate := privateMode != nil && privateMode.OwnerPrivateOutput()
 	wirePrivate := record.Request.OwnerPrivateOutput != nil && *record.Request.OwnerPrivateOutput

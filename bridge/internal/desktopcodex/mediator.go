@@ -52,7 +52,7 @@ type Fence struct {
 	number uint64
 }
 
-type Continuation struct{ OperationID, Text string }
+type Continuation struct{ OperationID, Text, Sandbox, Workspace string }
 type ContinuationResult struct{ TurnID, Text string }
 type FenceState struct {
 	Paused, Running, Uncertain bool
@@ -80,7 +80,10 @@ type controlReply struct {
 	state    FenceState
 	result   ContinuationResult
 	metadata json.RawMessage
+	views    []ThreadView
+	view     ThreadView
 	err      error
+	settled  bool
 }
 
 func NewMediator() *Mediator {
@@ -214,6 +217,7 @@ func raw(value any) json.RawMessage { data, _ := json.Marshal(value); return dat
 type pendingRequest struct {
 	originalID     json.RawMessage
 	method, thread string
+	params         envelope
 	reply          chan controlReply
 	fence          *heldThread
 	run            *operation
@@ -222,6 +226,7 @@ type observedThread struct {
 	loaded    bool
 	active    string
 	completed string
+	view      ThreadView
 }
 type operation struct {
 	input                 Continuation
@@ -438,7 +443,7 @@ func (l *mediatorLoop) fromDesktop(message envelope) error {
 		return l.send(l.desktop, envelope{"id": id, "error": raw(map[string]any{"code": -32001, "message": "ConveneWire holds this conversation; return control before editing it."})})
 	}
 	l.sourceIDs[key] = true
-	return l.request(message, pendingRequest{originalID: id, method: method, thread: thread})
+	return l.request(message, pendingRequest{originalID: id, method: method, thread: thread, params: objectField(message, "params")})
 }
 
 func (l *mediatorLoop) fromProvider(message envelope) error {
@@ -530,6 +535,7 @@ func (l *mediatorLoop) observeReply(request pendingRequest, result envelope) err
 			l.threads[id] = state
 		}
 		state.loaded = true
+		state.view = makeThreadView(id, thread, result, request.params, state.view.Revision+1)
 		status := stringField(objectField(thread, "status"), "type")
 		if status != "idle" && state.active == "" {
 			state.active = "unknown"
@@ -539,6 +545,19 @@ func (l *mediatorLoop) observeReply(request pendingRequest, result envelope) err
 			state.loaded = false
 		}
 	case "turn/start":
+		if state := l.threads[request.thread]; state != nil {
+			if model := stringField(request.params, "model"); model != "" {
+				state.view.Model = model
+			}
+			if cwd := stringField(request.params, "cwd"); cwd != "" {
+				state.view.Workspace = cwd
+			}
+			if sandbox := stringField(objectField(request.params, "sandboxPolicy"), "type"); sandbox != "" {
+				state.view.Sandbox = sandbox
+			}
+			state.view.Configuration = digest([]any{state.view.Configuration, request.params})
+			state.view.Revision++
+		}
 		turn := objectField(result, "turn")
 		id := stringField(turn, "id")
 		if state := l.threads[request.thread]; state != nil && id != state.completed {
@@ -565,11 +584,13 @@ func (l *mediatorLoop) notification(message envelope) error {
 		if turnID == "" {
 			return ErrProtocol
 		}
+		state.view.Revision++
 		state.active = turnID
 	case "turn/completed":
 		if turnID == "" {
 			return ErrProtocol
 		}
+		state.view.Revision++
 		state.completed = turnID
 		if state.active == turnID {
 			state.active = ""
@@ -675,6 +696,18 @@ func (l *mediatorLoop) settle(fence *heldThread, run *operation, err error) {
 
 func (l *mediatorLoop) control(command controlCommand) error {
 	reply := func(value controlReply) error { command.reply <- value; return nil }
+	if command.kind == "list" {
+		var views []ThreadView
+		for id, state := range l.threads {
+			if state.loaded {
+				view := state.view
+				view.ThreadID = id
+				view.Busy = state.active != "" || l.held[id] != nil
+				views = append(views, view)
+			}
+		}
+		return reply(controlReply{views: views})
+	}
 	if command.kind == "hold" {
 		state := l.threads[command.thread]
 		if !l.ready || !l.initialized || command.thread == "" || state == nil || !state.loaded {
@@ -705,6 +738,32 @@ func (l *mediatorLoop) control(command controlCommand) error {
 	}
 	state := l.threads[fence.thread]
 	switch command.kind {
+	case "result":
+		op := fence.operations[command.continuation.OperationID]
+		if op == nil {
+			return reply(controlReply{err: ErrUnavailable})
+		}
+		return reply(controlReply{result: op.result, settled: op.settled, err: op.err})
+	case "snapshot":
+		return reply(controlReply{view: state.view})
+	case "queue", "goal", "config", "tools":
+		method := map[string]string{"queue": "thread/queue/list", "goal": "thread/goal/get", "config": "config/read", "tools": "mcpServerStatus/list"}[command.kind]
+		params := map[string]any{"threadId": fence.thread}
+		if command.kind == "config" {
+			params = map[string]any{"includeLayers": false, "cwd": state.view.Workspace}
+		}
+		if command.kind == "tools" {
+			params = map[string]any{}
+		}
+		return l.request(envelope{"method": raw(method), "params": raw(params)}, pendingRequest{reply: command.reply, fence: fence})
+	case "interrupt":
+		if fence.running == nil {
+			return reply(controlReply{})
+		}
+		if fence.running.turn == "" {
+			return reply(controlReply{err: ErrUnknown})
+		}
+		return l.request(envelope{"method": raw("turn/interrupt"), "params": raw(map[string]string{"threadId": fence.thread, "turnId": fence.running.turn})}, pendingRequest{reply: command.reply, fence: fence})
 	case "state":
 		value := FenceState{Paused: fence.paused, Running: fence.running != nil || state.active != "", Uncertain: fence.uncertain}
 		if fence.running != nil {
@@ -752,13 +811,23 @@ func (l *mediatorLoop) control(command controlCommand) error {
 		if len(fence.operations) >= maxOperations {
 			return reply(controlReply{err: ErrCapacity})
 		}
+		if input.Sandbox != "" && input.Sandbox != "read-only" && input.Sandbox != "workspace-write" {
+			return reply(controlReply{err: ErrUnavailable})
+		}
+		sandbox := map[string]any{"type": "readOnly"}
+		if input.Sandbox == "workspace-write" {
+			if input.Workspace == "" || input.Workspace != state.view.Workspace {
+				return reply(controlReply{err: ErrInterference})
+			}
+			sandbox = map[string]any{"type": "workspaceWrite", "writableRoots": []string{input.Workspace}, "networkAccess": false, "excludeTmpdirEnvVar": true, "excludeSlashTmp": true}
+		}
 		run := &operation{input: input, reply: command.reply, items: map[string]string{}}
 		fence.running = run
 		fence.operations[input.OperationID] = run
 		return l.request(envelope{"method": raw("turn/start"), "params": raw(map[string]any{
 			"threadId": fence.thread, "clientUserMessageId": input.OperationID,
 			"input":          []any{map[string]string{"type": "text", "text": input.Text}},
-			"approvalPolicy": "never", "sandboxPolicy": map[string]string{"type": "readOnly"},
+			"approvalPolicy": "never", "sandboxPolicy": sandbox,
 		})}, pendingRequest{reply: command.reply, fence: fence, run: run})
 	default:
 		return fmt.Errorf("%w: unsupported local operation", ErrUnavailable)

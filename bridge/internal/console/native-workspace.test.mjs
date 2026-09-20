@@ -24,14 +24,14 @@ test('native settings opens the real Agent page and keeps editing and all manage
  dom.window.currentState = nativeState;
  dom.window.pageCopy = {agents: {context: '本机设置', title: '本机 Agent'}};
  dom.window.elements = Object.fromEntries([...document.querySelectorAll('[id]')].map(el => [el.id, el]));
- dom.window.peerSpacesController = dom.window.peerSharingController = dom.window.peerApprovalsController = {setActive() {}};
+ dom.window.handoffController = dom.window.peerSpacesController = dom.window.peerSharingController = dom.window.peerApprovalsController = {setActive() {}};
  const start = source.indexOf('function setPage('), end = source.indexOf('\nfunction governedInventoryGroup(', start);
  dom.window.eval(source.slice(start, end));
  dom.window.setPage(view.initialPage);
  assert.equal(document.getElementById('agents-page').classList.contains('hidden'), false);
  assert.equal(document.getElementById('overview-page').classList.contains('hidden'), true);
  assert.ok(document.querySelector('#agents-page #add-agent'));
- assert.deepEqual([...document.querySelectorAll('.workspace-settings-tabs [data-page-target]')].map(el => el.dataset.pageTarget), ['agents', 'peers', 'overview', 'governed', 'settings']);
+ assert.deepEqual([...document.querySelectorAll('.workspace-settings-tabs [data-page-target]')].map(el => el.dataset.pageTarget), ['agents', 'handoff', 'peers', 'overview', 'governed', 'settings']);
  view.render({...nativeState, agents: [{agentId: 'agent_existing001'}]});
  assert.equal(document.getElementById('workspace-agent-empty').classList.contains('hidden'), true);
  view.render({...nativeState, bridgeRunning: false});

@@ -31,7 +31,7 @@ func Decode(kind string, data []byte, result any) error {
 			return
 		}
 		schemas = make(map[string]*jsonschema.Schema)
-		for _, name := range []string{"LocalNodeIdentity", "LocalNodeLaunch", "LocalNodeReady", "LocalNodeBinding", "LocalNodeControlState"} {
+		for _, name := range []string{"LocalNodeIdentity", "LocalNodeLaunch", "LocalNodeReady", "LocalNodeBinding", "LocalNodeControlState", "DesktopHandoffRequest", "DesktopHandoffScope"} {
 			schemas[name], compileError = compiler.Compile(uri + "#/$defs/" + name)
 			if compileError != nil {
 				return
@@ -42,7 +42,11 @@ func Decode(kind string, data []byte, result any) error {
 		return errors.New("Local Node schema is unavailable")
 	}
 	schema, ok := schemas[kind]
-	if !ok || len(data) > 4096 {
+	maximum := 4096
+	if kind == "DesktopHandoffScope" {
+		maximum = 128 * 1024
+	}
+	if !ok || len(data) > maximum {
 		return errors.New("invalid Local Node message")
 	}
 	var value any

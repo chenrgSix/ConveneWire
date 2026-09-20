@@ -165,7 +165,11 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 			appearance := theme
 			themeMu.Unlock()
 			window.SetTitle("ConveneWire · 本机 Agent")
-			window.SetURL(nativeSettingsURL(service.Token(), appearance))
+			entry := nativeSettingsURL(service.Token(), appearance)
+			if shell.HandoffPending() {
+				entry += "&handoff=1"
+			}
+			window.SetURL(entry)
 		}
 		show(window)
 	}

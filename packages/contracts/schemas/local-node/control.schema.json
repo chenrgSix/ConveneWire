@@ -17,6 +17,12 @@
     },
     {
       "$ref": "#/$defs/LocalNodeControlState"
+    },
+    {
+      "$ref": "#/$defs/DesktopHandoffRequest"
+    },
+    {
+      "$ref": "#/$defs/DesktopHandoffScope"
     }
   ],
   "$defs": {
@@ -159,6 +165,137 @@
           "type": "string",
           "maxLength": 43,
           "pattern": "^([A-Za-z0-9_-]{43})?$"
+        },
+        "handoffTaskId": {
+          "type": "string",
+          "maxLength": 134
+        }
+      }
+    },
+    "DesktopHandoffRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "taskId"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "scope",
+            "confirm",
+            "validate",
+            "release"
+          ]
+        },
+        "taskId": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+        },
+        "adoptionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "audienceDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "runId": {
+          "type": "string",
+          "pattern": "^run_[A-Za-z0-9_-]{8,128}$"
+        }
+      }
+    },
+    "DesktopHandoffScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nodeId",
+        "teamId",
+        "roomId",
+        "taskId",
+        "agentId",
+        "deviceId",
+        "ownerMemberId",
+        "audienceDigest",
+        "audience",
+        "taskTitle",
+        "roomName",
+        "agentName",
+        "state",
+        "adoptionId"
+      ],
+      "properties": {
+        "nodeId": {
+          "type": "string",
+          "pattern": "^node_[A-Za-z0-9_-]{8,128}$"
+        },
+        "teamId": {
+          "type": "string",
+          "pattern": "^team_[A-Za-z0-9_-]{8,128}$"
+        },
+        "roomId": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9_-]{8,128}$"
+        },
+        "taskId": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]{8,128}$"
+        },
+        "agentId": {
+          "type": "string",
+          "pattern": "^agent_[A-Za-z0-9_-]{8,128}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^device_[A-Za-z0-9_-]{8,128}$"
+        },
+        "ownerMemberId": {
+          "type": "string",
+          "pattern": "^member_[A-Za-z0-9_-]{8,128}$"
+        },
+        "audienceDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "audience": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "taskTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "roomName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "agentName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "available",
+            "attached",
+            "released",
+            "paused"
+          ]
+        },
+        "adoptionId": {
+          "type": "string",
+          "maxLength": 128
         }
       }
     }

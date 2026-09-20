@@ -18,8 +18,8 @@ export function createNativeWorkspace({document, query}) {
     document.getElementById("page-title").textContent = "本机 Agent";
   }
   return {
-    address: requested ? `/?workspace=1&theme=${theme}` : null,
-    initialPage: requested ? "agents" : "overview",
+    address: requested ? `/?workspace=1&theme=${theme}${query.get("handoff") === "1" ? "&handoff=1" : ""}` : null,
+    initialPage: requested ? query.get("handoff") === "1" ? "handoff" : "agents" : "overview",
     render(state) {
       const active = requested && Boolean(state.localNodeId);
       activate(active);

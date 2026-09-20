@@ -33,6 +33,12 @@ test("installed Codex through the original-client stdio mediator", {
     const threadId = started.thread.id, anchor = "SYNTHETIC_MEDIATOR_PRIVATE_ANCHOR";
     await desktop.turn(threadId, anchor);
     const { fence } = await desktop.control("hold", { threadId });
+    const reviewed = await desktop.control("review-check", { fence });
+    assert.equal(reviewed.thread.threadId, threadId);
+    assert.equal(reviewed.thread.workspace, fixture.workspace);
+    assert.ok(reviewed.thread.model);
+    assert.ok(reviewed.thread.tools.includes("desktop_fixture_tool"));
+    assert.match(reviewed.fingerprint, /^[0-9a-f]{64}$/);
     const metadata = await desktop.control("read", { fence });
     assert.equal(metadata.thread.id, threadId);
     assert.deepEqual(metadata.thread.turns, []);

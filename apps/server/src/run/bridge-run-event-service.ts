@@ -74,7 +74,7 @@ export class BridgeRunEventService {
     private readonly evidenceConsumption?: ResultEvidenceConsumptionRepository,
     private readonly delivery?: Pick<
       DeliveryService, "validateRoomContextConsumption" | "getRuntimeScope"
-    > & Partial<Pick<DeliveryService, "isOwnerPrivate">>,
+    > & Partial<Pick<DeliveryService, "isOwnerPrivate" | "requireDesktopContent">>,
     private readonly conversationWork?: Pick<ConversationWorkService, "applyReply">
   ) {}
 
@@ -291,6 +291,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    this.delivery?.requireDesktopContent?.(run.runId);
     if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (
@@ -350,6 +351,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    this.delivery?.requireDesktopContent?.(run.runId);
     if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (
@@ -396,6 +398,7 @@ export class BridgeRunEventService {
     const run = this.requireOwnedRun(
       principal, input.runId, input.traceId, input.agentId
     );
+    this.delivery?.requireDesktopContent?.(run.runId);
     if (this.isOwnerPrivate(run)) throw new Error("Private Run output requires explicit disclosure");
     this.validateSequence(input.sequence);
     if (

@@ -1,3 +1,4 @@
+import { createDesktopHandoffController } from "./desktop-handoff.mjs";
 import { createClientEntryController } from "./client-entry.mjs";
 import { createNativeWorkspace } from "./native-workspace.mjs";
 import { createPeerSpacesController } from "./peer-spaces.mjs";
@@ -136,6 +137,7 @@ function consumePairingLaunchHash() {
 }
 
 const pageCopy = {
+  handoff: {context: "本地空间 / 原会话", title: "Codex 会话"},
   overview: {context: "本机执行环境", title: "概览"},
   agents: {context: "Runtime 与权限", title: "本机 Agent"},
   peers: {context: "跨节点协作", title: "远端空间"},
@@ -160,6 +162,7 @@ function setPage(page, focus = false) {
   elements["page-title"].textContent = pageCopy[page].title;
   if (focus) document.querySelector(`[data-page-panel="${page}"] h2`)?.focus?.();
   if (page === "governed") void refreshGovernedState();
+  handoffController.setActive(page === "handoff");
   peerSpacesController.setActive(page === "peers");
   peerSharingController.setActive(page === "peers");
   peerApprovalsController.setActive(page === "peers");
@@ -283,10 +286,11 @@ async function request(path, options = {}) {
 }
 
 const clientEntryController = createClientEntryController({elements, request});
+const handoffController = createDesktopHandoffController({root: document.getElementById("desktop-handoff-page"), request});
 const peerSpacesController = createPeerSpacesController({root: document.getElementById("peer-spaces-page"), request});
 const peerSharingController = createPeerSharingController({root: document.getElementById("peer-sharing-panel"), request});
 const peerApprovalsController = createPeerApprovalsController({root: document.getElementById("peer-approvals-panel"), badge: document.getElementById("peer-approval-badge"), request});
-window.addEventListener("pagehide", () => { peerSpacesController.dispose(); peerSharingController.dispose(); peerApprovalsController.dispose(); });
+window.addEventListener("pagehide", () => { handoffController.dispose(); peerSpacesController.dispose(); peerSharingController.dispose(); peerApprovalsController.dispose(); });
 const workPolicyForm = createWorkPolicyForm({form: document.getElementById("work-policy-form"), request,
   agents: () => currentState?.agents ?? [], refreshed: async () => { await refresh(); await refreshGovernedState(); }});
 

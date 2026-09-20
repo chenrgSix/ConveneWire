@@ -1427,7 +1427,9 @@ const canonicalPropertyTrees = {
                 "u": "9007199254740991"
               }
             }
-          }
+          },
+          "desktopAdoptionId": {},
+          "desktopAudienceDigest": {}
         }
       }
     }

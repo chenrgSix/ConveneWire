@@ -13,6 +13,7 @@ import (
 	"convenewire.dev/bridge/internal/authority"
 	"convenewire.dev/bridge/internal/config"
 	"convenewire.dev/bridge/internal/delivery"
+	"convenewire.dev/bridge/internal/desktopcodex"
 	"convenewire.dev/bridge/internal/pairing"
 	"convenewire.dev/bridge/internal/peer"
 	"convenewire.dev/bridge/internal/privatefs"
@@ -25,6 +26,7 @@ var errNativeNode = errors.New("native Runtime ownership no longer matches this 
 // lease. The Console owns the separate Bridge lease; neither a Device profile
 // nor an HTTP request can provide this native signing identity.
 type NativeNode struct {
+	desktop                *desktopcodex.Coordinator
 	root                   string
 	identity               localwire.LocalNodeIdentity
 	signer                 *peer.Signer

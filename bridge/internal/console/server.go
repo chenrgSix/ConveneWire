@@ -457,6 +457,8 @@ func (s *Service) Handler() http.Handler {
 		panic(err)
 	}
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/desktop-codex", s.authorizePeer(s.getDesktopHandoff))
+	mux.HandleFunc("POST /api/desktop-codex", s.authorizePeer(s.postDesktopHandoff))
 	mux.HandleFunc("GET /api/state", s.authorize(s.getState))
 	mux.HandleFunc("GET /api/peers/status", s.authorizePeer(s.getPeerStatus))
 	mux.HandleFunc("GET /api/peers/spaces", s.authorizePeer(s.getPeerSpaces))

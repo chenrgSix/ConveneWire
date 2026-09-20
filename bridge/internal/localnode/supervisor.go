@@ -148,16 +148,30 @@ func (supervisor *Supervisor) Close() error {
 }
 
 func (supervisor *Supervisor) control(ctx context.Context, method, endpoint string, output any) error {
+	return supervisor.controlInput(ctx, method, endpoint, nil, output)
+}
+func (supervisor *Supervisor) controlInput(ctx context.Context, method, endpoint string, input any, output any) error {
 	select {
 	case <-supervisor.done:
 		return errors.New("Local Hub has exited")
 	default:
 	}
-	request, err := http.NewRequestWithContext(ctx, method, supervisor.Data.Origin()+endpoint, nil)
+	var body io.Reader
+	if input != nil {
+		data, err := json.Marshal(input)
+		if err != nil {
+			return err
+		}
+		body = bytes.NewReader(data)
+	}
+	request, err := http.NewRequestWithContext(ctx, method, supervisor.Data.Origin()+endpoint, body)
 	if err != nil {
 		return err
 	}
 	request.Header.Set("X-ConveneWire-Node-Control", supervisor.controlToken)
+	if input != nil {
+		request.Header.Set("Content-Type", "application/json")
+	}
 	response, err := supervisor.client.Do(request)
 	if err != nil {
 		return errors.New("Local Hub control connection failed")
@@ -166,8 +180,8 @@ func (supervisor *Supervisor) control(ctx context.Context, method, endpoint stri
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("Local Hub control was refused (%d)", response.StatusCode)
 	}
-	source, err := io.ReadAll(io.LimitReader(response.Body, 16<<10))
-	if err != nil || len(source) >= 16<<10 {
+	source, err := io.ReadAll(io.LimitReader(response.Body, 128<<10))
+	if err != nil || len(source) >= 128<<10 {
 		return errors.New("invalid Local Hub control response")
 	}
 	select {
@@ -230,4 +244,19 @@ func (supervisor *Supervisor) ControlState(ctx context.Context) (contracts.Local
 		return state, errors.New("Local Hub binding has a foreign origin")
 	}
 	return state, nil
+}
+
+func (supervisor *Supervisor) Handoff(ctx context.Context, input contracts.DesktopHandoffRequest) (contracts.DesktopHandoffScope, error) {
+	var raw json.RawMessage
+	var scope contracts.DesktopHandoffScope
+	if err := supervisor.controlInput(ctx, http.MethodPost, "/api/local-node/control/handoff", input, &raw); err != nil {
+		return scope, err
+	}
+	if err := contracts.Decode("DesktopHandoffScope", raw, &scope); err != nil {
+		return scope, err
+	}
+	if scope.NodeID != supervisor.Data.Identity.NodeID {
+		return scope, errors.New("foreign handoff scope")
+	}
+	return scope, nil
 }

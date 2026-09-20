@@ -2189,7 +2189,27 @@
         },
         "centralApproval": {
           "$ref": "#/$defs/centralApprovalConsent"
+        },
+        "desktopAdoptionId": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "desktopAudienceDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
+      },
+      "dependentRequired": {
+        "desktopAdoptionId": [
+          "desktopAudienceDigest",
+          "taskId"
+        ],
+        "desktopAudienceDigest": [
+          "desktopAdoptionId",
+          "taskId"
+        ]
       }
     },
     "routingAgent": {

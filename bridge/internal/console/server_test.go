@@ -711,10 +711,10 @@ func TestEmbeddedUIExposesOperationsWithoutAutomaticUpdateChecks(t *testing.T) {
 		!bytes.Contains(html, []byte("日常怎么用")) ||
 		!bytes.Contains(html, []byte("Codex 会话说明")) ||
 		!bytes.Contains(html, []byte(`aria-label="关闭使用说明"`)) ||
-		bytes.Count(html, []byte("当前 Bridge 不与 Codex Desktop/CLI 共享同一个 App Server")) != 2 ||
+		bytes.Count(html, []byte("普通 Agent 模式不接管 Codex 桌面会话")) != 2 ||
 		!bytes.Contains(html, []byte("CODEX_SESSION_IN_USE")) ||
 		!bytes.Contains(html, []byte("CODEX_SESSION_RESUME_FAILED")) ||
-		!bytes.Contains(html, []byte("当前 ConveneWire 版本没有启用共享 daemon")) ||
+		!bytes.Contains(html, []byte("通过本机接管入口保留原会话 ID")) ||
 		!bytes.Contains(html, []byte("一条消息不等于一个新会话")) ||
 		bytes.Count(html, []byte(`value="preserve_and_retry"`)) != 2 ||
 		bytes.Count(html, []byte(`value="start_new"`)) != 2 ||

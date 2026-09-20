@@ -13,6 +13,7 @@ import (
 	"convenewire.dev/bridge/internal/config"
 	"convenewire.dev/bridge/internal/connection"
 	"convenewire.dev/bridge/internal/console"
+	"convenewire.dev/bridge/internal/desktopcodex"
 	"convenewire.dev/bridge/internal/operations"
 	"convenewire.dev/bridge/internal/pairing"
 	contracts "convenewire.dev/contracts/generated/go/localnode"
@@ -68,6 +69,15 @@ func (shell *Shell) Poll(ctx context.Context) (bool, error) {
 	}
 	requested := state.ConsoleRequestID != "" && state.ConsoleRequestID != shell.requestID
 	shell.requestID = state.ConsoleRequestID
+	if requested && shell.native != nil {
+		if coordinator, e := shell.native.DesktopHandoff(); e == nil {
+			task := ""
+			if state.HandoffTaskID != nil {
+				task = *state.HandoffTaskID
+			}
+			coordinator.SetPending(task)
+		}
+	}
 	return requested, nil
 }
 
@@ -104,6 +114,13 @@ func (shell *Shell) attach(binding *contracts.Binding) error {
 		if err != nil {
 			return err
 		}
+	}
+	planPath, err := desktopcodex.DefaultPlanPath()
+	if err != nil {
+		return err
+	}
+	if err = shell.native.ConfigureDesktopHandoff(filepath.Join(filepath.Dir(planPath), "connection.json"), shell.Hub.Handoff); err != nil {
+		return err
 	}
 	dependencies := shell.dependencies
 	native := shell.native
@@ -186,4 +203,14 @@ func (shell *Shell) Close() error {
 		shell.native.Close()
 	}
 	return shell.Hub.Close()
+}
+
+func (shell *Shell) HandoffPending() bool {
+	shell.mu.Lock()
+	defer shell.mu.Unlock()
+	if shell.native == nil {
+		return false
+	}
+	coordinator, err := shell.native.DesktopHandoff()
+	return err == nil && coordinator.PendingTask() != ""
 }

@@ -138,5 +138,102 @@
       "binding": null,
       "consoleRequestId": "oops"
     }
+  },
+  {
+    "kind": "DesktopHandoffScope",
+    "valid": true,
+    "value": {
+      "nodeId": "node_fixture_0001",
+      "teamId": "team_fixture_0001",
+      "roomId": "room_fixture_0001",
+      "taskId": "task_fixture_0001",
+      "agentId": "agent_fixture_0001",
+      "deviceId": "device_fixture_0001",
+      "ownerMemberId": "member_fixture_0001",
+      "adoptionId": "",
+      "audienceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "audience": [
+        "Owner",
+        "Codex (Agent)"
+      ],
+      "taskTitle": "Original work",
+      "roomName": "Local Room",
+      "agentName": "Local Agent",
+      "state": "available"
+    }
+  },
+  {
+    "kind": "DesktopHandoffScope",
+    "valid": false,
+    "value": {
+      "nodeId": "node_fixture_0001",
+      "teamId": "team_fixture_0001",
+      "roomId": "room_fixture_0001",
+      "taskId": "task_fixture_0001",
+      "agentId": "agent_fixture_0001",
+      "deviceId": "device_fixture_0001",
+      "ownerMemberId": "member_fixture_0001",
+      "adoptionId": "",
+      "audienceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "audience": [
+        "Owner",
+        "Codex (Agent)"
+      ],
+      "taskTitle": "Original work",
+      "roomName": "Local Room",
+      "agentName": "Local Agent",
+      "state": "available",
+      "threadId": "private"
+    }
+  },
+  {
+    "kind": "DesktopHandoffScope",
+    "valid": false,
+    "value": {
+      "nodeId": "node_fixture_0001",
+      "teamId": "team_fixture_0001",
+      "roomId": "room_fixture_0001",
+      "taskId": "task_fixture_0001",
+      "agentId": "agent_fixture_0001",
+      "deviceId": "device_fixture_0001",
+      "ownerMemberId": "member_fixture_0001",
+      "adoptionId": "",
+      "audienceDigest": "wrong",
+      "audience": [
+        "Owner",
+        "Codex (Agent)"
+      ],
+      "taskTitle": "Original work",
+      "roomName": "Local Room",
+      "agentName": "Local Agent",
+      "state": "available"
+    }
+  },
+  {
+    "kind": "DesktopHandoffRequest",
+    "valid": true,
+    "value": {
+      "action": "confirm",
+      "taskId": "task_fixture_0001",
+      "adoptionId": "adoption_fixture_0001",
+      "audienceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "kind": "DesktopHandoffRequest",
+    "valid": false,
+    "value": {
+      "action": "thread/resume",
+      "taskId": "task_fixture_0001"
+    }
+  },
+  {
+    "kind": "DesktopHandoffRequest",
+    "valid": false,
+    "value": {
+      "action": "scope",
+      "taskId": "task_fixture_0001",
+      "threadId": "private"
+    }
   }
 ]

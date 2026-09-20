@@ -1257,13 +1257,26 @@ Result adoption and integration remain distinct. See the real connected
 the earlier explicit-form flow; conversational acceptance belongs to RUN-019
 and WEB-078 in the task register.
 
-## Desktop conversation handoff design
+## Desktop conversation handoff
 
-[ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md) places an existing-Codex
-conversation entry in a local Room Task. Native Owner UI selects local metadata
-and reviews the destination, audience, project and execution permissions; private
-history is not uploaded by selection. Attached, busy/paused and released states
-explain who can continue the conversation. The normal composer remains the work
-entry; unsupported provider ownership or tools prevent attachment with a reason.
-WEB-091 implementation follows ADP-020 compatibility and ADP-021 binding; this
-section records design, not a currently available control.
+[ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md) places “连接已有 Codex
+会话” in eligible local Task details. The browser requests a native review and
+shows attached/paused/released status; it receives no source title, native ID,
+workspace, transcript or Console credential. The native window opens its Codex
+page without adding another client. A fresh Task assigned only to the owning
+Device's local Codex Agent is required.
+
+The native picker shows conversations already opened through cooperative startup.
+Review displays the source project/model/tools, execution limits, destination and
+actual Room audience. Sharing consent starts unchecked and is bound to that exact
+review. Ordinary Room messages continue the attached Task. Native settings retain
+saved bindings across restarts, offer explicit rereview and return, and keep lost
+return acknowledgments retryable. Canceling a provisional review leaves the Task
+available. Returning a confirmed adoption leaves the original Codex conversation
+usable and prevents this Task from silently creating another conversation.
+
+Setup prepares the packaged cooperative launcher without installing another app.
+The owner quits Codex and launches it explicitly from this page; ordinary Codex
+launch restores the usual mode. macOS support, idle-source requirements and
+unconfirmed outcomes are stated in the UI. [Browser evidence and screenshots](../acceptance/qa-094-codex-desktop-handoff.md#native-review-ui)
+record the actual local review, consent and return flow.

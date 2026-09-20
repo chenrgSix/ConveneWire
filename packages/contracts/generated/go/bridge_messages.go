@@ -636,6 +636,8 @@ type RunRequestedPayload struct {
 	// most nanosecond precision.
 	Deadline                       time.Time                            `json:"deadline"`
 	DeliveryAttemptID              string                               `json:"deliveryAttemptId"`
+	DesktopAdoptionID              *string                              `json:"desktopAdoptionId,omitempty"`
+	DesktopAudienceDigest          *string                              `json:"desktopAudienceDigest,omitempty"`
 	DeviceTrust                    *PayloadDeviceTrust                  `json:"deviceTrust,omitempty"`
 	DiscussionSupplementalEvidence *DiscussionSupplementalEvidenceClass `json:"discussionSupplementalEvidence,omitempty"`
 	IdempotencyKey                 string                               `json:"idempotencyKey"`

@@ -9,7 +9,15 @@ import (
 	contracts "convenewire.dev/contracts/generated/go"
 )
 
+// DesktopContinuation is supplied by the native owner. Runtime needs only the
+// final text and settlement state, not native profiles, IDs or control machinery.
+type DesktopContinuation interface {
+	HasTask(string) bool
+	Continue(ctx context.Context, task, agent, room, adoption, audience, runID, text string) (reply string, uncertain bool, err error)
+}
+
 type CodexAdapter struct {
+	Desktop DesktopContinuation
 	// Supplied only by the Participant's owning core, once per live child.
 	// It never imports a Device trust or Central approval pin.
 	LocalApproval   func(context.Context) (LocalApprovalSession, error)
@@ -30,12 +38,18 @@ func (c CodexAdapter) Name() string { return "codex" }
 
 func (c CodexAdapter) Capabilities() Capabilities {
 	return Capabilities{
-		SupportsResume: true, SupportsStreaming: true, SupportsInterrupt: true,
+		SupportsDesktopHandoff: c.Desktop != nil, SupportsResume: true, SupportsStreaming: true, SupportsInterrupt: true,
 		SupportsRoomContextCoverage: true,
 	}
 }
 
 func (c CodexAdapter) Execute(ctx context.Context, request Request, emit EmitFunc) error {
+	if request.Run.DesktopAdoptionID != nil {
+		return c.executeDesktop(ctx, request, emit)
+	}
+	if c.Desktop != nil && request.Run.TaskID != nil && c.Desktop.HasTask(*request.Run.TaskID) {
+		return emitCodexFailure(ctx, emit, "DESKTOP_HANDOFF_PAUSED", "Codex handoff requires local review.")
+	}
 	return c.executeAppServer(ctx, request, emit)
 }
 

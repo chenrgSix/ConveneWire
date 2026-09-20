@@ -5,12 +5,13 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"syscall"
 	"time"
 )
 
 // RunProvider keeps the experimental desktop on one original stdio connection.
-// No coordinator endpoint is installed by this startup-only entry. The desktop
+// A protected local coordinator endpoint shares this connection. The desktop
 // owns this mediator, which in turn owns and drains its native process group.
 func RunProvider(ctx context.Context, plan Plan, args, environment []string) error {
 	if len(args) == 1 && (args[0] == "--version" || args[0] == "-V") {
@@ -58,6 +59,22 @@ func RunProvider(ctx context.Context, plan Plan, args, environment []string) err
 	finished := make(chan error, 1)
 	go func() { finished <- command.Wait() }()
 	mediator := NewMediator()
+	if planPath := os.Getenv(ConfigEnvironment); planPath != "" {
+		profile := os.Getenv("CODEX_HOME")
+		if profile == "" {
+			home, _ := os.UserHomeDir()
+			profile = filepath.Join(home, ".codex")
+		}
+		control, controlErr := StartControl(ctx, mediator, planPath, plan, profile)
+		if controlErr != nil {
+			cancel()
+			_ = input.Close()
+			_ = output.Close()
+			<-finished
+			return controlErr
+		}
+		defer control.Close()
+	}
 	err = mediator.Serve(ctx, Streams{DesktopInput: os.Stdin, DesktopOutput: os.Stdout, ProviderInput: output, ProviderOutput: input})
 	// Serve has closed the pipes. Allow normal EOF shutdown to persist native
 	// state, then drain any remaining owned descendants within a fixed bound.
