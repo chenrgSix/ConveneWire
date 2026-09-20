@@ -380,4 +380,10 @@ missing desktop tool callbacks and delayed release after unsubscribe. Discovery
 success must not be used as an adoption capability flag. A shared loopback
 app-server test also receives callbacks in both clients and allows the source
 to continue without a return operation; shared transport is not exclusive control.
+Further queue fixtures retain the original writer and desktop callback handler
+when the producer does not resume or subscribe. Shared-service queue submission
+also wakes an idle fixture Thread; a separate producer process cannot immediately
+start that idle writer. Native queue additions do not deduplicate client message
+IDs. This is a candidate same-ID route, still dependent on a supported desktop
+connection, execution-time review enforcement and uncertain-outcome settlement.
 Delivery status lives in [TASKS.md](../TASKS.md).

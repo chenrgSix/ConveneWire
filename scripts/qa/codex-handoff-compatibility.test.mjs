@@ -1,8 +1,34 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import test from "node:test";
 import { handoffFixture } from "./codex-handoff-fixture.mjs";
 
 const executable = process.env.CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN;
+
+const desktopTool = { name: "desktop_fixture_tool", description: "Synthetic desktop-owned tool",
+  inputSchema: { type: "object", properties: {}, additionalProperties: false } };
+
+function respondWithDesktopTool(fixture, anchor) {
+  fixture.setResponder((input, index) => {
+    assert.ok(JSON.stringify(input.input).includes(anchor), "Queued continuation must retain original history");
+    if (index === 2) return { id: "tool_queued", type: "function_call", name: desktopTool.name,
+      arguments: "{}", call_id: "call_queued", status: "completed" };
+    assert.equal(index, 3);
+    const output = input.input.find(item => item.type === "function_call_output" && item.call_id === "call_queued");
+    assert.equal(output?.output, "DESKTOP_SYNTHETIC_CALLBACK");
+    return "Queued continuation completed in the original writer.";
+  });
+}
+
+async function expectQueuedCompletion(desktop, threadId, clientId) {
+  const started = await desktop.waitFor(message => message.method === "item/started" &&
+    message.params.threadId === threadId && message.params.item.type === "userMessage" &&
+    message.params.item.clientId === clientId);
+  const completed = await desktop.waitFor(message => message.method === "turn/completed" &&
+    message.params.threadId === threadId && message.params.turn.id === started.params.turnId);
+  assert.equal(completed.params.turn.status, "completed", JSON.stringify(completed.params.turn.error));
+  return started.params.turnId;
+}
 
 test("installed Codex preserves one conversation through exclusive handoff and return", {
   skip: !executable, timeout: 120_000
@@ -164,5 +190,119 @@ test("sharing an app-server does not establish exclusive client control", {
   t.diagnostic(`Shared-service callback recipients: source=${sourceCalls}, receiver=${receiverCalls}`);
   await desktop.turn(start.thread.id, "The original client can still start a turn without an explicit return operation.");
   assert.equal(fixture.calls.length, 4, "Shared subscription has not fenced the original client");
+  fixture.checkProvider();
+});
+
+test("a shared-service queue can continue an idle Thread without subscribing to desktop tool callbacks", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared: true, toolResult: "DESKTOP_SYNTHETIC_CALLBACK" });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never",
+    dynamicTools: [desktopTool] });
+  const anchor = "SYNTHETIC_IDLE_QUEUE_ANCHOR";
+  const originalTurnId = await desktop.turn(start.thread.id, anchor);
+  const room = await fixture.client({ shared: true });
+  respondWithDesktopTool(fixture, anchor);
+  const clientId = randomUUID();
+  await room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: clientId,
+    input: [{ type: "text", text: "Continue with the original desktop tool." }] });
+  // No resume, subscription or queue/start: the original writer drains its queue.
+  const queuedTurnId = await expectQueuedCompletion(desktop, start.thread.id, clientId);
+  assert.notEqual(queuedTurnId, originalTurnId);
+  assert.deepEqual((await room.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+  assert.equal(desktop.notifications.filter(message => message.method === "item/tool/call").length, 1);
+  assert.equal(room.notifications.filter(message => message.method === "item/tool/call").length, 0);
+  assert.equal(fixture.calls.length, 3);
+  fixture.checkProvider();
+});
+
+test("an independent queue producer waits for the active original turn and preserves its tool handler", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ toolResult: "DESKTOP_SYNTHETIC_CALLBACK" });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never",
+    dynamicTools: [desktopTool] });
+  const anchor = "SYNTHETIC_ACTIVE_QUEUE_ANCHOR";
+  let release, reached;
+  const blocked = new Promise(resolve => { release = resolve; });
+  const entered = new Promise(resolve => { reached = resolve; });
+  fixture.setResponder(async () => { reached(); await blocked; return "Original turn completed."; });
+  const running = desktop.turn(start.thread.id, anchor);
+  running.catch(() => {});
+  const clientId = randomUUID();
+  let room, originalTurnId;
+  try {
+    await Promise.race([entered, running]);
+    room = await fixture.client();
+    const queued = await room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: clientId,
+      input: [{ type: "text", text: "After the current turn, continue using the desktop tool." }] });
+    const listed = await desktop.rpc("thread/queue/list", { threadId: start.thread.id });
+    assert.deepEqual(listed.data.map(item => item.id), [queued.queuedSubmission.id]);
+    assert.equal(fixture.calls.length, 1, "Queueing must not start a concurrent provider request");
+    assert.equal(desktop.notifications.filter(message => message.method === "turn/started").length, 1);
+    respondWithDesktopTool(fixture, anchor);
+  } finally {
+    release();
+    originalTurnId = await running;
+  }
+  const queuedTurnId = await expectQueuedCompletion(desktop, start.thread.id, clientId);
+  assert.notEqual(queuedTurnId, originalTurnId, "Queue must create a later turn, not steer the active one");
+  const completionIndex = desktop.notifications.findIndex(message => message.method === "turn/completed" && message.params.turn.id === originalTurnId);
+  const nextStartIndex = desktop.notifications.findIndex(message => message.method === "turn/started" && message.params.turn.id === queuedTurnId);
+  assert.ok(nextStartIndex > completionIndex);
+  assert.deepEqual((await room.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+  assert.equal(desktop.notifications.filter(message => message.method === "item/tool/call").length, 1);
+  assert.equal(room.notifications.filter(message => message.method === "item/tool/call").length, 0);
+  assert.equal(fixture.calls.length, 3);
+  fixture.checkProvider();
+});
+
+test("an independent queue producer cannot immediately start an idle original writer", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client();
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  await desktop.turn(start.thread.id, "SYNTHETIC_IDLE_INDEPENDENT_ANCHOR");
+  const room = await fixture.client();
+  const queued = await room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: randomUUID(),
+    input: [{ type: "text", text: "SYNTHETIC_IDLE_INDEPENDENT_MESSAGE" }] });
+  await assert.rejects(room.rpc("thread/queue/start", { threadId: start.thread.id,
+    queuedSubmissionId: queued.queuedSubmission.id }), /resume the thread before starting a queued message/);
+  await assert.rejects(room.rpc("thread/resume", { threadId: start.thread.id }), /active writer/);
+  // This is a bounded observation, not a claim that no later desktop action can drain it.
+  await new Promise(resolve => setTimeout(resolve, 500));
+  assert.equal(fixture.calls.length, 1);
+  assert.deepEqual((await desktop.rpc("thread/queue/list", { threadId: start.thread.id })).data.map(item => item.id), [queued.queuedSubmission.id]);
+  assert.deepEqual(await room.rpc("thread/queue/delete", { threadId: start.thread.id,
+    queuedSubmissionId: queued.queuedSubmission.id }), { deleted: true });
+  assert.deepEqual((await desktop.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+  fixture.checkProvider();
+});
+
+test("queue client message IDs do not deduplicate retries or reject changed payloads", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client();
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  await desktop.turn(start.thread.id, "SYNTHETIC_QUEUE_RETRY_ANCHOR");
+  await desktop.stop(); // Keep the queue stationary while checking retry semantics.
+  const room = await fixture.client();
+  const request = { threadId: start.thread.id, clientUserMessageId: randomUUID(),
+    input: [{ type: "text", text: "SYNTHETIC_ORIGINAL_QUEUED_PAYLOAD" }] };
+  const original = await room.rpc("thread/queue/add", request);
+  const retried = await room.rpc("thread/queue/add", request);
+  const changed = await room.rpc("thread/queue/add", { ...request,
+    input: [{ type: "text", text: "SYNTHETIC_CHANGED_QUEUED_PAYLOAD" }] });
+  const ids = [original, retried, changed].map(result => result.queuedSubmission.id);
+  assert.equal(new Set(ids).size, 3, "The native queue accepts every repeated request as a new entry");
+  const listed = await room.rpc("thread/queue/list", { threadId: start.thread.id });
+  assert.deepEqual(listed.data.map(item => item.id), ids);
+  assert.ok(listed.data.every(item => item.clientUserMessageId === request.clientUserMessageId));
+  assert.deepEqual(listed.data.map(item => item.input[0].text), [request.input[0].text, request.input[0].text, "SYNTHETIC_CHANGED_QUEUED_PAYLOAD"]);
+  assert.equal(fixture.calls.length, 1, "Retry inspection must not execute queued messages");
   fixture.checkProvider();
 });

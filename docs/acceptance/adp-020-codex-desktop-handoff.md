@@ -24,7 +24,7 @@ removing its temporary home and workspace.
 
 ## Native observations
 
-The five opt-in cases in
+The nine opt-in cases in
 [codex-handoff-compatibility.test.mjs](../../scripts/qa/codex-handoff-compatibility.test.mjs)
 passed against that exact binary. Passing the cases records both supported
 behavior and reproduced limitations; it does not certify product takeover.
@@ -36,6 +36,10 @@ behavior and reproduced limitations; it does not certify product takeover.
 | Unsubscribe and writer lifetime | The source receives `{"status":"unsubscribed"}`; an immediate independent resume still fails with `already has an active writer`. Resume succeeds after the owned source process exits. Exactly one loopback request. | Unsubscribe acknowledgment cannot authorize immediate takeover. |
 | In-flight contention | While the original request is deliberately held open, another process reads status `{"type":"notLoaded"}` but cannot resume because the original writer is active. The original turn then completes once. Exactly one loopback request. | Another process's status is not global ownership evidence. The provider lock prevents this competing writer. |
 | Shared-service client control | Two WebSocket clients connect to one owned loopback app-server and resume the same Thread. Both receive the same synthetic tool callback, and one fixed client response reaches the provider. After the receiving client's turn, the source can start another turn without any return operation. Exactly four loopback requests. | Sharing a service neither routes callbacks exclusively nor fences the original client. It is not an ownership-transfer mechanism. |
+| Shared-service queue without subscription | An initialized second client calls only `thread/queue/add` and `thread/queue/list`, without resuming or subscribing to the Thread. The idle original writer automatically starts a new turn with the original ID and prior context. Only the original client receives the synthetic dynamic tool callback; its fixed result reaches the provider. Exactly three loopback requests. | A queue producer can delegate work to the existing writer without taking over its desktop tool callbacks. This differs from a second resumed client. |
+| Independent producer during an active turn | Another process adds a queue entry while the original response is held open. No competing turn starts. After the original turn completes, its writer automatically drains the queue into a distinct turn, retaining the original ID, history and synthetic desktop handler. Exactly three loopback requests. | Durable queue writes can be consumed by the original writer at a turn boundary; they need not steer the active turn. |
+| Independent producer while idle | After a completed source turn, another process adds a queue entry. `thread/queue/start` rejects with `resume the thread before starting a queued message`; resume still rejects the active writer. The entry remains pending during the additional 500 ms observation. Deleting that exact entry removes it. Exactly one loopback request. | Shared storage does not itself establish an immediate idle-wakeup route. The bounded test does not claim that future desktop actions cannot drain the entry. |
+| Queue retry identity | With the original fixture process stopped, the producer adds an identical request twice and then a changed payload with the same `clientUserMessageId`. Three distinct queue entries persist with that same client ID. None executes. Exactly one loopback request for the original context. | Client message IDs correlate messages but do not deduplicate submission or reject conflicting payloads. Blind retries can execute duplicate work. |
 
 The fixture-created source is classified `vscode` by this binary despite using
 app-server directly. Discovery includes the native `vscode`, `appServer` and `cli`
@@ -72,8 +76,9 @@ exposes this inventory yet.
 Commands and opt-in variables are recorded in
 [Development and Operations Commands](../development-commands.md).
 
-- Native offline compatibility: five tests passed, zero skipped, including the
-  additional shared-service boundary check after the fixture repair.
+- Native offline compatibility: nine tests passed, zero skipped, including four
+  queue cases added after the shared-service boundary check. The default run
+  without an explicit executable skips all nine cases.
 - Focused metadata regression with the installed-binary option: `go test -race`
   passed, including isolated native empty-list and absent-Thread reads.
 - Owning Runtime package: `go test ./internal/runtime` and
@@ -122,13 +127,23 @@ route are still missing. A complete tool inventory is also required before the
 owner can review capability changes. A tool appearing in old history is not a
 complete inventory, and a successful resume is not a successful tool check.
 
-The next integration must establish an explicit local connection to the original
-desktop tool host with a documented ownership boundary, or prove an eligible
-profile's complete capabilities through a supported provider interface. A shared
-app-server transport alone does not establish callback routing or exclusive
-control: the additional native case reproduces callbacks to both clients and
-continued source-client authority. It uses an owned loopback listener and fixed
-synthetic tool responses, never the actual desktop service or an executable tool.
+The owner reconfirmed the original Thread ID as the preferred outcome. The new
+queue evidence supports investigating delegation to the **original writer**:
+the Room-side producer submits a message without resuming/subscribing, and the
+source retains its tools. The shared-service fixture proves idle execution and
+callback isolation for that exact route. The separate-process case proves
+continuation at a turn boundary, but does not supply idle wakeup.
+
+A supported way to reach the real desktop's service is still required. These
+fixtures do not expose or connect to it. Source input fencing, checkpoint and
+audience validation at execution time, private result correlation, cancellation
+settlement, and complete permission/tool review are also unresolved. A local
+operation journal must reconcile uncertain submissions; the native queue's
+`clientUserMessageId` is not an idempotency key. Do not retry an ambiguous add or
+assume an accepted queue entry has executed. Sharing an app-server and resuming
+the Thread remains a different, unsuitable route: that test broadcasts callbacks
+to both subscribed clients and leaves source-client authority active.
+
 No complete desktop handoff route has been validated here. Do not implement adoption by
 scraping a private desktop socket, editing stored tool metadata, archiving a
 conversation to release its lock, stopping the owner desktop or silently creating

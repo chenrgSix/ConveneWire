@@ -37,6 +37,8 @@ an active desktop turn are subsequent work. The owner keeps using the normal
 Room message and Run interface after attachment.
 
 Continuation keeps the original Thread ID and provider-maintained history.
+The owner reconfirmed this preference after the initial compatibility findings;
+incomplete cross-client support does not change the target to a new Thread.
 Forking, importing a summary, replaying old prompts and creating a replacement
 are not success fallbacks. Existing `start_new`/missing-thread recreation policy
 must never apply to an adopted conversation. Missing history, busy ownership,
@@ -139,6 +141,13 @@ Delivery state is recorded only in [TASKS.md](../TASKS.md).
 
 ## Alternatives
 
+- Delegating through the original writer's native message queue is a candidate
+  same-ID integration route. Isolated tests preserve the desktop callback handler
+  when the producer does not resume or subscribe. It still needs a supported
+  desktop connection, execution-time ownership/review enforcement and uncertain
+  submission reconciliation before it can satisfy this decision. Native client
+  message IDs do not deduplicate queue additions. See the
+  [compatibility evidence](../acceptance/adp-020-codex-desktop-handoff.md).
 - A summary in a new Thread loses exact conversation continuity and is not the
   requested feature. It may later be a separately labeled user choice.
 - Copying or editing Codex's private storage couples us to undocumented layouts
