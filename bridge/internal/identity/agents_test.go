@@ -6,8 +6,36 @@ import (
 	"strings"
 	"testing"
 
+	"convenewire.dev/bridge/internal/authority"
 	"convenewire.dev/bridge/internal/config"
 )
+
+func TestSavedAgentIdentitiesRemainReadableByNativeAuthority(t *testing.T) {
+	directory := t.TempDir()
+	agents := []config.AgentConfig{{Name: "Builder"}}
+	ids, err := LoadOrCreate(directory, agents)
+	if err != nil {
+		t.Fatal(err)
+	}
+	check := func() {
+		t.Helper()
+		actual, err := authority.ReadLocalIdentities(directory, agents)
+		if err != nil || actual["Builder"] != ids["Builder"] {
+			t.Fatalf("native Authority cannot reopen saved identities: %v", err)
+		}
+	}
+	check()
+	if err := BindName(directory, "Renamed", ids["Builder"]); err != nil {
+		t.Fatal(err)
+	}
+	agents = []config.AgentConfig{{Name: "Renamed"}}
+	check()
+	if _, err := AllocateNew(directory, agents, "Reviewer"); err != nil {
+		t.Fatal(err)
+	}
+	agents = append(agents, config.AgentConfig{Name: "Reviewer"})
+	check()
+}
 
 func TestLookupConfiguredNeverCreatesOrRepairsIdentities(t *testing.T) {
 	dir := t.TempDir()
