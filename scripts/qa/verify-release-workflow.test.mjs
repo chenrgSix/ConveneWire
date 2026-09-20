@@ -86,6 +86,13 @@ test("Go gates provide the real Node Host used by Peer cross-language tests", ()
   }
 });
 
+test("Windows CI and Release use the same native compiler compatible with pinned node-gyp", () => {
+  for (const [source, verify] of [[workflow, verifyReleaseWorkflowSource], [ciWorkflow, verifyCIWorkflowSource]]) {
+    const changed = mutateJob(source, "desktop-windows", block => block.replace("runs-on: windows-2022", "runs-on: windows-latest"));
+    assert.throws(() => verify(changed), /Windows native builder/u);
+  }
+});
+
 test("release and installed payload verification cannot omit Node-first inventory admission", () => {
   for (const marker of ["verify-desktop-zip.py", "release-hub.mjs", "convenewire-node.exe"]) {
     assert.throws(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier.replaceAll(marker, "removed")), /combined Release asset verifier/u);

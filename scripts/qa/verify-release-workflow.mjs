@@ -74,7 +74,7 @@ export function assertTagSource(sourceSha, tagSourceSha) {
 export function verifyCIWorkflowSource(source) {
   verifyNativeNodeJobs(source);
   invariant(
-    source.includes("runs-on: windows-latest"),
+    source.includes("runs-on: windows-2022"),
     "CI must retain one native Windows job"
   );
   invariant(
@@ -404,6 +404,9 @@ export function verifyNativeNodeJobs(source) {
   assertBefore(go, "Install locked Peer Host fixture dependencies", "Test and vet Bridge", "Go Peer Host fixture");
   for (const name of ["desktop-macos", "desktop-windows"]) {
     const job = requireJob(jobs, name);
+    if (name === "desktop-windows") {
+      invariant(/^    runs-on: windows-2022$/mu.test(job), "Windows native builder must retain the pinned VS 2022 image");
+    }
     const gate = stepForName(job, "Build and verify native Node bundle");
     const setup = stepForName(job, "Set up Node.js");
     assertIncludes(setup, ["uses: actions/setup-node@", "node-version: 22.23.1"], `${name} Node toolchain`);

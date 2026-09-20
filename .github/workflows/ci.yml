@@ -198,7 +198,8 @@ jobs:
 
   desktop-windows:
     name: Desktop Windows
-    runs-on: windows-latest
+    # Node 22's pinned node-gyp requires the VS 2022 toolchain.
+    runs-on: windows-2022
     timeout-minutes: 30
     steps:
       - name: Check out source

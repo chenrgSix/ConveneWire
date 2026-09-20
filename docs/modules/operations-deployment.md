@@ -682,3 +682,8 @@ A native Node with an explicit data root can start without a user home directory
 In that environment the optional Codex desktop coordinator remains unavailable;
 ordinary Agent configuration, Runs and Discussions still work. A missing desktop
 profile never creates a guessed adoption path or an alternate Codex conversation.
+
+The native Windows CI and Release jobs use the same `windows-2022` runner image
+for the VS 2022 compiler supported by the pinned Node/node-gyp toolchain. The
+release policy rejects a drifting image; native Hub, installer upgrade, retained
+state and uninstall checks remain mandatory.
