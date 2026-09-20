@@ -82,6 +82,36 @@ These results are local protocol and package evidence. They do not cover the
 actual desktop-to-Room UI, live model behavior, Windows, installation, CI or
 release publication.
 
+## Acceptance finding and fixture repair
+
+A subsequent owner-requested acceptance on the same source found two metadata
+race-test timeouts; an isolated rerun still failed the notification case. The
+client UI and production callers also confirmed that adoption/binding/release
+were not implemented. That acceptance did not pass the product feature.
+
+Startup diagnostics identified the timeout source: the protocol double was the
+entire Runtime test executable. Before its fixture `init` could reply, generated
+contract package initialization compiled all validators. `GODEBUG=inittrace=1`
+measured approximately 490 MB of cumulative allocation and 6.5 million allocations
+per child. Even an otherwise responsive double spent 1.4–2.4 seconds initializing
+in a separate diagnostic run; the failed acceptance reached the five-second
+deadline. This was not evidence of an installed Codex metadata-query timeout.
+
+The double now uses a
+[standalone standard-library executable](../../bridge/internal/runtime/testdata/codex-metadata/main.go),
+built inside the owned test directory before the query starts. The production
+timeout remains five seconds, and the actual metadata reader and process cleanup
+still run under `go test -race`. Negative cases assert the complete request
+sequence, so a child that never initializes cannot falsely satisfy a malformed
+reply test. Cancellation waits until the child receives the hanging query before
+cancelling it.
+
+Repair validation: the complete focused metadata suite with the installed-binary
+option and `-race -count=3` passed all three iterations; owning Runtime unit tests
+and `go vet` for Runtime plus the standalone fixture passed. The diagnostic and
+test roots were removed. This repairs the timeout finding only; the following
+desktop integration requirements are still unfulfilled.
+
 ## Unresolved integration boundary
 
 The tested independent app-server route cannot yet deliver the designed desktop
