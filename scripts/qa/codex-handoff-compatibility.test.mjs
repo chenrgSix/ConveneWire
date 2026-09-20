@@ -306,3 +306,127 @@ test("queue client message IDs do not deduplicate retries or reject changed payl
   assert.equal(fixture.calls.length, 1, "Retry inspection must not execute queued messages");
   fixture.checkProvider();
 });
+
+for (const shared of [false, true]) test(`native queue CLI ${shared ? "wakes a shared" : "only enqueues for an independent"} idle writer`, {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  const anchor = "SYNTHETIC_NATIVE_QUEUE_ANCHOR";
+  const originalTurnId = await desktop.turn(start.thread.id, anchor);
+  const message = "SYNTHETIC_NATIVE_QUEUE_CONTINUATION";
+  const queued = await fixture.queueCLI(start.thread.id, message, { shared });
+  assert.equal(queued.code, 0, queued.output);
+  const queueId = /Queued message ([a-z0-9-]+) for thread /.exec(queued.output)?.[1];
+  assert.ok(queueId, "The native CLI must report a successful queue acknowledgment");
+  if (shared) {
+    const completed = await desktop.waitFor(event => event.method === "turn/completed" &&
+      event.params.threadId === start.thread.id && event.params.turn.id !== originalTurnId);
+    assert.equal(completed.params.turn.status, "completed");
+    assert.equal(fixture.calls.length, 2);
+    assert.ok(JSON.stringify(fixture.calls[1].input).includes(anchor));
+    assert.ok(JSON.stringify(fixture.calls[1].input).includes(message));
+    assert.deepEqual((await desktop.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+  } else {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    assert.equal(fixture.calls.length, 1, "A successful CLI acknowledgment is not proof of execution");
+    const listed = await desktop.rpc("thread/queue/list", { threadId: start.thread.id });
+    assert.deepEqual(listed.data.map(item => item.id), [queueId]);
+    assert.equal(listed.data[0].input[0].text, message);
+    assert.deepEqual(await desktop.rpc("thread/queue/delete", { threadId: start.thread.id, queuedSubmissionId: queueId }), { deleted: true });
+  }
+  fixture.checkProvider();
+});
+
+test("a lost queue acknowledgment can be reconciled to one completed turn without replay or subscription", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared: true });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  await desktop.turn(start.thread.id, "SYNTHETIC_PRIVATE_HISTORY_ANCHOR");
+  const room = await fixture.client({ shared: true, dropQueueAddReply: true });
+  const clientId = randomUUID();
+  const text = "SYNTHETIC_LOST_ACKNOWLEDGMENT_MESSAGE";
+  await assert.rejects(room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: clientId,
+    input: [{ type: "text", text }] }), /Injected lost queue acknowledgment/);
+  const turnId = await expectQueuedCompletion(desktop, start.thread.id, clientId);
+  const recovery = await fixture.client({ shared: true });
+  assert.deepEqual((await recovery.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+  const page = await recovery.rpc("thread/turns/list", { threadId: start.thread.id, limit: 10, itemsView: "full" });
+  const matches = page.data.filter(turn => turn.items.some(item => item.type === "userMessage" && item.clientId === clientId));
+  assert.equal(matches.length, 1);
+  assert.equal(matches[0].id, turnId);
+  assert.equal(matches[0].status, "completed");
+  const userMessage = matches[0].items.find(item => item.type === "userMessage" && item.clientId === clientId);
+  assert.equal(userMessage.content[0].text, text, "Reconciliation must compare the accepted payload as well as the client ID");
+  assert.equal(matches[0].items.find(item => item.type === "agentMessage")?.text, "Offline continuation completed.");
+  assert.equal(fixture.calls.length, 2, "An unknown acknowledgment must not cause another queue addition");
+  fixture.checkProvider();
+});
+
+test("deleting a queued message before the original turn finishes prevents its execution", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared: true });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  let release, reached;
+  const blocked = new Promise(resolve => { release = resolve; });
+  const entered = new Promise(resolve => { reached = resolve; });
+  fixture.setResponder(async (_input, index) => {
+    if (index === 1) { reached(); await blocked; }
+    return "Original conversation is still usable.";
+  });
+  const running = desktop.turn(start.thread.id, "SYNTHETIC_ORIGINAL_HELD_TURN");
+  running.catch(() => {});
+  const canceledText = "SYNTHETIC_CANCELED_QUEUE_MESSAGE";
+  try {
+    await Promise.race([entered, running]);
+    const room = await fixture.client({ shared: true });
+    const queued = await room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: randomUUID(),
+      input: [{ type: "text", text: canceledText }] });
+    assert.deepEqual(await room.rpc("thread/queue/delete", { threadId: start.thread.id,
+      queuedSubmissionId: queued.queuedSubmission.id }), { deleted: true });
+    assert.deepEqual((await room.rpc("thread/queue/list", { threadId: start.thread.id })).data, []);
+    assert.equal(fixture.calls.length, 1);
+  } finally {
+    release();
+    await running;
+  }
+  await desktop.turn(start.thread.id, "SYNTHETIC_AFTER_CANCEL_CONTINUATION");
+  assert.equal(fixture.calls.length, 2);
+  assert.ok(!JSON.stringify(fixture.calls).includes(canceledText), "The deleted prompt must never reach the provider or future context");
+  fixture.checkProvider();
+});
+
+test("deleting a consumed queue entry does not cancel its running turn", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared: true });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never" });
+  await desktop.turn(start.thread.id, "SYNTHETIC_ALREADY_STARTED_QUEUE_ANCHOR");
+  let release, reached;
+  const blocked = new Promise(resolve => { release = resolve; });
+  const entered = new Promise(resolve => { reached = resolve; });
+  fixture.setResponder(async () => { reached(); await blocked; return "The consumed queue turn still completed."; });
+  const room = await fixture.client({ shared: true });
+  const clientId = randomUUID();
+  const queued = await room.rpc("thread/queue/add", { threadId: start.thread.id, clientUserMessageId: clientId,
+    input: [{ type: "text", text: "SYNTHETIC_ALREADY_STARTED_MESSAGE" }] });
+  const completed = expectQueuedCompletion(desktop, start.thread.id, clientId);
+  completed.catch(() => {});
+  try {
+    await Promise.race([entered, completed]);
+    assert.deepEqual(await room.rpc("thread/queue/delete", { threadId: start.thread.id,
+      queuedSubmissionId: queued.queuedSubmission.id }), { deleted: false });
+    assert.equal(fixture.calls.length, 2);
+  } finally {
+    release();
+    await completed;
+  }
+  assert.equal(fixture.calls.length, 2);
+  fixture.checkProvider();
+});

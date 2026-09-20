@@ -100,7 +100,24 @@ export async function handoffFixture(t, executable) {
     await sharedServer;
   }
   let clientNumber = 0;
-  async function client({ shared = false, toolResult } = {}) {
+  async function queueCLI(threadId, message, { shared = false } = {}) {
+    if (shared) await startSharedServer();
+    const owned = spawnTestProcess(resources, executable,
+      ["queue", "--thread", threadId, "--message", message,
+        ...(shared ? ["--remote", sharedAddress] : []), ...overrides.flatMap(value => ["-c", value])],
+      { cwd: workspace, env: environment, stdio: ["ignore", "pipe", "pipe"] });
+    let output = "";
+    for (const stream of [owned.process.stdout, owned.process.stderr]) stream.on("data", value => { output = (output + value).slice(-8192); });
+    let timedOut = false;
+    const timer = setTimeout(() => { timedOut = true; void owned.stop().catch(() => {}); }, 10_000);
+    try {
+      const result = await owned.terminal;
+      assert.equal(timedOut, false, "Native queue CLI exceeded the fixture deadline");
+      return { ...result, output };
+    } finally { clearTimeout(timer); await owned.stop(); }
+  }
+  async function client({ shared = false, toolResult, dropQueueAddReply = false } = {}) {
+    assert.ok(!dropQueueAddReply || shared, "Lost-acknowledgment injection requires the owned shared transport");
     if (shared) await startSharedServer();
     const owned = shared ? undefined : spawnTestProcess(resources, executable,
       ["app-server", "--listen", "stdio://", ...overrides.flatMap(value => ["-c", value])], {
@@ -158,6 +175,11 @@ export async function handoffFixture(t, executable) {
           } else if (message.id !== undefined) {
             const entry = pending.get(message.id);
             assert.ok(entry, "Response must match one pending request");
+            if (dropQueueAddReply && entry.method === "thread/queue/add") {
+              fail(new Error("Injected lost queue acknowledgment"));
+              connection.terminate();
+              return;
+            }
             pending.delete(message.id); clearTimeout(entry.timer);
             if (message.error) entry.reject(Object.assign(new Error(message.error.message), { rpcCode: message.error.code }));
             else entry.resolve(message.result);
@@ -177,7 +199,7 @@ export async function handoffFixture(t, executable) {
       if (failure) { reject(failure); return; }
       const id = ++nextID;
       const timer = setTimeout(() => fail(new Error(`Timed out waiting for ${method}: ${stderr}`)), 20_000);
-      pending.set(id, { resolve, reject, timer });
+      pending.set(id, { resolve, reject, timer, method });
       write(`${JSON.stringify({ id, method, params })}\n`);
     });
     const waitFor = predicate => new Promise((resolve, reject) => {
@@ -201,6 +223,6 @@ export async function handoffFixture(t, executable) {
       }
     };
   }
-  return { client, workspace, calls, setResponder(value) { respond = value; },
+  return { client, queueCLI, workspace, calls, setResponder(value) { respond = value; },
     checkProvider() { if (providerError) throw providerError; } };
 }

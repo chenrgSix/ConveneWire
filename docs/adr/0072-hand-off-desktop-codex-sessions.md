@@ -88,6 +88,14 @@ Restart restores binding identity and existing Run settlement, not an instructio
 to replay a turn. Uncertain provider acceptance is an unknown outcome until
 reconciled; it cannot cause a new `turn/start`.
 
+For a prospective original-writer queue route, a successful queue acknowledgment
+does not mean execution, and a client message ID is not a provider idempotency
+key. Reconcile a lost acknowledgment against bounded native evidence and the
+exact payload before deciding its outcome. Removing a pending queue entry and
+interrupting a consumed turn are distinct actions; never report cancellation
+merely because an entry is absent. These requirements do not enable adoption
+before the desktop connection and execution authority gates pass.
+
 ## Context, permissions and disclosure
 
 Source titles, previews, paths, native IDs and old transcripts stay on the owner

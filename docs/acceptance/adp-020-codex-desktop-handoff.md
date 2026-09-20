@@ -24,7 +24,7 @@ removing its temporary home and workspace.
 
 ## Native observations
 
-The nine opt-in cases in
+The fourteen opt-in cases in
 [codex-handoff-compatibility.test.mjs](../../scripts/qa/codex-handoff-compatibility.test.mjs)
 passed against that exact binary. Passing the cases records both supported
 behavior and reproduced limitations; it does not certify product takeover.
@@ -40,6 +40,11 @@ behavior and reproduced limitations; it does not certify product takeover.
 | Independent producer during an active turn | Another process adds a queue entry while the original response is held open. No competing turn starts. After the original turn completes, its writer automatically drains the queue into a distinct turn, retaining the original ID, history and synthetic desktop handler. Exactly three loopback requests. | Durable queue writes can be consumed by the original writer at a turn boundary; they need not steer the active turn. |
 | Independent producer while idle | After a completed source turn, another process adds a queue entry. `thread/queue/start` rejects with `resume the thread before starting a queued message`; resume still rejects the active writer. The entry remains pending during the additional 500 ms observation. Deleting that exact entry removes it. Exactly one loopback request. | Shared storage does not itself establish an immediate idle-wakeup route. The bounded test does not claim that future desktop actions cannot drain the entry. |
 | Queue retry identity | With the original fixture process stopped, the producer adds an identical request twice and then a changed payload with the same `clientUserMessageId`. Three distinct queue entries persist with that same client ID. None executes. Exactly one loopback request for the original context. | Client message IDs correlate messages but do not deduplicate submission or reject conflicting payloads. Blind retries can execute duplicate work. |
+| Native queue CLI, default route | `codex queue --thread ID --message TEXT` exits successfully and reports an entry ID, but the original idle writer does not execute it during the 500 ms observation. The exact entry is visible and can be deleted. Exactly one loopback request. | Calling the public CLI does not remove the independent-process idle-wakeup limitation; acknowledgment is not completion. |
+| Native queue CLI, explicit shared route | The same command with `--remote` pointing to the owned loopback service causes the idle original writer to execute exactly one additional turn. Its provider input includes original context and the queued text. Exactly two loopback requests. | The explicit shared route can wake the original writer through the installed CLI. This does not configure or connect to the actual desktop. |
+| Lost acknowledgment recovery | The fixture drops the queue-add response and closes the producer connection after the native server has replied. The original writer still completes the queued turn. A fresh, unsubscribed client reads a bounded `thread/turns/list` page with `itemsView: full`, matches `userMessage.clientId` and text, and retrieves the exact completed turn and reply. Exactly two loopback requests. | An ambiguous add can be reconciled without replay when matching native evidence exists. Queue absence alone cannot establish non-execution. |
+| Pending cancellation | While the original turn is held, the producer enqueues and deletes one exact entry. After the source finishes, a subsequent original-client turn succeeds and no provider input contains the deleted message. Exactly two loopback requests. | Confirmed deletion before consumption prevents this queued prompt from running without interrupting the original turn. |
+| Cancellation after consumption | The queued turn has reached the provider and is held open. Deleting its former entry returns `deleted: false`; releasing the fixture response lets that turn complete normally. Exactly two loopback requests. | Queue deletion is not turn cancellation. A missing entry must be reconciled to the running/completed turn before reporting cancellation. |
 
 The fixture-created source is classified `vscode` by this binary despite using
 app-server directly. Discovery includes the native `vscode`, `appServer` and `cli`
@@ -76,9 +81,9 @@ exposes this inventory yet.
 Commands and opt-in variables are recorded in
 [Development and Operations Commands](../development-commands.md).
 
-- Native offline compatibility: nine tests passed, zero skipped, including four
-  queue cases added after the shared-service boundary check. The default run
-  without an explicit executable skips all nine cases.
+- Native offline compatibility: fourteen tests passed, zero skipped, including
+  native CLI queueing, lost acknowledgment recovery and cancellation before/after
+  consumption. The default run without an explicit executable skips all fourteen.
 - Focused metadata regression with the installed-binary option: `go test -race`
   passed, including isolated native empty-list and absent-Thread reads.
 - Owning Runtime package: `go test ./internal/runtime` and
@@ -134,6 +139,24 @@ source retains its tools. The shared-service fixture proves idle execution and
 callback isolation for that exact route. The separate-process case proves
 continuation at a turn boundary, but does not supply idle wakeup.
 
+Read-only inspection of the installed desktop archive (SHA-256
+`1f7939c1c781887c167043c4d1d307af3400d324685cfc315dfe2f80e634f483`)
+finds the normal local child-process route and a
+`CODEX_APP_SERVER_WS_URL` connection override. This override is **not** listed in
+the [stable public environment variable reference](https://learn.chatgpt.com/docs/config-file/environment-variables),
+and its presence in bundled code is not proof of supported desktop integration.
+The [App Server transport documentation](https://learn.chatgpt.com/docs/app-server)
+describes explicit listeners; it does not establish access to an already-running
+desktop's private child process. No internal socket was connected, owner profile
+changed, or desktop restarted during these checks. The default and explicit
+`--remote` CLI cases above make that distinction observable.
+
+Before choosing a desktop launch integration, settle whether V1 may require an
+explicit, version-specific initial setup/restart. Such a route would still need
+isolated desktop validation and a reversible activation plan before any real
+owner configuration change. A new transport listener is not a feature that can
+silently be enabled in an existing desktop process.
+
 A supported way to reach the real desktop's service is still required. These
 fixtures do not expose or connect to it. Source input fencing, checkpoint and
 audience validation at execution time, private result correlation, cancellation
@@ -143,6 +166,14 @@ operation journal must reconcile uncertain submissions; the native queue's
 assume an accepted queue entry has executed. Sharing an app-server and resuming
 the Thread remains a different, unsuitable route: that test broadcasts callbacks
 to both subscribed clients and leaves source-client authority active.
+
+Recovery may use bounded native turn/item pages locally after exact adoption
+authorization. Match both the client ID and accepted payload, then settle the
+exact native turn. Missing, conflicting, incomplete or out-of-range evidence
+leaves the outcome unknown; it does not authorize a retry. Previous private turns
+returned in a page must not be published to the Room. Deleting a queued entry can
+only settle pending cancellation when deletion is confirmed before consumption;
+it cannot establish cancellation of an already running turn.
 
 No complete desktop handoff route has been validated here. Do not implement adoption by
 scraping a private desktop socket, editing stored tool metadata, archiving a

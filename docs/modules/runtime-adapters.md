@@ -386,4 +386,8 @@ also wakes an idle fixture Thread; a separate producer process cannot immediatel
 start that idle writer. Native queue additions do not deduplicate client message
 IDs. This is a candidate same-ID route, still dependent on a supported desktop
 connection, execution-time review enforcement and uncertain-outcome settlement.
+Native CLI checks reproduce the same default/shared connection distinction.
+Lost acknowledgments can be correlated to a completed turn by client ID and
+payload without resuming or replaying; pending queue deletion does not cancel a
+consumed turn. Bounded local reconciliation must keep unrelated history private.
 Delivery status lives in [TASKS.md](../TASKS.md).
