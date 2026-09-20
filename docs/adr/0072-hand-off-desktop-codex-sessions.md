@@ -63,8 +63,8 @@ WebSocket override: that override can affect other connection routes, and the
 tested desktop did not connect through the attempted Unix WebSocket URL.
 
 A private, immutable launch plan pins the desktop executable/archive and native
-Codex executable by SHA-256. The proxy verifies that plan before executing the
-original provider with the desktop's arguments and standard streams. It adds no
+Codex executable by SHA-256. The proxy verifies that plan before starting the
+original provider with the desktop's arguments over mediated standard streams. It adds no
 permissions, Thread, model turn or listener. The provider receives its own CLI
 path for resource discovery. Changed binaries, unsafe plan permissions, a
 recursive proxy target or a requested listener/daemon mode fail before execution.
@@ -78,6 +78,26 @@ This startup component alone is not a Room binding or a general local RPC proxy.
 The later coordinator must still satisfy the ownership and disclosure rules below.
 
 ### Adoption coordinator
+
+The next transport stage retains one native provider connection and routes the
+desktop's requests, notifications and tool callbacks through a bounded stdio
+mediator. Coordinator request IDs occupy a separate namespace and never appear
+as desktop replies. The mediator's Go interface is local to the process; it is
+not a network endpoint or an owner-consent substitute. The startup command uses
+this mediator for stdio and owns the native child process group; desktop exit
+drains the connection and that group. Native version checks still execute the
+verified provider directly. No coordinator endpoint is installed by startup.
+
+A provisional per-Thread fence rejects desktop mutations before coordinator
+inspection. It can be acquired only for an observed, idle, loaded Thread with no
+outstanding source requests. Read-only inspection stays available, and desktop
+tool/approval responses remain on their original connection. Unexpected native
+turns pause the fence; only the exact coordinator-started turn may supply result
+text. Release refuses a running or uncertain submission and never cancels it as
+a side effect. The coordinator must still validate empty native queues, current
+history, permissions, tool dependencies and destination audience before starting.
+Independent native queue producers are not fenced by a stdio mediator: no claim
+of global queue exclusion may be based on this local gate.
 
 A local native coordinator owns discovery, review and the provider connection.
 The Server owns the destination Task, membership, assignments and Run records.

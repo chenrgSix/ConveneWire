@@ -395,4 +395,12 @@ plan pins the desktop/provider binaries, and a local executable override retains
 the original stdio transport and profile. It exposes no listener or Room RPC.
 The explicit launcher refuses a duplicate desktop instance; normal app launch is
 the rollback path. This startup entry does not grant conversation adoption.
+ADP-023 mediates that single stdio connection and retains the original tool
+callback handler. Its process-local control interface provisionally fences
+desktop writes to one loaded, idle Thread; it routes only the exact continuation
+result, deduplicates operation retries within the connection, and refuses release
+while execution is active or uncertain. An unexpected native turn pauses control.
+Independent queue producers remain outside this fence. Startup drains its owned
+provider group on desktop exit. The mediator is not exposed as a Room/Console
+endpoint; exact review, persistent adoption and recovery remain separate gates.
 Delivery status lives in [TASKS.md](../TASKS.md).

@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 
 	"convenewire.dev/bridge/internal/desktopcodex"
 )
@@ -59,5 +62,7 @@ func run(args []string) error {
 	if err != nil {
 		return err
 	}
-	return desktopcodex.Replace(plan, args, os.Environ())
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	return desktopcodex.RunProvider(ctx, plan, args, os.Environ())
 }

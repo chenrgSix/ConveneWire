@@ -62,6 +62,54 @@ through an unavailable proxy. Those routes were not selected. A sandboxed GUI
 launch failed at macOS process communication; the isolated real-desktop check
 passed with the required GUI process access. No owner desktop was restarted.
 
+## Original-connection mediator
+
+ADP-023 adds a [bounded stdio mediator](../../bridge/internal/desktopcodex/mediator.go)
+to the experimental startup entry. There is one native provider connection.
+Desktop request IDs are restored on replies; coordinator replies never enter
+the desktop response stream. Native server requests and their original desktop
+responses keep their IDs and connection. The mediator creates no listener or
+second native client. Its control interface is in-process Go only, with no Room
+or Owner Console exposure yet.
+
+The [native mediator cases](../../scripts/qa/codex-desktop-mediator.test.mjs)
+use an inherited pipe to an isolated test driver and the installed native Codex
+binary, with the same auth-free provider fixture. Both scenarios passed:
+
+- An original synthetic turn is continued under the same Thread ID. While the
+  local fence is held, desktop start/steer/resume/queue/archive requests are
+  rejected. The original client receives exactly one synthetic dynamic tool
+  callback. The mediator returns only the new turn's reply, returns the same
+  result on an exact operation retry without a new model request, rejects a
+  changed retry, and lets the original client continue after release. Four
+  loopback requests cover three turns, including the tool-result continuation.
+- A busy source turn cannot be fenced. Release during a continuation is refused.
+  Another native process can still enqueue a private message, which the native
+  writer executes after the reviewed turn. That extra turn pauses the fence;
+  its reply is not returned as the reviewed result, and another mediated start
+  is rejected until reconciliation. Three loopback requests. The native queue
+  is therefore an external interference source, not an exclusive control gate.
+
+The owning Go tests also exercise interleaved IDs and server callback IDs,
+forged/released handles, nonselected Threads, unknown mutations, completions
+before acknowledgments, duplicate items, stale private-turn output, ambiguous
+acknowledgments, caller cancellation and blocked-I/O cleanup. All owning tests
+pass with the race detector and `go vet`. A subprocess lifecycle test verifies
+that desktop EOF terminates the owned provider group including a lingering child.
+
+The actual installed desktop startup case above was rerun through this mediator
+and passed with unchanged executable/archive/provider pins. Startup owns and
+drains a native child group; version checks still directly execute the provider.
+This proves actual desktop initialization, not desktop GUI tool use or a Room
+round trip. No normal owner profile was activated.
+
+The transport's text continuation uses read-only sandbox and `never` approval;
+it does not certify or grant desktop dynamic-tool permissions. A provisional
+fence is not adoption consent. Complete queue/history/tool/permission review,
+exact audience checks, durable operation settlement and a closed coordinator
+channel remain ADP-021 work. Operation deduplication here is bounded and lasts
+only for the current fence/connection; it is not restart recovery.
+
 ## Native observations
 
 The fourteen opt-in cases in
@@ -201,11 +249,11 @@ setup/restart. The tested local CLI override and reversible startup entry above
 replace the proposed global WebSocket activation. This remains experimental;
 neither override is established as a stable public desktop integration contract.
 
-The local startup interception point is now verified, but the entry only validates
-and executes the original provider. It does not yet multiplex protocol messages
-or provide a closed coordinator channel for the Room. Source input fencing, checkpoint and
-audience validation at execution time, private result correlation, cancellation
-settlement, and complete permission/tool review are also unresolved. A local
+The local startup interception and original-connection mediator are now verified.
+Source input fencing and exact-turn result isolation pass in the native fixtures.
+The product still needs a closed coordinator channel for the Room, checkpoint and
+audience validation at execution time, cancellation settlement, durable recovery
+and complete permission/tool review. A local
 operation journal must reconcile uncertain submissions; the native queue's
 `clientUserMessageId` is not an idempotency key. Do not retry an ambiguous add or
 assume an accepted queue entry has executed. Sharing an app-server and resuming

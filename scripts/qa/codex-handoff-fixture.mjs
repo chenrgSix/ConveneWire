@@ -116,14 +116,16 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
       return { ...result, output };
     } finally { clearTimeout(timer); await owned.stop(); }
   }
-  async function client({ shared = false, toolResult, dropQueueAddReply = false, proxyExecutable, proxyPlan } = {}) {
+  async function client({ shared = false, toolResult, dropQueueAddReply = false, proxyExecutable, proxyPlan, mediatorExecutable } = {}) {
     assert.ok(!dropQueueAddReply || shared, "Lost-acknowledgment injection requires the owned shared transport");
     assert.ok(!proxyExecutable || (!shared && path.isAbsolute(proxyExecutable) && path.isAbsolute(proxyPlan)), "Proxy fixtures require explicit private paths and stdio");
+    assert.ok(!mediatorExecutable || (!shared && !proxyExecutable && path.isAbsolute(mediatorExecutable)), "Mediator fixtures require their own explicit stdio driver");
     if (shared) await startSharedServer();
-    const owned = shared ? undefined : spawnTestProcess(resources, proxyExecutable ?? executable,
+    const owned = shared ? undefined : spawnTestProcess(resources, mediatorExecutable ?? proxyExecutable ?? executable,
       ["app-server", "--listen", "stdio://", ...overrides.flatMap(value => ["-c", value])], {
-        cwd: workspace, env: { ...environment, ...(proxyExecutable ? { CONVENE_WIRE_CODEX_PROXY_PLAN: proxyPlan } : {}) },
-        stdio: ["pipe", "pipe", "pipe"]
+        cwd: workspace, env: { ...environment, ...(proxyExecutable ? { CONVENE_WIRE_CODEX_PROXY_PLAN: proxyPlan } : {}),
+          ...(mediatorExecutable ? { CONVENE_WIRE_CODEX_MEDIATOR_FIXTURE_BIN: executable } : {}) },
+        stdio: ["pipe", "pipe", "pipe", ...(mediatorExecutable ? ["pipe"] : [])]
       });
     const child = owned?.process;
     const connection = shared ? new WebSocket(sharedAddress, { handshakeTimeout: 10_000 }) : undefined;
@@ -203,6 +205,32 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
       pending.set(id, { resolve, reject, timer, method });
       write(`${JSON.stringify({ id, method, params })}\n`);
     });
+    const controlPipe = mediatorExecutable ? child.stdio[3] : null;
+    let controlBuffer = "", controlBytes = 0;
+    if (controlPipe) {
+      controlPipe.setEncoding("utf8"); controlPipe.on("error", fail);
+      controlPipe.on("data", data => {
+        try {
+          controlBytes += Buffer.byteLength(data);
+          assert.ok(controlBytes <= 1024 * 1024, "Bound local fixture replies");
+          controlBuffer += data;
+          while (controlBuffer.includes("\n")) {
+            const end = controlBuffer.indexOf("\n"), message = JSON.parse(controlBuffer.slice(0, end));
+            controlBuffer = controlBuffer.slice(end + 1);
+            const entry = pending.get(message.id); assert.ok(entry, "Local reply requires a pending operation");
+            pending.delete(message.id); clearTimeout(entry.timer);
+            if (message.error) entry.reject(new Error(message.error.message)); else entry.resolve(message.result);
+          }
+        } catch (error) { fail(error); }
+      });
+    }
+    const control = (method, params = {}) => new Promise((resolve, reject) => {
+      if (failure || !controlPipe) { reject(failure ?? new Error("No local fixture control pipe")); return; }
+      const id = `control-${++nextID}`;
+      const timer = setTimeout(() => fail(new Error(`Local fixture timed out: ${method}: ${stderr}`)), 25_000);
+      pending.set(id, { resolve, reject, timer, method });
+      controlPipe.write(`${JSON.stringify({ id, method, params })}\n`);
+    });
     const waitFor = predicate => new Promise((resolve, reject) => {
       const match = notifications.find(predicate);
       if (match) { resolve(match); return; }
@@ -215,7 +243,7 @@ export async function handoffFixture(t, executable, { resources: owner } = {}) {
       capabilities: { experimentalApi: true } });
     assert.equal(initialized.codexHome, codexHome, "Every client must reach the owned disposable profile");
     write('{"method":"initialized","params":{}}\n');
-    return { rpc, waitFor, initialized, notifications, stop,
+    return { rpc, control, waitFor, initialized, notifications, stop,
       async turn(threadId, text) {
         const { turn } = await rpc("turn/start", { threadId, input: [{ type: "text", text }] });
         const completed = await waitFor(m => m.method === "turn/completed" && m.params.threadId === threadId && m.params.turn.id === turn.id);
