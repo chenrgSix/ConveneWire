@@ -445,6 +445,8 @@ export function verifyReleaseWorkflowSource(source) {
       `${jobName} asset verifier dependency installation must not be optional`);
     assertBefore(job, "Set up Node.js for asset verification", "Install locked asset verifier dependencies", `${jobName} asset verifier`);
     assertBefore(job, "Install locked asset verifier dependencies", verificationStep, `${jobName} asset verifier`);
+    assertIncludes(stepForName(job, verificationStep),
+      ["LANG: en_US.UTF-8", "LC_ALL: en_US.UTF-8"], `${jobName} asset verifier UTF-8 locale`);
   }
   const repository = requireJob(jobs, "repository-gates");
   const go = requireJob(jobs, "go-gates");

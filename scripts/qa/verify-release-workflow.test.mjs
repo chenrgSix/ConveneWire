@@ -105,6 +105,15 @@ test("upload and downloaded-asset gates install the tagged Hub verifier dependen
   }
 });
 
+test("both asset gates preserve Windows UTF-8 names when extracting on Ubuntu", () => {
+  for (const name of ["publish", "verify-release"]) {
+    for (const setting of ["LANG: en_US.UTF-8", "LC_ALL: en_US.UTF-8"]) {
+      const changed = mutateJob(workflow, name, block => block.replace(setting, "REMOVED: C.UTF-8"));
+      assert.throws(() => verifyReleaseWorkflowSource(changed), /asset verifier UTF-8 locale/u);
+    }
+  }
+});
+
 test("release and installed payload verification cannot omit Node-first inventory admission", () => {
   for (const marker of ["verify-desktop-zip.py", "release-hub.mjs", "convenewire-node.exe"]) {
     assert.throws(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier.replaceAll(marker, "removed")), /combined Release asset verifier/u);
