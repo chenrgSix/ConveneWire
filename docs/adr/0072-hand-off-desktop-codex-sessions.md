@@ -39,6 +39,13 @@ Room message and Run interface after attachment.
 Continuation keeps the original Thread ID and provider-maintained history.
 The owner reconfirmed this preference after the initial compatibility findings;
 incomplete cross-client support does not change the target to a new Thread.
+The owner accepts a one-time setup and controlled desktop restart for an
+experimental integration. A version-specific shared-service launch route may be
+validated with a disposable desktop profile before activation. Pin the tested
+desktop/provider versions, retain an ordinary-launch rollback path, and never
+silently switch profiles, replace the app bundle or interrupt unrelated work.
+This acceptance permits that startup workflow; it does not waive per-conversation
+review, provider compatibility or the existing model-call budget gate.
 Forking, importing a summary, replaying old prompts and creating a replacement
 are not success fallbacks. Existing `start_new`/missing-thread recreation policy
 must never apply to an adopted conversation. Missing history, busy ownership,
@@ -46,6 +53,31 @@ unsupported permissions or missing required tools leave the binding paused and
 explain the problem without starting a model turn.
 
 ## Control ownership
+
+### Experimental local startup boundary
+
+The installed desktop accepts a `CODEX_CLI_PATH` executable override. The initial
+integration uses an explicit local launcher/proxy at this boundary, preserving
+the desktop's stdio transport and existing Codex home. It does not set a global
+WebSocket override: that override can affect other connection routes, and the
+tested desktop did not connect through the attempted Unix WebSocket URL.
+
+A private, immutable launch plan pins the desktop executable/archive and native
+Codex executable by SHA-256. The proxy verifies that plan before executing the
+original provider with the desktop's arguments and standard streams. It adds no
+permissions, Thread, model turn or listener. The provider receives its own CLI
+path for resource discovery. Changed binaries, unsafe plan permissions, a
+recursive proxy target or a requested listener/daemon mode fail before execution.
+
+The explicit launch command refuses to open another instance while the selected
+desktop is running. It sets the override only for that launch and never rewrites
+the installed app, global shell environment, login items or Codex history. An
+ordinary launch restores the ordinary executable selection. The experimental
+entry must be used again after quitting; persistent activation is not implied.
+This startup component alone is not a Room binding or a general local RPC proxy.
+The later coordinator must still satisfy the ownership and disclosure rules below.
+
+### Adoption coordinator
 
 A local native coordinator owns discovery, review and the provider connection.
 The Server owns the destination Task, membership, assignments and Run records.

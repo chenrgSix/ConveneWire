@@ -390,4 +390,9 @@ Native CLI checks reproduce the same default/shared connection distinction.
 Lost acknowledgments can be correlated to a completed turn by client ID and
 payload without resuming or replaying; pending queue deletion does not cancel a
 consumed turn. Bounded local reconciliation must keep unrelated history private.
+ADP-022 implements the experimental local startup boundary: an owner-only launch
+plan pins the desktop/provider binaries, and a local executable override retains
+the original stdio transport and profile. It exposes no listener or Room RPC.
+The explicit launcher refuses a duplicate desktop instance; normal app launch is
+the rollback path. This startup entry does not grant conversation adoption.
 Delivery status lives in [TASKS.md](../TASKS.md).

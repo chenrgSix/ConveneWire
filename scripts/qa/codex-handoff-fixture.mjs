@@ -1,6 +1,6 @@
 // Native compatibility fixture, not a production Codex control endpoint.
 import assert from "node:assert/strict";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import http from "node:http";
 import net from "node:net";
 import path from "node:path";
@@ -8,9 +8,9 @@ import WebSocket from "ws";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 
-export async function handoffFixture(t, executable) {
+export async function handoffFixture(t, executable, { resources: owner } = {}) {
   assert.ok(path.isAbsolute(executable), "Use an explicit installed Codex executable");
-  const resources = await createTestResources(t, "convenewire-codex-handoff-");
+  const resources = owner ?? await createTestResources(t, "convenewire-codex-handoff-");
   const home = path.join(resources.directory, "home");
   const workspace = path.join(resources.directory, "workspace");
   const codexHome = path.join(home, ".codex");
@@ -116,12 +116,13 @@ export async function handoffFixture(t, executable) {
       return { ...result, output };
     } finally { clearTimeout(timer); await owned.stop(); }
   }
-  async function client({ shared = false, toolResult, dropQueueAddReply = false } = {}) {
+  async function client({ shared = false, toolResult, dropQueueAddReply = false, proxyExecutable, proxyPlan } = {}) {
     assert.ok(!dropQueueAddReply || shared, "Lost-acknowledgment injection requires the owned shared transport");
+    assert.ok(!proxyExecutable || (!shared && path.isAbsolute(proxyExecutable) && path.isAbsolute(proxyPlan)), "Proxy fixtures require explicit private paths and stdio");
     if (shared) await startSharedServer();
-    const owned = shared ? undefined : spawnTestProcess(resources, executable,
+    const owned = shared ? undefined : spawnTestProcess(resources, proxyExecutable ?? executable,
       ["app-server", "--listen", "stdio://", ...overrides.flatMap(value => ["-c", value])], {
-        cwd: workspace, env: environment,
+        cwd: workspace, env: { ...environment, ...(proxyExecutable ? { CONVENE_WIRE_CODEX_PROXY_PLAN: proxyPlan } : {}) },
         stdio: ["pipe", "pipe", "pipe"]
       });
     const child = owned?.process;
@@ -224,5 +225,13 @@ export async function handoffFixture(t, executable) {
     };
   }
   return { client, queueCLI, workspace, calls, setResponder(value) { respond = value; },
+    async desktopLaunch({ shared = true } = {}) {
+      if (shared) await startSharedServer();
+      const userData = path.join(resources.directory, "desktop-user-data");
+      await mkdir(userData, { mode: 0o700 });
+      await writeFile(path.join(codexHome, "config.toml"), `${overrides.join("\n")}\n`, { mode: 0o600, flag: "wx" });
+      return { endpoint: sharedAddress, userData, providerOverrides: overrides, environment: { ...environment,
+        CODEX_ELECTRON_USER_DATA_PATH: userData, SHELL: "/bin/sh" } };
+    },
     checkProvider() { if (providerError) throw providerError; } };
 }

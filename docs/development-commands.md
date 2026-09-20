@@ -54,6 +54,8 @@ The contracts Go module pins the selected Go toolchain.
 - `CONVENE_WIRE_CODEX_METADATA_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/runtime -run '^TestConfiguredAgentModel'` — optional installed-Codex metadata compatibility check using a disposable home, fake configured model, and only initialization/configuration-read RPCs; no model credentials or turns.
 - `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --timeout-ms 150000 -- node --test scripts/qa/codex-handoff-compatibility.test.mjs` — ADP-020 opt-in installed-binary handoff checks with disposable profiles and an auth-free loopback provider: same-ID/history continuation, competing writers, dynamic tool handler failure, delayed unsubscribe release, shared-service callback boundaries, original-writer queue execution, native queue CLI routes, idle wakeup limits, non-idempotent retries, lost-ack reconciliation and cancellation before/after queue consumption. No desktop UI or real model is used; without the explicit executable these cases skip.
 - `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- go test -race ./internal/runtime -run '^TestCodexConversationMetadata' -count=1` — bounded metadata discovery, invalid/untrusted response rejection and owned-child cleanup; the optional binary adds empty-profile native metadata checks. No conversation is resumed and no model is invoked.
+- `node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/desktopcodex ./cmd/convenewire-codex-desktop` and the corresponding `go vet` command — ADP-022 private immutable startup plans, changed-binary/unsafe-plan rejection, stdio argument restriction, profile/tool environment preservation and duplicate-launch refusal.
+- `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/App.app/Contents/Resources/codex CONVENE_WIRE_CODEX_DESKTOP_TEST_BIN=/absolute/App.app/Contents/MacOS/AppExecutable node scripts/test/run-with-temp-root.mjs --timeout-ms 180000 -- node --test scripts/qa/codex-desktop-startup.test.mjs` — explicitly opt into launching the installed macOS desktop with a disposable profile and user-data directory. Builds the Go proxy, verifies actual stdio initialization and duplicate-launch refusal, then resumes the same synthetic Thread after desktop exit. Uses an auth-free loopback provider, performs no GUI actions and drains owned processes/socket files. Requires macOS GUI process access; without both explicit binaries the test skips. This is not Room UI acceptance.
 - `npm run test:bridge-ui` — test embedded Console controllers, including pairing,
   native Space invitations/recovery/browser handoff, local Runtime forms and permission views.
 - `npm run test:qa-evidence` — test the sanitized two-machine acceptance evidence verifier.
@@ -531,3 +533,44 @@ the failed root separately and use
 Restore requires the original root to be absent and refuses a different target,
 tampered contents, links or a live owner. Do not operate the preserved copy as a
 second writable Node. Neither helper silently downgrades a newer SQLite schema.
+
+## Experimental Codex desktop startup
+
+ADP-022 prepares the local startup boundary only; it does not enable Room adoption.
+The owner accepted an explicit initial setup/restart. Do not replace the installed
+desktop, change global launch environment or treat a successful startup as handoff
+acceptance. The current implementation is macOS-only and uses a version-specific
+desktop executable override, as recorded in
+[ADR-0072](adr/0072-hand-off-desktop-codex-sessions.md).
+
+From `bridge/`, build with
+`go build -o ./bin/convenewire-codex-desktop ./cmd/convenewire-codex-desktop`.
+Prepare a **new** private plan using explicit absolute paths:
+
+```sh
+./bin/convenewire-codex-desktop prepare \
+  --desktop /Applications/ChatGPT.app/Contents/MacOS/ChatGPT \
+  --out "$HOME/Library/Application Support/ConveneWire/codex-desktop/launch-plan.json"
+```
+
+Preparation hashes the desktop, its archive and bundled provider and creates an
+immutable owner-only file. It neither starts nor stops the desktop. Once work is
+settled and the selected desktop has exited, the experimental startup command is:
+
+```sh
+./bin/convenewire-codex-desktop launch \
+  --plan "$HOME/Library/Application Support/ConveneWire/codex-desktop/launch-plan.json"
+```
+
+The command refuses an already running desktop and conflicting existing
+transport overrides. It changes the executable selection only for that launch,
+preserves the existing Codex home and tool environment, and opens no listener.
+The proxy accepts only native version checks and stdio app-server invocations.
+It preserves the desktop-owned process lifetime by replacing itself with the
+verified provider. After an app/provider update, the old plan fails verification;
+validate compatibility before preparing a new plan under a new filename.
+
+To restore ordinary startup, quit the experimental desktop after work settles
+and open the existing app normally. No history migration or rollback copy of the
+app is needed. The experimental entry must be used again after quitting; this
+component does not install a persistent launcher, login item or global variable.

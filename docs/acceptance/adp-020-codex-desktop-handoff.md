@@ -8,7 +8,8 @@ Delivery status remains in [TASKS.md](../TASKS.md).
 These checks run the installed Codex executable against disposable profiles and
 an unauthenticated loopback Responses fixture. The source, receiving and returning
 clients are test-controlled app-server processes, **not the desktop application's
-UI or its existing conversations**. Fixed responses exercise the native provider
+UI or its existing conversations**. The separate ADP-022 startup check below also
+launches the installed desktop with isolated data, without GUI actions. Fixed responses exercise the native provider
 protocol without a real model, account credentials or owner configuration.
 
 - Codex: `0.155.0-alpha.9.2`, bundled in the local ChatGPT application.
@@ -17,10 +18,49 @@ protocol without a real model, account credentials or owner configuration.
 - Native initialization reports macOS `26.6.2`, `arm64`.
 - Test tools: Node.js `22.23.1`, Go `1.26.7`.
 
-No default daemon was started, desktop process stopped, personal conversation
+No default daemon was started, owner desktop process stopped, personal conversation
 resumed, application installed, public endpoint exposed or paid model invoked.
 Each fixture owns and drains its child processes and loopback listener before
 removing its temporary home and workspace.
+
+## Experimental local desktop startup
+
+The owner accepts an explicit initial setup/restart. The selected implementation
+is the [Go local startup entry](../../bridge/cmd/convenewire-codex-desktop/main.go)
+and its [private plan validation](../../bridge/internal/desktopcodex/plan.go).
+It uses `CODEX_CLI_PATH` only for an explicit launch, retains stdio and the existing
+profile, and does not expose a network service. An ordinary app launch restores
+the ordinary executable selection. This does not install another app or enable
+Room binding. Invocation and rollback are in
+[Development and Operations Commands](../development-commands.md#experimental-codex-desktop-startup).
+
+The opt-in
+[desktop startup case](../../scripts/qa/codex-desktop-startup.test.mjs)
+builds that Go entry and prepares a protected plan for the installed app. A
+synthetic conversation is persisted through the proxy and its source exits.
+The actual desktop then launches with a fresh `CODEX_HOME`, workspace and desktop
+user-data directory. Its diagnostic stream confirms that it spawned the Go entry
+and completed native initialization over stdio. A second explicit launch request
+is rejected while the app is running. After the owned instance exits, another
+proxy client resumes the same Thread ID and continues with the original synthetic
+context. Exactly two auth-free loopback model requests occur, before and after
+the desktop launch; initialization itself starts no model turn.
+
+Tested desktop: `26.915.31945`, executable SHA-256
+`dfe5654498e939d355702fa66e6e2400e55ec0ade61048e19e264f4bdc70b847`.
+The archive/provider pins are recorded below and in the fixture diagnostics.
+The test drains its owned processes, removes its temporary profile, and removes
+only native-tool sockets announced by that process with matching file identity.
+It performs no actions through the Codex GUI. This verifies startup and retained
+conversation continuity, not a desktop UI turn, desktop tool execution, Room
+adoption or activation in the owner's normal profile.
+
+Preliminary probes also initialized the actual desktop through a loopback
+WebSocket override, but that global override can affect other host routes. The
+attempted Unix WebSocket URL did not initialize: the installed desktop routed it
+through an unavailable proxy. Those routes were not selected. A sandboxed GUI
+launch failed at macOS process communication; the isolated real-desktop check
+passed with the required GUI process access. No owner desktop was restarted.
 
 ## Native observations
 
@@ -84,6 +124,11 @@ Commands and opt-in variables are recorded in
 - Native offline compatibility: fourteen tests passed, zero skipped, including
   native CLI queueing, lost acknowledgment recovery and cancellation before/after
   consumption. The default run without an explicit executable skips all fourteen.
+- ADP-022 actual installed desktop startup: the isolated proxy-initialization,
+  duplicate-launch refusal and original-ID/context continuation case passed.
+  Without the desktop/provider opt-in variables it skips. Owning startup package
+  tests, `go test -race` and `go vet` passed, including changed-binary, recursive
+  provider, unsafe plan, non-stdio invocation and conflicting-override negatives.
 - Focused metadata regression with the installed-binary option: `go test -race`
   passed, including isolated native empty-list and absent-Thread reads.
 - Owning Runtime package: `go test ./internal/runtime` and
@@ -151,14 +196,14 @@ desktop's private child process. No internal socket was connected, owner profile
 changed, or desktop restarted during these checks. The default and explicit
 `--remote` CLI cases above make that distinction observable.
 
-Before choosing a desktop launch integration, settle whether V1 may require an
-explicit, version-specific initial setup/restart. Such a route would still need
-isolated desktop validation and a reversible activation plan before any real
-owner configuration change. A new transport listener is not a feature that can
-silently be enabled in an existing desktop process.
+The owner subsequently accepted an explicit, version-specific initial
+setup/restart. The tested local CLI override and reversible startup entry above
+replace the proposed global WebSocket activation. This remains experimental;
+neither override is established as a stable public desktop integration contract.
 
-A supported way to reach the real desktop's service is still required. These
-fixtures do not expose or connect to it. Source input fencing, checkpoint and
+The local startup interception point is now verified, but the entry only validates
+and executes the original provider. It does not yet multiplex protocol messages
+or provide a closed coordinator channel for the Room. Source input fencing, checkpoint and
 audience validation at execution time, private result correlation, cancellation
 settlement, and complete permission/tool review are also unresolved. A local
 operation journal must reconcile uncertain submissions; the native queue's
