@@ -3,6 +3,13 @@
 Date: 2026-09-20. Design: [ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md).
 Delivery status remains in [TASKS.md](../TASKS.md).
 
+This document preserves the staged compatibility findings, including unsuccessful
+alternative transports and the integration boundaries that existed at that time.
+The subsequent implemented original-connection coordinator, Room workflow,
+recovery, browser acceptance and packaged candidate are recorded in
+[QA-094](qa-094-codex-desktop-handoff.md). Earlier “remaining” work below describes
+the transport-only stage, not the current integrated product.
+
 ## Scope and installed binary
 
 These checks run the installed Codex executable against disposable profiles and

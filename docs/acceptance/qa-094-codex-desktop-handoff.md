@@ -133,3 +133,26 @@ manual run were not performed. Windows desktop adoption, remote CI, signing,
 notarization and release publication are not claimed. The startup path is explicit
 and reversible; building an archive does not install another application or quit
 the owner's Codex.
+
+## Packaged candidate
+
+Built from clean implementation commit `74e667a59955a440f6ab8e308698e005b7906eab` with
+`RELEASE_TAG=v0.5.1-qa094 npm run package:local-node -- dist/local-node-desktop/qa-094`.
+The output is one unsigned macOS arm64 archive:
+`convenewire-bridge-desktop_0.5.1-qa094_darwin_arm64.zip` (approximately 81 MiB).
+
+- Archive SHA-256: `936ef5c84ddf0e183c3ae14b1e4dd09284af315971bc8f77de67abccd08c39d3`.
+- Cooperative helper SHA-256: `c4f53c89436f1bd2d8a79eec44f7e620af233e968159b0e72b96cc53ed0744e1`.
+- ZIP traversal/type/collision preflight passed before extraction.
+- Exact source/version/clean-state and all 7,299 Hub file digests passed.
+- Packaged desktop, Bridge helper and native Node host versions passed packaging
+  checks. The cooperative helper is executable arm64; the desktop minimum OS
+  target and plist checks passed.
+- Bundled Node loaded SQLite and decoded the new adoption wire fixture with an
+  empty PATH. No globally installed Node or Runtime was needed for this check.
+- Owned extracted app, staging directory and test roots were removed. The archive
+  and `verification.json` remain in `dist/local-node-desktop/qa-094/`.
+
+This candidate was built and inspected, not installed over the owner's running
+client. Activating a real Codex profile and confirming disclosure for a selected
+private conversation remain explicit owner actions in the product.
