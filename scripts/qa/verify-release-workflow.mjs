@@ -436,6 +436,8 @@ export function verifyReleaseWorkflowSource(source) {
     ["verify-release", "Verify uploaded Release assets"]
   ]) {
     const job = requireJob(jobs, jobName);
+    invariant(/^    runs-on: ubuntu-24\.04$/mu.test(job),
+      `${jobName} asset verifier requires the Ubuntu image supporting its explicit ZIP encoding`);
     const setup = stepForName(job, "Set up Node.js for asset verification");
     assertIncludes(setup, ["uses: actions/setup-node@", "node-version: 22.23.1"], `${jobName} asset verifier toolchain`);
     const install = stepForName(job, "Install locked asset verifier dependencies");
@@ -446,7 +448,7 @@ export function verifyReleaseWorkflowSource(source) {
     assertBefore(job, "Set up Node.js for asset verification", "Install locked asset verifier dependencies", `${jobName} asset verifier`);
     assertBefore(job, "Install locked asset verifier dependencies", verificationStep, `${jobName} asset verifier`);
     assertIncludes(stepForName(job, verificationStep),
-      ["LANG: en_US.UTF-8", "LC_ALL: en_US.UTF-8"], `${jobName} asset verifier UTF-8 locale`);
+      ["LANG: en_US.UTF-8", "LC_ALL: en_US.UTF-8", "UNZIP: -O UTF-8", "unzip -v"], `${jobName} asset verifier UTF-8 locale`);
   }
   const repository = requireJob(jobs, "repository-gates");
   const go = requireJob(jobs, "go-gates");

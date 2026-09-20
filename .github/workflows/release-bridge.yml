@@ -443,7 +443,7 @@ jobs:
   publish:
     name: Attach ConveneWire binaries
     needs: [validate-release, build, central, desktop-macos, desktop-windows]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -506,12 +506,15 @@ jobs:
 
       - name: Verify release assets before upload
         env:
-          # Ubuntu unzip otherwise guesses an OEM code page for Windows UTF-8 names.
+          # Ubuntu unzip can guess an OEM code page even in a UTF-8 locale.
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
+          UNZIP: -O UTF-8
           ASSET_DIR: ${{ github.workspace }}/dist
           SOURCE_REF: ${{ needs.validate-release.outputs.source_sha }}
-        run: ./bridge/scripts/verify-release-assets.sh
+        run: |
+          unzip -v
+          ./bridge/scripts/verify-release-assets.sh
 
       - name: Upload assets to GitHub Release
         env:
@@ -521,7 +524,7 @@ jobs:
   verify-release:
     name: Verify uploaded Release
     needs: [validate-release, publish]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       # Draft assets have the same visibility rule as the draft itself.
@@ -565,6 +568,9 @@ jobs:
         env:
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
+          UNZIP: -O UTF-8
           ASSET_DIR: ${{ github.workspace }}/release-assets
           SOURCE_REF: ${{ needs.validate-release.outputs.source_sha }}
-        run: ./bridge/scripts/verify-release-assets.sh
+        run: |
+          unzip -v
+          ./bridge/scripts/verify-release-assets.sh
