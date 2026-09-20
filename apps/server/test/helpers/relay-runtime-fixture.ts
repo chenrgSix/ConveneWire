@@ -39,7 +39,7 @@ export async function relayRuntimeFixture(t: TestContext) {
   const cert = path.join(resources.directory, "control.pem"), key = path.join(resources.directory, "control-key.pem");
   await writeFile(cert, material.cert, {mode: 0o600}); await writeFile(key, material.key, {mode: 0o600});
   const executable = path.join(resources.directory, process.platform === "win32" ? "relay.exe" : "relay");
-  await promisify(execFile)("go", ["build", "-o", executable, "./cmd/convenewire-relay"], {
+  await promisify(execFile)("go", ["build", "-modcacherw", "-o", executable, "./cmd/convenewire-relay"], {
     cwd: fileURLToPath(new URL("../../../../ops/convenewire-relay", import.meta.url)), timeout: 120000,
     env: {...process.env, GOPATH: path.join(resources.directory, "go-path")}
   });
