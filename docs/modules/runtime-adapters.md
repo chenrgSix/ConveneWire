@@ -357,3 +357,18 @@ Contracts and the invocation boundary. Bridge adapters depend on Bridge; the
 Hosted adapter additionally depends on Security for credential resolution and
 Run Orchestration for its durable intent. Adapters never call Team services
 directly.
+
+## Existing desktop Codex conversation handoff
+
+[ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md) defines explicitly
+reviewed adoption of a local desktop conversation into one fresh Room Task and
+local Agent. The native coordinator owns private discovery, provider ownership
+and protected bindings; Server retains Task/Run and membership authority.
+Imported history remains local but can influence newly shared replies, which the
+owner reviews for the exact audience. Adoption never recreates or forks a missing
+or occupied Thread. Release preserves the original conversation.
+
+ADP-020 first verifies the installed provider's cross-client ownership and tool
+compatibility with isolated offline fixtures. Until that capability gate passes,
+ordinary managed Sessions are unchanged and no takeover operation is enabled.
+Delivery status lives in [TASKS.md](../TASKS.md).

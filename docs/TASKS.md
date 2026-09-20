@@ -801,7 +801,7 @@ or a registration receipt alone.
 | FUT-002 | PLANNED | Slack, Feishu, or Discord human entry | Web Room MVP is validated |
 | FUT-003 | PLANNED | A2A interoperability | External Agent interop is required |
 | FUT-004 | DONE | Promote Artifact and structured-result transport | implemented by TASK-003 when Message-only collaboration proved insufficient |
-| FUT-005 | PLANNED | Attach to an existing visible Runtime Session | Runtime exposes a stable supported contract |
+| FUT-005 | ACTIVE | Attach an existing desktop Codex conversation to a Room Task | [ADR-0072](adr/0072-hand-off-desktop-codex-sessions.md); owner prioritized desktop session handoff on 2026-09-20. Design precedes implementation; actual provider ownership and tool compatibility must pass before enabling adoption |
 | FUT-006 | DONE | Add an optional Relay/Tunnel network mode | Optional service-profile, outbound TLS transport, automatic certificates, Web setup and native packaging implemented; [QA-093 local evidence](acceptance/qa-093-relay-access.md) passes. Public service deployment and existing QA-092 physical acceptance remain separate |
 
 ## Authenticated evidence disclosure
@@ -888,3 +888,13 @@ retain their explicit operation scope.
 | WEB-090 | DONE | Enable convenient access and surface actual network readiness | OPS-023, WEB-089 | 24 focused Web checks and production build pass; actual native Hub/Relay browser review/save, current versus pending readiness, advanced-view navigation and focus restoration verified; [screens and scope](modules/web-ui.md#convenient-relay-access) |
 | OPS-024 | DONE | Package Relay service configuration and deployment artifacts | OPS-022, OPS-023 | Explicit optional profile and exact inventory; operator Docker/Compose/health/CI definitions; native build, 10 bundle checks and 2 lifecycle cases pass, including empty PATH and stopped Relay metadata recovery. Development manifest records modified source; no install, image build, public deployment or foreign-platform run |
 | QA-093 | DONE | Verify low-friction browser and Peer collaboration through the real Relay | OPS-022, OPS-023, WEB-090, OPS-024 | [Local evidence](acceptance/qa-093-relay-access.md): actual two-Node CA/Relay HTTP/WS, three Go Run/Discussion/retry/revoke race scenarios, four direct regressions, same-identity/certificate/member restore, native bundle/lifecycle and actual Owner browser review/save; fixtures cleaned. No public deployment or physical-platform claim |
+
+## Desktop Codex conversation handoff
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| GOV-047 | DONE | Design same-conversation desktop-to-Room handoff | WEB-089, BRG-080, ADP-015 | [ADR-0072](adr/0072-hand-off-desktop-codex-sessions.md) defines local single-Task adoption, exact review, context disclosure, provider writer ownership, no recreation, release/recovery and capability-gated delivery. Design completion is not product compatibility |
+| ADP-020 | ACTIVE | Verify native Codex conversation handoff compatibility | GOV-047 | Build disposable offline protocol/installed-binary coverage for discovery, same-ID history resume, competing clients and tool availability; no owner Thread or paid provider invocation |
+| ADP-021 | PLANNED | Bind and release an adopted Codex conversation safely | ADP-020, BRG-080 | Native coordinator, protected single binding, exact destination/audience review, no-fallback Runtime execution and restart/unknown settlement |
+| WEB-091 | PLANNED | Connect an existing Codex conversation from a Room Task | ADP-021, WEB-089 | Native local picker/review and Room state/actions, same-window accessible UI, private metadata and normal composer continuation |
+| QA-094 | PLANNED | Accept desktop-to-Room continuation and return | WEB-091 | Same original Thread/context/workspace, one Room turn, controlled busy ownership, restart and release; deterministic/native/manual/model/platform gates recorded separately |

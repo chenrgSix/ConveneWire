@@ -1256,3 +1256,14 @@ Result adoption and integration remain distinct. See the real connected
 [QA-089 acceptance](../acceptance/qa-089-standing-work-product-loop.md) records
 the earlier explicit-form flow; conversational acceptance belongs to RUN-019
 and WEB-078 in the task register.
+
+## Desktop conversation handoff design
+
+[ADR-0072](../adr/0072-hand-off-desktop-codex-sessions.md) places an existing-Codex
+conversation entry in a local Room Task. Native Owner UI selects local metadata
+and reviews the destination, audience, project and execution permissions; private
+history is not uploaded by selection. Attached, busy/paused and released states
+explain who can continue the conversation. The normal composer remains the work
+entry; unsupported provider ownership or tools prevent attachment with a reason.
+WEB-091 implementation follows ADP-020 compatibility and ADP-021 binding; this
+section records design, not a currently available control.
