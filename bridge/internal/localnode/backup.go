@@ -139,8 +139,17 @@ func Restore(snapshot, destination string) error {
 		}
 		seen[file.Path] = true
 		target := filepath.Join(destination, relative)
-		if err := privatefs.EnsureDirectory(filepath.Dir(target)); err != nil {
-			return err
+		// Windows private directory creation requires each protected parent to
+		// exist. The file inventory need not contain a file in every parent.
+		parent := destination
+		for _, component := range strings.Split(filepath.Dir(relative), string(filepath.Separator)) {
+			if component == "." {
+				continue
+			}
+			parent = filepath.Join(parent, component)
+			if err := privatefs.EnsureDirectory(parent); err != nil {
+				return fmt.Errorf("restore snapshot parent: %w", err)
+			}
 		}
 		sum, err := copyRegular(filepath.Join(snapshot, relative), target)
 		if err != nil {
@@ -208,20 +217,9 @@ func copyRegular(source, target string) (string, error) {
 	if err != nil || !os.SameFile(info, actual) {
 		return "", errors.New("snapshot source changed")
 	}
-	output, err := os.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-	if err != nil {
-		return "", err
-	}
-	defer output.Close()
 	hasher := sha256.New()
-	if _, err := io.Copy(io.MultiWriter(output, hasher), input); err != nil {
+	if err := privatefs.WriteFrom(target, io.TeeReader(input, hasher)); err != nil {
 		return "", err
 	}
-	if err := output.Sync(); err != nil {
-		return "", err
-	}
-	if err := output.Close(); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(hasher.Sum(nil)), durablefs.SyncParent(target)
+	return hex.EncodeToString(hasher.Sum(nil)), nil
 }

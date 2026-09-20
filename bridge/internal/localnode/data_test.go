@@ -11,7 +11,7 @@ import (
 	"convenewire.dev/bridge/internal/privatefs"
 )
 
-func TestIdentityLeaseReopenAndSnapshot(t *testing.T) {
+func TestWindowsAndUnixIdentityLeaseReopenAndSnapshot(t *testing.T) {
 	parent := t.TempDir()
 	root := filepath.Join(parent, "node")
 	data, err := OpenData(root)
@@ -31,6 +31,15 @@ func TestIdentityLeaseReopenAndSnapshot(t *testing.T) {
 	if err := privatefs.WriteFile(filepath.Join(root, "bridge", "receipt.json"), []byte(`{"completed":true}`)); err != nil {
 		t.Fatal(err)
 	}
+	nested := filepath.Join("bridge", "processes", "namespace", "finished.json")
+	for _, dir := range []string{"bridge/processes", "bridge/processes/namespace"} {
+		if err := privatefs.CreateDirectory(filepath.Join(root, filepath.FromSlash(dir))); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := privatefs.WriteFile(filepath.Join(root, nested), []byte("completed process")); err != nil {
+		t.Fatal(err)
+	}
 	if err := data.MarkInitialized(); err != nil {
 		t.Fatal(err)
 	}
@@ -46,6 +55,9 @@ func TestIdentityLeaseReopenAndSnapshot(t *testing.T) {
 	snapshot := filepath.Join(parent, "snapshot")
 	if err := Backup(root, snapshot); err != nil {
 		t.Fatal(err)
+	}
+	if _, err := privatefs.ReadFile(filepath.Join(snapshot, identityFile), 4096); err != nil {
+		t.Fatalf("snapshot lost identity protection: %v", err)
 	}
 	if err := Restore(snapshot, root); err == nil {
 		t.Fatal("overwrote an existing Node")
@@ -68,6 +80,9 @@ func TestIdentityLeaseReopenAndSnapshot(t *testing.T) {
 		t.Fatal("restore changed identity")
 	}
 	restored.Close()
+	if value, err := privatefs.ReadFile(filepath.Join(root, nested), 64); err != nil || string(value) != "completed process" {
+		t.Fatalf("nested process receipt did not restore privately: %v", err)
+	}
 	receipt, err := os.ReadFile(filepath.Join(root, "bridge", "receipt.json"))
 	if err != nil || string(receipt) != `{"completed":true}` {
 		t.Fatal("lost execution receipt")

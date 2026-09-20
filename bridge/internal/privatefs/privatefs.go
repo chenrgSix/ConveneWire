@@ -3,6 +3,7 @@
 package privatefs
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"os"
@@ -14,6 +15,12 @@ var ErrProtection = errors.New("private storage requires an owner-only regular o
 
 // WriteFile creates an immutable file with protection established before writing.
 func WriteFile(target string, content []byte) error {
+	return WriteFrom(target, bytes.NewReader(content))
+}
+
+// WriteFrom streams an immutable file with protection established before writing.
+// This also supports database snapshots larger than the bounded private reader.
+func WriteFrom(target string, content io.Reader) error {
 	file, release, err := createFile(target)
 	if err != nil {
 		return err
@@ -26,7 +33,7 @@ func WriteFile(target string, content []byte) error {
 			os.Remove(target)
 		}
 	}()
-	if _, err := file.Write(content); err != nil {
+	if _, err := io.Copy(file, content); err != nil {
 		return err
 	}
 	if err := file.Sync(); err != nil {

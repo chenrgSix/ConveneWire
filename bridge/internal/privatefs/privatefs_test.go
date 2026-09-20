@@ -1,11 +1,38 @@
 package privatefs
 
 import (
+	"errors"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 )
+
+type failedSnapshotReader struct{}
+
+func (failedSnapshotReader) Read([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
+
+func TestWindowsAndUnixPrivateStreamFailureRemovesPartialFile(t *testing.T) {
+	target := filepath.Join(t.TempDir(), "snapshot")
+	input := io.MultiReader(strings.NewReader("partial bytes"), failedSnapshotReader{})
+	if err := WriteFrom(target, input); !errors.Is(err, io.ErrUnexpectedEOF) {
+		t.Fatalf("stream failure not returned: %v", err)
+	}
+	if _, err := os.Lstat(target); !os.IsNotExist(err) {
+		t.Fatal("failed stream retained partial file")
+	}
+	if err := WriteFrom(target, strings.NewReader("complete")); err != nil {
+		t.Fatal(err)
+	}
+	if err := WriteFrom(target, strings.NewReader("overwrite")); err == nil {
+		t.Fatal("stream replaced immutable snapshot")
+	}
+	if data, err := ReadFile(target, 64); err != nil || string(data) != "complete" {
+		t.Fatalf("protected stream was not readable: %v", err)
+	}
+}
 
 func TestPrivateRoundTripAndBounds(t *testing.T) {
 	directory := filepath.Join(t.TempDir(), "private")

@@ -698,3 +698,11 @@ opening admission storage, retaining the same filesystem identity and namespace.
 Parent aliases and Windows path casing do not create a new process owner. Linked
 leaves and missing directories are rejected; saved Node and Bridge paths are not
 rewritten.
+
+### Native Snapshot Protection
+
+Native Node backup and restore stream regular files into exclusively created
+private files, including protected Windows DACLs. Restore creates each nested
+parent with private protection before copying descendants; identity and process
+receipts must remain readable by their owning private stores after recovery.
+Digest, original-location and partial-restore cleanup checks remain mandatory.
