@@ -28,7 +28,7 @@ case "$*" in
     [ "$MACOSX_DEPLOYMENT_TARGET" = 12.0 ] || exit 42
     case "$CGO_CFLAGS $CGO_CXXFLAGS $CGO_LDFLAGS" in *-mmacosx-version-min=12.0*) ;; *) exit 43 ;; esac
     ;;
-  *cmd/convenewire-bridge|*cmd/convenewire-node) ;;
+  *cmd/convenewire-bridge|*cmd/convenewire-node|*cmd/convenewire-codex-desktop) ;;
   *) exit 44 ;;
 esac
 while [ "$#" -gt 0 ]; do
@@ -68,6 +68,7 @@ chmod +x "$target"
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/MacOS/convenewire-bridge-desktop`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-bridge`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-node`));
+      assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/bin/convenewire-codex-desktop`));
       assert.ok(entries.includes(`${packageName}/ConveneWire Bridge.app/Contents/Resources/hub/hub-manifest.json`));
       for (const executable of ["MacOS/convenewire-bridge-desktop", "Resources/bin/convenewire-bridge"]) {
         const content = execFileSync("unzip", ["-p", archive, `${packageName}/ConveneWire Bridge.app/Contents/${executable}`], { encoding: "utf8" });
