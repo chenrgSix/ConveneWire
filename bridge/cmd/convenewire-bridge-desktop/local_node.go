@@ -17,6 +17,7 @@ import (
 
 	"convenewire.dev/bridge/internal/autostart"
 	"convenewire.dev/bridge/internal/browserlaunch"
+	"convenewire.dev/bridge/internal/console"
 	"convenewire.dev/bridge/internal/localnode"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
@@ -109,7 +110,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 			fmt.Fprintf(response, "<!doctype html><html lang=zh-CN><meta charset=utf-8><title>ConveneWire</title><main style='max-width:640px;margin:12vh auto;font:18px system-ui;padding:24px'><h1>本地空间无法启动</h1><p>%s</p><p>请检查安装包、数据目录和保存的端口，然后退出并重新打开。原有数据会保留。</p></main></html>", html.EscapeString(startupMessage))
 			return
 		}
-		shell.Handler().ServeHTTP(response, request)
+		console.NativeAssetHandler(shell.Handler(), runtime.GOOS).ServeHTTP(response, request)
 	}))
 	window := app.Window.NewWithOptions(application.WebviewWindowOptions{Name: "ConveneWire Local Node", Title: "ConveneWire · 本地空间", URL: entryURL,
 		AllowSimpleEventEmit: true, JS: localSpaceNavigationScript,

@@ -47,8 +47,12 @@ func (s *Service) authorizePeer(next http.HandlerFunc) http.HandlerFunc {
 		host, _, err := net.SplitHostPort(request.Host)
 		ip := net.ParseIP(strings.Trim(host, "[]"))
 		origin := request.Header.Get("origin")
-		if err != nil || ip == nil || !ip.IsLoopback() || request.URL.RawQuery != "" ||
-			(origin != "" && origin != "http://"+request.Host) || request.Header.Get("sec-fetch-site") == "cross-site" ||
+		localOrigin := err == nil && ip != nil && ip.IsLoopback() && (origin == "" || origin == "http://"+request.Host)
+		if nativeOrigin, ok := request.Context().Value(nativeAssetOriginKey{}).(string); ok {
+			_, nativeHost, _ := strings.Cut(nativeOrigin, "://")
+			localOrigin = request.Host == nativeHost && (origin == "" || origin == nativeOrigin)
+		}
+		if !localOrigin || request.URL.RawQuery != "" || request.Header.Get("sec-fetch-site") == "cross-site" ||
 			request.Header.Get("forwarded") != "" || request.Header.Get("x-forwarded-host") != "" {
 			writeError(response, http.StatusForbidden, "Peer 操作只接受本机 Console 请求")
 			return

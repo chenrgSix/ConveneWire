@@ -706,3 +706,12 @@ private files, including protected Windows DACLs. Restore creates each nested
 parent with private protection before copying descendants; identity and process
 receipts must remain readable by their owning private stores after recovery.
 Digest, original-location and partial-restore cleanup checks remain mandatory.
+
+### Native Desktop Owner Requests
+
+Wails asset requests carry an in-process provenance marker attached by the native
+desktop router. Peer and Codex handoff endpoints accept only the platform's pinned
+asset origin plus the current Console credential. The ordinary HTTP handler never
+creates this marker; loopback, cross-site and forwarded-header checks remain
+required for network requests. Packaged desktop navigation must be verified before
+a release tag, independently of HTTP-only fixtures.
