@@ -52,6 +52,8 @@ The contracts Go module pins the selected Go toolchain.
 - `npm run test:bridge` — run all Go Bridge tests with one owned temporary root
   and invocation-scoped Go build and module caches.
 - `CONVENE_WIRE_CODEX_METADATA_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test ./internal/runtime -run '^TestConfiguredAgentModel'` — optional installed-Codex metadata compatibility check using a disposable home, fake configured model, and only initialization/configuration-read RPCs; no model credentials or turns.
+- `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --timeout-ms 150000 -- node --test scripts/qa/codex-handoff-compatibility.test.mjs` — ADP-020 opt-in installed-binary handoff checks with disposable profiles and an auth-free loopback provider: same-ID/history continuation, competing writers, dynamic tool handler failure and delayed unsubscribe release. No desktop UI or real model is used; without the explicit executable these cases skip.
+- `CONVENE_WIRE_CODEX_HANDOFF_TEST_BIN=/absolute/path/to/codex node scripts/test/run-with-temp-root.mjs --cwd bridge --timeout-ms 180000 -- go test -race ./internal/runtime -run '^TestCodexConversationMetadata' -count=1` — bounded metadata discovery, invalid/untrusted response rejection and owned-child cleanup; the optional binary adds empty-profile native metadata checks. No conversation is resumed and no model is invoked.
 - `npm run test:bridge-ui` — test embedded Console controllers, including pairing,
   native Space invitations/recovery/browser handoff, local Runtime forms and permission views.
 - `npm run test:qa-evidence` — test the sanitized two-machine acceptance evidence verifier.

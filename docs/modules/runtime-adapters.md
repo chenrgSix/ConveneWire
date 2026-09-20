@@ -371,4 +371,11 @@ or occupied Thread. Release preserves the original conversation.
 ADP-020 first verifies the installed provider's cross-client ownership and tool
 compatibility with isolated offline fixtures. Until that capability gate passes,
 ordinary managed Sessions are unchanged and no takeover operation is enabled.
+The local Runtime now provides bounded metadata-only list/read functions scoped
+to the configured Agent workspace; they omit private history and process-local
+ownership claims and are not exposed to Room or Console callers yet.
+[Installed-binary evidence](../acceptance/adp-020-codex-desktop-handoff.md) confirms
+same-ID context continuation and competing-writer rejection, but also reproduces
+missing desktop tool callbacks and delayed release after unsubscribe. Discovery
+success must not be used as an adoption capability flag.
 Delivery status lives in [TASKS.md](../TASKS.md).
