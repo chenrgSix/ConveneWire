@@ -9,9 +9,11 @@ def verify_desktop_zip(archive, package):
     files = set()
     with zipfile.ZipFile(archive) as bundle:
         for entry in bundle.infolist():
-            name = entry.filename
+            # ZipInfo normalizes backslashes on Windows and truncates at NUL.
+            # Admission must inspect the original archive name before either.
+            name = entry.orig_filename
             parts = name.rstrip("/").split("/")
-            if (not name or any(ord(c) < 32 for c in name) or "\\" in name
+            if (name != entry.filename or not name or any(ord(c) < 32 for c in name) or "\\" in name
                     or ":" in name or any(p in ("", ".", "..") for p in parts)
                     or parts[0] != package or entry.flag_bits & 1):
                 raise ValueError("Unsafe desktop ZIP path or encrypted entry")

@@ -61,15 +61,16 @@ test("desktop ZIP preflight rejects paths that could escape, collide or change t
   const make = (members) => execFileSync(python, ["-c", `import sys,json,zipfile
 with zipfile.ZipFile(sys.argv[1], 'w') as z:
  for name, mode in json.loads(sys.argv[2]):
-  i=zipfile.ZipInfo(name); i.external_attr=mode<<16; z.writestr(i, 'fixture')
+  i=zipfile.ZipInfo(name); i.filename=name; i.external_attr=mode<<16; z.writestr(i, 'fixture')
 `, fixture, JSON.stringify(members)], {stdio: "pipe"});
   const inspect = () => execFileSync(python, [fileURLToPath(verifier), fixture, "package"], {stdio: "pipe"});
   make([["package/hub/a", 0o100644]]); inspect();
   for (const members of [
     [["package/../escape", 0]], [["/package/a", 0]], [["package/a\\b", 0]], [["package/a:b", 0]],
+    [["package/a\u0000hidden", 0]],
     [["other/a", 0]], [["package/a", 0], ["package/a", 0]], [["package/A", 0], ["package/a", 0]],
     [["package/a", 0o120777]], [["package/a", 0o040755]], [["package/a", 0], ["package/a/b", 0]]
-  ]) { make(members); assert.throws(inspect, /ZIP/u); }
+  ]) { make(members); assert.throws(inspect, /ZIP/u, JSON.stringify(members)); }
 });
 
 test("desktop Hub admission requires the exact release and commit and forbids modified release payloads", () => {
