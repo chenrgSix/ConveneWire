@@ -329,6 +329,7 @@ test("commit migration preserves populated canonical lineage and rolls back a fa
     }));
     assert.deepEqual(snapshot(), expected);
     const admissionObjects = new Set([
+      "desktop_handoffs",
       "local_node_installation",
       "local_node_binding",
       "authority_identity",
