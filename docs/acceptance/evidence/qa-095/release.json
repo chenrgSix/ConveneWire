@@ -1,0 +1,192 @@
+{
+  "localLinuxTaggedVerification": {
+    "sourceCommit": "293fc5c391bb370b2fee4eaa3f6b3f62fde64c5a",
+    "assetCount": 12,
+    "ubuntu": "24.04",
+    "node": "22.23.1",
+    "unzip": "-O UTF-8",
+    "taggedVerifierPassed": true
+  },
+  "tag": "v0.5.4",
+  "sourceCommit": "293fc5c391bb370b2fee4eaa3f6b3f62fde64c5a",
+  "releaseId": 392433522,
+  "publishedAt": "2026-09-20T14:50:15Z",
+  "ciRun": 35511722202,
+  "releaseWorkflow": 35516412848,
+  "workflowRevision": "0a7225acad2a930415bb09798824d96eb8e0d9d4",
+  "workflowRepairCI": 35516403495,
+  "releaseJobs": [
+    {
+      "name": "Validate draft Release",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106093008803"
+    },
+    {
+      "name": "Go release gates",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106093021462"
+    },
+    {
+      "name": "Repository release gates",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106093021473"
+    },
+    {
+      "name": "Build desktop Windows/amd64",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106094666261"
+    },
+    {
+      "name": "Build Central source release",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106094666274"
+    },
+    {
+      "name": "Build desktop macOS/arm64",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106094666300"
+    },
+    {
+      "name": "Build linux/amd64",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106094666301"
+    },
+    {
+      "name": "Build linux/arm64",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106094666341"
+    },
+    {
+      "name": "Attach ConveneWire binaries",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106095583056"
+    },
+    {
+      "name": "Verify uploaded Release",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35516412848/job/106095709478"
+    }
+  ],
+  "publicMetadataMethod": "Anonymous Latest redirect and release page; authenticated REST metadata because anonymous REST quota was exhausted",
+  "localWindowsZipExtractor": "Apple ditto; tagged ZIP admission and inventory unchanged",
+  "authenticatedAndAnonymousDownloadsMatch": true,
+  "taggedAssetVerifierPassed": true,
+  "assets": [
+    {
+      "name": "COMMERCIAL-LICENSE.md",
+      "id": 576982965,
+      "bytes": 2070,
+      "sha256": "9c652c6c66e86b99729fd52b1fb8b83e73f7f28a1741a4038125f8ff510e4dca"
+    },
+    {
+      "name": "LICENSE",
+      "id": 576982969,
+      "bytes": 9471,
+      "sha256": "91ba8b540a0674ed2cf6ff4fe7a277ebd92e672eead5edd6f9c1994d3a854ef5"
+    },
+    {
+      "name": "NOTICE",
+      "id": 576982968,
+      "bytes": 293,
+      "sha256": "e693f578273a8055378dc63d5fa0d92235a0bfc30de871550a3dcf04fa5af7c5"
+    },
+    {
+      "name": "SHA256SUMS",
+      "id": 576982966,
+      "bytes": 799,
+      "sha256": "f728bba4e5842a63440814750b8c1c8114019e86b730377ce831c4d68e2baeb2"
+    },
+    {
+      "name": "TRADEMARKS.md",
+      "id": 576982967,
+      "bytes": 1470,
+      "sha256": "a5ab3ac04b9bd5c8970956b8b07bf105048e94f9c2a303f81a66b7975624156d"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.4_darwin_arm64.zip",
+      "id": 576982974,
+      "bytes": 84316834,
+      "sha256": "2d632c78c5faba18cc51d6b44a310e7d30540d35f7cbca937eb86e3ec441838b"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.4_windows_amd64.zip",
+      "id": 576982977,
+      "bytes": 76317995,
+      "sha256": "fdfffacea9a364c0d528406beb866ce1a728d6b514c0735530ceca02f6242b7c"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.4_windows_amd64_setup.exe",
+      "id": 576982978,
+      "bytes": 49224301,
+      "sha256": "47feb558494db0aa63e5e9b0e084339b2d2bd4c8199d69b19417c4b9ccf97a3f"
+    },
+    {
+      "name": "convenewire-bridge_0.5.4_linux_amd64.tar.gz",
+      "id": 576982980,
+      "bytes": 5009449,
+      "sha256": "da0c4e5b678fc6f210dc3e9e93081611395a3d3547bb73d8bf930b2d0e65ff19"
+    },
+    {
+      "name": "convenewire-bridge_0.5.4_linux_arm64.tar.gz",
+      "id": 576982979,
+      "bytes": 4537189,
+      "sha256": "828472536d6d764e7e5b05d659d333e525a708f3c72c29374b20360d157dc23f"
+    },
+    {
+      "name": "convenewire-central_0.5.4_source.SHA256SUMS.sha256",
+      "id": 576982995,
+      "bytes": 77,
+      "sha256": "43da0a3a3daa5f24625eebe326e2a5270feb20cd7f08455360f6b982e1896cae"
+    },
+    {
+      "name": "convenewire-central_0.5.4_source.tar.gz",
+      "id": 576982996,
+      "bytes": 10788733,
+      "sha256": "6ee07e5d9a4f80748311d80de02548d53d20d64da9b6c71e4368ba396f848993"
+    }
+  ],
+  "localInstallation": {
+    "version": "v0.5.4",
+    "sourceCommit": "293fc5c391bb370b2fee4eaa3f6b3f62fde64c5a",
+    "archiveSha256": "cff30b98e34f285284e34d9e7079dae1d861a88c313885aa22761dc3969a9231",
+    "archiveBytes": 84316316,
+    "hubFiles": 7299
+  },
+  "localPackageBuiltSeparatelyFromReleaseCI": true,
+  "localHealth": {
+    "releaseVersion": "v0.5.4",
+    "sourceCommit": "293fc5c391bb370b2fee4eaa3f6b3f62fde64c5a",
+    "databaseQuickCheck": "ok",
+    "retainedConfigFiles": 3,
+    "retainedTables": [
+      "teams",
+      "rooms",
+      "agent_tasks",
+      "messages",
+      "runs"
+    ],
+    "migration0105Present": true,
+    "ready": true,
+    "desktopProcesses": 1,
+    "hubProcesses": 1
+  },
+  "nativeUI": {
+    "sourceCommit": "293fc5c391bb370b2fee4eaa3f6b3f62fde64c5a",
+    "handoffPagePassed": true,
+    "peerPagePassed": true,
+    "ownerDataPreserved": true,
+    "realCodexRestarted": false,
+    "realConversationAccessed": false,
+    "inspection": "Installed native Wails settings, disconnected cooperative startup view and Peer state; no origin denial."
+  },
+  "cleanup": {
+    "removedArchiveCount": 22,
+    "removedArchiveBytes": 1314949726,
+    "privateSnapshotsPreserved": true
+  },
+  "applicationRegistrationsRemaining": 1,
+  "compatibleRollbackPairRetained": true,
+  "ownerWindowsUpgradePerformed": false,
+  "ownerCodexRestarted": false,
+  "publicRelayVerified": false
+}
