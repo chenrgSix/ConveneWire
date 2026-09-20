@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
 import http from "node:http";
+import net from "node:net";
 import path from "node:path";
+import WebSocket from "ws";
 import { createTestResources } from "../test/resources.mjs";
 import { spawnTestProcess } from "../test/child-process.mjs";
 
@@ -62,16 +64,63 @@ export async function handoffFixture(t, executable) {
     'model_providers.fixture.supports_websockets=false', 'analytics.enabled=false',
     'check_for_update_on_startup=false', 'web_search="disabled"'
   ];
+  const environment = { PATH: process.env.PATH, HOME: home, USERPROFILE: home, CODEX_HOME: codexHome,
+    TMPDIR: resources.directory, TEMP: resources.directory, TMP: resources.directory,
+    ...(process.platform === "win32" ? { SystemRoot: process.env.SystemRoot } : {}) };
+  let sharedAddress;
+  let sharedServer;
+  let sharedServerLog = "";
+  async function startSharedServer() {
+    sharedServer ??= (async () => {
+      const reservation = net.createServer();
+      resources.defer(() => new Promise(resolve => { if (reservation.listening) reservation.close(resolve); else resolve(); }));
+      await new Promise((resolve, reject) => { reservation.once("error", reject); reservation.listen(0, "127.0.0.1", resolve); });
+      const port = reservation.address().port;
+      await new Promise(resolve => reservation.close(resolve));
+      sharedAddress = `ws://127.0.0.1:${port}`;
+      const owned = spawnTestProcess(resources, executable,
+        ["app-server", "--listen", sharedAddress, ...overrides.flatMap(value => ["-c", value])],
+        { cwd: workspace, env: environment, stdio: ["pipe", "pipe", "pipe"] });
+      for (const output of [owned.process.stdout, owned.process.stderr]) {
+        output.on("data", value => { sharedServerLog = (sharedServerLog + value).slice(-4096); });
+      }
+      const deadline = Date.now() + 10_000;
+      while (Date.now() < deadline) {
+        assert.equal(owned.process.exitCode, null, "Shared fixture server exited before listening");
+        if (await new Promise(resolve => {
+          const probe = net.createConnection({ host: "127.0.0.1", port });
+          probe.once("connect", () => { probe.destroy(); resolve(true); });
+          probe.once("error", () => { probe.destroy(); resolve(false); });
+          probe.setTimeout(200, () => { probe.destroy(); resolve(false); });
+        })) return;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      throw new Error("Shared fixture server did not start listening");
+    })();
+    await sharedServer;
+  }
   let clientNumber = 0;
-  async function client() {
-    const owned = spawnTestProcess(resources, executable,
+  async function client({ shared = false, toolResult } = {}) {
+    if (shared) await startSharedServer();
+    const owned = shared ? undefined : spawnTestProcess(resources, executable,
       ["app-server", "--listen", "stdio://", ...overrides.flatMap(value => ["-c", value])], {
-        cwd: workspace, env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, CODEX_HOME: codexHome,
-          TMPDIR: resources.directory, TEMP: resources.directory, TMP: resources.directory,
-          ...(process.platform === "win32" ? { SystemRoot: process.env.SystemRoot } : {}) },
+        cwd: workspace, env: environment,
         stdio: ["pipe", "pipe", "pipe"]
       });
-    const child = owned.process;
+    const child = owned?.process;
+    const connection = shared ? new WebSocket(sharedAddress, { handshakeTimeout: 10_000 }) : undefined;
+    const stop = owned?.stop ?? (async () => {
+      if (connection.readyState === WebSocket.CLOSED) return;
+      await new Promise(resolve => { connection.once("close", resolve); connection.terminate(); });
+    });
+    if (shared) {
+      resources.defer(stop);
+      await new Promise((resolve, reject) => {
+        connection.once("open", resolve);
+        connection.once("error", error => reject(new Error(`${error.message}: ${sharedServerLog}`)));
+      });
+    }
+    const write = text => shared ? connection.send(text.trimEnd()) : child.stdin.write(text);
     const pending = new Map();
     const notifications = [];
     const waiters = new Set();
@@ -83,10 +132,12 @@ export async function handoffFixture(t, executable) {
       for (const entry of waiters) { clearTimeout(entry.timer); entry.reject(failure); }
       waiters.clear();
     }
-    child.stderr.on("data", data => { stderr = (stderr + data).slice(-4096); });
-    child.stdin.on("error", fail);
-    child.stdout.setEncoding("utf8");
-    child.stdout.on("data", data => {
+    if (child) {
+      child.stderr.on("data", data => { stderr = (stderr + data).slice(-4096); });
+      child.stdin.on("error", fail);
+      child.stdout.setEncoding("utf8");
+    }
+    const receive = data => {
       try {
         receivedBytes += Buffer.byteLength(data);
         assert.ok(receivedBytes <= 4 * 1024 * 1024, "Bound native fixture protocol output");
@@ -98,8 +149,12 @@ export async function handoffFixture(t, executable) {
           const message = JSON.parse(line);
           if (message.method && message.id !== undefined) {
             notifications.push(message);
-            // Never grant a tool, approval or user-input request automatically.
-            child.stdin.write(`${JSON.stringify({ id: message.id, error: { code: -32601, message: "Fixture has no desktop tool handler" } })}\n`);
+            // Only this explicitly configured synthetic tool can return fixture
+            // text. Never execute a real tool or grant an approval/user-input request.
+            const result = message.method === "item/tool/call" && message.params.tool === "desktop_fixture_tool" && typeof toolResult === "string"
+              ? { id: message.id, result: { contentItems: [{ type: "inputText", text: toolResult }], success: true } }
+              : { id: message.id, error: { code: -32601, message: "Fixture has no desktop tool handler" } };
+            write(`${JSON.stringify(result)}\n`);
           } else if (message.id !== undefined) {
             const entry = pending.get(message.id);
             assert.ok(entry, "Response must match one pending request");
@@ -113,15 +168,17 @@ export async function handoffFixture(t, executable) {
           }
         }
       } catch (error) { fail(error); }
-    });
-    child.on("error", fail);
-    child.on("close", () => fail(new Error(`Native fixture exited: ${stderr}`)));
+    };
+    if (shared) connection.on("message", data => receive(`${data.toString("utf8")}\n`));
+    else child.stdout.on("data", receive);
+    (connection ?? child).on("error", fail);
+    (connection ?? child).on("close", () => fail(new Error(`Native fixture closed: ${stderr}`)));
     const rpc = (method, params = {}) => new Promise((resolve, reject) => {
       if (failure) { reject(failure); return; }
       const id = ++nextID;
       const timer = setTimeout(() => fail(new Error(`Timed out waiting for ${method}: ${stderr}`)), 20_000);
       pending.set(id, { resolve, reject, timer });
-      child.stdin.write(`${JSON.stringify({ id, method, params })}\n`);
+      write(`${JSON.stringify({ id, method, params })}\n`);
     });
     const waitFor = predicate => new Promise((resolve, reject) => {
       const match = notifications.find(predicate);
@@ -133,8 +190,9 @@ export async function handoffFixture(t, executable) {
     });
     const initialized = await rpc("initialize", { clientInfo: { name: `convenewire_handoff_${++clientNumber}`, version: "0.1.0" },
       capabilities: { experimentalApi: true } });
-    child.stdin.write('{"method":"initialized","params":{}}\n');
-    return { rpc, waitFor, initialized, notifications, stop: owned.stop,
+    assert.equal(initialized.codexHome, codexHome, "Every client must reach the owned disposable profile");
+    write('{"method":"initialized","params":{}}\n');
+    return { rpc, waitFor, initialized, notifications, stop,
       async turn(threadId, text) {
         const { turn } = await rpc("turn/start", { threadId, input: [{ type: "text", text }] });
         const completed = await waitFor(m => m.method === "turn/completed" && m.params.threadId === threadId && m.params.turn.id === turn.id);

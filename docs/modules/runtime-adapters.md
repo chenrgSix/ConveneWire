@@ -377,5 +377,7 @@ ownership claims and are not exposed to Room or Console callers yet.
 [Installed-binary evidence](../acceptance/adp-020-codex-desktop-handoff.md) confirms
 same-ID context continuation and competing-writer rejection, but also reproduces
 missing desktop tool callbacks and delayed release after unsubscribe. Discovery
-success must not be used as an adoption capability flag.
+success must not be used as an adoption capability flag. A shared loopback
+app-server test also receives callbacks in both clients and allows the source
+to continue without a return operation; shared transport is not exclusive control.
 Delivery status lives in [TASKS.md](../TASKS.md).

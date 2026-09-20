@@ -132,3 +132,37 @@ test("a competing client cannot take over an in-flight native turn", {
   }
   fixture.checkProvider();
 });
+
+test("sharing an app-server does not establish exclusive client control", {
+  skip: !executable, timeout: 120_000
+}, async t => {
+  const fixture = await handoffFixture(t, executable);
+  const desktop = await fixture.client({ shared: true, toolResult: "DESKTOP_SYNTHETIC_CALLBACK" });
+  const start = await desktop.rpc("thread/start", { cwd: fixture.workspace, sandbox: "read-only", approvalPolicy: "never",
+    dynamicTools: [{ name: "desktop_fixture_tool", description: "Synthetic desktop-owned tool", inputSchema: { type: "object", properties: {}, additionalProperties: false } }] });
+  await desktop.turn(start.thread.id, "Persist the original shared-service conversation.");
+  const room = await fixture.client({ shared: true, toolResult: "ROOM_SYNTHETIC_CALLBACK" });
+  const resumed = await room.rpc("thread/resume", { threadId: start.thread.id });
+  assert.equal(resumed.thread.id, start.thread.id, "Another client can subscribe to the same loaded Thread");
+  fixture.setResponder((input, index) => {
+    if (index === 2) return { id: "tool_shared", type: "function_call", name: "desktop_fixture_tool", arguments: "{}", call_id: "call_shared", status: "completed" };
+    if (index === 3) {
+      const output = input.input.find(item => item.type === "function_call_output" && item.call_id === "call_shared");
+      assert.ok(output);
+      assert.match(JSON.stringify(output.output), /(DESKTOP|ROOM)_SYNTHETIC_CALLBACK/);
+      t.diagnostic(`Shared-service tool callback result: ${JSON.stringify(output.output)}`);
+    }
+    assert.ok(index === 3 || index === 4);
+    return "Shared-service fixture turn completed.";
+  });
+  await room.turn(start.thread.id, "Continue from the receiving client and invoke the synthetic tool.");
+  await Promise.all([desktop, room].map(client => client.waitFor(item => item.method === "item/tool/call")));
+  const sourceCalls = desktop.notifications.filter(item => item.method === "item/tool/call").length;
+  const receiverCalls = room.notifications.filter(item => item.method === "item/tool/call").length;
+  assert.equal(sourceCalls, 1);
+  assert.equal(receiverCalls, 1);
+  t.diagnostic(`Shared-service callback recipients: source=${sourceCalls}, receiver=${receiverCalls}`);
+  await desktop.turn(start.thread.id, "The original client can still start a turn without an explicit return operation.");
+  assert.equal(fixture.calls.length, 4, "Shared subscription has not fenced the original client");
+  fixture.checkProvider();
+});
