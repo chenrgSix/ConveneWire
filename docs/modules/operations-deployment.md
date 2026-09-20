@@ -675,3 +675,10 @@ publication evidence.
 - `QA-028`: deterministic plus physical one-install/one-Device acceptance.
 - `GOV-017`/`QA-038`: optional in-image Hosted Agent boundary and deterministic
   acceptance; no new deployment lifecycle surface.
+
+## Desktop profile independence
+
+A native Node with an explicit data root can start without a user home directory.
+In that environment the optional Codex desktop coordinator remains unavailable;
+ordinary Agent configuration, Runs and Discussions still work. A missing desktop
+profile never creates a guessed adoption path or an alternate Codex conversation.

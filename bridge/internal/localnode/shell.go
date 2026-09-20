@@ -115,12 +115,12 @@ func (shell *Shell) attach(binding *contracts.Binding) error {
 			return err
 		}
 	}
-	planPath, err := desktopcodex.DefaultPlanPath()
-	if err != nil {
-		return err
-	}
-	if err = shell.native.ConfigureDesktopHandoff(filepath.Join(filepath.Dir(planPath), "connection.json"), shell.Hub.Handoff); err != nil {
-		return err
+	// Headless/minimal environments can run a Node without a desktop profile.
+	// Leave adoption unavailable instead of making it a prerequisite for work.
+	if planPath, planErr := desktopcodex.DefaultPlanPath(); planErr == nil {
+		if err = shell.native.ConfigureDesktopHandoff(filepath.Join(filepath.Dir(planPath), "connection.json"), shell.Hub.Handoff); err != nil {
+			return err
+		}
 	}
 	dependencies := shell.dependencies
 	native := shell.native

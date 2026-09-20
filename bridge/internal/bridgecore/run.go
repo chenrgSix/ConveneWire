@@ -184,7 +184,9 @@ func runConnector(ctx context.Context, loaded config.Config, credential pairing.
 					Config: configured, Sessions: sessions, Approve: connection.AwaitCentralApproval(loaded, credential),
 				}
 				if node := nativeNodeFromContext(ctx); node != nil && node.checkConfiguration(loaded) == nil {
-					adapter.Desktop, _ = node.DesktopHandoff()
+					if desktop, err := node.DesktopHandoff(); err == nil {
+						adapter.Desktop = desktop
+					}
 				}
 				adapters[agentID] = adapter
 			}
