@@ -93,6 +93,18 @@ test("Windows CI and Release use the same native compiler compatible with pinned
   }
 });
 
+test("upload and downloaded-asset gates install the tagged Hub verifier dependencies", () => {
+  for (const name of ["publish", "verify-release"]) {
+    for (const command of ["npm ci --ignore-scripts", "node-version: 22.23.1"]) {
+      const changed = mutateJob(workflow, name, block => block.replace(command, "removed"));
+      assert.throws(() => verifyReleaseWorkflowSource(changed), /asset verifier/u);
+    }
+    const optional = mutateJob(workflow, name, block => block.replace(
+      "        run: npm ci --ignore-scripts", "        if: false\n        run: npm ci --ignore-scripts"));
+    assert.throws(() => verifyReleaseWorkflowSource(optional), /must not be optional/u);
+  }
+});
+
 test("release and installed payload verification cannot omit Node-first inventory admission", () => {
   for (const marker of ["verify-desktop-zip.py", "release-hub.mjs", "convenewire-node.exe"]) {
     assert.throws(() => verifyReleaseAssetVerifierSource(releaseAssetVerifier.replaceAll(marker, "removed")), /combined Release asset verifier/u);

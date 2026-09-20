@@ -431,6 +431,21 @@ export function verifyReleaseWorkflowSource(source) {
   verifyWindowsNativeFailures(source);
   const jobs = jobBlocks(source);
   const validate = requireJob(jobs, "validate-release");
+  for (const [jobName, verificationStep] of [
+    ["publish", "Verify release assets before upload"],
+    ["verify-release", "Verify uploaded Release assets"]
+  ]) {
+    const job = requireJob(jobs, jobName);
+    const setup = stepForName(job, "Set up Node.js for asset verification");
+    assertIncludes(setup, ["uses: actions/setup-node@", "node-version: 22.23.1"], `${jobName} asset verifier toolchain`);
+    const install = stepForName(job, "Install locked asset verifier dependencies");
+    invariant(install.split("\n").includes("        run: npm ci --ignore-scripts"),
+      `${jobName} asset verifier must install locked dependencies without lifecycle scripts`);
+    invariant(!/^\s+(?:if|continue-on-error):/mu.test(install),
+      `${jobName} asset verifier dependency installation must not be optional`);
+    assertBefore(job, "Set up Node.js for asset verification", "Install locked asset verifier dependencies", `${jobName} asset verifier`);
+    assertBefore(job, "Install locked asset verifier dependencies", verificationStep, `${jobName} asset verifier`);
+  }
   const repository = requireJob(jobs, "repository-gates");
   const go = requireJob(jobs, "go-gates");
   const buildJobNames = [
