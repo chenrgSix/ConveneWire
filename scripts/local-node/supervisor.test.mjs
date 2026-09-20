@@ -86,8 +86,19 @@ test("native Local Node completes Codex/Pi Run and Discussion, then restores the
   assert.equal(defaultRelay.pending, null);
   const unboundConsole = new URL((await running.event("console")).consoleUrl);
   const unboundHeaders = { authorization: `Bearer ${unboundConsole.searchParams.get("token")}` };
-  assert.equal((await fetch(unboundConsole.origin + "/api/desktop-codex", { headers: unboundHeaders })).status, 409,
-    "a host without a user home keeps desktop adoption unavailable while ordinary local work remains usable");
+  const desktopHandoff = await fetch(unboundConsole.origin + "/api/desktop-codex", { headers: unboundHeaders });
+  if (process.platform === "win32") {
+    // Windows supplies a user profile independently of the empty PATH fixture.
+    // The native endpoint must still refuse to advertise macOS-only takeover.
+    assert.equal(desktopHandoff.status, 200);
+    const view = await desktopHandoff.json();
+    assert.equal(view.supported, false);
+    assert.equal(view.connected, false);
+    assert.deepEqual(view.threads, []);
+  } else {
+    assert.equal(desktopHandoff.status, 409,
+      "a host without a user home keeps desktop adoption unavailable while ordinary local work remains usable");
+  }
   const unboundState = await fetch(unboundConsole.origin + "/api/state", { headers: unboundHeaders }).then(response => response.json());
   assert.equal(unboundState.paired, false);
   assert.equal(unboundState.bridgeRunning, true);
