@@ -6,12 +6,12 @@ import { PanelDialog } from "../navigation/PanelDialog.js";
 import { PeerHostControls } from "../team/PeerHostPanel.js";
 import { LocalNetworkDialog } from "./LocalNodeNetwork.js";
 
-interface LANStatus { enabled: boolean; ready: boolean; endpoints: {address: string; port: number}[]; error?: string | null }
+interface LANStatus { enabled: boolean; ready: boolean; endpoints: {address: string; port: number}[]; error?: string | null; advancedInvitationReady?: boolean }
 export function DeviceCollaboration({session, team, rooms, locale, canManage = false}: {
   session: LocalSession; team: Team | null; rooms: Room[]; locale: Locale; canManage?: boolean;
 }) {
   const zh = locale === "zh-CN";
-  const [open, setOpen] = useState(false), [advanced, setAdvanced] = useState(false);
+  const [open, setOpen] = useState(false), [advanced, setAdvanced] = useState<"network" | "invite" | null>(null);
   const [lan, setLAN] = useState<LANStatus | null>(null), [busy, setBusy] = useState(false), [error, setError] = useState("");
   const alive = useRef(false), inFlight = useRef(false), revision = useRef(0);
   const scope = useRef(captureWebSessionScope());
@@ -64,10 +64,17 @@ export function DeviceCollaboration({session, team, rooms, locale, canManage = f
           : <p>{zh ? "选择你管理的团队，即可邀请其他电脑加入房间。" : "Select a Team you manage to invite another computer."}</p>}
         <details className="lan-advanced"><summary>{zh ? "高级网络设置" : "Advanced network settings"}</summary>
           <p>{zh ? "公网 Relay、已有 HTTPS 地址和手工证书。" : "Public Relay, existing HTTPS addresses and manual certificates."}</p>
-          <button type="button" className="secondary-action" onClick={() => setAdvanced(true)}>{zh ? "打开高级设置" : "Open advanced settings"}</button>
+          <button type="button" className="secondary-action" onClick={() => setAdvanced("network")}>{zh ? "打开高级设置" : "Open advanced settings"}</button>
+          {team && canManage && lan?.advancedInvitationReady && <button type="button" className="secondary-action" onClick={() => setAdvanced("invite")}>
+            {zh ? "使用高级网络地址邀请" : "Invite via advanced network"}
+          </button>}
         </details>
       </div>
     </PanelDialog>}
-    {open && advanced && session.token && <LocalNetworkDialog token={session.token} locale={locale} onClose={() => setAdvanced(false)} />}
+    {open && advanced === "network" && session.token && <LocalNetworkDialog token={session.token} locale={locale} onClose={() => setAdvanced(null)} />}
+    {open && advanced === "invite" && team && canManage && <PanelDialog title={zh ? "高级网络邀请" : "Advanced network invitation"} locale={locale} onClose={() => setAdvanced(null)}>
+      <p>{zh ? "使用已配置的 Relay 或 HTTPS 地址。对方沿用已有的连接配置。" : "Use the configured Relay or HTTPS address and the recipient’s existing connection settings."}</p>
+      <PeerHostControls teamId={team.teamId} teamName={team.name} rooms={rooms} locale={locale} sessionToken={session.token} canInvite={!!lan?.advancedInvitationReady} />
+    </PanelDialog>}
   </>;
 }

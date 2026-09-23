@@ -1286,3 +1286,7 @@ record the actual local review, consent and return flow.
 Workspace actions expose LAN status, invitation, joining, native Agent settings and bilateral sharing. Manual certificate and public Relay settings are advanced actions.
 [ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
 its delivery state is recorded only in [the task register](../TASKS.md).
+
+Advanced invitations remain reachable when the configured manual HTTPS or Relay
+transport is ready. They retain their existing invitation format and transport;
+LAN readiness alone cannot advertise an advanced invitation path.

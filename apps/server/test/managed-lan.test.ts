@@ -17,6 +17,7 @@ test("managed LAN hot lifecycle, stable identity and local Owner isolation", asy
   r.defer(() => f.close());
   const signed = f.runtime.transport(), status = f.runtime.status();
   assert.equal(status.ready, true); assert.equal(signed.transport.hostOrigin, f.origin);
+  assert.equal(status.advancedInvitationReady, false, "LAN readiness cannot advertise a public/manual route");
   assert.equal(signed.transport.host.nodeId, f.launch.identity.nodeId);
   const key = createPublicKey({key: Buffer.concat([Buffer.from("302a300506032b6570032100", "hex"), Buffer.from(signed.transport.host.publicKey, "base64url")]), format: "der", type: "spki"});
   assert.ok(verify(null, canonicalPeerJson({domain: "convenewire.peer.lan.v1", transport: signed.transport}), key, Buffer.from(signed.signature, "base64url")));

@@ -381,6 +381,8 @@ jobs:
           ./scripts/test-windows-output-paths.ps1
           go test -count=1 ./internal/localnode -v
           if ($LASTEXITCODE -ne 0) { throw "Windows Local Hub startup tests failed" }
+          go test -count=1 ./internal/peer -run '^TestManagedLANReviewJoinRestartRuntimeAndRevocation$' -v
+          if ($LASTEXITCODE -ne 0) { throw "Windows managed LAN interoperability failed" }
           go test -tags desktop ./cmd/convenewire-bridge-desktop
           if ($LASTEXITCODE -ne 0) { throw "Windows desktop tests failed" }
           go vet -tags desktop ./cmd/convenewire-bridge-desktop

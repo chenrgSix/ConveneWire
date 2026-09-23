@@ -9,7 +9,8 @@ points. [ADR-0073](../adr/0073-managed-lan-collaboration.md) defines the boundar
 The workspace toolbar exposes 本机 Agent, Codex 会话 and 设备与协作. The device
 panel provides LAN enable/disable, Room-scoped connection codes, direct native
 joining/sharing navigation and connected-member controls. Manual HTTPS and Relay
-are advanced settings. Native tray Agent configuration still opens Agents,
+settings and their existing invitation flow remain reachable under advanced
+settings when that transport is ready. Native tray Agent configuration still opens Agents,
 independently of the last requested native page.
 
 The Hub creates private installation-scoped CA and leaf certificates. The signed
@@ -34,7 +35,7 @@ The actual Go/Node TLS/WebSocket case covers temporary preview, exact review,
 lost committed claim, native recovery, Host restart, listener disable/enable,
 endpoint and signature negatives, missing trust and membership revocation.
 
-Ten focused Web tests and all 96 embedded native UI tests pass. Go race checks
+Nine focused Web tests and all 96 embedded native UI tests pass. Go race checks
 for Console, Local Node and Bridge core pass; affected Go vet and desktop-tagged
 tests/vet pass. Production Server/Web build passes, with the existing large-chunk
 warning. Bundled supervisor checks pass both offline Runtime lifecycle and
@@ -73,3 +74,9 @@ fixtures. No public Relay, real model, owner Codex session or remote Windows
 installation was used. Nearby discovery is not included; changed addresses need
 a fresh reviewed connection code. Managed LAN does not install browser trust or
 offer the external-browser Space link.
+
+The unpublished v0.5.6 draft was stopped after compatibility review found a
+missing advanced-network invitation entry. Its tag is immutable. The corrected
+candidate is v0.5.7; no v0.5.6 installation or public distribution is claimed.
+Native Windows CI and Release explicitly execute managed LAN join, trust,
+restart, WebSocket and revocation coverage in addition to private-file tests.

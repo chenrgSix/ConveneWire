@@ -22,7 +22,7 @@ test("visible device controls enable LAN, issue a scoped code and open native sh
   globalThis.fetch = async (input, init) => {
     const url = String(input), method = init?.method ?? "GET", body = init?.body ? JSON.parse(String(init.body)) : undefined;
     calls.push({url, method, body});
-    if (url === "/api/local-node/lan") {if (method === "POST") enabled = body.enabled; return Response.json({enabled, ready: enabled, endpoints: enabled ? [{address: "192.168.1.254", port: 48124}] : []});}
+    if (url === "/api/local-node/lan") {if (method === "POST") enabled = body.enabled; return Response.json({enabled, ready: enabled, endpoints: enabled ? [{address: "192.168.1.254", port: 48124}] : [], advancedInvitationReady: true});}
     if (url.endsWith("/access")) return Response.json({host, hostOrigin: origin, invitationSupported: enabled, invitations: [], memberships: []});
     if (url.endsWith("/agent-offers")) return Response.json({offers: []});
     if (url.endsWith("/lan/transport")) return Response.json({transport: {schemaVersion: 1, host, hostOrigin: origin, caCertificatePem: "X".repeat(100),
@@ -54,4 +54,13 @@ test("visible device controls enable LAN, issue a scoped code and open native sh
   fireEvent.click(page.getByRole("button", {name: "连接与分享"}));
   await waitFor(() => assert.ok(calls.some(call => call.url === "/api/local-node/open-console" && call.body.page === "peers")));
   assert.equal(calls.filter(call => call.url.endsWith("/bind")).length, 0);
+  fireEvent.click(page.getByText("高级网络设置"));
+  fireEvent.click(page.getByRole("button", {name: "使用高级网络地址邀请"}));
+  assert.ok(await page.findByRole("heading", {name: "高级网络邀请"}));
+  fireEvent.click(await page.findByRole("button", {name: "邀请其他电脑"}));
+  fireEvent.click(page.getByRole("button", {name: "创建邀请", exact: true}));
+  fireEvent.click(await page.findByRole("button", {name: "复制连接码"}));
+  await waitFor(() => assert.ok(copied.startsWith("{")));
+  assert.equal(JSON.parse(copied).invitation.hostOrigin, origin);
+  assert.equal(calls.filter(call => call.url.endsWith("/lan/transport")).length, 1, "advanced invitation retains its existing transport");
 });

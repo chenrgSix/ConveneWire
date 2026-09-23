@@ -103,7 +103,8 @@ export class LANRuntime implements PeerIngressAccess {
   }
   public status() {
     const endpoints: PeerLANEndpoint[] = this.current ? this.addresses().filter(privateLANAddress).slice(0, 8).map(address => ({address, port: this.port})) : [];
-    return {enabled: this.enabled, ready: !!this.current && endpoints.length > 0, endpoints, error: this.error};
+    return {enabled: this.enabled, ready: !!this.current && endpoints.length > 0, endpoints, error: this.error,
+      advancedInvitationReady: !!this.primary?.invitationReady()};
   }
   public transport(): PeerLANSignedTransport {
     const status = this.status();
