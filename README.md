@@ -21,7 +21,7 @@ The Node-first desktop includes local Run/Discussion, independent Peer
 membership, bilateral Agent sharing, Participant-local approval and private
 HTTPS configuration. See the [native desktop guide](bridge/README.md#node-first-desktop-from-this-source)
 and [distribution evidence](docs/acceptance/ops-020-native-distribution.md).
-The [task register](docs/TASKS.md) and [release record](docs/acceptance/qa-095-v0.5.4.md)
+The [task register](docs/TASKS.md) and [release record](docs/acceptance/qa-096-windows-hub-window.md)
 track delivered capabilities and the remaining acceptance boundaries.
 
 The central Team MVP is runnable: the Fastify API and React UI persist Teams,
@@ -40,7 +40,7 @@ answer satisfies the task.
 - Current baseline:
   [convenewire_network_design_v0.2.md](convenewire_network_design_v0.2.md)
 - Stable release:
-  [ConveneWire v0.5.4](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.4)
+  [ConveneWire v0.5.5](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.5)
 - Historical evaluation candidate:
   [ConveneWire v0.5.0-rc.6](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.0-rc.6)
 - Historical baseline:
@@ -55,7 +55,8 @@ answer satisfies the task.
 - Security and clean-room audit:
   [docs/acceptance/qa-005-security-clean-room-audit.md](docs/acceptance/qa-005-security-clean-room-audit.md)
 
-Stable v0.5.4 packages the Node-first desktop for Apple-silicon macOS and Windows:
+Stable v0.5.5 fixes the Windows startup console window and packages the Node-first
+desktop for Apple-silicon macOS and Windows:
 start a local workspace without deploying Central, configure Agents in the same
 window and connect reviewed Peers over HTTPS. Physical macOS/Windows LAN evidence
 is recorded in [QA-092](docs/acceptance/qa-092-ab-native-desktop.md); public Relay
@@ -66,10 +67,10 @@ consent. Windows conversation handoff is not supported.
 The distribution retains 12 assets, including native desktop packages, the
 Windows installer, Linux CLI archives and one Central source archive. Existing
 Central/Discussion and private evidence features remain available. Read the
-[upgrade notes](docs/releases/v0.5.4.md), stop the application and keep a verified
+[upgrade notes](docs/releases/v0.5.5.md), stop the application and keep a verified
 backup with its matching old binaries before upgrading. Never open a migrated
 database with an older version. Packages remain unsigned and updates manual;
-[QA-095](docs/acceptance/qa-095-v0.5.4.md) records release and installation evidence.
+[QA-096](docs/acceptance/qa-096-windows-hub-window.md) records the Windows repair and release evidence.
 
 ## Repository Ownership
 
@@ -328,7 +329,7 @@ archive's internal file manifest.
 Run the shipped controller from the extracted root:
 
 ```bash
-archive=convenewire-central_0.5.4_source.tar.gz
+archive=convenewire-central_0.5.5_source.tar.gz
 pin_asset=${archive%.tar.gz}.SHA256SUMS.sha256
 release_dir=${archive%.tar.gz}
 tar -xzf "${archive}"

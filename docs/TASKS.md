@@ -906,5 +906,5 @@ retain their explicit operation scope.
 
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
-| BRG-083 | ACTIVE | Start the Windows Local Hub without a console window | BRG-046, WEB-087 | Preserve the supervisor's launch pipes and shutdown ownership; add native console-allocation regression coverage. Evidence: [QA-096](acceptance/qa-096-windows-hub-window.md) |
-| QA-096 | ACTIVE | Verify and publish the Windows startup repair | BRG-083, QA-095 | Exact-source CI, native Windows regression and installer upgrade, followed by verified v0.5.5 release downloads. Physical owner Windows acceptance remains distinct |
+| BRG-083 | DONE | Start the Windows Local Hub without a console window | BRG-046, WEB-087 | [QA-096](acceptance/qa-096-windows-hub-window.md): Windows Hub launches without console allocation; real child console probe, hidden-console detection control, authenticated readiness, graceful exit and owner-lease release pass in native Windows CI; local race/vet and Windows compilation pass |
+| QA-096 | DONE | Verify and publish the Windows startup repair | BRG-083, QA-095 | [Release evidence](acceptance/qa-096-windows-hub-window.md): all four exact-source CI jobs and ten Release jobs pass, native Windows regressions and v0.5.4 installer upgrade pass, twelve authenticated/public downloads match; v0.5.5 is published. Physical owner Windows acceptance remains distinct |

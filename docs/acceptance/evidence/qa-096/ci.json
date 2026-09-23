@@ -1,0 +1,48 @@
+{
+  "databaseId": 35815638617,
+  "headSha": "f357fee26ff4729e7962387775d68a30d8f14ca6",
+  "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35815638617",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "Go",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35815638617/job/107036451995"
+    },
+    {
+      "name": "Desktop Windows",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35815638617/job/107036452187"
+    },
+    {
+      "name": "Repository",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35815638617/job/107036452193"
+    },
+    {
+      "name": "Desktop macOS",
+      "conclusion": "success",
+      "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35815638617/job/107036452211"
+    }
+  ],
+  "windowsRegressions": [
+    {
+      "name": "TestWindowsHubHasNoConsoleAndPreservesReadinessAndShutdown",
+      "conclusion": "success",
+      "seconds": 1.49
+    },
+    {
+      "name": "TestWindowsHubConsoleProbeDetectsHiddenConsole",
+      "conclusion": "success",
+      "seconds": 1.33
+    }
+  ],
+  "localChecks": {
+    "macOSLocalNodeRace": "pass (12.727 seconds)",
+    "macOSLocalNodeVet": "pass",
+    "windowsAmd64TestCompilation": "pass; not execution evidence",
+    "releaseWorkflowPolicyTests": 29,
+    "markdownFiles": 553,
+    "localMarkdownLinks": 334
+  }
+}
