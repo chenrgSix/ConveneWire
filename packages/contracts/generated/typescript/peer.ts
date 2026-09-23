@@ -4687,3 +4687,113 @@ export type RelayOpenKind = "tls" | "http01";
 
 export type RelayOpenType = "open";
 
+export interface PeerLANEndpoint {
+  address: string;
+  port:    number;
+}
+
+export interface PeerLANTransport {
+  caCertificatePem: string;
+  endpoints:        [PeerLANTransportEndpoint, ...PeerLANTransportEndpoint[]];
+  expiresAt:        string;
+  host:             PeerLANTransportHost;
+  hostOrigin:       string;
+  schemaVersion:    number;
+}
+
+export interface PeerLANTransportEndpoint {
+  address: string;
+  port:    number;
+}
+
+export interface PeerLANTransportHost {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLANSignedTransport {
+  signature: string;
+  transport: PeerLANSignedTransportTransport;
+}
+
+export interface PeerLANSignedTransportTransport {
+  caCertificatePem: string;
+  endpoints:        [PurpleEndpoint, ...PurpleEndpoint[]];
+  expiresAt:        string;
+  host:             Host9;
+  hostOrigin:       string;
+  schemaVersion:    number;
+}
+
+export interface PurpleEndpoint {
+  address: string;
+  port:    number;
+}
+
+export interface Host9 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface PeerLANConnectionCode {
+  issued:        Issued;
+  kind:          PeerLANConnectionCodeKind;
+  lan:           LAN;
+  schemaVersion: number;
+}
+
+export interface Issued {
+  invitation:    IssuedInvitation;
+  schemaVersion: number;
+  secret:        string;
+}
+
+export interface IssuedInvitation {
+  expiresAt:           string;
+  host:                Host10;
+  hostOrigin:          string;
+  invitationId:        string;
+  membershipExpiresAt: string;
+  roomLabel:           null | string;
+  schemaVersion:       number;
+  scope:               Scope3;
+  teamLabel:           string;
+}
+
+export interface Host10 {
+  nodeId:    string;
+  publicKey: string;
+}
+
+export interface Scope3 {
+  kind:   PeerScopeKind;
+  roomId: null | string;
+  teamId: string;
+}
+
+export type PeerLANConnectionCodeKind = "convenewire.lan";
+
+export interface LAN {
+  signature: string;
+  transport: LANTransport;
+}
+
+export interface LANTransport {
+  caCertificatePem: string;
+  endpoints:        [FluffyEndpoint, ...FluffyEndpoint[]];
+  expiresAt:        string;
+  host:             Host11;
+  hostOrigin:       string;
+  schemaVersion:    number;
+}
+
+export interface FluffyEndpoint {
+  address: string;
+  port:    number;
+}
+
+export interface Host11 {
+  nodeId:    string;
+  publicKey: string;
+}
+

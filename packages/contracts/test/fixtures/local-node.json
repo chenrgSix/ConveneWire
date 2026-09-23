@@ -235,5 +235,61 @@
       "taskId": "task_fixture_0001",
       "threadId": "private"
     }
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": "agents"
+    },
+    "valid": true
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": "peers"
+    },
+    "valid": true
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": "handoff"
+    },
+    "valid": true
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": "settings"
+    },
+    "valid": false
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": "https://evil.test"
+    },
+    "valid": false
+  },
+  {
+    "kind": "LocalNodeControlState",
+    "value": {
+      "binding": null,
+      "consoleRequestId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "consolePage": [
+        "peers"
+      ]
+    },
+    "valid": false
   }
 ]

@@ -914,8 +914,8 @@ retain their explicit operation scope.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | GOV-048 | DONE | Define managed LAN transport and visible collaboration controls | GOV-045, GOV-046, WEB-087, QA-096 | [ADR-0073](adr/0073-managed-lan-collaboration.md); 555-file documentation lint and local link/whitespace checks pass |
-| CON-030 | TODO | Define bounded LAN connection material and native page targets | GOV-048 | Pending closed Node/Go validation and interoperability |
-| OPS-026 | TODO | Manage private LAN certificates and hot listener lifecycle | CON-030, OPS-019, OPS-023 | Pending lifecycle, isolation and native protection evidence |
-| BRG-084 | TODO | Review LAN connection codes and persist scoped Peer trust | CON-030, BRG-081, BRG-082 | Pending temporary trust, confirmed join, conflict and recovery evidence |
+| CON-030 | DONE | Define bounded LAN connection material and native page targets | GOV-048 | Closed LAN endpoint/transport/signature/code and native page contracts; Node/Go positive and negative decoding, generated/types checks, Go fixture tests/vet and actual signed HTTPS/WS interoperability pass |
+| OPS-026 | ACTIVE | Manage private LAN certificates and hot listener lifecycle | CON-030, OPS-019, OPS-023 | Pending lifecycle, isolation and native protection evidence |
+| BRG-084 | ACTIVE | Review LAN connection codes and persist scoped Peer trust | CON-030, BRG-081, BRG-082 | Pending temporary trust, confirmed join, conflict and recovery evidence |
 | WEB-092 | TODO | Expose devices, joining and sharing from the workspace | OPS-026, BRG-084, WEB-091 | Pending functional and visual evidence |
 | QA-097 | TODO | Verify and distribute simplified LAN collaboration | WEB-092, QA-096 | Pending combined local, CI and release evidence; physical LAN acceptance remains separate |

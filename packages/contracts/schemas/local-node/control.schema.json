@@ -169,6 +169,14 @@
         "handoffTaskId": {
           "type": "string",
           "maxLength": 134
+        },
+        "consolePage": {
+          "type": "string",
+          "enum": [
+            "agents",
+            "peers",
+            "handoff"
+          ]
         }
       }
     },

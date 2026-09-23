@@ -4533,6 +4533,114 @@ type RelayOpen struct {
 	Type          RelayOpenType `json:"type"`
 }
 
+type PeerLANEndpoint struct {
+	Address string `json:"address"`
+	Port    int64  `json:"port"`
+}
+
+type PeerLANTransport struct {
+	CACertificatePem string                     `json:"caCertificatePem"`
+	Endpoints        []PeerLANTransportEndpoint `json:"endpoints"`
+	ExpiresAt        string                     `json:"expiresAt"`
+	Host             PeerLANTransportHost       `json:"host"`
+	HostOrigin       string                     `json:"hostOrigin"`
+	SchemaVersion    int64                      `json:"schemaVersion"`
+}
+
+type PeerLANTransportEndpoint struct {
+	Address string `json:"address"`
+	Port    int64  `json:"port"`
+}
+
+type PeerLANTransportHost struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLANSignedTransport struct {
+	Signature string                          `json:"signature"`
+	Transport PeerLANSignedTransportTransport `json:"transport"`
+}
+
+type PeerLANSignedTransportTransport struct {
+	CACertificatePem string           `json:"caCertificatePem"`
+	Endpoints        []PurpleEndpoint `json:"endpoints"`
+	ExpiresAt        string           `json:"expiresAt"`
+	Host             Host9            `json:"host"`
+	HostOrigin       string           `json:"hostOrigin"`
+	SchemaVersion    int64            `json:"schemaVersion"`
+}
+
+type PurpleEndpoint struct {
+	Address string `json:"address"`
+	Port    int64  `json:"port"`
+}
+
+type Host9 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type PeerLANConnectionCode struct {
+	Issued        Issued                    `json:"issued"`
+	Kind          PeerLANConnectionCodeKind `json:"kind"`
+	LAN           LAN                       `json:"lan"`
+	SchemaVersion int64                     `json:"schemaVersion"`
+}
+
+type Issued struct {
+	Invitation    IssuedInvitation `json:"invitation"`
+	SchemaVersion int64            `json:"schemaVersion"`
+	Secret        string           `json:"secret"`
+}
+
+type IssuedInvitation struct {
+	ExpiresAt           string  `json:"expiresAt"`
+	Host                Host10  `json:"host"`
+	HostOrigin          string  `json:"hostOrigin"`
+	InvitationID        string  `json:"invitationId"`
+	MembershipExpiresAt string  `json:"membershipExpiresAt"`
+	RoomLabel           *string `json:"roomLabel"`
+	SchemaVersion       int64   `json:"schemaVersion"`
+	Scope               Scope3  `json:"scope"`
+	TeamLabel           string  `json:"teamLabel"`
+}
+
+type Host10 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
+type Scope3 struct {
+	Kind   PeerScopeKind `json:"kind"`
+	RoomID *string       `json:"roomId"`
+	TeamID string        `json:"teamId"`
+}
+
+type LAN struct {
+	Signature string       `json:"signature"`
+	Transport LANTransport `json:"transport"`
+}
+
+type LANTransport struct {
+	CACertificatePem string           `json:"caCertificatePem"`
+	Endpoints        []FluffyEndpoint `json:"endpoints"`
+	ExpiresAt        string           `json:"expiresAt"`
+	Host             Host11           `json:"host"`
+	HostOrigin       string           `json:"hostOrigin"`
+	SchemaVersion    int64            `json:"schemaVersion"`
+}
+
+type FluffyEndpoint struct {
+	Address string `json:"address"`
+	Port    int64  `json:"port"`
+}
+
+type Host11 struct {
+	NodeID    string `json:"nodeId"`
+	PublicKey string `json:"publicKey"`
+}
+
 type PeerScopeKind string
 
 const (
@@ -4925,4 +5033,10 @@ type RelayOpenType string
 
 const (
 	Open RelayOpenType = "open"
+)
+
+type PeerLANConnectionCodeKind string
+
+const (
+	ConvenewireLAN PeerLANConnectionCodeKind = "convenewire.lan"
 )

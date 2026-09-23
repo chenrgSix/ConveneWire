@@ -39,6 +39,7 @@ export interface LocalNodeBinding {
 
 export interface LocalNodeControlState {
   binding:          Binding | null;
+  consolePage?:     ConsolePage;
   consoleRequestId: string;
   handoffTaskId?:   string;
 }
@@ -50,6 +51,8 @@ export interface Binding {
   teamId:        string;
   token:         string;
 }
+
+export type ConsolePage = "agents" | "peers" | "handoff";
 
 export interface DesktopHandoffRequest {
   action:          Action;

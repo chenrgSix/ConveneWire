@@ -40,9 +40,10 @@ type LocalNodeBinding struct {
 }
 
 type LocalNodeControlState struct {
-	Binding          *Binding `json:"binding"`
-	ConsoleRequestID string   `json:"consoleRequestId"`
-	HandoffTaskID    *string  `json:"handoffTaskId,omitempty"`
+	Binding          *Binding     `json:"binding"`
+	ConsolePage      *ConsolePage `json:"consolePage,omitempty"`
+	ConsoleRequestID string       `json:"consoleRequestId"`
+	HandoffTaskID    *string      `json:"handoffTaskId,omitempty"`
 }
 
 type Binding struct {
@@ -77,6 +78,14 @@ type DesktopHandoffScope struct {
 	TaskTitle      string   `json:"taskTitle"`
 	TeamID         string   `json:"teamId"`
 }
+
+type ConsolePage string
+
+const (
+	Agents  ConsolePage = "agents"
+	Handoff ConsolePage = "handoff"
+	Peers   ConsolePage = "peers"
+)
 
 type Action string
 
