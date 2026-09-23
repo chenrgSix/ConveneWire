@@ -1659,6 +1659,17 @@ produced output and a reply, completed normally, and opened no empty console,
 closing the window-manager acceptance boundary without changing Runtime or
 protocol ownership.
 
+`BRG-083` applies the same windowless boundary to the bundled Local Hub Node
+process started by the desktop supervisor. The GUI subsystem on the parent
+executable and redirected streams alone do not prevent a child console. Windows
+Hub launch uses `CREATE_NO_WINDOW` plus a hidden startup window; other platforms
+retain their existing behavior. Authenticated launch pipes, readiness checks and
+EOF-driven shutdown remain unchanged. Native tests inspect `GetConsoleWindow`
+inside the actual supervised fixture child, verify readiness and graceful exit,
+and use a deliberately allocated hidden console as a positive detection control.
+The Release Windows gate runs the Local Node package tests before packaging;
+CI's uncached Windows regressions include the same console checks.
+
 Wails is pinned to `v3.0.0-beta.12` behind the `desktop` Go build tag. Ordinary
 CGO-free CLI tests and builds do not compile the desktop package. Desktop tests
 compile the native shell explicitly on macOS and Windows, while platform

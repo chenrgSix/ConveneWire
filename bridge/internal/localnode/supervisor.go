@@ -51,6 +51,7 @@ func Start(ctx context.Context, bundle, root string) (*Supervisor, error) {
 		return nil, err
 	}
 	command := exec.Command(filepath.Join(bundle, filepath.FromSlash(nodeExecutable())), filepath.Join(bundle, "apps/server/dist/local-node.js"), data.Root)
+	configureHubCommand(command)
 	command.Dir = bundle
 	command.Env = []string{"PATH=", "NODE_ENV=production"}
 	if runtime.GOOS == "windows" {
