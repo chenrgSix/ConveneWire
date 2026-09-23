@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { captureWebSessionScope, isStaleWebSessionError, jsonRequest } from "../../api-client.js";
 import type { Locale } from "../../i18n.js";
-import type { LocalSession, Team } from "../../models.js";
-import { LocalNodeNetwork } from "./LocalNodeNetwork.js";
+import type { LocalSession, Room, Team } from "../../models.js";
+import { DeviceCollaboration } from "./DeviceCollaboration.js";
 
 interface Binding { nodeId: string; teamId: string | null; deviceId: string | null }
 
-export function LocalNodeRuntime({ session, team, teams, locale }: { session: LocalSession; team: Team | null; teams: Team[]; locale: Locale }) {
+export function LocalNodeRuntime({ session, team, teams, locale, rooms = [], canManage = false }: { session: LocalSession; team: Team | null; teams: Team[]; locale: Locale; rooms?: Room[]; canManage?: boolean }) {
   const [binding, setBinding] = useState<Binding | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ export function LocalNodeRuntime({ session, team, teams, locale }: { session: Lo
     }).catch((reason: unknown) => { if (!stopped && !isStaleWebSessionError(reason)) setError(zh ? "无法读取本机连接，请重新打开本地空间。" : "Reopen the local workspace to read its Runtime binding."); });
     return () => { stopped = true; generation.current++; };
   }, [session.token, zh]);
-  async function open(bindTeam: boolean) {
+  async function open(bindTeam: boolean, page: "agents" | "handoff" = "agents") {
     if (!binding || busy || (bindTeam && !binding.teamId && !team)) return;
     const sessionCurrent = captureWebSessionScope(), epoch = generation.current;
     const current = () => sessionCurrent() && generation.current === epoch;
@@ -31,7 +31,7 @@ export function LocalNodeRuntime({ session, team, teams, locale }: { session: Lo
         if (!current()) return;
         setBinding(selected);
       }
-      await jsonRequest("/api/local-node/open-console", { method: "POST" }, session.token);
+      await jsonRequest("/api/local-node/open-console", { method: "POST", body: JSON.stringify({page}) }, session.token);
     } catch (reason) {
       if (current() && !isStaleWebSessionError(reason)) setError(reason instanceof Error ? reason.message : String(reason));
     } finally { if (current()) setBusy(false); }
@@ -47,7 +47,8 @@ export function LocalNodeRuntime({ session, team, teams, locale }: { session: Lo
       <button className="secondary-action" type="button" disabled={busy || !binding || (!binding.teamId && !team)} onClick={() => void open(true)}>
         {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "本机 Agent" : "Local Agents") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
       </button>
-      <LocalNodeNetwork session={session} locale={locale} />
+      <button className="secondary-action" type="button" disabled={busy || !binding} onClick={() => void open(false, "handoff")}>{zh ? "Codex 会话" : "Codex conversations"}</button>
+      <DeviceCollaboration key={`${session.userId}:${session.token ?? "cookie"}`} session={session} team={team} rooms={rooms} locale={locale} canManage={canManage} />
     </div>
     {error && <p role="alert">{error}</p>}
   </section>;

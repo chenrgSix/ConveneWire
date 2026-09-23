@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { PeerAgentAcceptanceRequest, PeerInvitationCreateRequest, PeerInvitationIssued } from "@convene-wire/contracts/peer";
+import type { PeerAgentAcceptanceRequest, PeerInvitationCreateRequest, PeerInvitationIssued, PeerLANSignedTransport } from "@convene-wire/contracts/peer";
 import { captureWebSessionScope, HttpRequestError, isStaleWebSessionError, jsonRequest } from "../../api-client.js";
 import type { Locale } from "../../i18n.js";
 import type { Room } from "../../models.js";
@@ -7,7 +7,7 @@ import { PanelDialog } from "../navigation/PanelDialog.js";
 import { LocalNetworkDialog } from "../local-node/LocalNodeNetwork.js";
 import { currentPeerAcceptance, peerOperationId, type PeerHostAccess, type PeerHostOffer } from "./peer-host-model.js";
 
-interface Props { teamId: string; teamName: string; rooms: Room[]; locale: Locale; sessionToken?: string | undefined; localNetworkToken?: string | undefined }
+interface Props { teamId: string; teamName: string; rooms: Room[]; locale: Locale; sessionToken?: string | undefined; localNetworkToken?: string | undefined; lan?: boolean; canInvite?: boolean }
 type Review = { kind: "accept"; item: PeerHostOffer } | { kind: "revoke-agent"; item: PeerHostOffer } |
   { kind: "revoke-membership"; item: PeerHostAccess["memberships"][number] } |
   { kind: "revoke-invitation"; item: PeerHostAccess["invitations"][number] };
@@ -27,7 +27,7 @@ export function PeerHostPanel(props: Props) {
   </>;
 }
 
-function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpenNetwork }: Props & { onOpenNetwork?: (() => void) | undefined }) {
+export function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpenNetwork, lan = false, canInvite = true }: Props & { onOpenNetwork?: (() => void) | undefined }) {
   const zh = locale === "zh-CN";
   const [data, setData] = useState<{ access: PeerHostAccess; offers: PeerHostOffer[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,8 +41,10 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpe
   const [days, setDays] = useState("7");
   const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
   const [issued, setIssued] = useState<PeerInvitationIssued | null>(null);
+  const [lanTransport, setLANTransport] = useState<PeerLANSignedTransport | null>(null);
   const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState<{ path: string; method: string; body?: unknown } | null>(null);
+  const preparing = useRef(false);
   const alive = useRef(true), inFlight = useRef(false), loading = useRef(false);
   const sessionScope = useRef(captureWebSessionScope());
   const heading = useRef<HTMLHeadingElement>(null);
@@ -109,18 +111,25 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpe
     setInviting(false); setReview(null); setPending(null); setIssued(null); setCopied(false); setError(null); void refresh();
   };
   async function createInvitation() {
-    if (!data?.access.invitationSupported || issued || busy || (scope !== "team" && !availableRooms.some(room => room.roomId === scope))) return;
+    if (!canInvite || !data?.access.invitationSupported || issued || busy || preparing.current || (scope !== "team" && !availableRooms.some(room => room.roomId === scope))) return;
     const time = Date.now();
     const body: PeerInvitationCreateRequest = { schemaVersion: 1, operationId: peerOperationId(),
       scope: scope === "team" ? { kind: "team", teamId, roomId: null } : { kind: "room", teamId, roomId: scope },
       expiresAt: new Date(time + 3600_000).toISOString(), membershipExpiresAt: new Date(time + Number(days) * 86400_000).toISOString() };
+    if (lan) {
+      preparing.current = true; setBusy(true);
+      try { const value = await jsonRequest<PeerLANSignedTransport>("/api/local-node/lan/transport", {}, sessionToken); if (!current()()) return; setLANTransport(value); }
+      catch (reason) { if (current()() && !isStaleWebSessionError(reason)) setError(zh ? "局域网连接未就绪，请先开启后重试。" : "Enable LAN before creating a code."); return; }
+      finally { preparing.current = false; if (current()()) setBusy(false); }
+    }
     const result = await mutate<PeerInvitationIssued>(pending ?? { path: "/api/peer/invitations", method: "POST", body });
     if (result) { setIssued(result); setCopied(false); void refresh(); }
   }
+  const connectionCode = issued && lanTransport && lan ? "CWLAN1." + btoa(Array.from(new TextEncoder().encode(JSON.stringify({schemaVersion: 1, kind: "convenewire.lan", issued, lan: lanTransport})), byte => String.fromCharCode(byte)).join("")).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "") : issued ? JSON.stringify(issued) : "";
   async function copyInvitation() {
     if (!issued || Date.parse(issued.invitation.expiresAt) <= Date.now()) return;
-    const active = current(), value = issued;
-    try { await navigator.clipboard.writeText(JSON.stringify(value)); if (active()) setCopied(true); }
+    const active = current(), value = connectionCode;
+    try { await navigator.clipboard.writeText(value); if (active()) setCopied(true); }
     catch { if (active()) setError(zh ? "无法访问剪贴板，请手动复制下方邀请。" : "Clipboard unavailable. Copy the invitation below manually."); }
   }
   function inspect(value: Review) {
@@ -170,7 +179,7 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpe
     {notice && <p role="status">{notice}</p>}
     {(inviting || review) && <button type="button" disabled={busy} onClick={back}>{zh ? "返回协作管理" : "Back to collaboration"}</button>}
     {inviting ? <section>
-      <h3 ref={heading} tabIndex={-1}>{zh ? "邀请其他节点的成员" : "Invite a member from another Node"}</h3>
+      <h3 ref={heading} tabIndex={-1}>{zh ? "邀请其他电脑加入房间" : "Invite another computer to a Room"}</h3>
       <p>{zh ? "对方在自己的 ConveneWire App 中审阅邀请并加入。本次邀请一小时内有效，只能使用一次。" : "The recipient reviews and joins in their ConveneWire app. This one-use invitation expires in one hour."}</p>
       {!issued ? <form onSubmit={event => { event.preventDefault(); void createInvitation(); }}>
         <label>{zh ? "访问范围" : "Access scope"}<select value={scope} disabled={busy || !!pending} onChange={event => setScope(event.target.value)}>
@@ -180,12 +189,12 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpe
         <label>{zh ? "成员访问期限" : "Membership duration"}<select value={days} disabled={busy || !!pending} onChange={event => setDays(event.target.value)}>
           {[1, 7, 30].map(day => <option key={day} value={day}>{zh ? `${day} 天` : `${day} days`}</option>)}
         </select></label>
-        <button type="submit" disabled={busy || !data?.access.invitationSupported}>{busy ? (zh ? "正在创建…" : "Creating…") : pending ? (zh ? "重试同一邀请" : "Retry this invitation") : (zh ? "创建邀请" : "Create invitation")}</button>
+        <button className="primary-action" type="submit" disabled={busy || !data?.access.invitationSupported}>{busy ? (zh ? "正在创建…" : "Creating…") : pending ? (zh ? "重试同一邀请" : "Retry this invitation") : (zh ? "创建邀请" : "Create invitation")}</button>
       </form> : <>
         <p>{scopeName(issued.invitation.scope)} · {zh ? "成员访问截止" : "Membership until"} {stamp(issued.invitation.membershipExpiresAt)}</p>
-        <label>{zh ? "一次性邀请" : "One-use invitation"}<textarea readOnly spellCheck={false} rows={5} value={JSON.stringify(issued)} /></label>
-        <button type="button" onClick={() => void copyInvitation()}>{copied ? (zh ? "已复制" : "Copied") : (zh ? "复制邀请" : "Copy invitation")}</button>
-        <p>{zh ? "仅发给被邀请人。关闭后可在邀请记录中撤销。" : "Share only with the intended recipient. Revoke it from the invitation list if needed."}</p>
+        <details className="lan-code"><summary>{zh ? "查看连接码（手动复制）" : "Show connection code"}</summary><textarea aria-label={zh ? "一次性连接码" : "One-use connection code"} readOnly spellCheck={false} rows={5} value={connectionCode} /></details>
+        <button className="primary-action" type="button" onClick={() => void copyInvitation()}>{copied ? (zh ? "已复制" : "Copied") : (zh ? "复制连接码" : "Copy connection code")}</button>
+        <p>{zh ? "把连接码发给对方，在“设备与协作 → 连接与分享”中粘贴。仅发给被邀请人。" : "Share only with the intended recipient. Revoke it from the invitation list if needed."}</p>
       </>}
     </section> : review ? <section>
       <h3 ref={heading} tabIndex={-1}>{review.kind === "accept" ? (zh ? "审阅远端 Agent 分享" : "Review shared Agent") : (zh ? "确认撤销范围" : "Review revocation")}</h3>
@@ -212,10 +221,10 @@ function PeerHostControls({ teamId, teamName, rooms, locale, sessionToken, onOpe
     </section> : <>
       <div className="panel-header"><h3>{teamName}</h3><button type="button" disabled={busy} onClick={() => void refresh()}>{zh ? "刷新" : "Refresh"}</button></div>
       {!data ? (!loadError && <p role="status">{zh ? "正在读取协作状态…" : "Loading collaboration status…"}</p>) : <>
-        <p className="peer-host-origin">{data.access.hostOrigin}</p>
-        {!data.access.invitationSupported && <><p role="status">{zh ? "网络接入尚未就绪。连接和 HTTPS 证书可用后，即可创建邀请。" : "Network access is not ready. Invitations become available once the connection and HTTPS certificate are ready."}</p>
+        {!lan && <p className="peer-host-origin">{data.access.hostOrigin}</p>}
+        {(!canInvite || !data.access.invitationSupported) && <><p role="status">{zh ? lan ? "开启局域网连接后，即可邀请其他电脑。" : "网络接入尚未就绪，请检查高级网络设置。" : "Enable network access to invite another computer."}</p>
           {onOpenNetwork && <button className="secondary-action" type="button" onClick={onOpenNetwork}>{zh ? "打开网络设置" : "Open network settings"}</button>}</>}
-        <button type="button" disabled={!data.access.invitationSupported} onClick={() => { setInviting(true); setIssued(null); setPending(null); setNotice(null); }}>{zh ? "创建节点邀请" : "Create Node invitation"}</button>
+        <button className="primary-action" type="button" disabled={!canInvite || !data.access.invitationSupported} onClick={() => { setInviting(true); setIssued(null); setPending(null); setNotice(null); }}>{zh ? "邀请其他电脑" : "Invite another computer"}</button>
         <section><h3>{zh ? "远端成员" : "Remote members"}</h3>
           {data.access.memberships.length === 0 && <p>{zh ? "还没有通过节点邀请加入的成员。" : "No members have joined through a Node invitation."}</p>}
           {data.access.memberships.map(item => <article className="peer-access-row" key={item.membershipId}>

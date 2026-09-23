@@ -84,6 +84,32 @@ func NewNativeClient(root, origin string, host wire.PeerNodeIdentity, signer *Si
 	if checkIdentity == nil || checkIdentity() != nil {
 		return nil, ErrProof
 	}
+	lan, lanDigest, err := readLANTrust(root, origin, host)
+	if err != nil {
+		return nil, err
+	}
+	if lan != nil {
+		roots, err := lanRoots(*lan, origin, host, false, time.Now())
+		if err != nil {
+			return nil, err
+		}
+		client, err := NewClient(origin, host, signer, roots)
+		if err != nil {
+			return nil, err
+		}
+		configureLANDial(client, lan.Transport)
+		client.beforeOperation = func() error {
+			if err := checkIdentity(); err != nil {
+				return err
+			}
+			_, current, err := readLANTrust(root, origin, host)
+			if err != nil || current != lanDigest {
+				return ErrTLSConfiguration
+			}
+			return nil
+		}
+		return client, nil
+	}
 	roots, digest, err := nativeTLSRoots(root, origin, host)
 	if err != nil {
 		return nil, err

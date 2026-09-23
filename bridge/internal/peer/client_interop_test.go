@@ -24,11 +24,13 @@ import (
 	"testing"
 	"time"
 
+	"convenewire.dev/bridge/internal/privatefs"
 	localwire "convenewire.dev/contracts/generated/go/localnode"
 	wire "convenewire.dev/contracts/generated/go/peer"
 )
 
 type peerHTTPFixture struct {
+	LAN            *LANProof             `json:"lan"`
 	Origin         string                `json:"origin"`
 	Host           wire.PeerNodeIdentity `json:"host"`
 	Invitation     wire.PeerInvitation   `json:"invitation"`
@@ -65,6 +67,12 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		return remoteLANPeerFixture(t, now, manifest)
 	}
 	directory := t.TempDir()
+	if os.Getenv("CONVENE_WIRE_MANAGED_LAN_FIXTURE") == "1" {
+		directory = filepath.Join(directory, "private-host")
+		if err := privatefs.CreateDirectory(directory); err != nil {
+			t.Fatal(err)
+		}
+	}
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		t.Fatal(err)
@@ -93,7 +101,9 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		t.Fatal(err)
 	}
 	process := exec.Command("node", "--import", "tsx", "apps/server/test/helpers/peer-http-fixture.ts", directory, certFile, keyFile, now.Format(peerTimeFormat))
-	if os.Getenv("CONVENE_WIRE_PEER_RELAY_FIXTURE") == "1" {
+	if os.Getenv("CONVENE_WIRE_MANAGED_LAN_FIXTURE") == "1" {
+		process.Args = append(process.Args, "managed-lan")
+	} else if os.Getenv("CONVENE_WIRE_PEER_RELAY_FIXTURE") == "1" {
 		process.Args = append(process.Args, "relay")
 	}
 	process.Dir = root
@@ -150,7 +160,7 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 		t.Fatal("invalid Peer fixture readiness")
 	}
 	f.roots = x509.NewCertPool()
-	if f.RelayAddress != "" {
+	if f.RelayAddress != "" || f.LAN != nil {
 		certPEM = []byte(f.CACertificate)
 	}
 	f.certificatePEM = certPEM
@@ -167,6 +177,10 @@ func peerTLSFixture(t *testing.T, now time.Time) *peerHTTPFixture {
 // Host proof and all Peer authorization remain unchanged in the real client.
 func (f *peerHTTPFixture) routeClient(t *testing.T, client *Client) {
 	t.Helper()
+	if f.LAN != nil {
+		configureLANDial(client, f.LAN.Transport)
+		return
+	}
 	if f.RelayAddress == "" {
 		return
 	}

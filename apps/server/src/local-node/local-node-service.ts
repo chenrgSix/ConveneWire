@@ -30,6 +30,7 @@ export class LocalNodeService {
   private readonly key: Buffer;
   private consoleRequestId = "";
   private handoffTaskId = "";
+  private consolePage: "agents" | "peers" | "handoff" = "agents";
 
   public constructor(
     private readonly database: Database.Database,
@@ -97,15 +98,16 @@ export class LocalNodeService {
     return { user: this.core.getUser(this.launch.identity.ownerUserId)!, session: { token: session.secret, expiresAt: session.expiresAt } };
   }
 
-  public requestConsole(actor: WebPrincipal, preserveHandoff = false) {
+  public requestConsole(actor: WebPrincipal, preserveHandoff = false, page: "agents" | "peers" | "handoff" = "agents") {
     this.requireOwner(actor);
     if (!preserveHandoff) this.handoffTaskId = "";
+    this.consolePage = preserveHandoff ? "handoff" : page;
     this.consoleRequestId = randomBytes(32).toString("base64url");
     return { requested: true };
   }
 
   public controlState(now: string) {
-    return { binding: this.binding(now), consoleRequestId: this.consoleRequestId, ...(this.handoffTaskId ? { handoffTaskId: this.handoffTaskId } : {}) };
+    return { binding: this.binding(now), consoleRequestId: this.consoleRequestId, consolePage: this.consolePage, ...(this.handoffTaskId ? { handoffTaskId: this.handoffTaskId } : {}) };
   }
 
   public handoffStatus(actor: WebPrincipal, taskId: string) {

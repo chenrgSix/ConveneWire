@@ -718,6 +718,12 @@ a release tag, independently of HTTP-only fixtures.
 
 ## Managed LAN transport
 
-The native supervisor owns private LAN certificates; the Hub owns the optional LAN listener. Existing manual/Relay origin and authorization remain authoritative.
+The Hub owns private LAN certificates and its optional LAN listener within the
+supervisor-protected installation directory. Existing manual/Relay origin and authorization remain authoritative.
 [ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
 its delivery state is recorded only in [the task register](../TASKS.md).
+
+LAN port conflicts leave the loopback Hub available with a retryable LAN status.
+The saved port and CA remain stable. Manual/Relay review, save and activation
+reject replacement of a published LAN origin; enabling LAN serializes with
+network settings and requires pending advanced changes to be resolved first.

@@ -23,7 +23,21 @@ function validInvitation(value) {
 export function parsePeerInvitation(text, operationId, now = Date.now()) {
   if (text.length > 16384) throw new Error("邀请内容过长，请粘贴 Host 提供的完整邀请。");
   let value;
-  try { value = JSON.parse(text); } catch { throw new Error("邀请格式无效，请粘贴 Host 提供的完整邀请。"); }
+  try {
+    if (text.trim().startsWith("CWLAN1.")) {
+      const encoded = text.trim().slice(7);
+      if (!/^[A-Za-z0-9_-]+$/u.test(encoded)) throw new Error("Invalid connection code");
+      text = new TextDecoder("utf-8", {fatal: true}).decode(Uint8Array.from(atob(encoded.replaceAll("-", "+").replaceAll("_", "/")), c => c.charCodeAt(0)));
+    }
+    value = JSON.parse(text);
+  } catch { throw new Error("邀请格式无效，请粘贴 Host 提供的完整邀请。"); }
+  let lan;
+  if (value?.kind === "convenewire.lan") {
+    if (value.schemaVersion !== 1 || !value.lan?.transport || typeof value.lan.signature !== "string") throw new Error("连接码不完整。");
+    lan = value.lan; value = value.issued;
+    if (lan.transport.host?.nodeId !== value?.invitation?.host?.nodeId || lan.transport.host?.publicKey !== value?.invitation?.host?.publicKey ||
+        lan.transport.hostOrigin !== value?.invitation?.hostOrigin || Date.parse(lan.transport.expiresAt) <= now) throw new Error("连接码与邀请不匹配或已经过期。");
+  }
   if (value?.schemaVersion !== 1 || !validInvitation(value.invitation) || !/^[A-Za-z0-9_-]{43}$/u.test(value.secret || "") ||
       !id("op", operationId)) throw new Error("邀请不完整，或 Host 地址不是 HTTPS。");
   const invitation = value.invitation;
@@ -31,7 +45,7 @@ export function parsePeerInvitation(text, operationId, now = Date.now()) {
     throw new Error("这份邀请已过期，请向 Host 申请新邀请。");
   }
   return {host: {nodeId: invitation.host.nodeId, publicKey: invitation.host.publicKey}, hostOrigin: invitation.hostOrigin, invitationId: invitation.invitationId,
-    secret: value.secret, operationId};
+    secret: value.secret, operationId, ...(lan ? {lan} : {})};
 }
 
 export function createPeerSpacesController({root, request, now = Date.now, newOperationId = peerOperationId}) {
@@ -68,11 +82,17 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
   function scopeLabel(invite) {
     return invite.scope.kind === "room" ? `${invite.teamLabel} / ${invite.roomLabel}` : `${invite.teamLabel} · 整个 Team`;
   }
-  function invitationDetails(invite) {
-    return details([["Host 地址", invite.hostOrigin], ["Host 节点", invite.host.nodeId], ["Host 公钥", invite.host.publicKey],
+  function invitationDetails(invite, managed = false) {
+    const technical = details([["Host 地址", invite.hostOrigin], ["Host 节点", invite.host.nodeId], ["Host 公钥", invite.host.publicKey],
       ["加入范围", scopeLabel(invite)], ["Team ID", invite.scope.teamId],
       ...(invite.scope.kind === "room" ? [["Room ID", invite.scope.roomId]] : []),
       ["成员有效至", new Date(invite.membershipExpiresAt).toLocaleString()]]);
+    if (!managed) return technical;
+    const view = element("div");
+    const advanced = element("details"); advanced.append(element("summary", "查看设备身份"), technical);
+    view.append(details([["加入范围", scopeLabel(invite)], ["成员有效至", new Date(invite.membershipExpiresAt).toLocaleString()]]),
+      element("p", "设备身份与安全连接已验证。"), advanced);
+    return view;
   }
   function open(dialog, target) {
     dialog.showModal(); target?.focus();
@@ -105,7 +125,7 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
     control("join").disabled ||= !review || (!confirmation && (Date.parse(review.invitation.expiresAt) <= now() || !displayName.value.trim() || [...displayName.value.trim()].length > 80));
     control("invite-note").textContent = confirmation
       ? "加入结果尚未确认时请重试原操作。关闭后也可在待恢复列表中查询结果。"
-      : review ? "加入只建立成员关系。分享本机 Agent 需要你另行选择，并由 Host 接纳。" : "邀请只发给本机 Console 验证；请核对验证后的 Host 与空间范围。";
+      : review ? "确认后仅为这台设备保存安全连接；分享 Agent 仍需另行选择，并由对方接纳。" : "邀请只发给本机 Console 验证；请核对验证后的 Host 与空间范围。";
   }
   function list(name, values, renderRow, empty) {
     const fingerprint = JSON.stringify([values, failures[name],
@@ -125,7 +145,7 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
       row.append(element("h4", scopeLabel(invite)), element("p", invite.hostOrigin),
         element("p", connection.state === "left" ? "已在本机离开" : ended ? "成员关系不可用" : "已加入 · 访问和任务仍需当前授权"),
         details([["成员关系", membership.membershipId], ["有效至", new Date(membership.expiresAt).toLocaleString()]]));
-      if (!ended && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
+      if (!connection.managedLAN && connection.browserEntryAvailable !== false && !ended && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
         row.append(button("进入空间", () => void run(async (current) => {
           if (Date.parse(membership.expiresAt) <= now()) throw new Error("成员关系已过期，请刷新空间状态。");
           const result = await request("/api/peers/human-entry/open", {method: "POST", body: JSON.stringify({
@@ -144,6 +164,7 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
           open(leaveDialog, control("leave-cancel")); updateControls();
         }, `leave:${membership.membershipId}`));
       }
+      if (connection.managedLAN) row.append(element("p", "局域网已连接。下方选择本机 Agent 分享给此空间，由对方接纳后即可协作。"));
       return row;
     }, "尚未加入远端空间。可粘贴 Host 发来的邀请。");
     list("joins", data.joins?.pending, (pending) => {
@@ -220,8 +241,9 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
         candidate.invitation.hostOrigin !== invitation.hostOrigin || !/^[a-f0-9]{64}$/u.test(candidate.invitationDigest || "")) {
       throw new Error("邀请验证结果与当前节点或 Host 不匹配，请重新打开邀请。");
     }
+    if (invitation.lan && !/^[a-f0-9]{64}$/u.test(candidate.lanDigest || "")) throw new Error("连接码验证不完整，请重试。");
     review = candidate;
-    control("invite-details").replaceChildren(invitationDetails(review.invitation), details([["本机节点", nodeId],
+    control("invite-details").replaceChildren(invitationDetails(review.invitation, Boolean(invitation.lan)), details([["本机节点", nodeId],
       ["邀请有效至", new Date(review.invitation.expiresAt).toLocaleString()]]));
     updateControls(); displayName.focus();
   }, control("invite-error")));
@@ -229,7 +251,7 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
   control("join").addEventListener("click", () => {
     if (!review || (!confirmation && (Date.parse(review.invitation.expiresAt) <= now() || !displayName.value.trim() || [...displayName.value.trim()].length > 80))) return;
     void run(async (current) => {
-      confirmation ||= {...invitation, displayName: displayName.value.trim(), reviewedInvitationDigest: review.invitationDigest};
+      confirmation ||= {...invitation, displayName: displayName.value.trim(), reviewedInvitationDigest: review.invitationDigest, ...(invitation.lan ? {reviewedLANDigest: review.lanDigest} : {})};
       updateControls();
       const outcome = await request("/api/peers/invitations/confirm", {method: "POST", body: JSON.stringify(confirmation)});
       if (current()) {

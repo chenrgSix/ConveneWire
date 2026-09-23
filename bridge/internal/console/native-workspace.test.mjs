@@ -58,3 +58,15 @@ test('native settings inherits only a closed appearance value', t => {
   assert.equal(document.querySelector('[data-local-workspace-return]').hasAttribute('href'), false, 'no page-supplied return URL');
  }
 });
+
+test('native collaboration and Codex links land directly on the selected page', t => {
+ for (const page of ['peers', 'handoff']) {
+  const {view} = fixture(t, '?workspace=1&theme=light&page=' + page);
+  assert.equal(view.initialPage, page);
+  assert.equal(view.address, '/?workspace=1&theme=light&page=' + page);
+ }
+ for (const page of ['settings', 'https://evil.test', '../peers']) {
+  const {view} = fixture(t, '?workspace=1&page=' + encodeURIComponent(page));
+  assert.equal(view.initialPage, 'agents');
+ }
+});

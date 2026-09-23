@@ -1,0 +1,15 @@
+.device-collaboration-entry { gap: 8px; }
+.lan-indicator { width: 7px; height: 7px; display: inline-block; flex: 0 0 auto; border-radius: 50%; background: var(--cw-text-muted); }
+.lan-indicator.online { background: var(--cw-success); }
+.device-collaboration { display: grid; gap: 20px; }
+.device-collaboration-intro { margin: 0; color: var(--cw-text-secondary); line-height: 1.7; }
+.lan-connection-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px; border: 1px solid var(--cw-border); border-radius: 14px; }
+.lan-connection-card h3 { margin: 0 0 8px; font-size: 16px; }
+.lan-connection-card p { margin: 4px 0; line-height: 1.6; }
+.lan-connection-card small { color: var(--cw-text-secondary); }
+.lan-connection-card > button { flex-shrink: 0; }
+.lan-advanced { border-top: 1px solid var(--cw-border); padding-top: 16px; }
+.lan-advanced summary { cursor: pointer; color: var(--cw-text-secondary); }
+.lan-code { overflow-wrap: anywhere; }
+.lan-code textarea { width: 100%; font: 12px/1.5 monospace; }
+@media (max-width: 600px) { .lan-connection-card { flex-direction: column; align-items: stretch; gap: 16px; } }

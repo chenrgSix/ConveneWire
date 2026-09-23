@@ -140,7 +140,7 @@ const pageCopy = {
   handoff: {context: "本地空间 / 原会话", title: "Codex 会话"},
   overview: {context: "本机执行环境", title: "概览"},
   agents: {context: "Runtime 与权限", title: "本机 Agent"},
-  peers: {context: "跨节点协作", title: "远端空间"},
+  peers: {context: "设备与协作", title: "连接设备与分享 Agent"},
   governed: {context: "只保存在这台设备", title: "受控开发"},
   settings: {context: "只保存在这台设备", title: "设置"}
 };

@@ -109,6 +109,12 @@ jobs:
           go test ./...
           go vet ./...
 
+      - name: Verify managed LAN task interoperability
+        working-directory: bridge
+        env:
+          CONVENE_WIRE_MANAGED_LAN_FIXTURE: "1"
+        run: go test -race -count=1 -run '^(TestManagedLANReviewJoinRestartRuntimeAndRevocation|TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild|TestPeerRunWorkerRecoversConnectionAndCoreReplacementWithoutReplay|TestPeerRunExecutionSettlesRevocationAfterActualProcessStops)$' ./internal/peer
+
       - name: Test, vet, and build central controller
         working-directory: ops/convenewirectl
         run: |

@@ -23,8 +23,8 @@ the Host. It contains the existing scoped invitation and public LAN transport
 material. The recipient previews the proven Host and Room scope, then confirms
 joining. Neither multicast discovery nor automatic acceptance is required.
 
-The native supervisor creates and protects a per-installation CA and renewable
-server certificate. The Hub opens its LAN listener only after the local Owner
+The Hub creates a per-installation CA and renewable server certificate inside
+the supervisor-protected private installation root. It opens its LAN listener only after the local Owner
 enables it. Enabling and disabling take effect without restarting the app.
 The listener uses the existing Peer request classification and authentication;
 it does not expose local Owner, supervisor or Device administration.
@@ -51,8 +51,9 @@ approval. Those existing bilateral checks and revocation paths still apply.
 Only private literal IPv4 endpoints are dialed; DNS, redirects, public addresses
 and loopback are not accepted from connection codes. HTTPS and fresh Node
 proofs remain mandatory before credentials are sent. Private keys never enter
-connection codes, browser responses or logs. Windows files retain protected
-owner/SYSTEM DACLs through the existing native private-file implementation.
+connection codes, browser responses or logs. Native trust files retain protected owner/SYSTEM DACLs through the existing
+native private-file implementation. Hub TLS material inherits the protected
+installation directory, as with the existing Relay certificate store.
 
 ## Alternatives and consequences
 

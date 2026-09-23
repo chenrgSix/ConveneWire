@@ -29,6 +29,7 @@ type Shell struct {
 	workspace    string
 	version      string
 	requestID    string
+	consolePage  string
 	binding      *contracts.Binding
 	closed       bool
 	native       *bridgecore.NativeNode
@@ -69,6 +70,12 @@ func (shell *Shell) Poll(ctx context.Context) (bool, error) {
 	}
 	requested := state.ConsoleRequestID != "" && state.ConsoleRequestID != shell.requestID
 	shell.requestID = state.ConsoleRequestID
+	if requested {
+		shell.consolePage = "agents"
+		if state.ConsolePage != nil {
+			shell.consolePage = string(*state.ConsolePage)
+		}
+	}
 	if requested && shell.native != nil {
 		if coordinator, e := shell.native.DesktopHandoff(); e == nil {
 			task := ""
@@ -213,4 +220,15 @@ func (shell *Shell) HandoffPending() bool {
 	}
 	coordinator, err := shell.native.DesktopHandoff()
 	return err == nil && coordinator.PendingTask() != ""
+}
+
+func (shell *Shell) ConsolePage() string {
+	shell.mu.Lock()
+	defer shell.mu.Unlock()
+	switch shell.consolePage {
+	case "peers", "handoff":
+		return shell.consolePage
+	default:
+		return "agents"
+	}
 }

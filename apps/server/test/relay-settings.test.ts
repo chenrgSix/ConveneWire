@@ -7,6 +7,7 @@ import type { RelayServiceProfile } from "@convene-wire/contracts/peer";
 import { createTestResources } from "../../../scripts/test/resources.mjs";
 import { applyPendingNetworkSettings, applyPendingRelay, loadRelayProfile, RelaySettings } from "../src/local-node/relay-settings.js";
 import { applyPendingPeerIngress, PeerIngressSettings } from "../src/local-node/peer-ingress-settings.js";
+import { privateDirectory, privateWrite } from "../src/local-node/relay-private.js";
 
 const profile: RelayServiceProfile = {schemaVersion: 1, id: "test-relay", displayName: "Local fixture service",
   relayOrigin: "https://relay.example.test:9443", nodeDomain: "nodes.example.test",
@@ -23,6 +24,15 @@ async function fixture(t: Parameters<typeof createTestResources>[0]) {
   };
   return {root: resources.directory, publicKey, settings, selection};
 }
+test("Relay cannot replace an established LAN origin, including after review", async t => {
+  const f = await fixture(t), {input} = await f.selection();
+  const directory = path.join(f.root, "managed-lan");
+  await privateDirectory(directory, true);
+  await privateWrite(directory, "settings.json", Buffer.from(JSON.stringify({origin: "https://existing.convenewire.invalid", enabled: true, port: 41987})));
+  await assert.rejects(f.settings.review({revisionDigest: input.revisionDigest, enabled: true, termsAccepted: true}), /局域网地址/u);
+  await assert.rejects(f.settings.save(input), /局域网地址/u);
+  assert.equal((await f.settings.status()).pending, null);
+});
 test("Relay review explicitly approves profile/CA and exact save survives a lost response until restart", async t => {
   const f = await fixture(t), initial = await f.settings.status();
   assert.equal(initial.termsAcceptanceRequired, false);

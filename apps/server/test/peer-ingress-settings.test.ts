@@ -7,6 +7,7 @@ import { createTestResources } from "../../../scripts/test/resources.mjs";
 import { applyPendingPeerIngress, PeerIngressSettings } from "../src/local-node/peer-ingress-settings.js";
 import { loadPeerIngressMaterial } from "../src/local-node/peer-ingress-configuration.js";
 import { nativePeerIngressFixture } from "./helpers/native-peer-ingress-fixture.js";
+import { privateDirectory, privateWrite } from "../src/local-node/relay-private.js";
 
 async function fixture(t: Parameters<typeof createTestResources>[0]) {
   const resources = await createTestResources(t, "convenewire-peer-network-settings-");
@@ -22,6 +23,17 @@ async function fixture(t: Parameters<typeof createTestResources>[0]) {
   };
   return {root: resources.directory, settings, selection, save, now, certificate};
 }
+
+test("manual settings cannot replace an established LAN origin, including after review", async t => {
+  const f = await fixture(t), {revisionDigest} = await f.settings.status();
+  const review = await f.settings.review({revisionDigest, selection: f.selection}, f.now);
+  const directory = path.join(f.root, "managed-lan");
+  await privateDirectory(directory, true);
+  await privateWrite(directory, "settings.json", Buffer.from(JSON.stringify({origin: "https://existing.convenewire.invalid", enabled: false, port: 41987})));
+  await assert.rejects(f.settings.review({revisionDigest, selection: f.selection}, f.now), /局域网地址/u);
+  await assert.rejects(f.settings.save({revisionDigest, reviewDigest: review.reviewDigest, selection: f.selection}, f.now), /局域网地址/u);
+  assert.equal((await f.settings.status()).pending, null);
+});
 
 test("network review and exact save retry remain private pending state until native startup", async t => {
   const f = await fixture(t), before = await f.settings.status();

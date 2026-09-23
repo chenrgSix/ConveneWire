@@ -934,3 +934,17 @@ summary:focus-visible {
 .task-assignment-fields > label { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .task-assignment-fields > label > span { min-width: 0; overflow-wrap: anywhere; }
 .task-assignment-fields select { min-width: 130px; max-width: 100%; }
+
+/* Local collaboration inherits the same controls in both appearance modes. */
+:root[data-theme] .peer-host-panel button {
+  color: var(--cw-text-secondary); border-color: var(--cw-border-strong); background: var(--cw-surface-raised);
+}
+:root[data-theme] .peer-host-panel button:hover:enabled {
+  color: var(--cw-text); border-color: var(--cw-accent-border); background: var(--cw-surface-hover);
+}
+:root[data-theme] .peer-host-panel button.primary-action {
+  color: var(--cw-accent-ink); border-color: var(--cw-accent); background: var(--cw-accent);
+}
+:root[data-theme] .peer-host-panel :is(select, textarea, fieldset) {
+  color: var(--cw-text); border-color: var(--cw-border); background: var(--cw-surface-inset);
+}

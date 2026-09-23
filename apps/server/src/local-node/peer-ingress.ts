@@ -2,10 +2,12 @@ import https from "node:https";
 import type { IncomingMessage, Server as HttpServer } from "node:http";
 import type { Duplex } from "node:stream";
 import type { SecureContext } from "node:tls";
+import type { AddressInfo } from "node:net";
 import type { PeerIngressMaterial } from "./peer-ingress-configuration.js";
 import { parsePeerIngressConfiguration, validatePeerIngressCertificate } from "./peer-ingress-configuration.js";
 
 export type PeerIngressRequestKind = "machine" | "browser-entry" | "browser" | "public";
+export type PeerIngressAccess = Pick<PeerIngress, "configuration" | "kind" | "invitationReady" | "close">;
 const machinePaths = new Set([
   "/api/peer/identity", "/api/peer/invitations/preview", "/api/peer/invitations/challenge", "/api/peer/invitations/claim",
   "/api/peer/human-entry", "/api/peer/agents/offers", "/api/peer/agents/sync", "/api/peer/memberships/leave", "/api/peer/runs/admit",
@@ -73,7 +75,12 @@ export class PeerIngress {
     return undefined;
   }
 
-  public async listen(target: HttpServer): Promise<void> {
+  public port(): number | null {
+    const address = this.listener?.address();
+    return address && typeof address !== "string" ? (address as AddressInfo).port : null;
+  }
+
+  public async listen(target: HttpServer, binding?: { port: number; host: string; allowAddress(address: string): boolean }): Promise<void> {
     if (!this.configuration.enabled) return;
     if (this.attached || !target.listening || this.stopping) throw new Error("Peer HTTPS requires one running local Hub");
     this.attached = true;
@@ -83,7 +90,7 @@ export class PeerIngress {
         callback(context ? null : new Error("Node certificate is not ready"), context ?? undefined);
       }} : {})}, (request, response) => {
       const kind = this.classify(request, false);
-      if (!kind || this.stopping) {
+      if (!kind || this.stopping || (binding && !binding.allowAddress(request.socket.remoteAddress ?? ""))) {
         response.writeHead(403, { "content-type": "application/json", "cache-control": "no-store", connection: "close" });
         response.end('{"code":"SCOPE_DENIED"}'); return;
       }
@@ -96,7 +103,7 @@ export class PeerIngress {
     listener.on("connection", socket => { this.sockets.add(socket); socket.once("close", () => this.sockets.delete(socket)); });
     listener.on("upgrade", (request, socket, head) => {
       const kind = this.classify(request, true);
-      if (!kind || this.stopping) { socket.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n"); return; }
+      if (!kind || this.stopping || (binding && !binding.allowAddress(request.socket.remoteAddress ?? ""))) { socket.end("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n"); return; }
       this.requests.set(request, kind);
       if (!target.emit("upgrade", request, socket, head)) socket.destroy();
     });
@@ -105,7 +112,7 @@ export class PeerIngress {
       const stopped = () => reject(new Error("Peer HTTPS startup stopped"));
       const failed = (error: Error) => { listener.removeListener("close", stopped); reject(error); };
       listener.once("error", failed); listener.once("close", stopped);
-      listener.listen({ port: Number(new URL(this.configuration.origin).port || "443"), host: this.configuration.listenHost, signal: this.abort.signal }, () => {
+      listener.listen({ port: binding?.port ?? Number(new URL(this.configuration.origin).port || "443"), host: binding?.host ?? this.configuration.listenHost, signal: this.abort.signal }, () => {
         listener.removeListener("error", failed); listener.removeListener("close", stopped); resolve();
       });
     }).catch(async error => { await this.close(); throw error; });

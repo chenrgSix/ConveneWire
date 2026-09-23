@@ -2,6 +2,7 @@
 // No Hub origin, return URL or credential is accepted by this controller.
 export function createNativeWorkspace({document, query}) {
   const requested = query.get("workspace") === "1";
+  const page = ["agents", "peers", "handoff"].includes(query.get("page")) ? query.get("page") : "agents";
   const theme = query.get("theme") === "light" ? "light" : "dark";
   const header = document.getElementById("workspace-settings-header");
   const empty = document.getElementById("workspace-agent-empty");
@@ -18,8 +19,8 @@ export function createNativeWorkspace({document, query}) {
     document.getElementById("page-title").textContent = "本机 Agent";
   }
   return {
-    address: requested ? `/?workspace=1&theme=${theme}${query.get("handoff") === "1" ? "&handoff=1" : ""}` : null,
-    initialPage: requested ? query.get("handoff") === "1" ? "handoff" : "agents" : "overview",
+    address: requested ? `/?workspace=1&theme=${theme}${page !== "agents" ? `&page=${page}` : ""}${query.get("handoff") === "1" ? "&handoff=1" : ""}` : null,
+    initialPage: requested ? query.get("handoff") === "1" ? "handoff" : page : "overview",
     render(state) {
       const active = requested && Boolean(state.localNodeId);
       activate(active);

@@ -12,6 +12,7 @@ import { PeerIngress } from "./local-node/peer-ingress.js";
 import { PeerIngressSettings } from "./local-node/peer-ingress-settings.js";
 import { localAuthorityPrivateKey } from "./security/authority-service.js";
 import { applyPendingNetworkSettings, disabledRelay, loadRelayProfile, RelaySettings } from "./local-node/relay-settings.js";
+import { LANRuntime } from "./local-node/lan-runtime.js";
 import { RelayRuntime } from "./local-node/relay-runtime.js";
 
 // Secrets travel only over the inherited pipe. EOF is a shutdown request and
@@ -23,9 +24,11 @@ let closeRequested = false;
 let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
 let shutdown: Promise<void> | undefined;
 let relayRuntime: RelayRuntime | undefined;
+let lanRuntime: LANRuntime | undefined;
 const stop = () => {
   closeRequested = true;
   if (app) shutdown ??= app.close().then(() => { input.close(); process.stdin.destroy(); });
+  else if (lanRuntime) return lanRuntime.close();
   else if (relayRuntime) return relayRuntime.close();
   return shutdown;
 };
@@ -51,15 +54,18 @@ input.on("line", (line) => {
       await relayRuntime.initialize();
     }
     const peerIngress = relayRuntime?.ingress ?? (ingressMaterial ? new PeerIngress(ingressMaterial) : undefined);
+    lanRuntime = new LANRuntime(root, launch.identity.nodeId, relayKey, peerIngress, undefined, relayConfiguration?.origin);
+    await lanRuntime.initialize();
     const manifest = JSON.parse(await readFile(new URL("../../../hub-manifest.json", import.meta.url), "utf8")) as { releaseVersion: string; sourceCommit: string };
     app = await createServerApp({ buildIdentity: resolveBuildIdentity(manifest.releaseVersion, manifest.sourceCommit), databasePath: path.join(root, "hub", "hub.sqlite"), localNode: launch, peerIngressSettings: new PeerIngressSettings(root, ingressMaterial),
       relaySettings: new RelaySettings(root, relayPublicKey, relayProfile, () => relayRuntime?.status() ?? disabledRelay()),
       ...(relayRuntime ? {relayLifecycle: relayRuntime} : {}), localNodeSpaceDirectory: path.join(root, "bridge", "authority-spaces.json"),
-      ...(peerIngress ? { peerIngress } : {}), webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
+      peerIngress: lanRuntime, lanRuntime, webRoot: fileURLToPath(new URL("../../web/dist/", import.meta.url)), logger: false });
     if (closeRequested) { await stop(); return; }
     const origin = await app.listen({ host: "127.0.0.1", port: launch.identity.port });
     if (closeRequested) { await stop(); return; }
     await peerIngress?.listen(app.server);
+    await lanRuntime.attach(app.server);
     relayRuntime?.start();
     if (closeRequested) { await stop(); return; }
     const ready: LocalNodeReady = { schemaVersion: 1, nodeId: launch.identity.nodeId, origin, launchProof: launch.controlToken };

@@ -11,6 +11,7 @@ import (
 )
 
 type InvitationInput struct {
+	LAN          *LANProof             `json:"lan,omitempty"`
 	Host         wire.PeerNodeIdentity `json:"host"`
 	HostOrigin   string                `json:"hostOrigin"`
 	InvitationID string                `json:"invitationId"`
@@ -18,6 +19,7 @@ type InvitationInput struct {
 	OperationID  string                `json:"operationId"`
 }
 type JoinReview struct {
+	LANDigest        string                `json:"lanDigest,omitempty"`
 	OperationID      string                `json:"operationId"`
 	Participant      wire.PeerNodeIdentity `json:"participant"`
 	LocalUserID      string                `json:"localUserId"`
@@ -28,6 +30,7 @@ type JoinConfirmation struct {
 	InvitationInput
 	DisplayName              string `json:"displayName"`
 	ReviewedInvitationDigest string `json:"reviewedInvitationDigest"`
+	ReviewedLANDigest        string `json:"reviewedLANDigest,omitempty"`
 }
 type JoinOutcome struct {
 	OperationID string              `json:"operationId"`
@@ -142,7 +145,7 @@ func (o *OwnerAccess) Preview(ctx context.Context, input InvitationInput) (JoinR
 		return JoinReview{}, err
 	}
 	defer done()
-	client, err := o.client(input.HostOrigin, input.Host)
+	client, err := o.invitationClient(input)
 	if err != nil {
 		return JoinReview{}, err
 	}
@@ -152,7 +155,14 @@ func (o *OwnerAccess) Preview(ctx context.Context, input InvitationInput) (JoinR
 		return JoinReview{}, err
 	}
 	digest, err := semanticDigest(preview.Invitation)
-	return JoinReview{OperationID: input.OperationID, Participant: o.signer.Identity(), LocalUserID: o.signer.LocalUserID(),
+	lanDigest := ""
+	if input.LAN != nil {
+		lanDigest, err = semanticDigest(input.LAN)
+		if err != nil {
+			return JoinReview{}, err
+		}
+	}
+	return JoinReview{LANDigest: lanDigest, OperationID: input.OperationID, Participant: o.signer.Identity(), LocalUserID: o.signer.LocalUserID(),
 		Invitation: preview.Invitation, InvitationDigest: digest}, err
 }
 
@@ -167,6 +177,14 @@ func (o *OwnerAccess) Confirm(ctx context.Context, input JoinConfirmation) (Join
 
 func (o *OwnerAccess) confirm(ctx context.Context, input JoinConfirmation) (JoinOutcome, error) {
 	if o.check() != nil || !joinDigest.MatchString(input.ReviewedInvitationDigest) {
+		return JoinOutcome{}, ErrProof
+	}
+	if input.LAN != nil {
+		digest, err := semanticDigest(input.LAN)
+		if err != nil || digest != input.ReviewedLANDigest {
+			return JoinOutcome{}, ErrProof
+		}
+	} else if input.ReviewedLANDigest != "" {
 		return JoinOutcome{}, ErrProof
 	}
 	intent, err := joinOwnerIntentDigest(input.Host, input.HostOrigin, input.InvitationID, input.ReviewedInvitationDigest,
@@ -195,7 +213,7 @@ func (o *OwnerAccess) confirm(ctx context.Context, input JoinConfirmation) (Join
 	if !errors.Is(err, os.ErrNotExist) {
 		return JoinOutcome{}, err
 	}
-	client, err := o.client(input.HostOrigin, input.Host)
+	client, err := o.invitationClient(input.InvitationInput)
 	if err != nil {
 		return JoinOutcome{}, err
 	}
@@ -209,6 +227,14 @@ func (o *OwnerAccess) confirm(ctx context.Context, input JoinConfirmation) (Join
 	digest, err := semanticDigest(preview.Invitation)
 	if err != nil || digest != input.ReviewedInvitationDigest {
 		return JoinOutcome{}, ErrProof
+	}
+	if input.LAN != nil {
+		if err := o.check(); err != nil {
+			return JoinOutcome{}, err
+		}
+		if err := saveLANTrust(o.root, *input.LAN); err != nil {
+			return JoinOutcome{}, err
+		}
 	}
 	now := o.clock()
 	pending = PendingJoin{SchemaVersion: 1, Participant: o.signer.Identity(), LocalUserID: o.signer.LocalUserID(), Invitation: preview.Invitation,
@@ -301,6 +327,10 @@ func (o *OwnerAccess) HumanEntry(ctx context.Context, membershipID string, scope
 	local, found := findConnection(state, membershipID)
 	if !found {
 		return HumanEntry{}, ErrStore
+	}
+	lan, err := ManagedLAN(o.root, local.Receipt.Invitation.HostOrigin, wire.PeerNodeIdentity(local.Receipt.Invitation.Host))
+	if err != nil || lan {
+		return HumanEntry{}, ErrTLSConfiguration
 	}
 	client, err := o.client(local.Receipt.Invitation.HostOrigin, wire.PeerNodeIdentity(local.Receipt.Invitation.Host))
 	if err != nil {

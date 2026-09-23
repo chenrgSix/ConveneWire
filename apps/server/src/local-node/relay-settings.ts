@@ -10,6 +10,7 @@ import { parsePeerIngressConfiguration } from "./peer-ingress-configuration.js";
 import { preparePendingPeerIngress } from "./peer-ingress-settings.js";
 import { exactObject, privateDirectory, privateRead, privateWrite, relayInvalid, syncPrivateDirectory } from "./relay-private.js";
 import { networkSettingsRevision, withNetworkSettingsLock } from "./network-settings-lock.js";
+import { assertManagedLANOrigin } from "./lan-settings.js";
 
 export interface RelaySaved {
   schemaVersion: 1; profile: RelayServiceProfile; origin: string; enabled: boolean; termsAccepted: true;
@@ -75,6 +76,7 @@ async function pending(root: string, publicKey: string): Promise<Pending | null>
   return {schemaVersion: 1, baseDigest: value.baseDigest, saved: saved(value.saved, publicKey)};
 }
 async function assertNoDirectBinding(root: string, next: RelaySaved): Promise<void> {
+  await assertManagedLANOrigin(root, next.origin);
   const directory = path.join(root, "peer-ingress");
   let exists = true;
   try { await lstat(directory); } catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") exists = false; else throw error; }

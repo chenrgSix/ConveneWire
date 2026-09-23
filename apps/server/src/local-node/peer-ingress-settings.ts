@@ -5,6 +5,7 @@ import { parsePeerJson } from "@convene-wire/contracts/peer-json";
 import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import { loadPeerIngressMaterial, parsePeerIngressConfiguration, readPeerPrivateFile, validatePeerIngressCertificate, type PeerIngressMaterial } from "./peer-ingress-configuration.js";
 import { networkSettingsRevision, withNetworkSettingsLock } from "./network-settings-lock.js";
+import { assertManagedLANOrigin } from "./lan-settings.js";
 
 const pendingFile = "peer-ingress.pending.json";
 const invalid = () => new Error("本机网络配置无效或已变化，请刷新后重新审阅。");
@@ -101,6 +102,7 @@ function publicConfiguration(configuration: Configuration | null, cert: Buffer) 
 }
 
 async function assertRelayBoundary(root: string, next: Configuration): Promise<void> {
+  await assertManagedLANOrigin(root, next.origin);
   const relayRoot = path.join(root, "relay"), staged = path.join(root, "relay.pending.json");
   const assertCompatible = (input: unknown, message: string) => {
     const configuration = object(input, ["schemaVersion", "profile", "origin", "enabled", "termsAccepted"]);

@@ -602,3 +602,19 @@ This workflow is currently verified on macOS arm64 with the pinned provider in
 empty native queues, no goal and matching local workspaces are supported. Setup,
 review and model execution are separate operations; packaging never activates an
 owner profile or grants disclosure consent.
+
+## Managed LAN collaboration
+
+- `node scripts/test/run-with-temp-root.mjs -- node --import tsx --test apps/server/test/managed-lan.test.ts apps/server/test/peer-ingress-settings.test.ts apps/server/test/relay-settings.test.ts` — verify automatic private CA/leaf lifecycle, hot enable/disable, local Owner isolation, occupied-port recovery and origin conflicts.
+- `node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test -race -run '^TestManagedLAN' ./internal/peer` — exercise a real Node Host and native Go participant over a private interface, including confirmed scoped trust, lost claim recovery, restart, WebSocket and revocation. Requires an RFC1918 IPv4 interface; an unavailable interface is an explicit skip.
+- `CONVENE_WIRE_MANAGED_LAN_FIXTURE=1 node scripts/test/run-with-temp-root.mjs --cwd bridge -- go test -race -run '^(TestPeerRunExecutionUsesActualHostAndRestrictedNativeChild|TestPeerRunWorkerRecoversConnectionAndCoreReplacementWithoutReplay|TestPeerRunExecutionSettlesRevocationAfterActualProcessStops)$' ./internal/peer` — opt into automatic LAN certificates and literal endpoint dialing for existing offline task execution, recovery and cancellation scenarios. No model service is contacted.
+- `node scripts/test/run-with-temp-root.mjs --cwd apps/web -- ../../node_modules/.bin/tsx --test test/device-collaboration.test.tsx test/peer-host-panel.test.tsx` and `npm run test:bridge-ui` — verify visible entry points, connection-code review and sharing controls.
+- After `npm run build:local-hub`, set `CONVENE_WIRE_LAN_PREVIEW_FILE` to a new absolute temporary file and run `node scripts/test/run-with-temp-root.mjs --timeout-ms 610000 -- node --import tsx --test apps/server/test/managed-lan-browser-fixture.test.ts` — serve a disposable native workspace for visual review. The protected file contains a temporary entry; create its `.done` sibling to stop, remove the entry and clean the fixture. Default test runs skip this interactive fixture.
+
+For normal use, open **设备与协作** in the workspace toolbar. The Host enables
+LAN, selects a Room and copies a connection code. The participant opens
+**连接与分享**, pastes the code and confirms the displayed scope before choosing
+which local Agents to share. Code transport data expires after one hour;
+confirmed connections retain scoped trust across restarts. Advanced manual
+HTTPS and Relay settings remain available. Address changes require a fresh
+reviewed code; nearby discovery and external-browser LAN trust are not provided.

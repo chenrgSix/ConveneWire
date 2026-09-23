@@ -1694,7 +1694,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
 
       <main className="workspace">
         {isLocalNode && session && <SpaceDirectory session={session} locale={locale} />}
-        {isLocalNode && session && <LocalNodeRuntime session={session} team={selectedTeam} teams={teams} locale={locale} />}
+        {isLocalNode && session && <LocalNodeRuntime session={session} team={selectedTeam} teams={teams} rooms={rooms} locale={locale} canManage={currentMember?.role === "owner"} />}
         <header className="workspace-header">
           <div className="workspace-heading">
             <button className="sidebar-toggle" type="button" aria-controls="workspace-navigation" aria-expanded={!sidebarCollapsed}
@@ -1911,7 +1911,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
           <>
           {currentMember?.role === "owner" && <div className="management-page-actions">
             <button onClick={() => void openLifecycleDialog()} type="button">{locale === "zh-CN" ? "资源生命周期" : "Resource lifecycle"}</button>
-            {session && <PeerHostPanel key={`${selectedTeam.teamId}:${session.userId}:${session.token ?? "cookie"}`} teamId={selectedTeam.teamId}
+            {session && !isLocalNode && <PeerHostPanel key={`${selectedTeam.teamId}:${session.userId}:${session.token ?? "cookie"}`} teamId={selectedTeam.teamId}
               teamName={selectedTeam.name} rooms={rooms} locale={locale} sessionToken={session.token} localNetworkToken={isLocalNode ? session.token : undefined} />}
           </div>}
           <TeamMembersWorkspace

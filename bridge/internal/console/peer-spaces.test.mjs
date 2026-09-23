@@ -50,6 +50,30 @@ function enterName(f, name = "Local Owner") {
   f.e("display-name").dispatchEvent(new f.dom.window.Event("input"));
 }
 
+test("LAN code preview binds confirmed transport and never offers an untrusted browser entry", async t => {
+  const lan = {transport: {schemaVersion: 1, host: invitation.host, hostOrigin: invitation.hostOrigin,
+    caCertificatePem: "fixture public CA", endpoints: [{address: "192.168.1.254", port: 48124}], expiresAt: invitation.expiresAt}, signature: "A".repeat(86)};
+  const code = "CWLAN1." + Buffer.from(JSON.stringify({schemaVersion: 1, kind: "convenewire.lan", issued, lan})).toString("base64url");
+  let confirmed;
+  const f = fixture(t, async (path, body) => {
+    assert.deepEqual(body.lan, lan);
+    if (path.endsWith("/preview")) return preview(body, {lanDigest: "c".repeat(64)});
+    confirmed = body; return {state: "active", membership};
+  });
+  f.replies.spaces.connections = [{invitation, membership, state: "active", managedLAN: true}];
+  await f.start();
+  assert.ok(!f.e("spaces").textContent.includes("进入空间"));
+  f.e("invite").click(); f.e("invitation").value = code; f.e("preview").click(); await flush();
+  assert.equal(f.e("invitation").value, "");
+  assert.match(f.e("invite-details").textContent, /设备身份与安全连接已验证/u);
+  assert.equal(f.e("invite-details").querySelector("details").open, false);
+  enterName(f); f.e("join").click(); await flush();
+  assert.equal(confirmed.reviewedLANDigest, "c".repeat(64));
+  assert.throws(() => parsePeerInvitation("CWLAN1.not+base64", "op_invalid001", Date.parse(recorded.now)));
+  const changed = {...lan, transport: {...lan.transport, hostOrigin: "https://other.test"}};
+  assert.throws(() => parsePeerInvitation(JSON.stringify({schemaVersion: 1, kind: "convenewire.lan", issued, lan: changed}), "op_invalid001", Date.parse(recorded.now)));
+});
+
 test("native invitations are explicit, reviewed and retry the exact ambiguous join without storing secrets", async (t) => {
   let confirms = 0;
   const f = fixture(t, async (path, body) => {

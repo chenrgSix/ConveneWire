@@ -90,7 +90,7 @@ test("Host collaboration requires explicit review and retains exact operation an
     };
     await open();
     assert.ok(calls.every(call => call.method === "GET"));
-    fireEvent.click(page.getByRole("button", { name: "创建节点邀请" }));
+    fireEvent.click(page.getByRole("button", { name: "邀请其他电脑" }));
     assert.equal((page.getByRole("combobox", { name: "访问范围" }) as HTMLSelectElement).value, roomId);
     fireEvent.click(page.getByRole("button", { name: "创建邀请", exact: true }));
     await page.findByRole("alert");
@@ -98,13 +98,15 @@ test("Host collaboration requires explicit review and retains exact operation an
     assert.match(page.getByRole("alert").textContent!, /暂时无法确认/u, "polling must not hide an ambiguous mutation");
     assert.equal((page.getByRole("combobox", { name: "成员访问期限" }) as HTMLSelectElement).disabled, true);
     fireEvent.click(page.getByRole("button", { name: "重试同一邀请" }));
-    const invitation = await page.findByRole("textbox", { name: "一次性邀请" }) as HTMLTextAreaElement;
+    await page.findByRole("button", {name: "复制连接码"});
+    fireEvent.click(page.getByText("查看连接码（手动复制）"));
+    const invitation = await page.findByRole("textbox", { name: "一次性连接码" }) as HTMLTextAreaElement;
     const writes = calls.filter(call => call.method === "POST");
     assert.deepEqual(writes[0], writes[1]);
     assert.deepEqual(writes[0]!.body.scope, { kind: "room", teamId, roomId });
     assert.equal(Date.parse(writes[0]!.body.membershipExpiresAt) - Date.parse(writes[0]!.body.expiresAt), 7 * 86400_000 - 3600_000);
     assert.equal(copied.length, 0, "creating does not send or copy the invitation");
-    fireEvent.click(page.getByRole("button", { name: "复制邀请" }));
+    fireEvent.click(page.getByRole("button", { name: "复制连接码" }));
     await page.findByRole("button", { name: "已复制" });
     assert.deepEqual(copied, [invitation.value]);
     assert.equal(dom.window.localStorage.length + dom.window.sessionStorage.length, 0);
@@ -112,7 +114,7 @@ test("Host collaboration requires explicit review and retains exact operation an
     assert.equal(page.queryByRole("dialog"), null);
     fireEvent.click(page.getByRole("button", { name: "跨节点协作" }));
     await page.findByText("小王");
-    assert.equal(page.queryByRole("textbox", { name: "一次性邀请" }), null);
+    assert.equal(page.queryByRole("textbox", { name: "一次性连接码" }), null);
   });
 
   await t.test("Agent acceptance reviews a Room subset and exact offer/CAS, including lost response after another read sees acceptance", async () => {
@@ -195,7 +197,7 @@ test("Host collaboration requires explicit review and retains exact operation an
     access.invitationSupported = false; access.hostOrigin = "http://127.0.0.1:3000";
     await open();
     assert.equal(page.queryByRole("button", { name: "打开网络设置" }), null, "remote or Central owners cannot open local controls");
-    assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, true);
+    assert.equal((page.getByRole("button", { name: "邀请其他电脑" }) as HTMLButtonElement).disabled, true);
     read = async () => Response.json({ error: { message: "forbidden" } }, { status: 403 });
     await refresh();
     await page.findByRole("alert");
@@ -209,11 +211,11 @@ test("Host collaboration requires explicit review and retains exact operation an
     assert.equal(calls.some(call => call.path === "/api/local-node/relay"), false);
     fireEvent.click(page.getByRole("button", { name: "打开网络设置" }));
     await page.findByRole("heading", { name: "本机网络设置" }); await page.findByText(/此版本尚未配置接入服务/);
-    assert.equal(page.getAllByRole("dialog").length, 1); assert.equal(page.queryByRole("button", { name: "创建节点邀请" }), null);
-    fireEvent.click(page.getByRole("button", { name: "关闭" })); await page.findByRole("button", { name: "创建节点邀请" });
-    assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, true);
+    assert.equal(page.getAllByRole("dialog").length, 1); assert.equal(page.queryByRole("button", { name: "邀请其他电脑" }), null);
+    fireEvent.click(page.getByRole("button", { name: "关闭" })); await page.findByRole("button", { name: "邀请其他电脑" });
+    assert.equal((page.getByRole("button", { name: "邀请其他电脑" }) as HTMLButtonElement).disabled, true);
     access.invitationSupported = true; await refresh();
-    assert.equal((page.getByRole("button", { name: "创建节点邀请" }) as HTMLButtonElement).disabled, false);
+    assert.equal((page.getByRole("button", { name: "邀请其他电脑" }) as HTMLButtonElement).disabled, false);
     assert.equal(calls.some(call => call.method !== "GET"), false);
   });
 
@@ -224,13 +226,13 @@ test("Host collaboration requires explicit review and retains exact operation an
       let resolve!: (response: Response) => void;
       write = () => new Promise<Response>(done => { resolve = done; });
       const view = await open();
-      fireEvent.click(page.getByRole("button", { name: "创建节点邀请" }));
+      fireEvent.click(page.getByRole("button", { name: "邀请其他电脑" }));
       fireEvent.click(page.getByRole("button", { name: "创建邀请", exact: true }));
       await waitFor(() => assert.ok(resolve));
       if (change === "team") view.rerender(<PeerHostPanel {...props} teamId="team_otherfixture01" teamName="Another Team" rooms={[]} />);
       else advanceWebSessionGeneration();
       await act(async () => resolve(Response.json({ schemaVersion: 1, secret: "must-not-display", invitation: { expiresAt: expiry } })));
-      assert.equal(page.queryByRole("textbox", { name: "一次性邀请" }), null);
+      assert.equal(page.queryByRole("textbox", { name: "一次性连接码" }), null);
       assert.equal(dom.window.document.body.textContent?.includes("must-not-display"), false);
       if (change === "logout") { const before = calls.length; await refresh(); assert.equal(calls.length, before, "retired sessions stop polling"); }
     }

@@ -5,7 +5,7 @@ import { parsePeerJson } from "@convene-wire/contracts/peer-json";
 import { bodyObject, noStore, requiredString } from "../http/http-helpers.js";
 import type { ServerRouteContext } from "../http/route-context.js";
 
-export function registerLocalNodeRoutes({ app, localNode, peerIngressSettings, relaySettings, principal, clock, limitAnonymous }: ServerRouteContext): void {
+export function registerLocalNodeRoutes({ app, localNode, peerIngressSettings, relaySettings, lanRuntime, principal, clock, limitAnonymous }: ServerRouteContext): void {
   if (!localNode) return;
   const validateHandoff = new Ajv2020({ strict: true }).addSchema(schema).getSchema(`${schema.$id}#/$defs/DesktopHandoffRequest`)!;
   void app.register(async handoff => {
@@ -23,6 +23,22 @@ export function registerLocalNodeRoutes({ app, localNode, peerIngressSettings, r
   });
   app.post<{Params: {taskId: string}}>("/api/local-node/tasks/:taskId/codex/open", async (request, reply) => {
     noStore(reply); return localNode.requestHandoff(principal(request), request.params.taskId);
+  });
+  if (lanRuntime) void app.register(async lan => {
+    lan.removeContentTypeParser("application/json");
+    lan.addContentTypeParser("application/json", {parseAs: "buffer", bodyLimit: 1024}, (_request, bytes, done) => done(null, bytes));
+    lan.get("/api/local-node/lan", async (request, reply) => {
+      noStore(reply); localNode.requireOwner(principal(request)); return lanRuntime.status();
+    });
+    lan.post("/api/local-node/lan", {bodyLimit: 1024}, async (request, reply) => {
+      noStore(reply); localNode.requireOwner(principal(request));
+      const body = parsePeerJson(request.body as Buffer) as Record<string, unknown>;
+      if (!body || Object.keys(body).length !== 1 || typeof body.enabled !== "boolean") throw new Error("请选择开启或关闭局域网连接。");
+      return lanRuntime.setEnabled(body.enabled, () => localNode.requireOwner(principal(request)));
+    });
+    lan.get("/api/local-node/lan/transport", async (request, reply) => {
+      noStore(reply); localNode.requireOwner(principal(request)); return lanRuntime.transport();
+    });
   });
   if (relaySettings) void app.register(async relay => {
     relay.removeContentTypeParser("application/json");
@@ -86,7 +102,9 @@ export function registerLocalNodeRoutes({ app, localNode, peerIngressSettings, r
   });
   app.post("/api/local-node/open-console", async (request, reply) => {
     noStore(reply);
-    return localNode.requestConsole(principal(request));
+    const body = request.body === undefined ? {} : bodyObject(request);
+    if (Object.keys(body).some(key => key !== "page") || (body.page !== undefined && (typeof body.page !== "string" || !["agents", "peers", "handoff"].includes(body.page)))) throw new Error("Invalid native page");
+    return localNode.requestConsole(principal(request), false, body.page as "agents" | "peers" | "handoff" | undefined);
   });
   app.post("/api/local-node/session", async (request, reply) => {
     noStore(reply); limitAnonymous(request, "local-node-entry");

@@ -1,7 +1,9 @@
 package console
 
 import (
+	wire "convenewire.dev/contracts/generated/go/peer"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"convenewire.dev/bridge/internal/config"
@@ -74,7 +76,8 @@ func (s *Service) getPeerSpaces(response http.ResponseWriter, _ *http.Request) {
 	}
 	connections := make([]map[string]any, 0, len(state.Connections))
 	for _, connection := range state.Connections {
-		connections = append(connections, map[string]any{"invitation": connection.Invitation,
+		lan, err := peer.ManagedLAN(filepath.Dir(s.options.ConfigPath), connection.Invitation.HostOrigin, wire.PeerNodeIdentity(connection.Invitation.Host))
+		connections = append(connections, map[string]any{"managedLAN": lan, "browserEntryAvailable": err == nil && !lan, "invitation": connection.Invitation,
 			"membership": connection.Membership, "state": connection.State})
 	}
 	writeJSON(response, http.StatusOK, map[string]any{"participant": state.Participant, "localUserId": state.LocalUserID, "connections": connections})

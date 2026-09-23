@@ -106,9 +106,10 @@ export interface ServerRouteContext {
   peerAgents: import("../registry/peer-agent-service.js").PeerAgentService;
   authority: import("../security/authority-service.js").AuthorityService;
   localNode?: LocalNodeService;
+  lanRuntime?: import("../local-node/lan-runtime.js").LANRuntime;
   peerIngressSettings?: import("../local-node/peer-ingress-settings.js").PeerIngressSettings;
   relaySettings?: import("../local-node/relay-settings.js").RelaySettings;
-  peerIngress?: import("../local-node/peer-ingress.js").PeerIngress;
+  peerIngress?: import("../local-node/peer-ingress.js").PeerIngressAccess;
   app: FastifyInstance;
   artifactContentBinding: ArtifactContentBindingService;
   artifactDeliveries: ArtifactDeliveryService;

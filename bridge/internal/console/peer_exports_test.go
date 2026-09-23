@@ -86,6 +86,7 @@ func peerExportConsoleFixture(t *testing.T) (*Service, *consoleExportOwner, *htt
 	owner := &consoleExportOwner{consolePeerOwner: approvals, store: store}
 	service.mu.Lock()
 	service.options.NativePeers = owner
+	service.options.ConfigPath = filepath.Join(root, "bridge.json")
 	service.configuration = &config.Config{LocalNodeID: state.Participant.NodeID, DataDir: service.options.DataDir, Agents: []config.AgentConfig{{
 		Name: "Local writer", Role: "Reviewer", Adapter: "generic", RuntimeKind: "generic", PresetVersion: 1, Command: []string{"offline-runtime"}, Workspace: t.TempDir(),
 	}}}

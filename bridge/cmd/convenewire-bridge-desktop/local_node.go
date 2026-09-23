@@ -155,7 +155,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 			themeMu.Unlock()
 		})
 	}
-	openAgents := func() {
+	openNative := func(page string) {
 		navigation.Add(1)
 		if shell == nil {
 			show(window)
@@ -167,13 +167,15 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 			themeMu.Unlock()
 			window.SetTitle("ConveneWire · 本机 Agent")
 			entry := nativeSettingsURL(service.Token(), appearance)
-			if shell.HandoffPending() {
+			entry += "&page=" + page
+			if page == "handoff" && shell.HandoffPending() {
 				entry += "&handoff=1"
 			}
 			window.SetURL(entry)
 		}
 		show(window)
 	}
+	openAgents := func() { openNative("agents") }
 	app.Event.On("convenewire.local.workspace", func(*application.CustomEvent) { openHub() })
 	bindActivationToLoadedPage(window.OnWindowEvent, runtime.GOOS, activation, application.InvokeAsync, func(link string) {
 		if link != "" {
@@ -263,7 +265,8 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 						return
 					}
 					if requested {
-						application.InvokeAsync(openAgents)
+						page := shell.ConsolePage()
+						application.InvokeAsync(func() { openNative(page) })
 					}
 				}
 			}

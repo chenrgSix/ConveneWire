@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"convenewire.dev/bridge/internal/privatefs"
 )
 
 func TestPeerSpacesInventorySurvivesRuntimeConfigurationLossWithoutSecrets(t *testing.T) {
@@ -48,7 +51,7 @@ func TestPeerSpacesInventorySurvivesRuntimeConfigurationLossWithoutSecrets(t *te
 		var view struct {
 			Connections []map[string]json.RawMessage `json:"connections"`
 		}
-		if json.Unmarshal(raw, &view) != nil || len(view.Connections) != 1 || len(view.Connections[0]) != 3 {
+		if json.Unmarshal(raw, &view) != nil || len(view.Connections) != 1 || len(view.Connections[0]) != 5 {
 			t.Fatal("Space inventory did not retain only membership metadata", string(raw))
 		}
 		if !strings.Contains(string(raw), state.Connections[0].Receipt.Membership.MembershipID) ||
@@ -56,5 +59,24 @@ func TestPeerSpacesInventorySurvivesRuntimeConfigurationLossWithoutSecrets(t *te
 			strings.Contains(string(raw), "proof") || strings.Contains(string(raw), "exports") || response.Header.Get("cache-control") != "no-store" {
 			t.Fatal("Space inventory leaked credentials or confused membership with Runtime availability")
 		}
+	}
+	// A damaged optional transport must not hide the membership or its controls.
+	directory := filepath.Join(filepath.Dir(service.options.ConfigPath), "peer-lan", state.Connections[0].Receipt.Invitation.Host.NodeID)
+	if err := privatefs.EnsureDirectory(filepath.Dir(directory)); err != nil {
+		t.Fatal(err)
+	}
+	if err := privatefs.EnsureDirectory(directory); err != nil {
+		t.Fatal(err)
+	}
+	request, _ := http.NewRequest(http.MethodGet, server.URL+"/api/peers/spaces", nil)
+	request.Header.Set("authorization", "Bearer "+service.Token())
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer response.Body.Close()
+	raw, _ := io.ReadAll(response.Body)
+	if response.StatusCode != http.StatusOK || !strings.Contains(string(raw), `"browserEntryAvailable":false`) {
+		t.Fatal("damaged trust hid membership or advertised browser access")
 	}
 }

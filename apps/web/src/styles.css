@@ -2,6 +2,7 @@
 @import "./features/work/work-experience.css";
 @import "./features/room/experience.css";
 @import "./features/local-node/local-network.css";
+@import "./features/local-node/device-collaboration.css";
 
 :root {
   color: #edf1eb;

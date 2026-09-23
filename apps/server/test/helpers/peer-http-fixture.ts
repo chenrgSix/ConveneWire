@@ -20,6 +20,7 @@ import { peerDigest } from "@convene-wire/contracts/peer-proof";
 import type { DiscussionView } from "../../src/discussion/discussion-orchestrator.js";
 import type { TestContext } from "node:test";
 import { relayRuntimeFixture, untilRelay } from "./relay-runtime-fixture.js";
+import { managedLANPeerFixture } from "./managed-lan-peer-fixture.js";
 import { lanNativePeerFixture } from "./lan-native-peer-fixture.js";
 
 const [directory, certFile, keyFile, initialNow, transport] = process.argv.slice(2) as [string, string, string, string, string?];
@@ -31,7 +32,8 @@ try {
   let app: Awaited<ReturnType<typeof createServerApp>> | undefined;
   const runtimeSockets = new Set<Duplex>();
   let relayBase: Awaited<ReturnType<typeof relayRuntimeFixture>> | undefined;
-  let relayNode: Awaited<ReturnType<Awaited<ReturnType<typeof relayRuntimeFixture>>["node"]>> | Awaited<ReturnType<typeof lanNativePeerFixture>> | undefined;
+  let relayNode: Awaited<ReturnType<Awaited<ReturnType<typeof relayRuntimeFixture>>["node"]>> | Awaited<ReturnType<typeof lanNativePeerFixture>> | Awaited<ReturnType<typeof managedLANPeerFixture>> | undefined;
+  let managed: Awaited<ReturnType<typeof managedLANPeerFixture>> | undefined;
   const configureHost = (host: Awaited<ReturnType<typeof createServerApp>>) => {
     host.addHook("onRequest", async request => {if (request.url === "/api/peer/invitations/preview") previewRequests++;});
     host.addHook("onSend", async (request, reply, payload) => {
@@ -48,6 +50,10 @@ try {
       runtimeUpgrades++; runtimeSockets.add(socket); socket.once("close", () => runtimeSockets.delete(socket));
     });
   };
+  if (transport === "managed-lan") {
+    managed = await managedLANPeerFixture(directory, () => now, configureHost);
+    relayNode = managed; cleanups.push(() => managed!.close());
+  }
   if (transport === "lan") {
     const native = await lanNativePeerFixture(directory, certFile, keyFile, process.env.CONVENE_WIRE_LAN_HOST ?? "", () => now, configureHost);
     relayNode = native;
@@ -149,12 +155,15 @@ try {
   const invitation = peers.createInvitation(owner, { schemaVersion: 1, operationId: "op_tlsfixtureinvite001", scope: { kind: "room", teamId, roomId },
     expiresAt: new Date(Date.parse(now) + 3600_000).toISOString(), membershipExpiresAt: expiry }, now);
   process.stdout.write(JSON.stringify({ origin, host: invitation.invitation.host, invitation: invitation.invitation, secret: invitation.secret,
+    ...(managed ? {lan: managed.runtime.transport(), caCertificatePem: managed.runtime.transport().transport.caCertificatePem} : {}),
     ...(relayBase ? {relayAddress: `127.0.0.1:${relayBase.tlsPort}`, caCertificatePem: relayBase.ca.ca.toString()} :
       transport === "lan" ? {caCertificatePem: await readFile(certFile, "utf8")} : {}) }) + "\n");
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
     const command = JSON.parse(line) as { action: string; membershipId?: string; now?: string; runId?: string; discussionId?: string };
     if (command.action === "stop") break;
     if (command.action === "clock") {now = command.now!; if (relayBase) relayBase.ca.now = Date.parse(now);}
+    else if (command.action === "lan-off") await managed!.runtime.setEnabled(false, () => {});
+    else if (command.action === "lan-on") await managed!.runtime.setEnabled(true, () => {});
     else if (command.action === "drop-runtime") {
       for (const socket of runtimeSockets) socket.destroy();
     }
