@@ -8,6 +8,8 @@ import { createTestResources } from "../../../scripts/test/resources.mjs";
 import { createServerApp } from "../../server/src/app.js";
 import { App } from "../src/App.js";
 import { advanceWebSessionGeneration } from "../src/api-client.js";
+import { LANRuntime } from "../../server/src/local-node/lan-runtime.js";
+import { localAuthorityPrivateKey } from "../../server/src/security/authority-service.js";
 
 test("native empty-Team and Room cards open the Owner Console without Bridge pairing or implicit binding", async t => {
   const resources = await createTestResources(t, "convenewire-native-onboarding-");
@@ -15,7 +17,9 @@ test("native empty-Team and Room cards open the Owner Console without Bridge pai
   const localNode = { schemaVersion: 1 as const, controlToken: secret(), identity: {
     schemaVersion: 1 as const, nodeId: `node_${secret()}`, ownerUserId: `user_${secret()}`, port: 48123, secret: secret()
   } };
-  const app = await createServerApp({ databasePath: path.join(resources.directory, "hub.sqlite"), localNode });
+  const lanRuntime = new LANRuntime(resources.directory, localNode.identity.nodeId, localAuthorityPrivateKey(localNode));
+  await lanRuntime.initialize();
+  const app = await createServerApp({ databasePath: path.join(resources.directory, "hub.sqlite"), localNode, peerIngress: lanRuntime, lanRuntime });
   resources.defer(() => app.close());
   const origin = "http://127.0.0.1:48123", host = new URL(origin).host;
   const control = { host, "x-convenewire-node-control": localNode.controlToken };

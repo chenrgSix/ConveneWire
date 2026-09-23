@@ -29,7 +29,8 @@ records or departure controls, and cannot advertise external browser access.
 
 ## Local evidence
 
-Closed Node/Go contracts, current generated output and TypeScript types pass.
+All 140 contract tests, current generated output, TypeScript types and Go
+contract packages pass. The full Web suite passes all 380 tests.
 Thirty Server lifecycle, settings, isolation and conflict regressions pass.
 The actual Go/Node TLS/WebSocket case covers temporary preview, exact review,
 lost committed claim, native recovery, Host restart, listener disable/enable,
@@ -80,3 +81,9 @@ missing advanced-network invitation entry. Its tag is immutable. The corrected
 candidate is v0.5.7; no v0.5.6 installation or public distribution is claimed.
 Native Windows CI and Release explicitly execute managed LAN join, trust,
 restart, WebSocket and revocation coverage in addition to private-file tests.
+
+The first v0.5.7 CI candidate identified missing explicit bounds on constant
+schema-version integers and an onboarding fixture without the new LAN status
+service. Both were corrected; full contract and Web suites then passed locally.
+An unchanged connection cancellation test also exceeded its one-second teardown
+bound; its Bridge gate passed on rerun without changing production code or tests.
