@@ -715,3 +715,9 @@ asset origin plus the current Console credential. The ordinary HTTP handler neve
 creates this marker; loopback, cross-site and forwarded-header checks remain
 required for network requests. Packaged desktop navigation must be verified before
 a release tag, independently of HTTP-only fixtures.
+
+## Managed LAN transport
+
+The native supervisor owns private LAN certificates; the Hub owns the optional LAN listener. Existing manual/Relay origin and authorization remain authoritative.
+[ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
+its delivery state is recorded only in [the task register](../TASKS.md).

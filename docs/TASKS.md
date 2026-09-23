@@ -908,3 +908,14 @@ retain their explicit operation scope.
 | --- | --- | --- | --- | --- |
 | BRG-083 | DONE | Start the Windows Local Hub without a console window | BRG-046, WEB-087 | [QA-096](acceptance/qa-096-windows-hub-window.md): Windows Hub launches without console allocation; real child console probe, hidden-console detection control, authenticated readiness, graceful exit and owner-lease release pass in native Windows CI; local race/vet and Windows compilation pass |
 | QA-096 | DONE | Verify and publish the Windows startup repair | BRG-083, QA-095 | [Release evidence](acceptance/qa-096-windows-hub-window.md): all four exact-source CI jobs and ten Release jobs pass, native Windows regressions and v0.5.4 installer upgrade pass, twelve authenticated/public downloads match; v0.5.5 is published. Physical owner Windows acceptance remains distinct |
+
+## Managed LAN collaboration
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| GOV-048 | DONE | Define managed LAN transport and visible collaboration controls | GOV-045, GOV-046, WEB-087, QA-096 | [ADR-0073](adr/0073-managed-lan-collaboration.md); 555-file documentation lint and local link/whitespace checks pass |
+| CON-030 | TODO | Define bounded LAN connection material and native page targets | GOV-048 | Pending closed Node/Go validation and interoperability |
+| OPS-026 | TODO | Manage private LAN certificates and hot listener lifecycle | CON-030, OPS-019, OPS-023 | Pending lifecycle, isolation and native protection evidence |
+| BRG-084 | TODO | Review LAN connection codes and persist scoped Peer trust | CON-030, BRG-081, BRG-082 | Pending temporary trust, confirmed join, conflict and recovery evidence |
+| WEB-092 | TODO | Expose devices, joining and sharing from the workspace | OPS-026, BRG-084, WEB-091 | Pending functional and visual evidence |
+| QA-097 | TODO | Verify and distribute simplified LAN collaboration | WEB-092, QA-096 | Pending combined local, CI and release evidence; physical LAN acceptance remains separate |

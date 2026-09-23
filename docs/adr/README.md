@@ -4,6 +4,8 @@ Use an Architecture Decision Record for changes that affect component
 ownership, trust boundaries, protocols, persistence, compatibility, deployment,
 or runtime lifecycle.
 
+[ADR-0073: Managed LAN collaboration](0073-managed-lan-collaboration.md)
+
 ## Naming
 
 Use a zero-padded sequence and short kebab-case title:

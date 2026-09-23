@@ -910,3 +910,9 @@ None. Every other module consumes these contracts.
 ## Client owner entry contracts
 
 ADR-0035 adds optional member binding, initial Room selection and an independent client-access proof to Device pairing, plus bounded client entry request/projection payloads. New member-aware links require an updated client; old links retain Device-only behavior. JSON Schema remains the cross-language authority and generated types must agree in Go and TypeScript.
+
+## Managed LAN connection contracts
+
+Closed LAN transport and connection-code envelopes bind public CA material and private endpoints to the Host identity. Native page targets are an allowlisted enum.
+[ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
+its delivery state is recorded only in [the task register](../TASKS.md).

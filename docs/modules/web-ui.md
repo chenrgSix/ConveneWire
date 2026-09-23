@@ -1280,3 +1280,9 @@ The owner quits Codex and launches it explicitly from this page; ordinary Codex
 launch restores the usual mode. macOS support, idle-source requirements and
 unconfirmed outcomes are stated in the UI. [Browser evidence and screenshots](../acceptance/qa-094-codex-desktop-handoff.md#native-review-ui)
 record the actual local review, consent and return flow.
+
+## Visible devices and collaboration
+
+Workspace actions expose LAN status, invitation, joining, native Agent settings and bilateral sharing. Manual certificate and public Relay settings are advanced actions.
+[ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
+its delivery state is recorded only in [the task register](../TASKS.md).

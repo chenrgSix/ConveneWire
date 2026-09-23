@@ -2018,3 +2018,9 @@ a tombstone; canceled provisional reviews remove their local reservation.
 [QA-094](../acceptance/qa-094-codex-desktop-handoff.md) records actual local evidence
 and the supported envelope; [development commands](../development-commands.md#desktop-codex-room-integration)
 cover reproducible checks and cooperative startup.
+
+## Managed LAN Peer trust
+
+The native Owner reviews a connection code before persisting scoped CA/endpoint pins. Preview is temporary; existing membership, grants, approvals and recovery journals remain authoritative.
+[ADR-0073](../adr/0073-managed-lan-collaboration.md) defines this increment;
+its delivery state is recorded only in [the task register](../TASKS.md).
