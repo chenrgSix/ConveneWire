@@ -144,3 +144,8 @@ README, Bridge guidance and the public site now identify v0.5.7 and explain the
 connection-code path. All fifteen site checks pass. Physical owner Windows
 upgrade and new Mac/Windows LAN acceptance remain subsequent owner actions;
 public Relay and live-model acceptance remain deferred.
+
+The first site deployment stopped at its copy-boundary test after the new desktop
+FAQ omitted the previous Central/browser compatibility sentence. That sentence
+was restored with its system-trust boundary; the application tag and published
+packages were unchanged.
