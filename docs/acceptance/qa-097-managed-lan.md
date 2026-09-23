@@ -43,12 +43,15 @@ not release installation evidence.
 
 The initial combined Peer race run exceeded its nine-minute wrapper bound.
 The subsequent diagnostic run exposed the private Host fixture root mismatch,
-which was corrected to use native private-file creation. Actual LAN task execution passed both a standalone run and a race run. The
-local race group also passed Host cancellation and revocation, but local leave
-and worker restart exceeded their existing timing bounds. The diagnostic full
-Peer run also reached its ten-minute timeout. These are unresolved local
-acceptance limits, not passing results. CI and Release now explicitly run the
-managed LAN task execution/recovery group under race detection before packaging.
+which was corrected to use native private-file creation. Actual LAN task execution passed both a standalone run and a race run. Host
+cancellation and revocation passed. A recovery fixture initially discarded its
+LAN endpoint mapping when constructing replacement clients; preserving that
+mapping corrected the test setup. The unchanged race assertions then passed
+local leave and all three worker recovery cases (Runtime disconnect, Host restart
+and participant restart) in 102.197 seconds, with no repeated child side effect.
+The diagnostic full Peer run reached its ten-minute timeout; no local full-suite
+pass is claimed. CI and Release explicitly run the managed LAN task group under
+race detection in addition to their full repository gates.
 
 ## Visual review
 

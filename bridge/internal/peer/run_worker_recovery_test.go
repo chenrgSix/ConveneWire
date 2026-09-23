@@ -18,6 +18,9 @@ func configureRunWorker(c *Connectors, client *Client, f *peerHTTPFixture) {
 		value, err := NewClient(origin, host, client.signer, f.roots)
 		if err == nil {
 			value.clock = c.clock
+			// Recreated fixture clients retain the selected LAN/Relay route while
+			// keeping normal TLS and Host verification in the new client.
+			value.transport.DialContext = client.transport.DialContext
 		}
 		return value, err
 	}
