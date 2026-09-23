@@ -1,0 +1,180 @@
+{
+  "ci": {
+    "runId": 35837982859,
+    "sourceCommit": "0fff1d46592297d912eb4812164471ce1b66cdd9",
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35837982859",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Go",
+        "id": 107109780060,
+        "conclusion": "success"
+      },
+      {
+        "name": "Desktop macOS",
+        "id": 107109781226,
+        "conclusion": "success"
+      },
+      {
+        "name": "Repository",
+        "id": 107109781994,
+        "conclusion": "success"
+      },
+      {
+        "name": "Desktop Windows",
+        "id": 107109782495,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "runId": 35837991840,
+    "sourceCommit": "0fff1d46592297d912eb4812164471ce1b66cdd9",
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/35837991840",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Validate draft Release",
+        "id": 107105973748,
+        "conclusion": "success"
+      },
+      {
+        "name": "Go release gates",
+        "id": 107106000463,
+        "conclusion": "success"
+      },
+      {
+        "name": "Repository release gates",
+        "id": 107106000646,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build Central source release",
+        "id": 107108976923,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build desktop Windows/amd64",
+        "id": 107108976930,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build linux/arm64",
+        "id": 107108976935,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build desktop macOS/arm64",
+        "id": 107108976940,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build linux/amd64",
+        "id": 107108977147,
+        "conclusion": "success"
+      },
+      {
+        "name": "Attach ConveneWire binaries",
+        "id": 107111421867,
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify uploaded Release",
+        "id": 107111739313,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "downloads": {
+    "stage": "public",
+    "tag": "v0.5.7",
+    "sourceCommit": "0fff1d46592297d912eb4812164471ce1b66cdd9",
+    "releaseUrl": "https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.7",
+    "publishedAt": "2026-09-23T08:56:21Z",
+    "assetDownloadsAnonymous": true,
+    "assets": [
+      {
+        "name": "COMMERCIAL-LICENSE.md",
+        "size": 2070,
+        "sha256": "9c652c6c66e86b99729fd52b1fb8b83e73f7f28a1741a4038125f8ff510e4dca",
+        "id": "RA_kwDOUBQSbs4ixZ4J"
+      },
+      {
+        "name": "LICENSE",
+        "size": 9471,
+        "sha256": "91ba8b540a0674ed2cf6ff4fe7a277ebd92e672eead5edd6f9c1994d3a854ef5",
+        "id": "RA_kwDOUBQSbs4ixZ4I"
+      },
+      {
+        "name": "NOTICE",
+        "size": 293,
+        "sha256": "e693f578273a8055378dc63d5fa0d92235a0bfc30de871550a3dcf04fa5af7c5",
+        "id": "RA_kwDOUBQSbs4ixZ4N"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 799,
+        "sha256": "0e9ca699f5c4269aad79c5b347920eba45842a00fb66bee1d2b5b8fe2a866001",
+        "id": "RA_kwDOUBQSbs4ixZ4M"
+      },
+      {
+        "name": "TRADEMARKS.md",
+        "size": 1470,
+        "sha256": "a5ab3ac04b9bd5c8970956b8b07bf105048e94f9c2a303f81a66b7975624156d",
+        "id": "RA_kwDOUBQSbs4ixZ4K"
+      },
+      {
+        "name": "convenewire-bridge-desktop_0.5.7_darwin_arm64.zip",
+        "size": 84358484,
+        "sha256": "3e1a65609655e405e22ef9f0cf2a59323423a76a9efe541e56018ef6b5f5e2c9",
+        "id": "RA_kwDOUBQSbs4ixZ4V"
+      },
+      {
+        "name": "convenewire-bridge-desktop_0.5.7_windows_amd64.zip",
+        "size": 76356906,
+        "sha256": "56f675d53e2a796a685670b0e199b3205cf573b346e0e47d2a149e5ce15bd2c1",
+        "id": "RA_kwDOUBQSbs4ixZ4X"
+      },
+      {
+        "name": "convenewire-bridge-desktop_0.5.7_windows_amd64_setup.exe",
+        "size": 49248064,
+        "sha256": "3b17da81d6355f83b6d6ade43d00ec39bad8e865e3617fc36109530406560afc",
+        "id": "RA_kwDOUBQSbs4ixZ4b"
+      },
+      {
+        "name": "convenewire-bridge_0.5.7_linux_amd64.tar.gz",
+        "size": 5015702,
+        "sha256": "cdd8ee2db59587d7ecae9d258573bfe9585d7ab10ca56bda28cf4322d1637ef0",
+        "id": "RA_kwDOUBQSbs4ixZ4c"
+      },
+      {
+        "name": "convenewire-bridge_0.5.7_linux_arm64.tar.gz",
+        "size": 4544087,
+        "sha256": "837cfb39045bc01cf73071a2734b9f7c1781bde7d1a1e016806c35b9bd1ca6dc",
+        "id": "RA_kwDOUBQSbs4ixZ4Z"
+      },
+      {
+        "name": "convenewire-central_0.5.7_source.SHA256SUMS.sha256",
+        "size": 77,
+        "sha256": "8e9cbbdc76f7178e76c25c761cb01cf9136ba88a5b095e9f4740cda87b87b36a",
+        "id": "RA_kwDOUBQSbs4ixZ4k"
+      },
+      {
+        "name": "convenewire-central_0.5.7_source.tar.gz",
+        "size": 10808448,
+        "sha256": "5c4163a66cb3a28833a3d655876d85c23f38940650e59cb1c876b4b911142716",
+        "id": "RA_kwDOUBQSbs4ixZ4n"
+      }
+    ],
+    "allChecksumsMatch": true,
+    "sameAsDraft": true
+  },
+  "firstFinalCIFailure": {
+    "jobId": 107106042550,
+    "test": "TestPreAdmissionCancellationAcknowledgesWithoutStartingRuntime",
+    "failure": "Bridge client did not stop within the existing one-second teardown bound",
+    "sameSourceReleaseGoGate": "passed",
+    "unchangedLocalRepetitions": 20,
+    "codeOrTestChangedForRetry": false
+  }
+}

@@ -69,9 +69,8 @@ and shared controls use the workspace color tokens.
 
 ## Remaining acceptance boundaries
 
-Exact-source CI, native Windows execution, release downloads and owner installation
-are pending. Physical Mac/Windows LAN acceptance is separate from local two-Node
-fixtures. No public Relay, real model, owner Codex session or remote Windows
+Physical Mac/Windows LAN acceptance for the new connection-code flow remains
+separate from local two-Node fixtures and hosted native Windows tests. No public Relay, real model, owner Codex session or remote Windows
 installation was used. Nearby discovery is not included; changed addresses need
 a fresh reviewed connection code. Managed LAN does not install browser trust or
 offer the external-browser Space link.
@@ -87,3 +86,61 @@ schema-version integers and an onboarding fixture without the new LAN status
 service. Both were corrected; full contract and Web suites then passed locally.
 An unchanged connection cancellation test also exceeded its one-second teardown
 bound; its Bridge gate passed on rerun without changing production code or tests.
+
+## Final CI and release
+
+[v0.5.7](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.7) was published
+on 2026-09-23 from clean source
+`0fff1d46592297d912eb4812164471ce1b66cdd9`.
+[CI 35837982859](https://github.com/chenrgSix/ConveneWire/actions/runs/35837982859)
+passes all four jobs and
+[Release 35837991840](https://github.com/chenrgSix/ConveneWire/actions/runs/35837991840)
+passes all ten jobs. Both include the full repository and Bridge gates, with
+managed LAN task execution, restart and revocation additionally under race
+checking. Native Windows actually executes the LAN join/restart case and all
+eight negative subcases without skipping (8.48 seconds in CI, 8.65 seconds in
+Release). Its installer verifies stable v0.5.5 to v0.5.7 upgrade, uninstall and
+owner-state retention.
+
+The final-source CI first attempt again hit an existing one-second connection
+teardown bound in `TestPreAdmissionCancellationAcknowledgesWithoutStartingRuntime`.
+The same-source Release Go gate passed; both cancellation cases passed 20 local
+repetitions, and the CI Go job passed on rerun without changing production code
+or tests. The initial failure remains recorded in the
+[sanitized release receipt](evidence/qa097/release.json).
+
+All twelve Draft files were independently downloaded and checked against their
+GitHub SHA-256 digests, names, sizes and seven outer checksum entries. After
+publication, all twelve anonymous downloads matched the verified Draft bytes
+and asset IDs. License files match the tag, and anonymous Latest resolves to
+v0.5.7. Release asset gates also verify package internals and clean source;
+this local download receipt does not replace those platform checks.
+
+## Owner macOS installation
+
+The installed v0.5.7 is the public release ZIP. Its source/version, architecture
+and all 7,305 Hub inventory files pass. Before replacement, the idle old app was
+stopped and a private Node snapshot plus matching v0.5.4 app archive retained.
+After replacement, three identity/configuration file digests and all five work
+table digests matched their baseline. SQLite quick_check and readiness pass;
+exactly one desktop and one Hub process run. The
+[installation receipt](evidence/qa097/installation.json) contains no owner data.
+
+Actual installed native navigation passes all three workspace toolbar entries,
+the device panel, direct connection/sharing page and paste-code form. After
+visiting Codex, the Agent button still opens Agents. Navigation returns to the
+workspace; no owner LAN setting, Codex startup or Runtime execution was changed.
+The [native UI receipt](evidence/qa097/native-ui.json) distinguishes this from
+physical cross-machine LAN acceptance.
+
+[Cleanup](evidence/qa097/cleanup.json) removed this installation's expanded
+staging directory, duplicate Draft downloads and twelve obsolete v0.5.4 download
+files (230,208,681 bytes). Current v0.5.7 and prior stable v0.5.5 downloads remain,
+along with the private stopped v0.5.4 snapshot and matching app ZIP. LaunchServices
+readback contains one canonical application registration. No private snapshot
+was deleted.
+
+README, Bridge guidance and the public site now identify v0.5.7 and explain the
+connection-code path. All fifteen site checks pass. Physical owner Windows
+upgrade and new Mac/Windows LAN acceptance remain subsequent owner actions;
+public Relay and live-model acceptance remain deferred.

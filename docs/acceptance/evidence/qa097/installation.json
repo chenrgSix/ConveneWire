@@ -1,0 +1,17 @@
+{
+  "releaseVersion": "v0.5.7",
+  "sourceCommit": "0fff1d46592297d912eb4812164471ce1b66cdd9",
+  "databaseQuickCheck": "ok",
+  "retainedConfigFiles": 3,
+  "retainedTables": [
+    "teams",
+    "rooms",
+    "messages",
+    "runs",
+    "agent_tasks"
+  ],
+  "ready": true,
+  "desktopProcesses": 1,
+  "hubProcesses": 1,
+  "archiveSha256": "3e1a65609655e405e22ef9f0cf2a59323423a76a9efe541e56018ef6b5f5e2c9"
+}

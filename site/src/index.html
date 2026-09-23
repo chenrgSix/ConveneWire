@@ -28,7 +28,7 @@
       <h1 id="hero-title">让 Agent 协作，<br><em>让工作有结果。</em></h1>
       <p class="hero-description">不止多一个聊天窗口。<br>把讨论、分工、执行与交付证据放在同一个 Team，<br class="desktop-break">让你和 AI 助手围绕真正的工作一起向前。</p>
       <div class="actions"><a class="button primary" href="__BASE__guide/">开始使用 <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://github.com/chenrgSix/ConveneWire">查看 GitHub <span aria-hidden="true">→</span></a></div>
-      <p class="hero-note">先打开本机工作区，按需接入 Agent 与其他 Node。<br>v0.5.5 正式版修复 Windows 启动黑窗口，保留 Node-first 桌面、局域网协作和 macOS 实验性 Codex 原会话接管；稳定 Latest 为 v0.5.5。</p>
+      <p class="hero-note">先打开本机工作区，按需接入 Agent 与其他 Node。<br>v0.5.7 正式版新增“设备与协作”入口，局域网连接无需手动配置证书，复制连接码即可审阅加入；保留 Windows 黑窗口修复和 macOS 实验性 Codex 原会话接管；稳定 Latest 为 v0.5.7。</p>
     </div>
     <figure class="product-preview" aria-label="ConveneWire 协作工作台界面示意">
       <div class="preview-top"><span class="window-dots" aria-hidden="true">● ● ●</span><span>ConveneWire / Product Team</span><span class="preview-badge">自托管</span></div>
@@ -65,12 +65,12 @@
     <details><summary>中央 Agent 是不是还要额外部署一个 Agent 服务？</summary><p>不需要。当前源码中的中央 Agent 是中央服务自带的 HTTP 调用能力。启动中央服务后，Owner 在网页上选配即可；不用再安装 pi、Codex 或单独的 Agent 容器。不配置也能继续使用本机和演示 Agent。</p></details>
     <details><summary>支持哪些模型服务？</summary><p>中央 Agent 当前仅支持固定的 OpenAI Responses API。模型名称由你配置，需要对应的可用凭据与权限；不支持任意兼容 API 地址。验证与运行可能产生提供方用量。本机 Agent 则使用自己配置的 Runtime。</p></details>
     <details><summary>自托管意味着所有数据都不会离开服务器吗？</summary><p>不是。Team 记录存储在托管它的本机 Node 或中央服务中，但远程模型调用会把获授权的上下文发送给模型提供方，本机 Runtime 也可能调用其模型服务。请按数据要求选择接入方式并配置房间与 Runtime 权限。</p></details>
-    <details><summary>下载稳定版就能用到页面上的全部功能吗？</summary><p>稳定 Latest 为 v0.5.5，包含 Node-first 本机工作区、局域网协作、macOS 实验性 Codex 原会话接管、客户端 Owner 入口、受控软件团队执行 Core、可信局域网免证书访问、精简的 12 资产分发、Discussion 进度完整性修复，以及私有证据授权汇合与 Windows 私有文件保护。正式版面向可信小团队自托管，安装包仍未签名，升级仍需手动操作。本机模式升级前先退出并保留 Node 快照和配套旧包；集中部署升级前请阅读迁移与回滚说明并备份 Central；真实模型调用仍需自行配置受支持的服务和凭据。官网上线本身不代表应用发版。</p></details>
-    <details><summary>局域网里的另一台电脑还要安装证书吗？</summary><p>不一定。可信局域网部署可为浏览器明确选择 HTTP，Windows、macOS 或 Linux 都无需安装 CA；Bridge、Device 与执行流量仍走单独固定的 HTTPS 通道。只有选择私有 HTTPS 时，浏览器才需要信任私有 CA，配对后的 Bridge/Desktop 会在“设置”里提供带指纹校验的高级信任引导，并且不会静默修改系统信任。公网部署应使用公共 CA。</p></details>
+    <details><summary>下载稳定版就能用到页面上的全部功能吗？</summary><p>稳定 Latest 为 v0.5.7，包含 Node-first 本机工作区、局域网协作、macOS 实验性 Codex 原会话接管、客户端 Owner 入口、受控软件团队执行 Core、可信局域网免证书访问、精简的 12 资产分发、Discussion 进度完整性修复，以及私有证据授权汇合与 Windows 私有文件保护。正式版面向可信小团队自托管，安装包仍未签名，升级仍需手动操作。本机模式升级前先退出并保留 Node 快照和配套旧包；集中部署升级前请阅读迁移与回滚说明并备份 Central；真实模型调用仍需自行配置受支持的服务和凭据。官网上线本身不代表应用发版。</p></details>
+    <details><summary>局域网里的另一台电脑还要安装证书吗？</summary><p>桌面应用之间不用。两台电脑更新到 v0.5.7 后，打开“设备与协作”，开启局域网并交换连接码，确认房间即可加入；安全连接和证书由应用管理，无需域名、证书文件或系统 CA。集中部署 Central 的浏览器入口仍可明确选择可信局域网 HTTP；Bridge、Device 与执行流量继续走 HTTPS。高级私有 HTTPS 的浏览器信任引导仍保留，公网部署应使用公共 CA。</p></details>
     <details><summary>ConveneWire 会接管我的 Git 仓库和 SSH Key 吗？</summary><p>不会。ConveneWire 不接管你的 Git 仓库或 Git 凭据。仓库路径、Git/SSH 凭据、worktree 和 Git 操作由本地 Client/Bridge 控制；Central 只协调 Plan、调度、授权、证据与操作回执。</p></details>
     <details><summary>一个人、一台电脑也能用吗？</summary><p>可以。macOS 和 Windows 桌面包自带本机工作区，安装后可创建 Team、Room 并配置本机 Agent，无需先部署中央服务。需要多人集中托管时，再使用 Central 部署。</p></details>
   </div></section>
-  <section class="container closing-cta" id="start" aria-labelledby="start-title"><div><p class="eyebrow">YOUR NEXT PROJECT, TOGETHER.</p><h2 id="start-title">从你的第一个 Team 开始。</h2><p>先完成一次有意义的协作，再逐步接入更多能力。</p></div><div><a class="button primary" href="__BASE__guide/">阅读入门指南 <span aria-hidden="true">→</span></a><a class="closing-secondary" href="https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.5">下载正式版 v0.5.5 ↗</a><a class="closing-secondary" href="https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.4">历史稳定版 v0.5.4 ↗</a></div></section>
+  <section class="container closing-cta" id="start" aria-labelledby="start-title"><div><p class="eyebrow">YOUR NEXT PROJECT, TOGETHER.</p><h2 id="start-title">从你的第一个 Team 开始。</h2><p>先完成一次有意义的协作，再逐步接入更多能力。</p></div><div><a class="button primary" href="__BASE__guide/">阅读入门指南 <span aria-hidden="true">→</span></a><a class="closing-secondary" href="https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.7">下载正式版 v0.5.7 ↗</a><a class="closing-secondary" href="https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.5">历史稳定版 v0.5.5 ↗</a></div></section>
 </main>
 <!-- FOOTER -->
 </body>

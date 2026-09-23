@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "version": "v0.5.7",
+  "sourceCommit": "0fff1d46592297d912eb4812164471ce1b66cdd9",
+  "installedPublicRelease": true,
+  "workspaceToolbarVisible": [
+    "本机 Agent",
+    "Codex 会话",
+    "设备与协作"
+  ],
+  "devicesPanelLoaded": true,
+  "connectAndShareOpensPeers": true,
+  "pasteConnectionCodeFormLoaded": true,
+  "topCodexOpensHandoff": true,
+  "topAgentOpensAgentsAfterHandoff": true,
+  "returnedToWorkspace": true,
+  "ownerLANEnabled": false,
+  "ownerCodexStartedOrConfigured": false,
+  "realModelInvoked": false,
+  "physicalCrossMachineLANTested": false
+}

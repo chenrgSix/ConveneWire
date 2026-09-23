@@ -40,7 +40,7 @@ answer satisfies the task.
 - Current baseline:
   [convenewire_network_design_v0.2.md](convenewire_network_design_v0.2.md)
 - Stable release:
-  [ConveneWire v0.5.5](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.5)
+  [ConveneWire v0.5.7](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.7)
 - Historical evaluation candidate:
   [ConveneWire v0.5.0-rc.6](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.0-rc.6)
 - Historical baseline:
@@ -55,10 +55,13 @@ answer satisfies the task.
 - Security and clean-room audit:
   [docs/acceptance/qa-005-security-clean-room-audit.md](docs/acceptance/qa-005-security-clean-room-audit.md)
 
-Stable v0.5.5 fixes the Windows startup console window and packages the Node-first
+Stable v0.5.7 adds automatic secure LAN setup and visible device collaboration
+controls, retains the Windows console-window repair and packages the Node-first
 desktop for Apple-silicon macOS and Windows:
 start a local workspace without deploying Central, configure Agents in the same
-window and connect reviewed Peers over HTTPS. Physical macOS/Windows LAN evidence
+window and connect reviewed Peers over HTTPS. On the LAN, open **设备与协作**,
+enable LAN and exchange a connection code; certificate files and domains are
+not required. Earlier physical macOS/Windows LAN evidence
 is recorded in [QA-092](docs/acceptance/qa-092-ab-native-desktop.md); public Relay
 acceptance remains deferred. macOS additionally supports experimental original
 Codex desktop conversation handoff with explicit cooperative startup and local
@@ -67,10 +70,10 @@ consent. Windows conversation handoff is not supported.
 The distribution retains 12 assets, including native desktop packages, the
 Windows installer, Linux CLI archives and one Central source archive. Existing
 Central/Discussion and private evidence features remain available. Read the
-[upgrade notes](docs/releases/v0.5.5.md), stop the application and keep a verified
+[upgrade notes](docs/releases/v0.5.7.md), stop the application and keep a verified
 backup with its matching old binaries before upgrading. Never open a migrated
 database with an older version. Packages remain unsigned and updates manual;
-[QA-096](docs/acceptance/qa-096-windows-hub-window.md) records the Windows repair and release evidence.
+[QA-097](docs/acceptance/qa-097-managed-lan.md) records managed LAN and release evidence.
 
 ## Repository Ownership
 
@@ -329,7 +332,7 @@ archive's internal file manifest.
 Run the shipped controller from the extracted root:
 
 ```bash
-archive=convenewire-central_0.5.5_source.tar.gz
+archive=convenewire-central_0.5.7_source.tar.gz
 pin_asset=${archive%.tar.gz}.SHA256SUMS.sha256
 release_dir=${archive%.tar.gz}
 tar -xzf "${archive}"

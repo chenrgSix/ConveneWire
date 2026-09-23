@@ -1,0 +1,11 @@
+{
+  "ownedInstallationStageRemoved": true,
+  "draftDownloadsRemoved": true,
+  "obsoleteRelease": "v0.5.4",
+  "obsoleteDownloadFiles": 12,
+  "obsoleteDownloadBytes": 230208681,
+  "retainedCurrentDownloads": "v0.5.7",
+  "retainedPreviousDownloads": "v0.5.5",
+  "privateRollbackSnapshotAndOldAppRetained": true,
+  "applicationRegistrations": 1
+}
