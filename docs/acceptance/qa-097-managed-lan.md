@@ -149,3 +149,11 @@ The first site deployment stopped at its copy-boundary test after the new deskto
 FAQ omitted the previous Central/browser compatibility sentence. That sentence
 was restored with its system-trust boundary; the application tag and published
 packages were unchanged.
+
+[Pages 35840791898](https://github.com/chenrgSix/ConveneWire/actions/runs/35840791898)
+passes both jobs for documentation/site source
+`c3d1d1acb0dde613619541e7ef6d6f4105ac81ea`. All nine public files were fetched
+anonymously and match the exact-source local build byte for byte; the empty
+`.nojekyll` control is checked separately. The
+[website receipt](evidence/qa097/pages.json) records the public digests. This
+website revision is distinct from the immutable application source above.
