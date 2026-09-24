@@ -6,6 +6,8 @@ or runtime lifecycle.
 
 [ADR-0073: Managed LAN collaboration](0073-managed-lan-collaboration.md)
 
+[ADR-0074: Private Peer cancellation diagnostics](0074-peer-cancellation-diagnostics.md)
+
 ## Naming
 
 Use a zero-padded sequence and short kebab-case title:

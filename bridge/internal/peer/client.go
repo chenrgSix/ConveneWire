@@ -232,7 +232,7 @@ func (c *Client) postMachine(ctx context.Context, path, requestKind string, valu
 	}
 	response, err := c.http.Do(request)
 	if err != nil {
-		return ErrTransport
+		return httpDiagnostic(path, transportReason(err), 0, ErrTransport)
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, wire.MaximumJSONBytes+1))
@@ -240,17 +240,17 @@ func (c *Client) postMachine(ctx context.Context, path, requestKind string, valu
 		return guardErr
 	}
 	if err != nil || len(body) > wire.MaximumJSONBytes {
-		return ErrTransport
+		return httpDiagnostic(path, "response_unreadable", response.StatusCode, ErrTransport)
 	}
 	if response.StatusCode != http.StatusOK {
 		var denied wire.PeerError
 		if wire.Decode("PeerError", body, &denied) == nil {
-			return &RemoteError{Code: string(denied.Code)}
+			return httpDiagnostic(path, "host_denied", response.StatusCode, &RemoteError{Code: string(denied.Code)})
 		}
-		return ErrTransport
+		return httpDiagnostic(path, "http_status", response.StatusCode, ErrTransport)
 	}
 	if wire.Decode(responseKind, body, result) != nil {
-		return ErrProof
+		return httpDiagnostic(path, "response_invalid", response.StatusCode, ErrProof)
 	}
 	return nil
 }

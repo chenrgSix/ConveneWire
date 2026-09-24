@@ -1,5 +1,16 @@
 # Local Bridge
 
+## Private Peer execution diagnostics
+
+[ADR-0074](../adr/0074-peer-cancellation-diagnostics.md) adds a bounded private
+`peer-runtime/<partition>/runs/<run>/diagnostics.json` sidecar. It records
+UTC observations of the first cancellation source, classified HTTP failure,
+approval wait transitions and process cleanup. It contains no callback content,
+credentials, command lines or native Session IDs, and is never published to a
+Host. Existing journal and wire formats remain unchanged. Missing diagnostics
+are not evidence that no cancellation or approval happened; storage failure or
+abrupt termination can prevent recording. Diagnostics never authorize replay.
+
 ## Shared Runtime core
 
 [ADR-0067](../adr/0067-multi-authority-runtime-foundation.md) defines BRG-080:
