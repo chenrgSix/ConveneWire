@@ -35,11 +35,11 @@ type peerRunExecution struct {
 
 func (e *peerRunExecution) current(ctx context.Context) error {
 	if _, err := e.factory.local(e.membership, e.delivery.Settlement.Binding); err != nil {
-		return err
+		return diagnosticCause("authorization", "local_recheck", err)
 	}
 	admission, err := e.client.AuthorizeExecution(ctx, e.factory.store, e.membership, e.delivery.Settlement.Binding)
 	if err != nil {
-		return err
+		return diagnosticCause("authorization", "host_recheck", err)
 	}
 	e.admissionMu.Lock()
 	e.admission = admission
@@ -321,6 +321,8 @@ func (e *peerRunExecution) execute(ctx context.Context) error {
 		}
 		return e.recover(ctx, record)
 	}
+	diagnostics := newRunDiagnostics(e.journal, record.Binding.RunID)
+	ctx = context.WithValue(ctx, runDiagnosticsKey{}, diagnostics)
 	live, stop := context.WithCancelCause(ctx)
 	watchDone := make(chan struct{})
 	watchStarted := false
@@ -352,6 +354,7 @@ func (e *peerRunExecution) execute(ctx context.Context) error {
 	}
 	result, runErr := e.factory.executeManaged(live, e.membership, record.Binding, bridgeruntime.Request{Run: request.Payload}, e.current, e.emit, before)
 	cause := context.Cause(live)
+	diagnostics.finish(cause, runErr, result.ProcessesStopped)
 	stop(context.Canceled)
 	if watchStarted {
 		<-watchDone

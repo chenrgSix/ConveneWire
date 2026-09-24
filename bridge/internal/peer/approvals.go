@@ -117,7 +117,7 @@ func (a *Approvals) closeProcess(p *approvalProcess) {
 	}
 }
 
-func (a *Approvals) await(ctx context.Context, p *approvalProcess, input contracts.RuntimeApprovalRequestedPayload) (bool, error) {
+func (a *Approvals) await(ctx context.Context, p *approvalProcess, input contracts.RuntimeApprovalRequestedPayload) (allowed bool, approvalErr error) {
 	now := time.Now()
 	if ctx == nil || ctx.Err() != nil || p.ctx.Err() != nil || !localApprovalID.MatchString(input.RequestID) ||
 		input.RunID != p.binding.RunID || input.AgentID != p.binding.ProjectionAgentID || input.Revision != p.binding.GrantRevision ||
@@ -145,6 +145,21 @@ func (a *Approvals) await(ctx context.Context, p *approvalProcess, input contrac
 	p.seen[input.RequestID] = true
 	a.pending[input.RequestID] = request
 	a.mu.Unlock()
+	observeApproval(p.ctx, "approval_waiting")
+	defer func() {
+		event := "approval_interrupted"
+		if approvalErr == nil {
+			event = "approval_denied"
+			if allowed {
+				event = "approval_allowed"
+			}
+		} else if p.ctx.Err() == nil && !input.ExpiresAt.After(time.Now()) {
+			event = "approval_expired"
+		} else if p.ctx.Err() == nil && ctx.Err() == nil {
+			event = "approval_recheck_failed"
+		}
+		observeApproval(p.ctx, event)
+	}()
 	defer func() {
 		a.mu.Lock()
 		if a.pending[input.RequestID] == request {

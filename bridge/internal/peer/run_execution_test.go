@@ -149,6 +149,10 @@ func TestPeerRunExecutionSettlesRevocationAfterActualProcessStops(t *testing.T) 
 			if err != nil || record.Outcome == nil || record.Outcome.State != "canceled" {
 				t.Fatalf("revoked local truth %+v, %v", record.Outcome, err)
 			}
+			diagnostic := readRunDiagnostics(t, partition.Runs(), binding.RunID)
+			if diagnostic.Cancellation == nil || diagnostic.Cancellation.Source != "authorization" || !diagnostic.ProcessesStopped {
+				t.Fatalf("lost revocation cause: %+v", diagnostic)
+			}
 			probe, stop := context.WithTimeout(context.Background(), time.Second)
 			defer stop()
 			release, err := connectors.runtime.gate.Acquire(probe, binding.LocalAgentID)
@@ -355,6 +359,10 @@ func assertPeerRunUsesActualHostAndRestrictedNativeChild(t *testing.T) {
 	record, err := partition.Runs().Load(binding.RunID)
 	if err != nil || record.Outcome == nil || record.Outcome.State != "completed" || record.Outcome.Reply != "peer-completed" {
 		t.Fatalf("local outcome %+v, %v", record.Outcome, err)
+	}
+	diagnostic := readRunDiagnostics(t, partition.Runs(), binding.RunID)
+	if diagnostic.Cancellation != nil || !diagnostic.ProcessesStopped || !diagnostic.Finished {
+		t.Fatalf("success reported cancellation: %+v", diagnostic)
 	}
 	transport, err := partition.Runs().Transport(binding.RunID)
 	if err != nil || transport.SettlementReceipt == nil || transport.Acknowledged() != int64(len(transport.Events)) {

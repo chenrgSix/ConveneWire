@@ -33,7 +33,7 @@ type ConnectorSnapshot struct {
 
 type peerWorker struct {
 	ctx    context.Context
-	cancel context.CancelFunc
+	cancel context.CancelCauseFunc
 	done   chan struct{}
 	local  LocalConnection
 	digest string
@@ -111,7 +111,7 @@ func (c *Connectors) LocalChange(peerID string) {
 	}
 	for _, local := range state.Connections {
 		if local.Receipt.Membership.PeerID == peerID && (local.State != "active" || peerAuthorizationDigest(local) != worker.digest) {
-			worker.cancel()
+			worker.cancel(diagnosticCause("connector", "authorization_changed", context.Canceled))
 			c.approvals.RevokePeer(peerID)
 			return
 		}
@@ -163,7 +163,7 @@ func (c *Connectors) stopAll(state, code string) {
 	defer c.mu.Unlock()
 	c.state, c.errorCode = state, code
 	for id, worker := range c.workers {
-		worker.cancel()
+		worker.cancel(diagnosticCause("connector", connectorStopReason(code), context.Canceled))
 		c.approvals.RevokePeer(id)
 		view := c.statuses[id]
 		view.State, view.ErrorCode = state, code
@@ -205,7 +205,7 @@ func (c *Connectors) reconcile(ctx context.Context) {
 		digest := peerAuthorizationDigest(local)
 		if worker := c.workers[id]; worker != nil {
 			if !eligible || worker.digest != digest {
-				worker.cancel()
+				worker.cancel(diagnosticCause("connector", "authorization_changed_or_expired", context.Canceled))
 				c.approvals.RevokePeer(id)
 				if eligible {
 					view.State = "reconfiguring"
@@ -218,7 +218,7 @@ func (c *Connectors) reconcile(ctx context.Context) {
 			c.statuses[id] = view
 			continue
 		}
-		workerCtx, cancel := context.WithCancel(ctx)
+		workerCtx, cancel := context.WithCancelCause(ctx)
 		worker := &peerWorker{ctx: workerCtx, cancel: cancel, done: make(chan struct{}), local: local, digest: digest}
 		c.workers[id] = worker
 		view.State = "connecting"

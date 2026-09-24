@@ -44,7 +44,7 @@ type RuntimeConnection struct {
 	digest       string
 	socket       *websocket.Conn
 	ctx          context.Context
-	cancel       context.CancelFunc
+	cancel       context.CancelCauseFunc
 	stop         func() bool
 	readDone     chan struct{}
 	acks         chan int64
@@ -163,7 +163,7 @@ func (c *Client) ConnectRuntime(ctx context.Context, store *Store, membershipID 
 	if _, err := c.runtimeMembership(store, membershipID); err != nil {
 		return nil, err
 	}
-	live, cancel := context.WithCancel(ctx)
+	live, cancel := context.WithCancelCause(ctx)
 	connection := &RuntimeConnection{client: c, store: store, membershipID: membershipID, binding: b, digest: digest,
 		socket: socket, ctx: live, cancel: cancel, readDone: make(chan struct{}), acks: make(chan int64, 1)}
 	connection.stop = context.AfterFunc(ctx, connection.Close)
@@ -175,9 +175,11 @@ func (c *Client) ConnectRuntime(ctx context.Context, store *Store, membershipID 
 func (c *RuntimeConnection) Context() context.Context         { return c.ctx }
 func (c *RuntimeConnection) Binding() wire.PeerRuntimeBinding { return c.binding }
 
-func (c *RuntimeConnection) Close() {
+func (c *RuntimeConnection) Close() { c.closeWithCause("closed") }
+
+func (c *RuntimeConnection) closeWithCause(reason string) {
 	c.closeOnce.Do(func() {
-		c.cancel()
+		c.cancel(diagnosticCause("runtime_connection", reason, context.Canceled))
 		_ = c.socket.CloseNow()
 	})
 }
@@ -192,11 +194,13 @@ func (c *RuntimeConnection) read() {
 	for c.ctx.Err() == nil {
 		message, err := readRuntimeMessage(c.ctx, c.socket)
 		if err != nil || message.Type != "peer.runtime.acknowledged" {
+			c.closeWithCause("read_failed_or_unexpected_message")
 			return
 		}
 		var ack wire.PeerRuntimeHeartbeat
 		if wire.Decode("PeerRuntimeHeartbeat", message.Payload, &ack) != nil || ack.BindingDigest != c.digest ||
 			ack.Sequence != acknowledged+1 || ack.Sequence != c.sequence.Load() {
+			c.closeWithCause("invalid_acknowledgement")
 			return
 		}
 		acknowledged = ack.Sequence
@@ -216,13 +220,13 @@ func (c *RuntimeConnection) Heartbeat(ctx context.Context) error {
 	defer stop()
 	defer cancel()
 	if _, err := c.client.runtimeMembership(c.store, c.membershipID); err != nil {
-		c.Close()
+		c.closeWithCause("membership_recheck_failed")
 		return err
 	}
 	sequence := c.sequence.Add(1)
 	if err := writeRuntimeMessage(ctx, c.socket, "peer.runtime.heartbeat", wire.PeerRuntimeHeartbeat{
 		SchemaVersion: 1, BindingDigest: c.digest, Sequence: sequence}, c.client.clock()); err != nil {
-		c.Close()
+		c.closeWithCause("heartbeat_write_failed")
 		return err
 	}
 	select {
@@ -231,11 +235,17 @@ func (c *RuntimeConnection) Heartbeat(ctx context.Context) error {
 			if _, err := c.client.runtimeMembership(c.store, c.membershipID); err == nil {
 				return nil
 			}
+			c.closeWithCause("membership_recheck_failed")
 		}
 	case <-ctx.Done():
+		if ctx.Err() == context.DeadlineExceeded {
+			c.closeWithCause("heartbeat_timeout")
+		} else {
+			c.closeWithCause("heartbeat_context_canceled")
+		}
 	case <-c.ctx.Done():
 	}
-	c.Close()
+	c.closeWithCause("heartbeat_failed")
 	return ErrTransport
 }
 
