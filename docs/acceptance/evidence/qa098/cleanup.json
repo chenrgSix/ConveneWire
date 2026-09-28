@@ -19,5 +19,6 @@
   ],
   "privateRollbackSnapshotAndOldAppRetained": true,
   "applicationRegistrations": 1,
-  "canonicalVersion": "v0.5.8"
+  "canonicalVersion": "v0.5.8",
+  "ownedTaskTemporaryRootRemoved": true
 }
