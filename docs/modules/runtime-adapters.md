@@ -115,7 +115,7 @@ reasoning-summary deltas and allowlisted tool item name/phase become activity;
 raw hidden reasoning, structured command/tool records, arguments, and approval
 protocol stay local. Interactive
 server requests receive a protocol error instead of being approved. A bounded
-safety tail, redaction, protocol/output limits, process-group cancellation, and
+safety tail, redaction, visible output limits, process-group cancellation, and
 final-reply parsing match the Pi streaming boundary.
 
 Generic CLI remains final-only by default because plain stdout has no stable
@@ -396,3 +396,10 @@ old Task from starting a replacement conversation.
 provider/Hub/Runtime integration, isolated desktop startup, browser observation
 and unperformed owner-profile/live-model/platform checks. Delivery status lives
 only in [TASKS.md](../TASKS.md).
+
+## Managed Codex protocol output
+
+ADP-024 removes cumulative and per-event byte limits from managed Codex App
+Server JSONL. The reader retains one event at a time. Large tool events stay
+private; malformed/truncated JSON still fails closed and cancellation remains
+effective. Visible assistant output and final-reply limits remain unchanged.

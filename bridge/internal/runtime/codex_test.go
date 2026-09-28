@@ -819,6 +819,9 @@ func runCodexAppServerFixture(t *testing.T, complete bool, expectedOpen string, 
 			if !complete {
 				continue
 			}
+			if mode := os.Getenv("AGENTROOM_CODEX_OUTPUT_FIXTURE"); mode != "" {
+				emitCodexLargeOutputFixture(encoder, mode)
+			}
 			_ = encoder.Encode(map[string]any{"method": "item/reasoning/summaryTextDelta", "params": map[string]any{
 				"threadId": "019d-thread", "turnId": "turn-1", "itemId": "reasoning-1",
 				"summaryIndex": 0, "delta": "Reviewing the task.",
@@ -842,9 +845,15 @@ func runCodexAppServerFixture(t *testing.T, complete bool, expectedOpen string, 
 				"threadId": "019d-thread", "turnId": "turn-1", "completedAtMs": 1,
 				"item": map[string]any{"id": "item-1", "type": "agentMessage", "text": "Implemented.\n<agentroom-assessment>{\"goalSatisfied\":true,\"confidence\":0.9}</agentroom-assessment>"},
 			}})
-			_ = encoder.Encode(map[string]any{"method": "turn/completed", "params": map[string]any{
+			completion := map[string]any{"method": "turn/completed", "params": map[string]any{
 				"threadId": "019d-thread", "turn": map[string]any{"id": "turn-1", "status": "completed", "items": []any{}},
-			}})
+			}}
+			if os.Getenv("AGENTROOM_CODEX_OUTPUT_FIXTURE") == "final-without-newline" {
+				encoded, _ := json.Marshal(completion)
+				_, _ = os.Stdout.Write(encoded)
+				os.Exit(0)
+			}
+			_ = encoder.Encode(completion)
 		}
 	}
 }

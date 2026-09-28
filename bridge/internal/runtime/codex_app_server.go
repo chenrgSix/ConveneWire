@@ -17,8 +17,6 @@ import (
 	contracts "convenewire.dev/contracts/generated/go"
 )
 
-const maxCodexProtocolOutput = 4 * 1024 * 1024
-
 var (
 	errCodexSessionInUse        = errors.New("Codex session is active in another local client")
 	errCodexSessionResumeFailed = errors.New("Codex session resume failed without a safe recreation signal")
@@ -240,18 +238,21 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 	parser.runID = request.Run.RunID
 	parser.logicalTaskSession = logicalTaskSession
 	parser.sessionDisposition = sessionDisposition
-	scanner := bufio.NewScanner(stdout)
-	scanner.Buffer(make([]byte, 64*1024), maxCodexProtocolOutput)
-	total := 0
+	// Read one JSONL event at a time without a per-event or per-run byte cap.
+	// Large local tool output must not terminate an otherwise valid turn.
+	reader := bufio.NewReader(stdout)
 	var protocolError error
 	var executionError error
-	for scanner.Scan() {
-		total += len(scanner.Bytes()) + 1
-		if total > maxCodexProtocolOutput {
-			protocolError = fmt.Errorf("Codex app-server output exceeded limit")
+	for {
+		source, readError := reader.ReadBytes('\n')
+		if readError != nil && !errors.Is(readError, io.EOF) {
+			protocolError = readError
 			break
 		}
-		delta, messages, consumeError := parser.consume(scanner.Bytes())
+		if len(source) == 0 && errors.Is(readError, io.EOF) {
+			break
+		}
+		delta, messages, consumeError := parser.consume(source)
 		if consumeError != nil {
 			protocolError = consumeError
 			break
@@ -284,9 +285,6 @@ func (c CodexAdapter) executeAppServer(ctx context.Context, request Request, emi
 		if parser.complete {
 			break
 		}
-	}
-	if scanner.Err() != nil && protocolError == nil && !parser.complete {
-		protocolError = scanner.Err()
 	}
 	cancelProcess()
 	waitError := wait()
