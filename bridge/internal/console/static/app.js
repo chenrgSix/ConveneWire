@@ -1,3 +1,4 @@
+import "./native-navigation.js";
 import { createDesktopHandoffController } from "./desktop-handoff.mjs";
 import { createClientEntryController } from "./client-entry.mjs";
 import { createNativeWorkspace } from "./native-workspace.mjs";
