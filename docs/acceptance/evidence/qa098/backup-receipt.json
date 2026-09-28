@@ -1,0 +1,7 @@
+{
+  "stoppedSnapshotVerified": true,
+  "snapshotFiles": 15,
+  "rollbackArchiveVersion": "v0.5.7",
+  "rollbackArchiveSha256": "3e1a65609655e405e22ef9f0cf2a59323423a76a9efe541e56018ef6b5f5e2c9",
+  "oldInstalledFilesMatch": 7316
+}

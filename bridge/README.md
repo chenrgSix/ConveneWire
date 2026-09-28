@@ -10,11 +10,11 @@ for headless environments and diagnostics.
 Current desktop builds bundle the local Hub, Web, Node.js and SQLite with the
 Go Runtime. Opening the bundled application creates a private local Node and
 opens its local workspace. Its Owner identity and Team records stay on this
-computer. Stable v0.5.7 includes this desktop on macOS and Windows. Open **设备与协作**
+computer. Stable v0.5.8 includes this desktop on macOS and Windows. Open **设备与协作**
 in the workspace for LAN setup and a one-use connection code; the app manages
 certificates automatically. Advanced settings retain manual HTTPS and Relay invitations.
 [TASKS.md](../docs/TASKS.md) and the
-[release record](../docs/acceptance/qa-097-managed-lan.md) track delivery and the
+[release record](../docs/acceptance/qa-098-v0.5.8.md) track delivery and the
 remaining platform and network acceptance boundaries.
 
 1. Create a local Team and Room. Choose **连接本机 Runtime** to bind this
@@ -31,7 +31,10 @@ remaining platform and network acceptance boundaries.
    and joins from the local Console's Peer page, then opens the remote workspace
    using a separate human session. A Room invitation limits access to that Room.
 4. Sharing a local Agent requires a separate local Export and explicit Host
-   acceptance. Runtime approval requests remain on the executing computer.
+   acceptance. Shared Codex trusts the connected space by default; turn off
+   **完全信任此空间** in its joined-space card to restore local approval prompts.
+   The saved choice survives restart, and switching ends that connection's
+   running tasks. Pi/generic runtimes retain their own permission behavior.
    Leaving a space or withdrawing an Export retains recovery receipts and
    fences further local starts under that authority.
 
@@ -64,7 +67,7 @@ it:
 sha256sum -c SHA256SUMS --ignore-missing
 
 # macOS (set this to the archive you downloaded)
-ARCHIVE=convenewire-bridge-desktop_0.5.7_darwin_arm64.zip
+ARCHIVE=convenewire-bridge-desktop_0.5.8_darwin_arm64.zip
 grep "  ${ARCHIVE}$" SHA256SUMS | shasum -a 256 -c -
 ```
 

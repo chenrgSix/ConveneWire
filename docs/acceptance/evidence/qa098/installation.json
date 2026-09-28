@@ -1,0 +1,21 @@
+{
+  "releaseVersion": "v0.5.8",
+  "sourceCommit": "e4ef20c9e81dd2fea90ffcb58861e02cbea62a5b",
+  "installedFilesMatch": 7316,
+  "archiveSha256": "202b77583c263dbe253a723bae687e043b691fa28ffb7928d874c68121ac0e8b",
+  "canonicalPath": "/Applications/ConveneWire Bridge.app",
+  "live": true,
+  "ready": true,
+  "desktopProcesses": 1,
+  "hubProcesses": 1,
+  "dataMatches": true,
+  "databaseQuickCheck": "ok",
+  "retainedConfigFiles": 3,
+  "retainedTables": [
+    "teams",
+    "rooms",
+    "messages",
+    "runs",
+    "agent_tasks"
+  ]
+}

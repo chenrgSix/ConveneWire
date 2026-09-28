@@ -1,0 +1,23 @@
+{
+  "ownedInstallationStageRemoved": true,
+  "temporaryDownloadGroupsRemoved": [
+    {
+      "group": "draft",
+      "files": 12,
+      "bytes": 230488905
+    },
+    {
+      "group": "public",
+      "files": 12,
+      "bytes": 230488905
+    },
+    {
+      "group": "rollback",
+      "files": 1,
+      "bytes": 84358484
+    }
+  ],
+  "privateRollbackSnapshotAndOldAppRetained": true,
+  "applicationRegistrations": 1,
+  "canonicalVersion": "v0.5.8"
+}
