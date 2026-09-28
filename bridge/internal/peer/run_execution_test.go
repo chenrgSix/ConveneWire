@@ -29,7 +29,7 @@ func runExecutionFixture(t *testing.T, modes ...string) (*peerHTTPFixture, *Clie
 	t.Setenv("CONVENE_WIRE_PEER_RUNTIME_FIXTURE", mode)
 	cfg := config.AgentConfig{Name: "Peer writer", Role: "Reviewer", Adapter: "generic", RuntimeKind: "generic", Sandbox: "workspace-write",
 		Workspace: t.TempDir(), Command: []string{os.Args[0], "-test.run=^TestPeerRuntimeProcessFixture$"}, EnvAllowlist: []string{"CONVENE_WIRE_PEER_RUNTIME_FIXTURE"}}
-	if mode == "codex" {
+	if strings.HasPrefix(mode, "codex") {
 		cfg.Adapter, cfg.RuntimeKind = "codex", "codex"
 		cfg.Command = append(cfg.Command, "--", "app-server")
 	}
@@ -53,6 +53,13 @@ func runExecutionFixture(t *testing.T, modes ...string) (*peerHTTPFixture, *Clie
 	connectors, err := NewConnectors(store, sources, client.signer, func() error { return nil })
 	if err != nil {
 		t.Fatal(err)
+	}
+	// Keep the restricted-mode approval regressions explicit; full fixtures use
+	// the absent-preference default.
+	if mode == "codex" {
+		if _, _, err := connectors.exporter.SetExecutionTrust(membership, 0, false, now); err != nil {
+			t.Fatal(err)
+		}
 	}
 	connectors.clock = func() time.Time { return now }
 	root := filepath.Dir(store.directory)

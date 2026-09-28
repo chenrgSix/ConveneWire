@@ -36,6 +36,7 @@ type LocalConnection struct {
 	Acceptances         []wire.RemoteAgentAcceptance `json:"acceptances"`
 	LocalExports        []LocalExport                `json:"localExports,omitempty"`
 	AcceptanceSnapshots []ExportSyncReceipt          `json:"acceptanceSnapshots,omitempty"`
+	ExecutionTrust      *wire.PeerExecutionTrust     `json:"executionTrust,omitempty"`
 	Departure           *LocalDeparture              `json:"departure,omitempty"`
 }
 type State struct {
@@ -190,7 +191,7 @@ func transition(previous, next State, now time.Time) error {
 	}
 	for i, c := range next.Connections {
 		if i >= len(previous.Connections) {
-			if c.State != "active" || len(c.Exports) != 0 || len(c.Acceptances) != 0 || len(c.LocalExports) != 0 || len(c.AcceptanceSnapshots) != 0 || !wire.ProofTimeValid(wire.PeerProofPayload(c.Receipt.Proof.Payload), now) {
+			if c.ExecutionTrust != nil || c.State != "active" || len(c.Exports) != 0 || len(c.Acceptances) != 0 || len(c.LocalExports) != 0 || len(c.AcceptanceSnapshots) != 0 || !wire.ProofTimeValid(wire.PeerProofPayload(c.Receipt.Proof.Payload), now) {
 				return ErrStore
 			}
 			expiry, err := time.Parse(time.RFC3339Nano, c.Receipt.Membership.ExpiresAt)
@@ -200,7 +201,7 @@ func transition(previous, next State, now time.Time) error {
 			continue
 		}
 		old := previous.Connections[i]
-		if acceptanceSnapshotTransition(old, c, now) != nil || departureTransition(old, c, now) != nil {
+		if executionTrustTransition(old, c, now) != nil || acceptanceSnapshotTransition(old, c, now) != nil || departureTransition(old, c, now) != nil {
 			return ErrStore
 		}
 		if len(c.LocalExports) < len(old.LocalExports) {

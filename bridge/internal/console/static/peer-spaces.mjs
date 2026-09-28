@@ -125,7 +125,7 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
     control("join").disabled ||= !review || (!confirmation && (Date.parse(review.invitation.expiresAt) <= now() || !displayName.value.trim() || [...displayName.value.trim()].length > 80));
     control("invite-note").textContent = confirmation
       ? "加入结果尚未确认时请重试原操作。关闭后也可在待恢复列表中查询结果。"
-      : review ? "确认后仅为这台设备保存安全连接；分享 Agent 仍需另行选择，并由对方接纳。" : "邀请只发给本机 Console 验证；请核对验证后的 Host 与空间范围。";
+      : review ? "加入后默认完全信任此空间，分享的 Codex 可直接执行命令、读写文件和联网。可在已连接空间关闭；分享 Agent 仍需另行选择，并由对方接纳。" : "邀请只发给本机 Console 验证；请核对验证后的 Host 与空间范围。";
   }
   function list(name, values, renderRow, empty) {
     const fingerprint = JSON.stringify([values, failures[name],
@@ -145,6 +145,28 @@ export function createPeerSpacesController({root, request, now = Date.now, newOp
       row.append(element("h4", scopeLabel(invite)), element("p", invite.hostOrigin),
         element("p", connection.state === "left" ? "已在本机离开" : ended ? "成员关系不可用" : "已加入 · 访问和任务仍需当前授权"),
         details([["成员关系", membership.membershipId], ["有效至", new Date(membership.expiresAt).toLocaleString()]]));
+      const trust = connection.executionTrust;
+      if (!ended && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
+        if (typeof trust?.enabled === "boolean" && Number.isSafeInteger(trust.revision) && trust.revision >= 0) {
+          const toggle = button(`完全信任此空间：${trust.enabled ? "已开启" : "已关闭"}`, () => void run(async (current) => {
+            await request("/api/peers/execution-trust", {method: "POST", body: JSON.stringify({
+              membershipId: membership.membershipId, expectedRevision: trust.revision, enabled: !trust.enabled
+            })});
+            if (current()) control("result").textContent = trust.enabled
+              ? "已关闭完全信任，后续 Codex 任务恢复本机审批。此连接正在运行的任务会结束。"
+              : "已开启完全信任，后续 Codex 任务无需逐次审批。此连接正在运行的任务会结束。";
+          }), `trust:${membership.membershipId}`);
+          toggle.setAttribute("role", "switch");
+          toggle.setAttribute("aria-checked", String(trust.enabled));
+          toggle.setAttribute("aria-label", "完全信任此空间");
+          row.append(toggle, element("p", trust.enabled
+            ? "已分享的 Codex 可使用本机账户执行命令、读写文件和联网，无需逐次审批。"
+            : "Codex 使用受限权限，需要时在本机请求审批。"),
+          element("p", "切换会停止此连接正在运行的任务。其他 Runtime 沿用自身权限设置。", "muted"));
+        } else {
+          row.append(element("p", "权限模式暂不可用，请更新本机应用后刷新。", "peer-error"));
+        }
+      }
       if (!connection.managedLAN && connection.browserEntryAvailable !== false && !ended && !data.departures?.departures.some(value => value.intent.membershipId === membership.membershipId)) {
         row.append(button("进入空间", () => void run(async (current) => {
           if (Date.parse(membership.expiresAt) <= now()) throw new Error("成员关系已过期，请刷新空间状态。");

@@ -8,6 +8,8 @@ or runtime lifecycle.
 
 [ADR-0074: Private Peer cancellation diagnostics](0074-peer-cancellation-diagnostics.md)
 
+[ADR-0075: Per-connection Peer execution trust](0075-peer-execution-trust.md)
+
 ## Naming
 
 Use a zero-padded sequence and short kebab-case title:

@@ -10,6 +10,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -50,6 +51,9 @@ func newRuntimeFactoryFixture(t *testing.T, kind string) runtimeFactoryFixture {
 		Sandbox: "workspace-write", Workspace: t.TempDir(),
 		Command:      []string{os.Args[0], "-test.run=^TestPeerRuntimeProcessFixture$", "--", "app-server"},
 		EnvAllowlist: []string{"CONVENE_WIRE_PEER_RUNTIME_FIXTURE"}}
+	if strings.HasPrefix(kind, "codex-full") {
+		cfg.Adapter, cfg.RuntimeKind = "codex", "codex"
+	}
 	id := "agent_runtimefactory001"
 	sources, err := NewSources([]config.AgentConfig{cfg}, map[string]string{cfg.Name: id})
 	if err != nil {
@@ -73,6 +77,13 @@ func newRuntimeFactoryFixture(t *testing.T, kind string) runtimeFactoryFixture {
 	snapshot := signedAcceptanceSnapshot(t, host, []AgentOffer{entry.Offer}, []AcceptanceRecord{record}, now)
 	if err := c.exporter.installAcceptanceSnapshot(membership, snapshot, now); err != nil {
 		t.Fatal(err)
+	}
+	// Existing approval regressions explicitly select restricted mode. Full-mode
+	// fixtures deliberately leave the preference absent to exercise the default.
+	if kind == "codex" {
+		if _, _, err := c.exporter.SetExecutionTrust(membership, 0, false, now); err != nil {
+			t.Fatal(err)
+		}
 	}
 	partitions, err := NewRuntimePartitions(root, store, func() error { return nil })
 	if err != nil {
@@ -118,7 +129,7 @@ func (f runtimeFactoryFixture) execute(ctx context.Context, current func(context
 func ignoreRuntimeEvent(context.Context, bridgeruntime.Event) error { return nil }
 
 func TestPeerRuntimeFactorySharesPhysicalGateAndRechecksAfterQueue(t *testing.T) {
-	for _, mode := range []string{"run", "Host unavailable", "withdraw", "cancel"} {
+	for _, mode := range []string{"run", "Host unavailable", "withdraw", "cancel", "trust change"} {
 		t.Run(mode, func(t *testing.T) {
 			f := newRuntimeFactoryFixture(t, "generic")
 			ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -161,6 +172,11 @@ func TestPeerRuntimeFactorySharesPhysicalGateAndRechecksAfterQueue(t *testing.T)
 				state, _ := f.connectors.store.Read()
 				if _, err := f.connectors.exporter.Withdraw(state.Revision, f.membership, f.binding.ExportID, f.binding.GrantRevision,
 					"op_runtimewithdraw001", f.now); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if mode == "trust change" {
+				if _, _, err := f.connectors.exporter.SetExecutionTrust(f.membership, 0, false, f.now); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -401,12 +417,30 @@ func TestPeerRuntimeProcessFixture(t *testing.T) {
 		case 1:
 			_ = encoder.Encode(map[string]any{"id": 1, "result": map[string]any{}})
 		case 2:
+			if strings.HasPrefix(kind, "codex-full") {
+				if message.Params["sandbox"] != "danger-full-access" || message.Params["approvalPolicy"] != "never" {
+					os.Exit(3)
+				}
+				_ = encoder.Encode(map[string]any{"id": 2, "result": map[string]any{"thread": map[string]string{"id": "thread-peer-test"}, "approvalPolicy": "never"}})
+				continue
+			}
 			if message.Params["sandbox"] != "workspace-write" || message.Params["approvalPolicy"] != "on-request" || message.Params["approvalsReviewer"] != "user" {
 				os.Exit(3)
 			}
 			_ = encoder.Encode(map[string]any{"id": 2, "result": map[string]any{"thread": map[string]string{"id": "thread-peer-test"}, "approvalPolicy": "on-request", "approvalsReviewer": "user"}})
 		case 3:
 			_ = encoder.Encode(map[string]any{"id": 3, "result": map[string]any{"turn": map[string]string{"id": "turn-peer-test"}}})
+			if strings.HasPrefix(kind, "codex-full") {
+				_ = os.WriteFile("permission-test.txt", []byte("trusted"), 0600)
+				if kind == "codex-full-hold" {
+					for {
+						time.Sleep(100 * time.Millisecond)
+					}
+				}
+				_ = encoder.Encode(map[string]any{"method": "item/completed", "params": map[string]any{"threadId": "thread-peer-test", "turnId": "turn-peer-test", "item": map[string]string{"id": "reply-peer-test", "type": "agentMessage", "text": "Peer full trust completed."}}})
+				_ = encoder.Encode(map[string]any{"method": "turn/completed", "params": map[string]any{"threadId": "thread-peer-test", "turn": map[string]string{"id": "turn-peer-test", "status": "completed"}}})
+				continue
+			}
 			cwd, _ := os.Getwd()
 			_ = encoder.Encode(map[string]any{"id": 8, "method": "item/commandExecution/requestApproval", "params": map[string]any{
 				"threadId": "thread-peer-test", "turnId": "turn-peer-test", "itemId": "command-peer-test", "environmentId": "local", "command": "write permission-test.txt", "cwd": cwd}})

@@ -850,6 +850,7 @@ export interface PeerLocalConnection {
   acceptances:          PeerLocalConnectionAcceptance[];
   acceptanceSnapshots?: PeerLocalConnectionAcceptanceSnapshot[];
   departure?:           PeerLocalConnectionDeparture;
+  executionTrust?:      PeerLocalConnectionExecutionTrust;
   exports:              PeerLocalConnectionExport[];
   localExports?:        PeerLocalConnectionLocalExport[];
   receipt:              PeerLocalConnectionReceipt;
@@ -1049,6 +1050,11 @@ export interface HilariousPayload {
 
 export type ReceiptState = "revoked";
 
+export interface PeerLocalConnectionExecutionTrust {
+  enabled:  boolean;
+  revision: number;
+}
+
 export interface PeerLocalConnectionExport {
   authorityNodeId:   string;
   capabilities:      FriskyCapabilities;
@@ -1208,6 +1214,7 @@ export interface Connection {
   acceptances:          ConnectionAcceptance[];
   acceptanceSnapshots?: ConnectionAcceptanceSnapshot[];
   departure?:           ConnectionDeparture;
+  executionTrust?:      ConnectionExecutionTrust;
   exports:              ConnectionExport[];
   localExports?:        ConnectionLocalExport[];
   receipt:              ConnectionReceipt;
@@ -1403,6 +1410,11 @@ export interface MagentaPayload {
   signerNodeId:    string;
   signerPublicKey: string;
   subjectDigest:   string;
+}
+
+export interface ConnectionExecutionTrust {
+  enabled:  boolean;
+  revision: number;
 }
 
 export interface ConnectionExport {
@@ -4795,5 +4807,10 @@ export interface FluffyEndpoint {
 export interface Host11 {
   nodeId:    string;
   publicKey: string;
+}
+
+export interface PeerExecutionTrust {
+  enabled:  boolean;
+  revision: number;
 }
 

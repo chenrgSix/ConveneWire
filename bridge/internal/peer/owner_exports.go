@@ -41,10 +41,11 @@ type OwnerExportView struct {
 }
 
 type OwnerConnectionView struct {
-	Invitation wire.PeerInvitation `json:"invitation"`
-	Membership wire.PeerMembership `json:"membership"`
-	State      string              `json:"state"`
-	Exports    []OwnerExportView   `json:"exports"`
+	Invitation     wire.PeerInvitation     `json:"invitation"`
+	Membership     wire.PeerMembership     `json:"membership"`
+	State          string                  `json:"state"`
+	ExecutionTrust wire.PeerExecutionTrust `json:"executionTrust"`
+	Exports        []OwnerExportView       `json:"exports"`
 }
 
 // OwnerState omits machine/human credentials and proof journals. Its locally
@@ -63,7 +64,7 @@ func (e *Exporter) OwnerState(now time.Time) (OwnerState, error) {
 	}
 	view := OwnerState{Participant: state.Participant, LocalUserID: state.LocalUserID, Revision: state.Revision, Connections: []OwnerConnectionView{}}
 	for _, local := range state.Connections {
-		connection := OwnerConnectionView{Invitation: local.Receipt.Invitation, Membership: local.Receipt.Membership, State: local.State, Exports: []OwnerExportView{}}
+		connection := OwnerConnectionView{Invitation: local.Receipt.Invitation, Membership: local.Receipt.Membership, State: local.State, ExecutionTrust: effectiveExecutionTrust(local), Exports: []OwnerExportView{}}
 		latest := map[string]LocalExport{}
 		for _, entry := range local.LocalExports {
 			grant := entry.Offer.Grant

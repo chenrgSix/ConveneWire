@@ -1,5 +1,22 @@
 # Security and Authorization
 
+## Participant execution trust
+
+[ADR-0075](../adr/0075-peer-execution-trust.md) changes the local default for
+shared Peer Codex execution to full trust. A joined connection without a saved
+choice is enabled; explicit off is durable and restores restricted local
+approval. The permission applies only within the existing membership and
+bilateral export/acceptance scope. It neither grants Agent sharing nor imports
+legacy Device consent. Pi/generic runtimes retain their own permission behavior.
+
+Only the local Owner Console may change a connection's preference. Peer machine,
+Device and remote Owner credentials, foreign origins and stale revisions are
+rejected. The Host never supplies or synchronizes the preference. A change
+retires the affected connector, cancels pending approvals and isolates subsequent
+native sessions; existing journals still prevent duplicate execution. Missing
+or corrupt established state fails closed. Downgrades cannot silently discard
+an explicit off because older strict readers reject the new private field.
+
 ## Peer invitation admission
 
 [ADR-0068](../adr/0068-peer-collaboration-delivery.md) is implemented by the

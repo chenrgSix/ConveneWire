@@ -50,9 +50,9 @@ func consolePeerBinding() wire.PeerExecutionBinding {
 
 func TestPeerConsoleAcceptsOnlyOwnerAndLocalOriginWithoutLegacyFallback(t *testing.T) {
 	service, _, server := peerConsoleFixture(t)
-	for _, route := range []string{"/api/peers/status", "/api/peers/approvals", "/api/peers/approvals/approval_request001"} {
+	for _, route := range []string{"/api/peers/status", "/api/peers/approvals", "/api/peers/approvals/approval_request001", "/api/peers/execution-trust"} {
 		method := http.MethodGet
-		if strings.Contains(route, "approval_request") {
+		if strings.Contains(route, "approval_request") || strings.Contains(route, "execution-trust") {
 			method = http.MethodPost
 		}
 		for _, token := range []string{"", "peer-machine-token", "device-token", "host-owner-token"} {

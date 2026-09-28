@@ -25,6 +25,7 @@ type peerRunExecution struct {
 	emitMu           sync.Mutex
 	admissionMu      sync.Mutex
 	admission        ExecutionAdmission
+	executionTrust   *wire.PeerExecutionTrust
 	terminal         *bridgeruntime.Event
 	reply            string
 	preview          string
@@ -37,13 +38,36 @@ func (e *peerRunExecution) current(ctx context.Context) error {
 	if _, err := e.factory.local(e.membership, e.delivery.Settlement.Binding); err != nil {
 		return diagnosticCause("authorization", "local_recheck", err)
 	}
+	if err := e.checkExecutionTrust(); err != nil {
+		return diagnosticCause("authorization", "local_recheck", err)
+	}
 	admission, err := e.client.AuthorizeExecution(ctx, e.factory.store, e.membership, e.delivery.Settlement.Binding)
 	if err != nil {
 		return diagnosticCause("authorization", "host_recheck", err)
 	}
+	if err := e.checkExecutionTrust(); err != nil {
+		return diagnosticCause("authorization", "local_recheck", err)
+	}
 	e.admissionMu.Lock()
 	e.admission = admission
 	e.admissionMu.Unlock()
+	return nil
+}
+
+// Freeze the local permission epoch at first admission, then recheck it during
+// execution as well as after network waits. It never changes publication scope.
+func (e *peerRunExecution) checkExecutionTrust() error {
+	trust, err := e.factory.store.executionTrust(e.membership, e.factory.clock())
+	if err != nil {
+		return err
+	}
+	e.admissionMu.Lock()
+	defer e.admissionMu.Unlock()
+	if e.executionTrust == nil {
+		e.executionTrust = &trust
+	} else if *e.executionTrust != trust {
+		return ErrExport
+	}
 	return nil
 }
 

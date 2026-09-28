@@ -75,7 +75,8 @@ export function createPeerSharingController({root, request, now = Date.now, newO
   function renderSource() {
     const selectedSource = source(); shownSource = selectedSource ? structuredClone(selectedSource) : null; c("source").replaceChildren();
     if (!selectedSource) { c("source").append(make("p", "尚无可分享的 Agent，请先在本机 Agent 页面完成配置。")); return; }
-    c("source").append(details([["本机 Agent", selectedSource.name], ["工作区（仅本机）", selectedSource.workspace], ["本机沙箱", selectedSource.sandbox || "由 Runtime 管理"]]));
+    c("source").append(details([["本机 Agent", selectedSource.name], ["工作区（仅本机）", selectedSource.workspace], ["关闭完全信任后的沙箱", selectedSource.sandbox || "由 Runtime 管理"]]));
+    c("source").append(make("p", "Codex 的执行权限取决于上方已连接空间的“完全信任此空间”开关；默认开启，可关闭以恢复本机审批。"));
     for (const [key, label] of Object.entries(capabilityLabels)) if (selectedSource.capabilities[key]) {
       const row = make("label", label, "peer-capability"), input = make("input"); input.type = "checkbox"; input.checked = true; input.dataset.capability = key;
       if (key === "supportsStart") { input.hidden = true; row.hidden = true; }

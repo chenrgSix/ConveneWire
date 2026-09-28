@@ -830,6 +830,7 @@ type PeerLocalConnection struct {
 	Acceptances         []PeerLocalConnectionAcceptance         `json:"acceptances"`
 	AcceptanceSnapshots []PeerLocalConnectionAcceptanceSnapshot `json:"acceptanceSnapshots,omitempty"`
 	Departure           *PeerLocalConnectionDeparture           `json:"departure,omitempty"`
+	ExecutionTrust      *PeerLocalConnectionExecutionTrust      `json:"executionTrust,omitempty"`
 	Exports             []PeerLocalConnectionExport             `json:"exports"`
 	LocalExports        []PeerLocalConnectionLocalExport        `json:"localExports,omitempty"`
 	Receipt             PeerLocalConnectionReceipt              `json:"receipt"`
@@ -1027,6 +1028,11 @@ type HilariousPayload struct {
 	SubjectDigest   string  `json:"subjectDigest"`
 }
 
+type PeerLocalConnectionExecutionTrust struct {
+	Enabled  bool  `json:"enabled"`
+	Revision int64 `json:"revision"`
+}
+
 type PeerLocalConnectionExport struct {
 	AuthorityNodeID   string              `json:"authorityNodeId"`
 	Capabilities      FriskyCapabilities  `json:"capabilities"`
@@ -1184,6 +1190,7 @@ type Connection struct {
 	Acceptances         []ConnectionAcceptance         `json:"acceptances"`
 	AcceptanceSnapshots []ConnectionAcceptanceSnapshot `json:"acceptanceSnapshots,omitempty"`
 	Departure           *ConnectionDeparture           `json:"departure,omitempty"`
+	ExecutionTrust      *ConnectionExecutionTrust      `json:"executionTrust,omitempty"`
 	Exports             []ConnectionExport             `json:"exports"`
 	LocalExports        []ConnectionLocalExport        `json:"localExports,omitempty"`
 	Receipt             ConnectionReceipt              `json:"receipt"`
@@ -1379,6 +1386,11 @@ type MagentaPayload struct {
 	SignerNodeID    string  `json:"signerNodeId"`
 	SignerPublicKey string  `json:"signerPublicKey"`
 	SubjectDigest   string  `json:"subjectDigest"`
+}
+
+type ConnectionExecutionTrust struct {
+	Enabled  bool  `json:"enabled"`
+	Revision int64 `json:"revision"`
 }
 
 type ConnectionExport struct {
@@ -4639,6 +4651,11 @@ type FluffyEndpoint struct {
 type Host11 struct {
 	NodeID    string `json:"nodeId"`
 	PublicKey string `json:"publicKey"`
+}
+
+type PeerExecutionTrust struct {
+	Enabled  bool  `json:"enabled"`
+	Revision int64 `json:"revision"`
 }
 
 type PeerScopeKind string

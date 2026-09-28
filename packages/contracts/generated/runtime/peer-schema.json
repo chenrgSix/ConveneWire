@@ -1495,6 +1495,9 @@
         },
         "departure": {
           "$ref": "#/$defs/PeerLocalDeparture"
+        },
+        "executionTrust": {
+          "$ref": "#/$defs/PeerExecutionTrust"
         }
       }
     },
@@ -5373,6 +5376,24 @@
         },
         "lan": {
           "$ref": "#/$defs/PeerLANSignedTransport"
+        }
+      }
+    },
+    "PeerExecutionTrust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "revision"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         }
       }
     }

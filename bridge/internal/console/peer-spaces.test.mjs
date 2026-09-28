@@ -261,3 +261,46 @@ test("a retired native Space view ignores a late browser handoff response", asyn
   f.controller.render(null); release({status: "opened"}); await flush();
   assert.equal(f.e("result").textContent, "");
 });
+
+test("space trust is visible, toggles only its membership and retains explicit off on refresh", async t => {
+  let finish;
+  const f = fixture(t, async (path, body) => {
+    assert.equal(path, "/api/peers/execution-trust");
+    assert.deepEqual(body, {membershipId: membership.membershipId, expectedRevision: 0, enabled: false});
+    await new Promise(resolve => { finish = resolve; });
+    f.replies.spaces.connections[0].executionTrust = {enabled: false, revision: 1};
+    return {enabled: false, revision: 1};
+  });
+  f.replies.spaces.connections = [{invitation, membership, state: "active", executionTrust: {enabled: true, revision: 0}},
+    {invitation, membership: {...membership, membershipId: "peermember_second001"}, state: "active", executionTrust: {enabled: true, revision: 0}}];
+  await f.start();
+  const toggle = () => f.e("spaces").querySelector('[role="switch"]');
+  assert.equal(toggle().getAttribute("aria-checked"), "true");
+  assert.match(f.e("spaces").textContent, /无需逐次审批/u);
+  toggle().click(); toggle().click();
+  assert.equal(toggle().disabled, true);
+  assert.equal(f.calls.filter(value => value.path.endsWith("execution-trust")).length, 1);
+  finish(); await flush();
+  assert.equal(toggle().getAttribute("aria-checked"), "false");
+  assert.match(f.e("result").textContent, /恢复本机审批/u);
+  await f.controller.refresh();
+  assert.equal(toggle().getAttribute("aria-checked"), "false");
+  assert.equal(f.e("spaces").querySelectorAll('[role="switch"]')[1].getAttribute("aria-checked"), "true");
+});
+
+test("failed trust changes preserve mode and unavailable or ended connections offer no toggle", async t => {
+  const f = fixture(t, async () => { throw new Error("空间或权限模式已变化，请刷新后重试"); });
+  f.replies.spaces.connections = [{invitation, membership, state: "active", executionTrust: {enabled: false, revision: 3}}];
+  await f.start();
+  f.e("spaces").querySelector('[role="switch"]').click(); await flush();
+  assert.equal(f.e("spaces").querySelector('[role="switch"]').getAttribute("aria-checked"), "false");
+  assert.match(f.e("result").textContent, /刷新后重试/u);
+  delete f.replies.spaces.connections[0].executionTrust;
+  await f.controller.refresh();
+  assert.equal(f.e("spaces").querySelector('[role="switch"]'), null);
+  assert.match(f.e("spaces").textContent, /权限模式暂不可用/u);
+  f.replies.spaces.connections[0].executionTrust = {enabled: true, revision: 0};
+  f.replies.spaces.connections[0].state = "left";
+  await f.controller.refresh();
+  assert.equal(f.e("spaces").querySelector('[role="switch"]'), null);
+});

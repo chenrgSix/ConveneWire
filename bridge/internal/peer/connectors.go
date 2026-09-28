@@ -119,7 +119,7 @@ func (c *Connectors) LocalChange(peerID string) {
 }
 
 func peerAuthorizationDigest(local LocalConnection) string {
-	digest, _ := semanticDigest(map[string]any{"receipt": local.Receipt, "exports": local.Exports, "acceptances": local.Acceptances})
+	digest, _ := semanticDigest(map[string]any{"receipt": local.Receipt, "exports": local.Exports, "acceptances": local.Acceptances, "executionTrust": effectiveExecutionTrust(local)})
 	return digest
 }
 func (c *Connectors) Snapshot() ConnectorSnapshot {

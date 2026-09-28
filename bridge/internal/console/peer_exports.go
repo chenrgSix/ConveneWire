@@ -78,7 +78,7 @@ func (s *Service) getPeerSpaces(response http.ResponseWriter, _ *http.Request) {
 	for _, connection := range state.Connections {
 		lan, err := peer.ManagedLAN(filepath.Dir(s.options.ConfigPath), connection.Invitation.HostOrigin, wire.PeerNodeIdentity(connection.Invitation.Host))
 		connections = append(connections, map[string]any{"managedLAN": lan, "browserEntryAvailable": err == nil && !lan, "invitation": connection.Invitation,
-			"membership": connection.Membership, "state": connection.State})
+			"membership": connection.Membership, "state": connection.State, "executionTrust": connection.ExecutionTrust})
 	}
 	writeJSON(response, http.StatusOK, map[string]any{"participant": state.Participant, "localUserId": state.LocalUserID, "connections": connections})
 }

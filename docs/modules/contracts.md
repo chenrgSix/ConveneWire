@@ -145,6 +145,16 @@ requires exact grant correspondence and immutable history prefixes, while the
 Exporter requires current configuration correspondence before publication.
 Configuration values and the private history are never part of an offer.
 
+[ADR-0075](../adr/0075-peer-execution-trust.md) adds optional private
+`PeerLocalConnection.executionTrust`: closed `PeerExecutionTrust` has boolean
+`enabled` and integer `revision` from 1 through 9007199254740991. An absent
+preference means enabled at effective revision zero, including older stores.
+The Owner view/API expose that effective zero; it cannot be persisted as an
+explicit record. Only local Owner mutations advance it. Signed join responses
+cannot supply the preference, and synchronization cannot erase or roll it back.
+It is never included in Host messages/proofs. Older strict state readers refuse
+stores containing a saved preference, so downgrades need compatible readers.
+
 `PeerAgentSyncRequest` signs the complete ordered offer history for one stable
 local Agent; its receipt binds that history digest and the resulting exact Host
 head. Synchronization is atomic and cannot itself create an Acceptance. Both

@@ -121,6 +121,20 @@ func (f *runtimeFactory) executeManaged(ctx context.Context, membershipID string
 	if _, err := f.local(membershipID, binding); err != nil {
 		return result, err
 	}
+	trust, err := f.store.executionTrust(membershipID, f.clock())
+	if err != nil {
+		return result, err
+	}
+	checkTrust := func() error {
+		latest, err := f.store.executionTrust(membershipID, f.clock())
+		if err != nil {
+			return err
+		}
+		if latest != trust {
+			return ErrExport
+		}
+		return nil
+	}
 	partition, err := f.partitions.Open(membershipID)
 	if err != nil {
 		return result, err
@@ -135,6 +149,9 @@ func (f *runtimeFactory) executeManaged(ctx context.Context, membershipID string
 		if _, err := f.local(membershipID, binding); err != nil {
 			return err
 		}
+		if err := checkTrust(); err != nil {
+			return err
+		}
 		if err := hostCurrent(ctx); err != nil {
 			return err
 		}
@@ -143,6 +160,9 @@ func (f *runtimeFactory) executeManaged(ctx context.Context, membershipID string
 			return err
 		}
 		if err := partition.Check(); err != nil {
+			return err
+		}
+		if err := checkTrust(); err != nil {
 			return err
 		}
 		return ctx.Err()
@@ -171,16 +191,26 @@ func (f *runtimeFactory) executeManaged(ctx context.Context, membershipID string
 		return result, err
 	}
 	cfg := source.Configuration
-	cfg.AuthorityNodeID, cfg.PeerRuntimeNamespace = binding.AuthorityNodeID, partition.Namespace()
+	cfg.AuthorityNodeID = binding.AuthorityNodeID
+	// A changed permission epoch must never resume a native thread with old grants.
+	cfg.PeerRuntimeNamespace, err = semanticDigest(map[string]any{"partition": partition.Namespace(), "executionTrust": trust})
+	if err != nil {
+		return result, err
+	}
 	var adapter bridgeruntime.Adapter
 	switch {
 	case cfg.RuntimeKind == "pi":
 		adapter = bridgeruntime.PiAdapter{Config: cfg, Sessions: partition.Sessions()}
 	case cfg.Adapter == "codex":
-		adapter = bridgeruntime.CodexAdapter{Config: cfg, Sessions: partition.Sessions(),
-			LocalApproval: func(live context.Context) (bridgeruntime.LocalApprovalSession, error) {
+		codex := bridgeruntime.CodexAdapter{Config: cfg, Sessions: partition.Sessions()}
+		if trust.Enabled {
+			codex.Config.Sandbox = "danger-full-access"
+		} else {
+			codex.LocalApproval = func(live context.Context) (bridgeruntime.LocalApprovalSession, error) {
 				return f.approvals.Open(live, binding, current)
-			}}
+			}
+		}
+		adapter = codex
 	case cfg.Adapter == "generic":
 		adapter = bridgeruntime.GenericAdapter{Config: cfg}
 	default:

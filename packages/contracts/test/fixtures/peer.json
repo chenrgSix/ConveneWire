@@ -17353,6 +17353,172 @@
         "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB"
       },
       "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust enabled",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": true,
+        "revision": 1
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerExecutionTrust disabled",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": false,
+        "revision": 2
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerExecutionTrust maximum revision",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": false,
+        "revision": 9007199254740991
+      },
+      "valid": true
+    },
+    {
+      "description": "PeerExecutionTrust implicit revision cannot persist",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": true,
+        "revision": 0
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust missing choice",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "revision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust missing revision",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": false
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust unsafe revision",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": false,
+        "revision": 9007199254740992
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust fractional revision",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": false,
+        "revision": 1.5
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust unknown consent",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": true,
+        "revision": 1,
+        "deviceId": "device_foreign001"
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerExecutionTrust null choice",
+      "kind": "PeerExecutionTrust",
+      "value": {
+        "enabled": null,
+        "revision": 1
+      },
+      "valid": false
+    },
+    {
+      "description": "PeerLocalConnection persists explicit opt-out",
+      "kind": "PeerLocalConnection",
+      "value": {
+        "receipt": {
+          "schemaVersion": 1,
+          "invitation": {
+            "schemaVersion": 1,
+            "invitationId": "peerinvite_peerfixture0001",
+            "host": {
+              "nodeId": "node_hostfixture001",
+              "publicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw"
+            },
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "teamLabel": "Peer fixture",
+            "roomLabel": "Invited room",
+            "expiresAt": "2026-09-10T03:00:00.000Z",
+            "hostOrigin": "https://host.example.test",
+            "membershipExpiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "membership": {
+            "schemaVersion": 1,
+            "membershipId": "peermember_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "hostNodeId": "node_hostfixture001",
+            "participantNodeId": "node_participant001",
+            "localUserId": "user_localowner0001",
+            "memberId": "member_peerfixture0001",
+            "userId": "user_peerfixture0001",
+            "scope": {
+              "kind": "room",
+              "teamId": "team_peerfixture0001",
+              "roomId": "room_peerfixture0001"
+            },
+            "revision": 1,
+            "state": "active",
+            "createdAt": "2026-09-10T02:00:00.000Z",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "machineCredential": {
+            "schemaVersion": 1,
+            "audience": "peer.runtime",
+            "credentialId": "peercredential_peerfixture0001",
+            "peerId": "peer_peerfixture0001",
+            "token": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+            "expiresAt": "2026-10-10T02:00:00.000Z"
+          },
+          "proof": {
+            "payload": {
+              "schemaVersion": 1,
+              "purpose": "invitation.claim",
+              "signerNodeId": "node_hostfixture001",
+              "signerPublicKey": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "audienceNodeId": "node_participant001",
+              "operationId": "op_peerfixture0001",
+              "nonce": "6kpsY-KcUgq-9VB7Ey7F-ZVHdq6-vnuSQh7qaRRG0iw",
+              "subjectDigest": "9fbd05c7dcb0be42ee3d606cf8ccee2bb9cea4f76c1c85d9a4cb0de6e0f8e73b",
+              "issuedAt": "2026-09-10T02:00:00.000Z",
+              "expiresAt": "2026-09-10T02:00:30.000Z"
+            },
+            "signature": "jT6tON3nNeOwCTIjWYtVmH2-XJmWWwzHN0M6rl0kNPkz018mramGPiG61ro_9bkjPxjb4E2Bps8DJibFSm2hCA"
+          }
+        },
+        "state": "active",
+        "exports": [],
+        "acceptances": [],
+        "executionTrust": {
+          "enabled": false,
+          "revision": 1
+        }
+      },
+      "valid": true
     }
   ],
   "raw": [

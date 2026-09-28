@@ -1,5 +1,24 @@
 # Local Bridge
 
+## Peer execution trust
+
+[ADR-0075](../adr/0075-peer-execution-trust.md) defines BRG-086. Each joined
+space defaults to full trust for shared Codex execution, including existing
+connections without a saved preference. The visible “完全信任此空间” switch
+persists an independent per-membership choice. Enabled Codex uses full local
+account access with no per-operation approvals; disabled Codex restores the
+configured restricted sandbox and local approval pool. Pi/generic permissions
+remain runtime-managed. Legacy Device trust remains opt-in and independent.
+
+The Owner-only `POST /api/peers/execution-trust` accepts `membershipId`,
+`expectedRevision` and `enabled`. It remains available without Agent Runtime
+configuration. Changes persist before retiring that connector and its approvals;
+other Peers continue unchanged. Fresh execution checks pin the trust revision
+across network/queue waits and running authorization checks. Session fingerprints
+separate permission epochs, while process and Run identities still prevent
+replay. The closed private store retains opt-out across synchronization and
+restart; older readers reject saved preferences instead of dropping them.
+
 ## Private Peer execution diagnostics
 
 [ADR-0074](../adr/0074-peer-cancellation-diagnostics.md) adds a bounded private
@@ -296,8 +315,9 @@ stable local Agent, verifies the exact current bilateral grant/Acceptance and
 opens that Peer's Session partition. A required trusted Run-admission callback
 must verify the immutable request and obtain fresh Host authorization. Local
 authority and the partition are rechecked after the network check and after
-resource waiting. Codex uses this same callback through the live local approval
-pool before continuing an approved operation. Device trust, Central approval,
+resource waiting. With per-connection full trust disabled, Codex uses this same
+callback through the live local approval pool before continuing an approved
+operation. Device trust, Central approval,
 owner-private/governed requests and unimplemented artifact transfers are rejected
 before invoking an adapter. The resource remains held until process teardown.
 
