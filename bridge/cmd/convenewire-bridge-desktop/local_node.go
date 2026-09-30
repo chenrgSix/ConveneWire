@@ -12,7 +12,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"convenewire.dev/bridge/internal/autostart"
@@ -120,17 +119,21 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 	if background && startErr == nil {
 		window.Hide()
 	}
-	var navigation atomic.Uint64
+	var navigation localNodeNavigation
+	reveal := func() {
+		navigation.reveal()
+		show(window)
+	}
 	openHub := func() {
-		epoch := navigation.Add(1)
-		if startErr != nil {
+		epoch, navigate := navigation.beginWorkspace()
+		if startErr != nil || !navigate {
 			show(window)
 			return
 		}
 		go func() {
 			entry, err := hub.Entry(ctx)
 			application.InvokeAsync(func() {
-				if ctx.Err() != nil || navigation.Load() != epoch {
+				if ctx.Err() != nil || !navigation.current(epoch) {
 					return
 				}
 				if err != nil {
@@ -140,6 +143,9 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 				// A changed query forces a document navigation even if only the ticket
 				// fragment would otherwise differ; browser cache never becomes Owner ID.
 				entry = strings.Replace(entry, "/#", fmt.Sprintf("/?desktop=%d#", time.Now().UnixNano()), 1)
+				if !navigation.finishWorkspace(epoch) {
+					return
+				}
 				window.SetTitle("ConveneWire · 本地空间")
 				window.SetURL(entry)
 				show(window)
@@ -156,12 +162,13 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 		})
 	}
 	openNative := func(page string) {
-		navigation.Add(1)
+		navigation.reveal()
 		if shell == nil {
 			show(window)
 			return
 		}
 		if service := shell.Console(); service != nil {
+			navigation.enterSettings()
 			themeMu.Lock()
 			appearance := theme
 			themeMu.Unlock()
@@ -182,7 +189,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 			app.Dialog.Error().SetTitle("请在 Bridge 模式中配对").SetMessage("本地 Node 保留独立的本机身份；此版本的远端配对请在 Bridge 模式中打开。").Show()
 			return
 		}
-		openHub()
+		reveal()
 	})
 	if runtime.GOOS == "darwin" {
 		app.Event.OnApplicationEvent(events.Mac.ApplicationShouldHandleReopen, func(*application.ApplicationEvent) { activation.accept("") })
@@ -205,7 +212,7 @@ func runLocalNodeDesktop(bundle, root, workspace string, background bool, activa
 	menu.AddSeparator()
 	menu.Add("退出").OnClick(func(*application.Context) { app.Quit() })
 	tray.SetMenu(menu)
-	tray.OnClick(openHub)
+	tray.OnClick(reveal)
 	registeredSpaces := map[string]bool{}
 	registerSpaces := func() {
 		if hub == nil {

@@ -941,3 +941,10 @@ retain their explicit operation scope.
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
 | BRG-089 | DONE | Review and export supported Peer task session resume capability | WEB-085, BRG-081, RUN-020 | [Regression evidence](acceptance/brg-089-peer-task-session-resume.md): visible supported resume choice, explicit opt-out, frozen exact retries and existing-share update hint; 13 focused sharing, all 108 embedded UI and eight Host panel tests pass, plus syntax/docs/links/whitespace checks. Existing Export/Host Acceptance and installed Bridge remain unchanged; activation requires rebuilding, explicit resharing and Host acceptance. |
+
+## Conversation navigation and reading position
+
+| ID | State | Task | Depends On | Completion evidence |
+| --- | --- | --- | --- | --- |
+| BRG-090 | DONE | Preserve the current desktop page when reopening a background window | BRG-087, BRG-088 | [Regression evidence](acceptance/brg-090-background-page.md): ordinary Dock, single-instance and tray wake reveal the current document; explicit settings return retains fresh local entry and stale-navigation fencing. Five navigation groups and the full native desktop package pass race checking; desktop vet passes. Installed native/Windows acceptance remains separate |
+| WEB-093 | IN_PROGRESS | Open conversations at the latest message and preserve history reading position | WEB-030, WEB-081 | Initial Room/Task selection, delayed content, live updates and older-history anchoring checks pending |

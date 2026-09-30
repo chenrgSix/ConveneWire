@@ -243,6 +243,13 @@ are cleared; directory presence never means current connectivity. See
 
 ## Local Node entry
 
+BRG-090 makes ordinary background activation reveal the current native document
+instead of requesting another root entry. The selected conversation, draft and
+reading position remain in the running WebView. Explicit return from native
+settings still uses the fresh installation entry and rejects stale callbacks.
+See [background-page evidence](../acceptance/brg-090-background-page.md); this
+does not provide persistence across process exit or change resource authority.
+
 [ADR-0066](../adr/0066-local-node-delivery.md) adds a desktop-issued one-use entry
 fragment. Web removes it, exchanges it for the fixed local Owner and keeps the
 bearer in tab session storage. Browser User cache is not installation identity;
