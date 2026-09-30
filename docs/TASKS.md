@@ -935,3 +935,9 @@ retain their explicit operation scope.
 | ID | State | Task | Depends On | Completion Evidence |
 | --- | --- | --- | --- | --- |
 | ADP-024 | DONE | Remove managed Codex protocol output size limits | ADP-008 | [Regression evidence](acceptance/adp-024-codex-protocol-output.md): six process scenarios, Codex race checks excluding two reproduced Windows baseline failures, native Desktop tests/build, owning vet and docs lint pass; activation is a separate local deployment step |
+
+## Peer task session continuity repair
+
+| ID | State | Task | Depends On | Completion Evidence |
+| --- | --- | --- | --- | --- |
+| BRG-089 | DONE | Review and export supported Peer task session resume capability | WEB-085, BRG-081, RUN-020 | [Regression evidence](acceptance/brg-089-peer-task-session-resume.md): visible supported resume choice, explicit opt-out, frozen exact retries and existing-share update hint; 13 focused sharing, all 108 embedded UI and eight Host panel tests pass, plus syntax/docs/links/whitespace checks. Existing Export/Host Acceptance and installed Bridge remain unchanged; activation requires rebuilding, explicit resharing and Host acceptance. |

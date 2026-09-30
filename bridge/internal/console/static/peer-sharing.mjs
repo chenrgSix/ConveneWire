@@ -1,6 +1,6 @@
 import {peerOperationId} from "./peer-spaces.mjs";
 
-const capabilityLabels = {supportsStart: "启动任务", supportsStreaming: "输出进度", supportsInterrupt: "中断任务", supportsTaskContextIsolation: "独立任务上下文"};
+const capabilityLabels = {supportsStart: "启动任务", supportsStreaming: "输出进度", supportsInterrupt: "中断任务", supportsResume: "恢复同一任务会话", supportsTaskContextIsolation: "独立任务上下文"};
 const roomLinkKeys = new Set("team room view task workTask tab run scope lifecycleState ownerMemberId search attention priority filterRoomId filterAgentId".split(" "));
 const roomID = value => /^room_[A-Za-z0-9_-]{8,128}$/u.test(value);
 
@@ -82,6 +82,7 @@ export function createPeerSharingController({root, request, now = Date.now, newO
       if (key === "supportsStart") { input.hidden = true; row.hidden = true; }
       row.prepend(input); c("source").append(row);
     }
+    if (selectedSource.capabilities.supportsResume) c("source").append(make("p", "启用会话恢复后，普通任务的后续消息可继续使用同一会话；关闭后每次新建。需 Host 接纳新分享版本后生效。"));
     controls();
   }
   function openShare(value) {
@@ -110,9 +111,14 @@ export function createPeerSharingController({root, request, now = Date.now, newO
           const block = make("section", undefined, "peer-export-record");
           block.append(make("h5", entry.offer.displayName), details([["本机授权", grant.state === "revoked" ? "已撤回" : entry.current ? "当前配置下有效" : "当前配置或授权条件不满足"],
             ["授权有效至", new Date(grant.expiresAt).toLocaleString()], ["分享房间", grant.roomIds.join("、")],
+            ["会话恢复", grant.capabilities.supportsResume ? "本机已启用" : "本机未启用"],
             ["Host 回执", !acceptance ? "尚未收到接纳回执" : acceptance.state === "revoked" ? "Host 已撤销接纳" : Date.parse(acceptance.expiresAt) <= now() ? "Host 接纳已过期" : acceptance.exportId !== grant.exportId || acceptance.grantRevision !== grant.revision ? "回执属于旧的分享版本" : "Host 已接纳此版本"],
             ["双方授权范围", entry.effectiveRoomIds?.length ? entry.effectiveRoomIds.join("、") : "当前没有同时生效的房间"]]));
           block.append(make("p", "依据本机已保存的授权和回执；实际执行还需 Host 当前准入与本机权限。"));
+          if (grant.state === "active" && !grant.capabilities.supportsResume &&
+            data.sources.some(value => value.localAgentId === grant.localAgentId && value.available && value.capabilities.supportsResume)) {
+            block.append(make("p", "此分享未启用会话恢复。重新分享并经 Host 接纳后，同一普通任务的后续消息可继续使用同一会话。"));
+          }
           if (grant.state === "active") block.append(button("撤回此分享", () => {
             if (busy || !active) return;
             withdraw = {expectedRevision: data.state.revision, membershipId: value.membership.membershipId, exportId: grant.exportId, grantRevision: grant.revision, operationId: newOperationId()};
@@ -159,11 +165,11 @@ export function createPeerSharingController({root, request, now = Date.now, newO
   c("review-submit").addEventListener("click", () => {
     if (busy || !active || !data?.configurationAvailable || !source()?.available || !available(connection())) return;
     try {
-      const value = connection(), selectedSource = source(), capabilities = {supportsResume: false, supportsOwnerPrivateOutput: false};
+      const value = connection(), selectedSource = source(), capabilities = {supportsOwnerPrivateOutput: false};
       if (!shownSource || shownSource.localAgentId !== selectedSource.localAgentId || shownSource.configurationDigest !== selectedSource.configurationDigest) {
         renderSource(); c("error").textContent = "本机配置已变化。请核对更新后的工作区与能力，再审阅分享。"; return;
       }
-      for (const key of Object.keys(capabilityLabels)) capabilities[key] = Boolean(c("source").querySelector(`[data-capability="${key}"]`)?.checked);
+      for (const key of Object.keys(capabilityLabels)) capabilities[key] = Boolean(selectedSource.capabilities[key] && c("source").querySelector(`[data-capability="${key}"]`)?.checked);
       const previous = value.exports.find(entry => entry.offer.grant.localAgentId === selectedSource.localAgentId);
       const request = {membershipId: selected, localAgentId: selectedSource.localAgentId, operationId: newOperationId(), roomIds: sharingRooms(c("rooms").value, value), capabilities,
         expiresAt: new Date(Math.min(Date.parse(value.membership.expiresAt), now() + Number(c("duration").value))).toISOString(), replaceLineage: previous?.offer.grant.state === "revoked"};

@@ -78,6 +78,73 @@ test("unsubmitted reviews cannot adopt a changed configuration, revision or memb
   assert.equal(f.c("confirm").disabled, true);
 });
 
+test("resume-capable sharing reviews and freezes task continuation through an ambiguous retry", async t => {
+  let attempts = 0;
+  const f = fixture(t, async () => {
+    if (++attempts === 1) { f.data.state.revision++; throw new Error("response lost after commit"); }
+    return {offer: exported().offer};
+  });
+  f.data.sources[0].capabilities.supportsResume = true;
+  await f.start(); f.open();
+  const input = f.c("source").querySelector('[data-capability="supportsResume"]');
+  assert.ok(input, "the actual resume capability must have a visible choice");
+  assert.equal(input.checked, true);
+  assert.match(f.c("source").textContent, /恢复同一任务会话/);
+  f.c("review-submit").click();
+  assert.match(f.c("review").textContent, /恢复同一任务会话/);
+  assert.match(f.c("review").textContent, /Host 接纳/);
+  assert.equal(f.calls.some(call => call.body), false, "review alone grants no authority");
+  assert.equal(input.disabled, true);
+  f.c("confirm").click(); await flush();
+  const frozen = f.calls.find(call => call.body).body;
+  assert.equal(frozen.request.capabilities.supportsResume, true);
+  input.checked = false;
+  f.c("confirm").click(); await flush();
+  assert.deepEqual(f.calls.filter(call => call.body).map(call => call.body), [frozen, frozen]);
+});
+
+test("resume-capable sharing can explicitly opt out before confirmation", async t => {
+  const f = fixture(t, async () => ({offer: exported().offer}));
+  f.data.sources[0].capabilities.supportsResume = true;
+  await f.start(); f.open();
+  const input = f.c("source").querySelector('[data-capability="supportsResume"]');
+  assert.ok(input);
+  input.checked = false; f.c("review-submit").click();
+  assert.doesNotMatch(f.c("review").textContent, /恢复同一任务会话/);
+  f.c("confirm").click(); await flush();
+  assert.equal(f.calls.find(call => call.body).body.request.capabilities.supportsResume, false);
+});
+
+test("unsupported sources cannot export resume through an injected checkbox", async t => {
+  const f = fixture(t, async () => ({offer: exported().offer}));
+  await f.start(); f.open();
+  assert.equal(f.c("source").querySelector('[data-capability="supportsResume"]'), null);
+  const injected = f.dom.window.document.createElement("input");
+  injected.type = "checkbox"; injected.checked = true; injected.dataset.capability = "supportsResume";
+  f.c("source").append(injected);
+  f.c("review-submit").click(); f.c("confirm").click(); await flush();
+  assert.equal(f.calls.find(call => call.body).body.request.capabilities.supportsResume, false);
+});
+
+test("existing disabled shares explain the required explicit update and Host acceptance", async t => {
+  const f = fixture(t, async () => ({offer: exported(2).offer}));
+  f.data.sources[0].capabilities.supportsResume = true;
+  const entry = exported();
+  entry.acceptance = {acceptance: {state: "active", expiresAt: membership.expiresAt,
+    exportId: entry.offer.grant.exportId, grantRevision: 1, capabilities}};
+  f.data.state.connections[0].exports = [entry];
+  await f.start();
+  assert.match(f.c("inventory").textContent, /未启用会话恢复/);
+  assert.match(f.c("inventory").textContent, /重新分享并经 Host 接纳/);
+  assert.equal(f.calls.some(call => call.body), false, "existing authorization must not migrate automatically");
+  f.review(); f.c("confirm").click(); await flush();
+  const updated = f.calls.find(call => call.body).body;
+  assert.equal(updated.request.capabilities.supportsResume, true);
+  assert.equal(updated.request.replaceLineage, false);
+  assert.equal(entry.offer.grant.capabilities.supportsResume, false);
+  assert.equal(entry.acceptance.acceptance.capabilities.supportsResume, false);
+});
+
 test("Team sharing accepts only explicit same-Host Room links and Room membership cannot widen", () => {
   const scoped = structuredClone(connection); scoped.membership.scope = {kind: "team", teamId: membership.scope.teamId, roomId: null};
   const link = `${invitation.hostOrigin}/?team=${membership.scope.teamId}&room=${membership.scope.roomId}&view=room`;

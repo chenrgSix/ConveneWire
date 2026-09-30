@@ -117,6 +117,15 @@ confirmed. After a possibly committed write, retry retains the original operatio
 configuration digest and complete selection. Replacing a locally revoked Export
 explicitly creates a new lineage and still requires Host acceptance.
 
+BRG-089 includes **恢复同一任务会话** in that reviewed capability subset when the
+local adapter supports resume. The choice is checked initially and can be
+disabled before review; unsupported sources cannot offer it. The confirmation
+and any ambiguous retry retain the exact selected value. Existing disabled
+shares display an update hint, but their saved Export and Host Acceptance remain
+unchanged until an explicit reshare and Host decision. An accepted ordinary Task
+can then resume its native session; Discussion turns retain their fresh-session
+policy. No protocol, execution permission or admission boundary changes.
+
 Inventory distinguishes current local consent, retained Host receipts and the
 bilateral Room intersection without claiming fresh execution admission. Withdrawal
 reviews the exact Export revision and survives unavailable Runtime configuration.
