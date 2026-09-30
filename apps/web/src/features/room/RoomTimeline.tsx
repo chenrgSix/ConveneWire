@@ -91,8 +91,24 @@ export function RoomTimeline({
   const t = (key: TranslationKey) => translate(locale, key);
   const timelineRef = useRef<HTMLElement>(null);
   const anchorRef = useRef<{ messageId: string; top: number } | null>(null);
+  const followLatestRef = useRef(true);
   const findAnchor = () => Array.from(timelineRef.current?.querySelectorAll<HTMLElement>("[data-message-id]") ?? [])
     .find((element) => element.dataset.messageId === anchorRef.current?.messageId);
+  useLayoutEffect(() => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    const followLatest = () => {
+      if (followLatestRef.current && !anchorRef.current) timeline.scrollTop = timeline.scrollHeight;
+    };
+    followLatest();
+    // Images, Markdown and the dock can settle after the messages render. Keep
+    // following only while the reader has not scrolled back into the history.
+    if (!window.ResizeObserver) return;
+    const observer = new window.ResizeObserver(followLatest);
+    observer.observe(timeline);
+    for (const child of timeline.children) observer.observe(child);
+    return () => observer.disconnect();
+  }, [messages, pendingMessages, runOutputs, runActivities, runs]);
   useLayoutEffect(() => {
     const anchor = anchorRef.current;
     const timeline = timelineRef.current;
@@ -103,6 +119,7 @@ export function RoomTimeline({
   }, [messages]);
   const loadOlder = async () => {
     if (!onLoadOlderMessages || historyLoading) return;
+    followLatestRef.current = false;
     const first = timelineRef.current?.querySelector<HTMLElement>("[data-message-id]");
     anchorRef.current = first?.dataset.messageId
       ? { messageId: first.dataset.messageId, top: first.getBoundingClientRect().top }
@@ -120,6 +137,8 @@ export function RoomTimeline({
   return (
     <section className="timeline" aria-label={t("roomMessages")} ref={timelineRef}
       onScroll={() => {
+        const timeline = timelineRef.current;
+        if (timeline) followLatestRef.current = timeline.scrollHeight - timeline.clientHeight - timeline.scrollTop <= 48;
         const anchor = anchorRef.current;
         const element = findAnchor();
         if (anchor && element) anchor.top = element.getBoundingClientRect().top;

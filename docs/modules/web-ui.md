@@ -968,6 +968,13 @@ timeline. Request errors participate in workspace layout above the timeline
 and clear when the user edits the draft, so an error cannot cover the Send
 action or stale-block a corrected command.
 
+WEB-093 opens each Room/Task timeline at its latest message, including data that
+arrives after the first render. New messages and resized content follow the
+bottom while the reader remains within 48 pixels of it. Scrolling into history
+stops that following; loading older messages retains the existing message
+anchor. Observers are disconnected when the conversation changes or unmounts.
+See [scrolling evidence](../acceptance/web-093-conversation-scroll.md).
+
 The desktop context sidebar contains only the Team identity and selected Room
 participants. The participant roster fills the column below the Team identity,
 uses the sidebar itself as its surface, and scrolls only when the member list

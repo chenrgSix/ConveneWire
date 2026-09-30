@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "surface": "production RoomTimeline and styles in a synthetic React fixture",
+  "browser": "Codex In-app Browser",
+  "realModelInvoked": false,
+  "ownerProfileUsed": false,
+  "cases": [
+    {
+      "case": "initial-open",
+      "bodyScroll": 0,
+      "bottomGap": 0.5,
+      "clientHeight": 588,
+      "lastMessage": "滚滚动验收08:00对话 A · 第 49 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+      "scrollHeight": 5308,
+      "scrollTop": 4719.5
+    },
+    {
+      "case": "switch-conversation",
+      "bodyScroll": 0,
+      "bottomGap": 0.5,
+      "clientHeight": 588,
+      "lastMessage": "滚滚动验收08:00对话 B · 第 49 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+      "scrollHeight": 5308,
+      "scrollTop": 4719.5
+    },
+    {
+      "case": "append-at-bottom",
+      "bodyScroll": 0,
+      "bottomGap": 0,
+      "clientHeight": 588,
+      "lastMessage": "滚滚动验收08:00对话 B · 第 50 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+      "scrollHeight": 5437,
+      "scrollTop": 4849
+    },
+    {
+      "case": "late-content-height",
+      "bodyScroll": 0,
+      "bottomGap": -0.5,
+      "clientHeight": 588,
+      "lastMessage": "滚滚动验收08:00对话 B · 第 50 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+      "scrollHeight": 9679,
+      "scrollTop": 9091.5
+    },
+    {
+      "case": "append-while-reading",
+      "before": {
+        "bodyScroll": 0,
+        "bottomGap": 799.5,
+        "clientHeight": 588,
+        "lastMessage": "滚滚动验收08:00对话 B · 第 50 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+        "scrollHeight": 9679,
+        "scrollTop": 8291.5
+      },
+      "after": {
+        "bodyScroll": 0,
+        "bottomGap": 1032.5,
+        "clientHeight": 588,
+        "lastMessage": "滚滚动验收08:00对话 B · 第 51 条消息\n这是一条用于滚动验收的合成消息。长对话打开后应显示最新内容；翻阅历史时应保留当前阅读位置。",
+        "scrollHeight": 9912,
+        "scrollTop": 8291.5
+      }
+    },
+    {
+      "case": "prepend-history",
+      "before": {
+        "message": "msg_B_10",
+        "scrollTop": 0,
+        "top": 165
+      },
+      "after": {
+        "first": "msg_B_5",
+        "scrollTop": 1165.5,
+        "top": 164.96875
+      }
+    }
+  ]
+}
