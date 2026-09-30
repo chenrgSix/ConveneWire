@@ -1,0 +1,10 @@
+{
+  "hiddenInstallationStageRemoved": true,
+  "expandedBackupApplicationsRemoved": true,
+  "temporaryPackageAndExtractionRemoved": true,
+  "stalePackageRegistrationRemoved": true,
+  "canonicalRegistrations": 1,
+  "bundleVersion": "0.5.9",
+  "matchingRollbackZipAndStoppedSnapshotRetained": true,
+  "historicalBackupsPreserved": true
+}
