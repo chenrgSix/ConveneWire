@@ -1,0 +1,10 @@
+{
+  "stopped": true,
+  "snapshotFilesMatch": 17,
+  "snapshotManifestSha256": "457ffbd68c3e71842544cd43876739ad1a54e6ea50e5398daa667003cae5d2b4",
+  "rollbackRelease": "v0.5.9-local.2",
+  "rollbackSourceCommit": "a86f5100a737019286f554c28f79a633b43efa1f",
+  "rollbackZipSha256": "f9c0a0120d5f4883e7ca4a0c510e0b278996db89a1de29ff64475dc3fdbd1aa3",
+  "rollbackInstalledFilesMatch": 7316,
+  "rollbackArchiveOrigin": "Repacked installed application with exact file-byte verification"
+}

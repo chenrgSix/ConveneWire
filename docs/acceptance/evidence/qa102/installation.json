@@ -1,0 +1,38 @@
+{
+  "archiveSha256": "ceff73694508f225b224bd852ef5a3712c851bc9fa2f29881c4762fe0dd310da",
+  "installedFilesMatch": 7316,
+  "bundleVersion": "0.5.9",
+  "releaseVersion": "v0.5.9",
+  "sourceCommit": "1fa14a552f64fc569078005a6925b91870394b8d",
+  "sourceState": "clean",
+  "canonicalPath": "/Applications/ConveneWire Bridge.app",
+  "nativeArchitecture": "darwin/arm64",
+  "publicRelease": true,
+  "fileModesMatchCandidate": true,
+  "legacyZipFilenameUTF8MatchesNativeExtraction": true,
+  "databaseQuickCheck": "ok",
+  "retainedConfigFiles": 6,
+  "retainedTables": [
+    "teams",
+    "rooms",
+    "messages",
+    "runs",
+    "agent_tasks"
+  ],
+  "activeRuns": 0,
+  "live": true,
+  "ready": true,
+  "nodeVersion": "v22.23.1",
+  "hubFiles": 7305,
+  "checkedAt": "2026-09-30T09:02:38.298251+00:00",
+  "desktopProcesses": 1,
+  "hubProcesses": 1,
+  "initialPostLaunchDataMatches": true,
+  "laterWorkTablesMatchBaseline": true,
+  "laterConfigFilesMatchBaseline": 5,
+  "laterConfigurationDeltaFields": [
+    "agents[0].command[0]"
+  ],
+  "laterExecutableSettingPreserved": true,
+  "laterConfigurationVerificationBoundary": "Six configuration files and five work tables matched immediately after launch; during subsequent UI inspection one Agent executable setting changed from an absent path to an existing path. The later setting was preserved, without attributing that edit to installation."
+}

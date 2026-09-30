@@ -1,0 +1,13 @@
+{
+  "ownedInstallationStageRemoved": true,
+  "ownedTaskTemporaryRootRemoved": true,
+  "temporaryDownloadFilesRemoved": 1,
+  "temporaryDownloadBytesRemoved": 84402279,
+  "ownedTemporaryFileCountRemoved": 14642,
+  "ownedTemporaryBytesRemoved": 592181860,
+  "privateRollbackSnapshotAndOldAppZipRetained": true,
+  "applicationRegistrations": 1,
+  "ownedStaleRegistrationsRemoved": 0,
+  "canonicalVersion": "v0.5.9",
+  "checkedAt": "2026-09-30T09:10:03.687653+00:00"
+}
