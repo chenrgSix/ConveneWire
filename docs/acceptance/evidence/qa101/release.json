@@ -1,0 +1,167 @@
+{
+  "version": "v0.5.9",
+  "sourceCommit": "1fa14a552f64fc569078005a6925b91870394b8d",
+  "assetCount": 12,
+  "checksums": 7,
+  "assets": [
+    {
+      "name": "COMMERCIAL-LICENSE.md",
+      "id": 600403163,
+      "size": 2070,
+      "digest": "sha256:9c652c6c66e86b99729fd52b1fb8b83e73f7f28a1741a4038125f8ff510e4dca"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.9_darwin_arm64.zip",
+      "id": 600403173,
+      "size": 84402279,
+      "digest": "sha256:ceff73694508f225b224bd852ef5a3712c851bc9fa2f29881c4762fe0dd310da"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.9_windows_amd64.zip",
+      "id": 600403184,
+      "size": 76408408,
+      "digest": "sha256:5a04d54c34e8db4c23f4d4c11e28117e5edb9619c000e93ed3126c8911d98f6c"
+    },
+    {
+      "name": "convenewire-bridge-desktop_0.5.9_windows_amd64_setup.exe",
+      "id": 600403179,
+      "size": 49289214,
+      "digest": "sha256:e611d3bf6fc6cf9b65911661aeaa9e6ad069c9755d8602d4f1417684900d0e0d"
+    },
+    {
+      "name": "convenewire-bridge_0.5.9_linux_amd64.tar.gz",
+      "id": 600403175,
+      "size": 5032160,
+      "digest": "sha256:d0da017af344664737c9fe27add7f65125039c1c9b8ebf60a699afe96ad2ba5a"
+    },
+    {
+      "name": "convenewire-bridge_0.5.9_linux_arm64.tar.gz",
+      "id": 600403189,
+      "size": 4559748,
+      "digest": "sha256:0090840f911fe266d786a4643ccac052ae69ed6e7375de8c5b9d033c9198c5ab"
+    },
+    {
+      "name": "convenewire-central_0.5.9_source.SHA256SUMS.sha256",
+      "id": 600403216,
+      "size": 77,
+      "digest": "sha256:ba0bc8e321cb69460475e2d479f11198464c9393ece04403587eee4790c27fc3"
+    },
+    {
+      "name": "convenewire-central_0.5.9_source.tar.gz",
+      "id": 600403223,
+      "size": 10805127,
+      "digest": "sha256:e1c04444aa647260f8473f44b363e474c857165305d88dac993e1a8cdb4d35a1"
+    },
+    {
+      "name": "LICENSE",
+      "id": 600403156,
+      "size": 9471,
+      "digest": "sha256:91ba8b540a0674ed2cf6ff4fe7a277ebd92e672eead5edd6f9c1994d3a854ef5"
+    },
+    {
+      "name": "NOTICE",
+      "id": 600403157,
+      "size": 293,
+      "digest": "sha256:e693f578273a8055378dc63d5fa0d92235a0bfc30de871550a3dcf04fa5af7c5"
+    },
+    {
+      "name": "SHA256SUMS",
+      "id": 600403151,
+      "size": 799,
+      "digest": "sha256:49eea644bf83a6c31840818aa760638bb1d9ba68c5b3d4e17e3bd03f0f60e012"
+    },
+    {
+      "name": "TRADEMARKS.md",
+      "id": 600403155,
+      "size": 1470,
+      "digest": "sha256:a5ab3ac04b9bd5c8970956b8b07bf105048e94f9c2a303f81a66b7975624156d"
+    }
+  ],
+  "releaseId": 399825488,
+  "publishedAt": "2026-09-30T08:27:43Z",
+  "public": true,
+  "byteAndSizeDigestsMatch": true,
+  "licensesMatchTaggedSource": true,
+  "ci": {
+    "databaseId": 36686493788,
+    "headSha": "1fa14a552f64fc569078005a6925b91870394b8d",
+    "conclusion": "success",
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/36686493788",
+    "jobs": [
+      {
+        "name": "Repository",
+        "conclusion": "success"
+      },
+      {
+        "name": "Desktop macOS",
+        "conclusion": "success"
+      },
+      {
+        "name": "Desktop Windows",
+        "conclusion": "success"
+      },
+      {
+        "name": "Go",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "databaseId": 36686994692,
+    "headSha": "1fa14a552f64fc569078005a6925b91870394b8d",
+    "conclusion": "success",
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/36686994692",
+    "jobs": [
+      {
+        "name": "Validate draft Release",
+        "conclusion": "success"
+      },
+      {
+        "name": "Go release gates",
+        "conclusion": "success"
+      },
+      {
+        "name": "Repository release gates",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build desktop macOS/arm64",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build linux/amd64",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build desktop Windows/amd64",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build linux/arm64",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build Central source release",
+        "conclusion": "success"
+      },
+      {
+        "name": "Attach ConveneWire binaries",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify uploaded Release",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "latest": {
+    "assets": 12,
+    "id": 399825488,
+    "publishedAt": "2026-09-30T08:27:43Z",
+    "tag": "v0.5.9",
+    "anonymousWebRedirectTag": "v0.5.9",
+    "anonymousHTTPStatus": 200
+  },
+  "draftAndAnonymousPublicBytesAndAssetIDsMatch": true,
+  "verificationBoundary": "Local authenticated Draft and anonymous public byte/size/digest, seven-checksum and tagged-license checks; exact-source hosted combined asset verifier before and after upload; native Windows v0.5.8 upgrade gate"
+}

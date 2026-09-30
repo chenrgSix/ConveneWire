@@ -10,15 +10,15 @@ for headless environments and diagnostics.
 Current desktop builds bundle the local Hub, Web, Node.js and SQLite with the
 Go Runtime. Opening the bundled application creates a private local Node and
 opens its local workspace. Its Owner identity and Team records stay on this
-computer. Stable v0.5.8 includes this desktop on macOS and Windows. Open **设备与协作**
+computer. Stable v0.5.9 includes this desktop on macOS and Windows. Open **设备与协作**
 in the workspace for LAN setup and a one-use connection code; the app manages
 certificates automatically. Advanced settings retain manual HTTPS and Relay invitations.
 [TASKS.md](../docs/TASKS.md) and the
-[release record](../docs/acceptance/qa-098-v0.5.8.md) track delivery and the
+[release record](../docs/acceptance/qa-101-v0.5.9.md) track delivery and the
 remaining platform and network acceptance boundaries.
 
 1. Create a local Team and Room. Choose **连接本机 Runtime** to bind this
-   installation's local Runtime to one Team, then **配置本机 Agent** to select
+   installation's local Runtime to one Team, then **配置中心** to select
    installed Runtime executables and Workspaces. The Console can also open
    before a Team is created. Local model execution uses the chosen Runtime's
    existing setup; the desktop bundle does not include a model.
@@ -67,7 +67,7 @@ it:
 sha256sum -c SHA256SUMS --ignore-missing
 
 # macOS (set this to the archive you downloaded)
-ARCHIVE=convenewire-bridge-desktop_0.5.8_darwin_arm64.zip
+ARCHIVE=convenewire-bridge-desktop_0.5.9_darwin_arm64.zip
 grep "  ${ARCHIVE}$" SHA256SUMS | shasum -a 256 -c -
 ```
 

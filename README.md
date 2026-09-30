@@ -21,7 +21,7 @@ The Node-first desktop includes local Run/Discussion, independent Peer
 membership, bilateral Agent sharing, Participant-local approval and private
 HTTPS configuration. See the [native desktop guide](bridge/README.md#node-first-desktop-from-this-source)
 and [distribution evidence](docs/acceptance/ops-020-native-distribution.md).
-The [task register](docs/TASKS.md) and [release record](docs/acceptance/qa-096-windows-hub-window.md)
+The [task register](docs/TASKS.md) and [release record](docs/acceptance/qa-101-v0.5.9.md)
 track delivered capabilities and the remaining acceptance boundaries.
 
 The central Team MVP is runnable: the Fastify API and React UI persist Teams,
@@ -40,7 +40,7 @@ answer satisfies the task.
 - Current baseline:
   [convenewire_network_design_v0.2.md](convenewire_network_design_v0.2.md)
 - Stable release:
-  [ConveneWire v0.5.8](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.8)
+  [ConveneWire v0.5.9](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.9)
 - Historical evaluation candidate:
   [ConveneWire v0.5.0-rc.6](https://github.com/chenrgSix/ConveneWire/releases/tag/v0.5.0-rc.6)
 - Historical baseline:
@@ -55,7 +55,10 @@ answer satisfies the task.
 - Security and clean-room audit:
   [docs/acceptance/qa-005-security-clean-room-audit.md](docs/acceptance/qa-005-security-clean-room-audit.md)
 
-Stable v0.5.8 defaults shared Codex execution to per-space full trust, with a
+Stable v0.5.9 preserves the current conversation on background reopening, opens
+conversations at the latest message and labels local settings **配置中心**.
+It also fixes Windows workspace return/theme and reviewed Peer session resume.
+Shared Codex execution retains per-space full trust, with a
 visible durable opt-out that restores local approvals. Private cancellation
 diagnostics retain execution-stop reasons. It keeps automatic secure LAN setup,
 the Windows console-window repair and the Node-first
@@ -72,10 +75,11 @@ consent. Windows conversation handoff is not supported.
 The distribution retains 12 assets, including native desktop packages, the
 Windows installer, Linux CLI archives and one Central source archive. Existing
 Central/Discussion and private evidence features remain available. Read the
-[upgrade notes](docs/releases/v0.5.8.md), stop the application and keep a verified
+[upgrade notes](docs/releases/v0.5.9.md), stop the application and keep a verified
 backup with its matching old binaries before upgrading. Never open a migrated
 database with an older version. Packages remain unsigned and updates manual;
-[QA-098](docs/acceptance/qa-098-v0.5.8.md) records release and local installation evidence.
+[QA-101](docs/acceptance/qa-101-v0.5.9.md) records publication and distribution checks;
+[QA-100](docs/acceptance/qa-100-configuration-center.md) records the earlier local macOS validation build.
 
 ## Repository Ownership
 
@@ -334,7 +338,7 @@ archive's internal file manifest.
 Run the shipped controller from the extracted root:
 
 ```bash
-archive=convenewire-central_0.5.8_source.tar.gz
+archive=convenewire-central_0.5.9_source.tar.gz
 pin_asset=${archive%.tar.gz}.SHA256SUMS.sha256
 release_dir=${archive%.tar.gz}
 tar -xzf "${archive}"
