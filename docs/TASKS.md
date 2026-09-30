@@ -928,6 +928,7 @@ retain their explicit operation scope.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | BRG-087 | DONE | Restore Windows native workspace navigation after URL loads | WEB-087, WEB-092 | [Windows evidence](acceptance/brg-087-windows-workspace-return.md): page-loaded shared navigation avoids missing URL-window injection and Runtime-ready dependency; 99 original and 101 merged embedded UI checks, original/merged desktop tests and original desktop/Console vet pass. Actual isolated WebView2 baseline emits zero returns; fixed module emits three across three documents. No model calls; installed owner acceptance remains separate |
+| BRG-088 | DONE | Synchronize Room appearance with native Agent settings on Windows | BRG-087, WEB-087 | [Regression evidence](acceptance/brg-088-windows-theme-sync.md): shared script loaded by the Web entry; 104 embedded UI, four native navigation and six Web checks pass, plus production Web build, native Windows desktop tests, desktop/Console vet and docs checks. Installed application and physical appearance acceptance remain separate |
 
 ## Runtime Output Reliability
 

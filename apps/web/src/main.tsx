@@ -1,6 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+// URL windows on Windows do not run Wails' injected navigation script.
+// Load the same guarded observer as native settings before React restores theme.
+import "../../../bridge/internal/console/static/native-navigation.js";
 import { App } from "./App.tsx";
 import "./styles.css";
 import "./features/auth/owner-recovery.css";

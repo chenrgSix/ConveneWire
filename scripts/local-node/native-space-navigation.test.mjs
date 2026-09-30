@@ -2,8 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-const source=await readFile(new URL('../../bridge/cmd/convenewire-bridge-desktop/local_node_spaces.go',import.meta.url),'utf8');
-const script=source.match(/const localSpaceNavigationScript = `([\s\S]*?)`;/)?.[1] ?? source.match(/const localSpaceNavigationScript = `([\s\S]*?)`/)[1];
+const script=await readFile(new URL('../../bridge/internal/console/static/native-navigation.js',import.meta.url),'utf8');
 for(const platform of ['webkit','webview2'])test(`native Space script works without the HTTP runtime on ${platform}`,()=>{
  const dom=new JSDOM('<a href="https://remote.example/?team=team_remote001" data-authority-node="node_remote001" data-authority-team="team_remote001"><span>Remote</span></a>',{url:'http://127.0.0.1:48123',runScripts:'outside-only'});
  const messages=[];const port={postMessage:message=>messages.push(message)};

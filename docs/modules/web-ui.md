@@ -277,6 +277,13 @@ the workspace's light/dark appearance. [Installed acceptance](../acceptance/web-
 records the final macOS source and actual navigation/appearance observations. Native API authorization and framing
 restrictions remain unchanged; no Console capability is proxied through the Hub.
 
+BRG-088 loads the shared native navigation module from the Web entry as well as
+the Console. Room appearance changes therefore reach native Agent settings even
+when Windows URL windows omit Wails script injection. The existing per-document
+guard prevents duplicate observers; ordinary browsers have no native port. Only
+the existing closed light/dark event crosses the shell boundary. See
+[theme synchronization evidence](../acceptance/brg-088-windows-theme-sync.md).
+
 WEB-088 uses the shared `secondary-action` visual role for local Agent, Runtime
 binding and network entry. Actions form one right-aligned wrapping group with
 34px controls and visible keyboard focus. The strip uses the shared divider and
