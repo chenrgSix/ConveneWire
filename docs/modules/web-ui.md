@@ -243,6 +243,11 @@ are cleared; directory presence never means current connectivity. See
 
 ## Local Node entry
 
+WEB-094 names the workspace toolbar's native configuration entry
+`配置中心` / `Configuration center`, both before and after Runtime binding.
+It continues to open the existing native settings page. The separate
+`Connect local Runtime` action retains its explicit Team-binding operation.
+
 BRG-090 makes ordinary background activation reveal the current native document
 instead of requesting another root entry. The selected conversation, draft and
 reading position remain in the running WebView. Explicit return from native

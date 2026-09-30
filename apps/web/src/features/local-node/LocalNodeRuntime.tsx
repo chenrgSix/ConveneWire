@@ -43,9 +43,9 @@ export function LocalNodeRuntime({ session, team, teams, locale, rooms = [], can
       : (zh ? (team ? `将本机 Runtime 连接到 ${team.name}；此版本绑定一个 Team。` : "先配置本机 Agent，再选择要连接的 Team。")
         : (team ? `Connect this computer to ${team.name}. This version binds one Team.` : "Set up local Agents, then choose a Team to connect."))}</span></div>
     <div className="local-node-actions">
-      {!binding?.teamId && <button className="secondary-action" type="button" disabled={busy || !binding} onClick={() => void open(false)}>{zh ? "本机 Agent" : "Local Agents"}</button>}
+      {!binding?.teamId && <button className="secondary-action" type="button" disabled={busy || !binding} onClick={() => void open(false)}>{zh ? "配置中心" : "Configuration center"}</button>}
       <button className="secondary-action" type="button" disabled={busy || !binding || (!binding.teamId && !team)} onClick={() => void open(true)}>
-        {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "本机 Agent" : "Local Agents") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
+        {busy ? (zh ? "正在打开…" : "Opening…") : binding?.teamId ? (zh ? "配置中心" : "Configuration center") : (zh ? "连接本机 Runtime" : "Connect local Runtime")}
       </button>
       <button className="secondary-action" type="button" disabled={busy || !binding} onClick={() => void open(false, "handoff")}>{zh ? "Codex 会话" : "Codex conversations"}</button>
       <DeviceCollaboration key={`${session.userId}:${session.token ?? "cookie"}`} session={session} team={team} rooms={rooms} locale={locale} canManage={canManage} />
