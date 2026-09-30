@@ -1,0 +1,30 @@
+{
+  "archiveSha256": "a1415284b6bafa1f3bfb2053c95aa04827cd7b01560f08c6279fd6a21c069801",
+  "installedFilesMatch": 7316,
+  "bundleVersion": "0.5.9",
+  "releaseVersion": "v0.5.9-local.1",
+  "sourceCommit": "26248d0bf89d00af789981d7afd634bd98720495",
+  "sourceState": "clean",
+  "hubFiles": 7305,
+  "dataMatches": true,
+  "databaseQuickCheck": "ok",
+  "retainedConfigFiles": 3,
+  "retainedTables": [
+    "teams",
+    "rooms",
+    "messages",
+    "runs",
+    "agent_tasks"
+  ],
+  "activeRuns": 0,
+  "desktopProcesses": 1,
+  "hubProcesses": 1,
+  "checkedAt": "2026-09-30T07:04:36.577568+00:00",
+  "canonicalPath": "/Applications/ConveneWire Bridge.app",
+  "live": true,
+  "ready": true,
+  "nativeArchitecture": "darwin/arm64",
+  "nodeVersion": "v22.23.1",
+  "ownerAcceptance": "pending",
+  "publicRelease": false
+}

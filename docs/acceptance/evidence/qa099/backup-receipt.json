@@ -1,0 +1,8 @@
+{
+  "stopped": true,
+  "snapshotFilesMatch": 15,
+  "snapshotManifestSha256": "108d6de356e314287055c6accbb1281b6734e2f78d2ca7896b3c47c8e9ab3be0",
+  "rollbackRelease": "v0.5.8",
+  "rollbackZipSha256": "202b77583c263dbe253a723bae687e043b691fa28ffb7928d874c68121ac0e8b",
+  "rollbackInstalledFilesMatch": 7316
+}

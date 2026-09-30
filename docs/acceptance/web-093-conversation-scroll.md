@@ -43,3 +43,7 @@ The temporary preview source, browser tab, server and wrapper-owned state were
 removed after the check. No owner profile, conversation or external model was
 used. This is a browser component/layout check, not installed desktop or
 physical Windows acceptance. No application package was installed or released.
+
+The subsequent [QA-099 local installation](qa-099-local-navigation-build.md)
+activates this behavior in the owner macOS application. Owner manual scroll
+acceptance remains pending; the geometry evidence above uses synthetic data.

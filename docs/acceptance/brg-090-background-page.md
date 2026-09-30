@@ -27,3 +27,7 @@ do not establish compatibility on older macOS versions or native Windows.
 No installed owner application was replaced, release published, model called or
 owner conversation modified in this increment. Packaged native Dock/tray
 acceptance remains a subsequent installation check.
+
+The subsequent [QA-099 local installation](qa-099-local-navigation-build.md)
+passes an installed macOS window-close/reopen smoke check on an existing owner
+conversation. Owner manual acceptance and other activation paths remain separate.
