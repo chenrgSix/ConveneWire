@@ -1,0 +1,80 @@
+{
+  "version": "v0.5.9",
+  "siteSourceCommit": "9ab20437222cca5ee998b7332391d699b4d5bbf6",
+  "run": {
+    "databaseId": 36690453655,
+    "headSha": "9ab20437222cca5ee998b7332391d699b4d5bbf6",
+    "conclusion": "success",
+    "url": "https://github.com/chenrgSix/ConveneWire/actions/runs/36690453655"
+  },
+  "jobs": [
+    {
+      "name": "Test and build static website",
+      "conclusion": "success"
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "conclusion": "success"
+    }
+  ],
+  "site": "https://chenrgsix.github.io/ConveneWire/",
+  "anonymousPublicFiles": [
+    {
+      "path": "404.html",
+      "size": 2343,
+      "sha256": "266338640817efae6778646d998517ac2b01da7d8ad7c83b6912665e93737cb3",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "assets/guide.js",
+      "size": 911,
+      "sha256": "5dc84907aa45803cf2b34865086fbfee00794a3b750986ef31d94c05402adf24",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "assets/mark.svg",
+      "size": 339,
+      "sha256": "137f3b79ae54eee6a188e37809c39df24a088b608124c4d863b23c66b06d0357",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "assets/site.css",
+      "size": 18161,
+      "sha256": "754b8c7f5ca6e10d461f35357b08d0c130e2c4a1af6f89e4045872ec78b38ab4",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "guide/index.html",
+      "size": 16437,
+      "sha256": "a7bf74abea9e742657917a8466639620c2ca65bfc3db8789e4ddf0b8758675ca",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "index.html",
+      "size": 15919,
+      "sha256": "0d39270a2fea5b212cc3e9dad1cb8a3ef7571927206025ddd91587fa8be4d0f0",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "robots.txt",
+      "size": 84,
+      "sha256": "1bf4151d1b8bd01e3cbd2c9642c79293f1c380d69421e556990b6e2039eca8d8",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "sitemap.xml",
+      "size": 239,
+      "sha256": "71fdc01a04b39f2b803c6984ffbfa06b080f0c48639b34db10081e9a2105d50b",
+      "anonymousBytesMatchExactSource": true
+    },
+    {
+      "path": "version.json",
+      "size": 126,
+      "sha256": "43f4528e3ca75fc17218a14532a6ccddeed687c262dda8261959b00a0433cf10",
+      "anonymousBytesMatchExactSource": true
+    }
+  ],
+  "publicFileCount": 9,
+  "localNoJekyllControlEmpty": true,
+  "verificationBoundary": "Nine anonymous public files compared byte-for-byte with the local build pinned to the exact deployed source; empty .nojekyll checked locally"
+}

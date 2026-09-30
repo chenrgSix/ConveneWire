@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-09-30T08:40:00.640651+00:00",
+  "temporaryDownloadGroupsRemoved": [
+    {
+      "group": "draft-assets",
+      "files": 12,
+      "bytes": 230511116
+    },
+    {
+      "group": "public-assets",
+      "files": 12,
+      "bytes": 230511116
+    }
+  ],
+  "ownedTemporaryFileCountRemoved": 61,
+  "ownedTemporaryBytesRemoved": 461459579,
+  "ownedTaskTemporaryRootRemoved": true,
+  "temporaryAppCopiesCreated": false,
+  "installedApplicationModified": false,
+  "privateRollbackSnapshotsPreserved": true
+}
