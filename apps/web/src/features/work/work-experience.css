@@ -1,7 +1,10 @@
 .work-filters, .work-pagination { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
-.work-workspace .work-intro { align-items: center; flex-wrap: wrap; gap: 12px; }
+.work-workspace .work-intro { align-items: center; flex-wrap: wrap; gap: 12px 24px; }
+.work-heading { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .work-workspace .work-intro h3 { font-size: 21px; line-height: 1.35; letter-spacing: -.02em; }
 .work-workspace .work-toolbar { flex: 1 1 auto; justify-content: flex-end; }
+.work-workspace .work-intro button { min-height: 40px; }
+.work-workspace .work-scope button { min-width: 48px; }
 .work-filter-bar { display: grid; gap: 12px; min-width: 0; }
 .work-filter-primary { align-items: center; }
 .work-filter-primary .work-search > span, .work-filter-primary .work-search small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -25,14 +28,14 @@
 .work-filters label { display: grid; min-width: 150px; gap: 6px; color: #bac6ac; font-size: 12px; }
 .work-filters select { max-width: 240px; padding: 9px 11px; border: 1px solid #46523a; border-radius: 8px; background: #171d13; color: #e0e8d8; font: inherit; }
 .work-toolbar { flex-wrap: wrap; }
-.work-toolbar .work-create-task { background: #bfd27f; color: #1a2412; border-color: #bfd27f; }
+.work-heading .work-create-task { background: #bfd27f; color: #1a2412; border-color: #bfd27f; }
 .work-filters .work-search { flex: 1 1 250px; min-width: 0; max-width: 420px; }
 .work-search input { box-sizing: border-box; min-width: 0; width: 100%; padding: 9px 11px; border: 1px solid #46523a; border-radius: 8px; background: #171d13; color: #e0e8d8; font: inherit; }
 .work-search small { font-size: 10px; color: #a3ae98; line-height: 1.4; }
 .work-card footer:has(.work-next-action) { flex-wrap: wrap; align-items: center; }
 .work-next-action { max-width: 100%; text-align: left; overflow-wrap: anywhere; white-space: normal; }
 .work-detail-actions { display: grid; justify-items: end; gap: 10px; min-width: 0; }
-.work-toolbar button:focus-visible, .work-next-action:focus-visible, .work-search input:focus-visible, .work-detail-actions button:focus-visible { outline: 2px solid #bfd27f; outline-offset: 3px; }
+.work-intro button:focus-visible, .work-next-action:focus-visible, .work-search input:focus-visible, .work-detail-actions button:focus-visible { outline: 2px solid #bfd27f; outline-offset: 3px; }
 .work-pagination { align-items: center; padding-top: 12px; color: #a3ae98; font-size: 12px; }
 .work-pagination p { margin: 0; }
 .work-inline-link:disabled { cursor: default; opacity: .5; }
@@ -184,6 +187,13 @@
 :root[data-theme="light"] .work-search small { color: #526443; }
 :root[data-theme="light"] .task-delivery-options summary { color: #354827; }
 @media (max-width: 760px) {
+  .work-workspace[aria-label] { gap: 16px; padding-top: 16px; }
+  .work-workspace .work-intro { align-items: stretch; gap: 10px; }
+  .work-heading { justify-content: space-between; width: 100%; }
+  .work-workspace .work-toolbar { flex: 0 1 auto; justify-content: flex-start; gap: 8px; }
+  .work-workspace .work-scope { margin-right: auto; }
+  .work-workspace .work-intro button { min-height: 44px; }
+  .work-workspace .work-intro .work-inline-link, .work-workspace .work-refresh { padding-inline: 10px; }
   .work-filters { align-items: stretch; }
   .work-filters label { flex: 1 1 130px; min-width: 0; }
   .work-filters select { width: 100%; max-width: none; }

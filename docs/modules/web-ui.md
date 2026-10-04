@@ -1379,3 +1379,10 @@ on demand; existing Team Agents route to Room membership. Ordinary chat stays
 available, and first-reply detection is Task-scoped. The ask action appends an
 Agent mention without overwriting drafts, duplicating targets or sending, while
 retaining Room/Task/session and target-count boundaries. See [onboarding evidence](../acceptance/web-099-conversation-onboarding.md).
+
+## Compact workbench header
+
+WEB-101 groups task creation with the heading, then scope and utility actions
+on narrow screens. The mobile header retains 44px control height and the full
+copy-link accessible name; desktop keeps a compact row. Card and filter
+semantics remain unchanged. See [layout evidence](../acceptance/web-101-workbench-density.md).

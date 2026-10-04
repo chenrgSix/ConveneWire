@@ -276,9 +276,11 @@ export function WorkWorkspace({
   return (
     <section className="work-workspace" aria-label={locale === "zh-CN" ? "工作台" : "Work"}>
       <header className="work-intro">
-        <h3>{locale === "zh-CN" ? "任务" : "Tasks"}</h3>
-        <div className="work-toolbar">
+        <div className="work-heading">
+          <h3>{locale === "zh-CN" ? "任务" : "Tasks"}</h3>
           {onCreateTask && <button className="work-inline-link work-create-task" disabled={createTaskDisabled} onClick={onCreateTask} type="button">{locale === "zh-CN" ? "新建任务" : "New Task"}</button>}
+        </div>
+        <div className="work-toolbar">
           <div aria-label={locale === "zh-CN" ? "工作范围" : "Work scope"} className="work-scope" role="group">
             <button aria-pressed={scope === "mine"} onClick={() => onScopeChange("mine")} type="button">{locale === "zh-CN" ? "我的" : "Mine"}</button>
             <button aria-pressed={scope === "team"} onClick={() => onScopeChange("team")} type="button">{locale === "zh-CN" ? "团队" : "Team"}</button>
@@ -286,7 +288,7 @@ export function WorkWorkspace({
           <button className="work-refresh" disabled={loading} onClick={onRefresh} type="button">
             {loading ? (locale === "zh-CN" ? "刷新中…" : "Refreshing…") : (locale === "zh-CN" ? "刷新" : "Refresh")}
           </button>
-          {onCopyLink && <button className="work-inline-link" onClick={() => void onCopyLink()} type="button">{locale === "zh-CN" ? "复制当前链接" : "Copy current link"}</button>}
+          {onCopyLink && <button aria-label={locale === "zh-CN" ? "复制当前链接" : "Copy current link"} className="work-inline-link" onClick={() => void onCopyLink()} type="button">{locale === "zh-CN" ? "复制链接" : "Copy link"}</button>}
         </div>
       </header>
       {(hasAdvancedFilters || onSearchChange) && <section className="work-filter-bar" aria-label={locale === "zh-CN" ? "筛选工作" : "Filter work"}>
