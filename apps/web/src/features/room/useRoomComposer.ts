@@ -527,6 +527,33 @@ export function useRoomComposer(input: RoomComposerInput) {
     }
   }
 
+  function addMention(agent: Agent) {
+    const target = roomAgents.find((candidate) => candidate.agentId === agent.agentId && candidate.enabled !== false &&
+      (!taskAgentIds || taskAgentIds.includes(candidate.agentId)));
+    if (!roomAgentsReady || !target || !isCurrentSession() || scopeRef.current.key !== scopeKey || composerRef.current.key !== scopeKey) return;
+    if (composerRef.current.value.mentionAgentIds.includes(target.agentId)) return;
+    if (composerRef.current.value.mentionAgentIds.length >= 5) {
+      onError(locale === "zh-CN"
+        ? "一次协作最多可以提及 5 个智能体。"
+        : "A collaboration can mention at most 5 Agents.");
+      return;
+    }
+    draftRevisionRef.current += 1;
+    updateComposer((current) => {
+      if (current.mentionAgentIds.includes(target.agentId)) return current;
+      const hasToken = retainVisibleMentionIds(current.content, [...current.mentionAgentIds, target.agentId], agentsById).includes(target.agentId);
+      const separator = current.content && !/\s$/u.test(current.content) ? " " : "";
+      return {
+        ...current,
+        content: hasToken ? current.content : `${current.content}${separator}@${target.name} `,
+        mentionAgentIds: [...current.mentionAgentIds, target.agentId]
+      };
+    });
+    onError(null);
+    setMentionSearch(null);
+    setMentionOptionIndex(0);
+  }
+
   function selectMention(agent: Agent) {
     if (!mentionSearch) return;
     if (mentionAgentIds.length >= 5) {
@@ -661,6 +688,7 @@ export function useRoomComposer(input: RoomComposerInput) {
   }
 
   return {
+    addMention,
     busy,
     clearDraft: () => resetDraft(),
     changeKeepMentions,

@@ -581,7 +581,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
 
     fireEvent.change(roomInput, { target: { value: "general" } });
     fireEvent.click(screen.getByRole("button", { name: "创建房间" }));
-    await screen.findByRole("heading", { name: "在房间中开始对话 general" });
+    await screen.findByRole("heading", { name: "开始对话", exact: true });
     fireEvent.click(screen.getByRole("button", { name: "新建 Team" }));
     const teamDialog = screen.getByRole("dialog", { name: "新建 Team" });
     fireEvent.change(within(teamDialog).getByLabelText("新 Team 名称"), {
@@ -593,7 +593,7 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     assert.equal((screen.getByRole("combobox", { name: "选择团队" }) as HTMLSelectElement).value, secondTeam.teamId);
     fireEvent.change(screen.getByRole("combobox", { name: "选择团队" }), { target: { value: team.teamId } });
     fireEvent.click((await screen.findAllByRole("button", { name: "对话" }))[0]!);
-    await screen.findByRole("heading", { name: "在房间中开始对话 general" });
+    await screen.findByRole("heading", { name: "开始对话", exact: true });
     assert.equal(screen.queryByLabelText("新建假智能体名称"), null);
     assert.equal(screen.queryByLabelText("新 Team 名称"), null);
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
@@ -684,11 +684,22 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     fireEvent.click(screen.getByRole("button", { name: "工作", exact: true }));
     await screen.findByRole("region", { name: "工作台" });
     fireEvent.click(screen.getAllByRole("button", { name: "对话" })[0]!);
-    await screen.findByRole("heading", { name: "在房间中开始对话 delivery" });
+    await screen.findByRole("heading", { name: "开始对话", exact: true });
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
     await within(screen.getByRole("region", { name: "房间成员" })).findByText("Review Bot");
 
     const messageInput = screen.getByLabelText("消息") as HTMLTextAreaElement;
+    const sentBeforeAgentChoice = requests.filter((request) => request.path.endsWith("/messages") && request.method === "POST").length;
+    fireEvent.click(screen.getByRole("button", { name: "选择 Agent 提问" }));
+    assert.equal(messageInput.value, "@Local Codex ");
+    assert.equal(dom.window.document.activeElement, messageInput);
+    screen.getByRole("button", { name: "移除提及 Local Codex（Codex 执行者）" });
+    fireEvent.click(screen.getByRole("button", { name: "选择 Agent 提问" }));
+    assert.equal(messageInput.value, "@Local Codex ");
+    fireEvent.change(messageInput, { target: { value: "保留这段需求\n以及第二行" } });
+    fireEvent.click(screen.getByRole("button", { name: "选择 Agent 提问" }));
+    assert.equal(messageInput.value, "保留这段需求\n以及第二行 @Local Codex ");
+    assert.equal(requests.filter((request) => request.path.endsWith("/messages") && request.method === "POST").length, sentBeforeAgentChoice);
     fireEvent.change(messageInput, { target: { value: "请 @Rev" } });
     within(screen.getByRole("listbox", { name: "提及智能体" }))
       .getByRole("option", { name: /@Review Bot/u });

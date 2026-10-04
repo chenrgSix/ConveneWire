@@ -2,8 +2,15 @@
 .work-home > .work-workspace { flex: none; overflow: visible; }
 .work-onboarding { padding: 24px 34px 0; }
 .work-onboarding h3 { margin: 6px 0 16px; font-size: 22px; }
-.room-onboarding { overflow-y: auto; padding-block: 24px; }
-.room-onboarding .agent-setup-choices { width: min(960px, 100%); text-align: left; }
+.empty-stage.conversation-intro { overflow-y: auto; max-width: 860px; gap: 12px; padding: 28px 24px; }
+.empty-stage.conversation-intro h3 { margin: 0; font-size: clamp(22px, 3vw, 30px); overflow-wrap: anywhere; }
+.conversation-readiness { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; width: 100%; min-width: 0; }
+.conversation-readiness p { margin: 0; font-size: 13px; line-height: 1.6; color: var(--cw-text-secondary, #a5ae9e); }
+.conversation-readiness button { flex: none; padding: 8px 12px; border: 1px solid var(--cw-border, #394139); border-radius: 8px; background: var(--cw-surface-raised, #1b211d); color: var(--cw-text, #edf1eb); cursor: pointer; }
+.conversation-intro .conversation-readiness { flex-direction: column; max-width: 580px; padding-top: 8px; }
+.conversation-setup { width: 100%; text-align: left; }
+.conversation-guide { width: 100%; }
+.conversation-guide .conversation-setup { max-height: 40vh; overflow-y: auto; }
 .first-reply-guide { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 10px 14px; border: 1px solid #364337; border-radius: 10px; background: #182019; font-size: 12px; color: #c0ceba; }
 .first-reply-guide > span { flex: 1; min-width: 200px; }
 .first-reply-guide button, .history-toolbar button { padding: 8px 12px; border: 1px solid #4b5c40; border-radius: 8px; background: #222b20; color: #dce7c2; cursor: pointer; }
@@ -20,6 +27,8 @@
 @media (max-width: 720px) {
   .work-onboarding { padding: 18px 14px 0; }
   .work-onboarding h3 { font-size: 19px; }
-  .room-onboarding .orb { display: none; }
-  .first-reply-guide { font-size: 11px; }
+  .empty-stage.conversation-intro { padding: 20px 16px; gap: 10px; }
+  .conversation-readiness { flex-wrap: wrap; gap: 8px; }
+  .conversation-readiness p { font-size: 12px; }
+  .conversation-readiness button { min-height: 36px; }
 }

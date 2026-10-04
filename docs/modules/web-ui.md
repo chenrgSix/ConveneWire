@@ -1370,3 +1370,12 @@ delivery requirements. Collapsed roles retain values and show the assignment
 count. The body scrolls independently from the action footer, and closed
 disclosures exclude their controls from the modal focus cycle. Room candidate
 scoping and creation authority are unchanged. See [form evidence](../acceptance/web-100-task-creation-focus.md).
+
+## Conversation readiness and first use
+
+WEB-099 keeps one readiness guide per conversation: loading, no Room Agents,
+unassigned Task, unavailable Agents, demo or real readiness. Setup choices open
+on demand; existing Team Agents route to Room membership. Ordinary chat stays
+available, and first-reply detection is Task-scoped. The ask action appends an
+Agent mention without overwriting drafts, duplicating targets or sending, while
+retaining Room/Task/session and target-count boundaries. See [onboarding evidence](../acceptance/web-099-conversation-onboarding.md).

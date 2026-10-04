@@ -88,6 +88,57 @@ test("composer retains explicit recipients only with local opt-in", async (t) =>
   });
 
   try {
+    await t.test("explicit Agent actions preserve drafts, deduplicate and respect Room and Task eligibility", async () => {
+      const h = mount();
+      h.type("保留需求\n和 @未完成搜索");
+      act(() => h.result.current.addMention(builder));
+      assert.equal(h.result.current.messageContent, "保留需求\n和 @未完成搜索 @Local Codex ");
+      assert.deepEqual(h.result.current.selectedMentionAgents.map(({ agentId }) => agentId), [builder.agentId]);
+      act(() => h.result.current.addMention(builder));
+      assert.equal(h.result.current.messageContent, "保留需求\n和 @未完成搜索 @Local Codex ");
+      assert.equal(requests.length, 0);
+      h.type("已有 @Reviewer 文本");
+      act(() => h.result.current.addMention(reviewer));
+      assert.equal(h.result.current.messageContent, "已有 @Reviewer 文本");
+      assert.deepEqual(h.result.current.selectedMentionAgents.map(({ agentId }) => agentId), [reviewer.agentId]);
+      h.type("普通聊天");
+      h.rerender({ ...h.input, taskAgentIds: [builder.agentId] });
+      act(() => h.result.current.addMention(reviewer));
+      h.rerender({ ...h.input, roomAgentsReady: false });
+      act(() => h.result.current.addMention(builder));
+      h.rerender({ ...h.input, roomAgents: [{ ...builder, enabled: false }] });
+      act(() => h.result.current.addMention(builder));
+      act(() => h.result.current.addMention(reviewer));
+      assert.equal(h.result.current.messageContent, "普通聊天");
+      assert.deepEqual(h.result.current.selectedMentionAgents, []);
+      assert.equal(requests.length, 0);
+    });
+
+    await t.test("explicit Agent actions keep the five-recipient limit", () => {
+      const h = mount();
+      const available = Array.from({ length: 6 }, (_, index) => ({ ...builder, agentId: `agent_${index}`, name: `Agent${index}` }));
+      h.rerender({ ...h.input, agents: available, roomAgents: available });
+      act(() => { for (const candidate of available) h.result.current.addMention(candidate); });
+      assert.equal(h.result.current.selectedMentionAgents.length, 5);
+      assert.equal(h.result.current.messageContent, available.slice(0, 5).map(({ name }) => `@${name} `).join(""));
+      assert.match(errors.at(-1) ?? "", /最多可以提及 5 个/u);
+      assert.equal(requests.length, 0);
+    });
+
+    await t.test("explicit Agent actions do not reuse another Agent's longer or same-name token", () => {
+      const h = mount();
+      const longer = { ...reviewer, agentId: "longer", name: "Reviewer Bot" };
+      const sameName = { ...reviewer, agentId: "same-name" };
+      h.rerender({ ...h.input, agents: [reviewer, longer, sameName], roomAgents: [reviewer, longer, sameName] });
+      h.type("请 @Reviewer Bot 检查");
+      act(() => h.result.current.addMention(reviewer));
+      assert.equal(h.result.current.messageContent, "请 @Reviewer Bot 检查 @Reviewer ");
+      act(() => h.result.current.addMention(sameName));
+      assert.equal(h.result.current.messageContent, "请 @Reviewer Bot 检查 @Reviewer @Reviewer ");
+      assert.deepEqual(h.result.current.selectedMentionAgents.map(({ agentId }) => agentId), [reviewer.agentId, sameName.agentId]);
+      assert.equal(requests.length, 0);
+    });
+
     await t.test("default-off and opt-in preference survive remount without recipients", async () => {
       const h = mount();
       assert.equal(h.result.current.keepMentions, false);

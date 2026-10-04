@@ -75,7 +75,13 @@ test("native empty-Team and Room cards open the Owner Console without Bridge pai
   const screen = within(render(<App />).container);
   await screen.findByRole("heading", { name: "团队工作台" });
   for (let index = 0; index < 2; index++) {
-    if (index) fireEvent.click(screen.getByRole("button", { name: "对话", exact: true }));
+    if (index) {
+      fireEvent.click(screen.getByRole("button", { name: "对话", exact: true }));
+      await screen.findByText("房间还没有 Agent。可以先聊天，也可以添加 Agent 参与。");
+      assert.equal(screen.queryByRole("region", { name: "选择开始方式" }), null);
+      assert.equal(dom.window.document.querySelector(".first-reply-guide"), null);
+      fireEvent.click(screen.getByRole("button", { name: "添加 Agent" }));
+    }
     const card = within(await screen.findByRole("region", { name: "选择开始方式" }));
     assert.equal(Boolean(card.queryByText(/需要在执行工作的电脑安装客户端/u)), false);
     const beforeUrl = window.location.href;
@@ -90,5 +96,13 @@ test("native empty-Team and Room cards open the Owner Console without Bridge pai
   assert.deepEqual(calls.filter(call => call.method !== "GET").map(call => call.url), [
     "/api/local-node/session", "/api/local-node/open-console", "/api/local-node/open-console"
   ]);
+  fireEvent.change(screen.getByLabelText("消息"), { target: { value: "先记录需求，稍后添加 Agent" } });
+  fireEvent.click(screen.getByRole("button", { name: "发送", exact: true }));
+  await screen.findByText("先记录需求，稍后添加 Agent");
+  await waitFor(() => assert.equal(calls.filter(call => call.url.endsWith("/messages") && call.method === "POST" && call.status === 200).length, 1));
+  assert.equal(dom.window.document.querySelectorAll(".conversation-readiness").length, 1);
+  assert.equal(dom.window.document.querySelector(".room-onboarding"), null);
+  const runs = await app.inject({ url: `/api/rooms/${roomResponse.json().roomId}/runs`, headers: owner });
+  assert.deepEqual(runs.json(), []);
   assert.equal(calls.some(call => call.status && call.status >= 400), false);
 });

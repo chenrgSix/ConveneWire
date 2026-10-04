@@ -48,6 +48,7 @@ import { useDiscussionController } from "./features/discussion/useDiscussionCont
 import { useComposerHeight } from "./features/room/useComposerHeight.js";
 import { RuntimeApprovals } from "./features/room/RuntimeApprovals.js";
 import { RoomTimeline } from "./features/room/RoomTimeline.js";
+import { RoomConversationIntro } from "./features/room/RoomConversationIntro.js";
 import { RoomSettingsDialog } from "./features/room/RoomSettingsDialog.js";
 import { AgentModelLabel } from "./features/agent/AgentModelLabel.js";
 import { useRoomComposer } from "./features/room/useRoomComposer.js";
@@ -484,17 +485,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     const visible = new Set(roomParticipants.agentIds);
     return agents.filter(({ agentId }) => visible.has(agentId));
   }, [agents, roomParticipants.agentIds]);
-  const taskAgents = useMemo(() => {
-    const assigned = selectedTask && !selectedTask.isDefault
-      ? new Set((selectedTask.assignments ?? []).map(({ agentId }) => agentId)) : null;
-    return roomAgents.filter((agent) => agent.enabled !== false && (!assigned || assigned.has(agent.agentId)));
-  }, [roomAgents, selectedTask]);
-  const readyTaskAgents = taskAgents.filter((agent) => agent.presence === "ready");
-  const taskNeedsAgents = Boolean(selectedTask && !selectedTask.isDefault && taskAgents.length === 0);
   const readyAgents = agents.filter((agent) => agent.enabled !== false && agent.presence === "ready").length;
-  const readyRoomAgents = roomAgents.filter((agent) => agent.enabled !== false && agent.presence === "ready");
-  const hasRealRoomReply = messages.some((message) => message.senderType === "agent" &&
-    agents.some((agent) => agent.agentId === message.senderId && agent.integrationMode !== "fake"));
   const currentMember = members.find((member) => member.userId === session?.userId) ?? null;
   const lifecycleTeam = lifecycleTeams.find(({ teamId }) =>
     teamId === lifecycleTeamId
@@ -527,6 +518,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     session
   });
   const {
+    addMention,
     busy: composerBusy,
     changeKeepMentions,
     deliver: deliverPendingMessage,
@@ -1455,6 +1447,24 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     (message.taskId ?? tasks.find((task) => task.isDefault)?.taskId) === selectedTaskId);
   const taskRuns = runs.filter((run) => run.taskId === selectedTaskId);
   const taskRunsById = new Map(taskRuns.map((run) => [run.runId, run]));
+  const conversationEmpty = taskMessages.length === 0 && taskPendingMessages.length === 0;
+  const hasRealTaskReply = taskMessages.some((message) => message.senderType === "agent" &&
+    agents.some((agent) => agent.agentId === message.senderId && agent.integrationMode !== "fake"));
+  const conversationIntroProps = {
+    assignedAgentIds: selectedTask && !selectedTask.isDefault ? (selectedTask.assignments ?? []).map(({ agentId }) => agentId) : undefined,
+    canManageRoom: currentMember?.role === "owner",
+    hasTeamAgents: agents.length > 0,
+    loaded: selectedTask !== null && roomSettingsContext === roomContextRef.current,
+    localNode: isLocalNode,
+    locale,
+    onAssignAgents: () => setTaskAgentsOpen(true),
+    onChooseSetup: chooseAgentSetup,
+    onManageAgents: revealConnectionSetup,
+    onManageRoom: () => { void openParticipantDialog(); },
+    onSelectAgent: (agent: Agent) => { addMention(agent); composerInputRef.current?.focus(); },
+    roomAgents,
+    taskTitle: selectedTask && !selectedTask.isDefault ? selectedTask.title : undefined
+  };
 
   function openTaskInRoom(roomId: string, taskId: string) {
     navigate({ roomId, taskId, workTaskId: undefined, tab: undefined, runId: undefined, view: "room" });
@@ -2025,29 +2035,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
               <small>{t("addMoreRooms")}</small>
             </form>
           </section>
-        ) : taskMessages.length === 0 && taskPendingMessages.length === 0 ? (
-          <section className="empty-stage room-onboarding">
-            {selectedTask && !selectedTask.isDefault ? <>
-              <p className="eyebrow">{locale === "zh-CN" ? "任务对话" : "Task conversation"}</p>
-              <h3>{selectedTask.title}</h3>
-              <p>{locale === "zh-CN" ? "直接在下方说需求。这个任务的对话会独立保存。" : "Describe what you need below. This Task keeps its own conversation."}</p>
-            </> : <>
-            <div className="orb"><span>✦</span></div>
-            <p className="eyebrow">{locale === "zh-CN" ? "第 3 步 · 收到第一条真实回复" : "STEP 3 · Get your first real reply"}</p>
-            <h3>
-              {readyRoomAgents.length === 0
-                ? t("addAgentOrStart")
-                : `${t("startConversation")} ${selectedRoom.name}`}
-            </h3>
-            <p>{t("timelineHelp")}</p>
-            {readyRoomAgents.length === 0 && (
-              <>
-                <p>{locale === "zh-CN" ? "当前房间还没有就绪的 Agent。已注册不等于可以在这里回复，请检查状态和房间授权。" : "No Agent is ready in this Room yet. Check availability and Room access, not just registration."}</p>
-                <AgentSetupChoices currentMemberIsOwner={currentMember?.role === "owner"} localNode={isLocalNode} locale={locale} onSelect={chooseAgentSetup} />
-              </>
-            )}
-            </>}
-          </section>
+        ) : conversationEmpty ? (
+          <RoomConversationIntro key={`${selectedRoom.roomId}:${selectedTaskId}`} {...conversationIntroProps} empty />
         ) : (
           <RoomTimeline
             key={`${selectedRoom.roomId}:${selectedTaskId}`}
@@ -2074,28 +2063,8 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
         )}
         {selectedRoom && activeView === "room" && (
           <div className="room-dock">
-            {!hasRealRoomReply && (
-              <div className="first-reply-guide" role="status">
-                <span>{taskNeedsAgents
-                  ? (locale === "zh-CN" ? "先为这个任务指派 Agent，再选择提问对象。" : "Assign Agents to this Task before asking one to work.")
-                  : readyTaskAgents.some((agent) => agent.integrationMode !== "fake")
-                  ? (locale === "zh-CN" ? "下一步：选择一个 Agent，写下你的问题并发送，收到第一条真实回复。" : "Next: choose an Agent, write your question and send it to get a real reply.")
-                  : readyTaskAgents.length > 0
-                    ? (locale === "zh-CN" ? "当前为演示体验，不会调用真实模型。准备好后可创建中央 Agent 或连接本机 Agent。" : "This is a demo, without real model calls. Add a Central or local Agent when you are ready.")
-                    : (locale === "zh-CN" ? "聊天已经可以使用；让 Agent 回复需要先配置并授权到当前房间。" : "Chat is ready. To receive an Agent reply, configure one and grant it access to this Room.")}</span>
-                <button type="button" onClick={() => {
-                  if (taskNeedsAgents) { setTaskAgentsOpen(true); return; }
-                  const target = readyTaskAgents.find((agent) => agent.integrationMode !== "fake") ?? readyTaskAgents[0];
-                  if (target) {
-                    selectMention(target);
-                    composerInputRef.current?.focus();
-                  } else revealConnectionSetup();
-                }}>{taskNeedsAgents
-                  ? (locale === "zh-CN" ? "指派任务 Agent" : "Assign Task Agents")
-                  : readyTaskAgents.length > 0
-                  ? (locale === "zh-CN" ? "选择 Agent 提问" : "Ask an Agent")
-                  : (locale === "zh-CN" ? "配置 Agent" : "Set up an Agent")}</button>
-              </div>
+            {!conversationEmpty && !hasRealTaskReply && (
+              <RoomConversationIntro key={`${selectedRoom.roomId}:${selectedTaskId}`} {...conversationIntroProps} empty={false} />
             )}
             {visibleDiscussion && (
               <DiscussionStatus
