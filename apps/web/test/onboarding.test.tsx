@@ -789,13 +789,14 @@ test("Chinese-first onboarding persists locale and reaches Bridge approval", asy
     fireEvent.click(screen.getByRole("button", { name: "返回工作", exact: true }));
     fireEvent.click(screen.getByText("房间成员", { selector: ".product-participants > summary" }));
     fireEvent.click(screen.getByRole("button", { name: "+ 新任务" }));
-    const taskDialog = await screen.findByRole("dialog", { name: "创建长期任务" });
+    const taskDialog = await screen.findByRole("dialog", { name: "新建任务" });
     fireEvent.change(within(taskDialog).getByLabelText("任务名称"), {
       target: { value: "OAuth 迁移" }
     });
     fireEvent.change(within(taskDialog).getByLabelText("任务目标"), {
       target: { value: "完成 OAuth 迁移并通过回归测试。" }
     });
+    await waitFor(() => assert.equal((within(taskDialog).getByRole("button", { name: "创建并切换" }) as HTMLButtonElement).disabled, false));
     fireEvent.click(within(taskDialog).getByRole("button", { name: "创建并切换" }));
     await waitFor(() => assert.equal(
       (screen.getByLabelText("当前任务") as HTMLSelectElement).value,

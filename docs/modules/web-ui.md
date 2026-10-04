@@ -1335,3 +1335,13 @@ actor and action; empty diagnostic counters no longer compete with those
 fields. The human-action group does not claim every item belongs to the current
 member. Accessible task names include their titles. See the
 [current-source review](../acceptance/web-095-workbench-review.md).
+
+## Explicit task creation destination
+
+WEB-096 separates the creation destination from the last open conversation.
+Work creation defaults to the single Room filter when present; the dialog
+always exposes the selected Room and scopes candidate Agents to it. Changing
+the Room clears prior assignments and fences late reads. Creation responses
+cannot clear a newer request after a Team or session change. Conversation
+selectors localize presentation without renaming stored Tasks. See
+[creation evidence](../acceptance/web-096-task-destination.md).

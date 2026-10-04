@@ -65,6 +65,7 @@ import { ArtifactPreviewPanel } from "./features/task/ArtifactPreviewPanel.js";
 import { TaskAssignmentDialog } from "./features/task/TaskAssignmentDialog.js";
 import type { TaskAssignmentInput } from "./features/task/TaskAssignmentFields.js";
 import { TaskCreateDialog, TaskSelector } from "./features/task/TaskControls.js";
+import { useTaskCreationAgents } from "./features/task/useTaskCreationAgents.js";
 import { parseTaskCriteria } from "./features/task/task-criteria.js";
 import { TaskWorkDetail, type TaskWorkDetailTab } from "./features/work/TaskWorkDetail.js";
 import { WorkWorkspace, workActionTarget } from "./features/work/WorkWorkspace.js";
@@ -236,9 +237,12 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
   const [agentSetupTarget, setAgentSetupTarget] = useState<AgentSetupTarget | null>(null);
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [taskCreateRoomId, setTaskCreateRoomId] = useState<string | null>(null);
+  const [taskCreateError, setTaskCreateError] = useState<string | null>(null);
+  const taskCreationRequest = useRef(0);
   const [taskAssignments, setTaskAssignments] = useState<TaskAssignmentInput[]>([]);
   const [taskAgentsOpen, setTaskAgentsOpen] = useState(false);
-  useEffect(() => { setTaskAssignments([]); setTaskAgentsOpen(false); }, [selectedRoomId, selectedTaskId]);
+  useEffect(() => { setTaskAgentsOpen(false); }, [selectedRoomId, selectedTaskId]);
   const [lifecycleDialogOpen, setLifecycleDialogOpen] = useState(false);
   const [lifecycleTeams, setLifecycleTeams] = useState<Team[]>([]);
   const [lifecycleRooms, setLifecycleRooms] = useState<Room[]>([]);
@@ -440,6 +444,16 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     () => tasks.find((task) => task.taskId === selectedTaskId) ?? null,
     [selectedTaskId, tasks]
   );
+  const taskCreateRoom = rooms.find((room) => room.roomId === taskCreateRoomId) ?? null;
+  const taskCreationAgents = useTaskCreationAgents(taskDialogOpen ? taskCreateRoom?.roomId ?? null : null, session, agents);
+  useEffect(() => {
+    taskCreationRequest.current += 1;
+    setTaskDialogOpen(false);
+    setTaskCreateRoomId(null);
+    setTaskCreateError(null);
+    setTaskAssignments([]);
+    setTaskBusy(false);
+  }, [selectedTeamId, session]);
   const waitingClarifications = clarifications.filter(
     ({ state }) => state === "waiting"
   );
@@ -1063,43 +1077,55 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
     }
   }
 
+  function openTaskCreateDialog() {
+    const filteredRoom = activeView === "work" ? rooms.find((room) => room.roomId === workFilters.filterRoomId) : null;
+    setTaskCreateRoomId(filteredRoom?.roomId ?? selectedRoomId);
+    setTaskAssignments([]);
+    setTaskCreateError(null);
+    setTaskDialogOpen(true);
+  }
+
   async function createAgentTask(event: FormEvent) {
     event.preventDefault();
     if (
-      !session || !selectedRoomId || !taskTitle.trim() || !taskGoal.trim()
+      !session || !taskCreateRoom || taskBusy || taskCreationAgents.loading || taskCreationAgents.error || !taskTitle.trim() || !taskGoal.trim()
     ) return;
+    const destinationRoomId = taskCreateRoom.roomId;
     setTaskBusy(true);
-    setError(null);
+    setTaskCreateError(null);
     const context = roomContextRef.current;
     const originView = activeView;
+    const requestId = ++taskCreationRequest.current;
+    const current = () => isCurrentSession() && taskCreationRequest.current === requestId && roomContextRef.current === context;
     try {
       const task = await jsonRequest<AgentTask>(
-        `/api/rooms/${selectedRoomId}/tasks`,
+        `/api/rooms/${destinationRoomId}/tasks`,
         {
           method: "POST",
           body: JSON.stringify({ title: taskTitle, goal: taskGoal, criteria: parseTaskCriteria(taskCriteria, locale), ...(taskAssignments.length ? { assignments: taskAssignments } : {}) })
         },
         session.token
       );
-      if (!isCurrentSession() || roomContextRef.current !== context) return;
-      // Reconcile the successful creation before exposing its selection. This
-      // also fences an older initial snapshot still waiting on Run output.
-      try { await refreshRoomState(); } catch (reason) { reportError(reason); }
-      if (!isCurrentSession() || roomContextRef.current !== context) return;
-      setTasks((current) => [...current.filter(({ taskId }) => taskId !== task.taskId), task]);
-      setSelectedTaskId(task.taskId);
+      if (!current()) return;
+      if (destinationRoomId === selectedRoomId) {
+        // Fence an older initial snapshot before exposing the new selection.
+        try { await refreshRoomState(); } catch (reason) { reportError(reason); }
+        if (!current()) return;
+        setTasks((current) => [...current.filter(({ taskId }) => taskId !== task.taskId), task]);
+        setSelectedTaskId(task.taskId);
+      }
       setTaskTitle("");
       setTaskGoal("");
       setTaskCriteria("");
       setTaskAssignments([]);
       setTaskDialogOpen(false);
-      if (originView === "work") openWorkbenchTask(task.taskId, selectedRoomId);
-      else navigate({ taskId: task.taskId, workTaskId: undefined, view: "room" });
+      if (originView === "work") openWorkbenchTask(task.taskId, destinationRoomId);
+      else openTaskInRoom(destinationRoomId, task.taskId);
       void refreshWorkbenchState();
     } catch (reason) {
-      reportError(reason);
+      if (current() && !isStaleWebSessionError(reason)) setTaskCreateError(String(reason));
     } finally {
-      if (isCurrentSession()) setTaskBusy(false);
+      if (isCurrentSession() && taskCreationRequest.current === requestId) setTaskBusy(false);
     }
   }
 
@@ -1879,7 +1905,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
             memberNames={memberNames}
             onOpenTask={openWorkbenchTask}
             onLoadMore={() => void loadMoreWork()}
-            onCreateTask={() => setTaskDialogOpen(true)}
+            onCreateTask={openTaskCreateDialog}
             createTaskDisabled={!selectedRoom || taskBusy}
             onCopyLink={copyLink}
             onOpenAction={(item) => {
@@ -2129,7 +2155,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
             <form className="composer" onSubmit={(event) => void submitComposer(event)}>
               <TaskSelector
                 locale={locale}
-                onCreate={() => setTaskDialogOpen(true)}
+                onCreate={openTaskCreateDialog}
                 onConfigureAgents={() => setTaskAgentsOpen(true)}
                 onSelect={(taskId) => navigate({ taskId: taskId ?? undefined })}
                 selectedTask={selectedTask}
@@ -2273,10 +2299,14 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
         token={session.token} member={currentMember} agents={roomAgents} locale={locale}
         onClose={() => setTaskAgentsOpen(false)} onChanged={async () => { await refreshRoomState(); await refreshWorkbenchState(); }}
       />}
-      {taskDialogOpen && selectedRoom && (
+      {taskDialogOpen && taskCreateRoom && (
         <TaskCreateDialog
           busy={taskBusy}
-          agents={roomAgents}
+          agents={taskCreationAgents.agents}
+          agentsLoading={taskCreationAgents.loading}
+          agentsError={taskCreationAgents.error}
+          onRetryAgents={taskCreationAgents.retry}
+          error={taskCreateError ? errorLabel(taskCreateError, locale) : null}
           assignments={taskAssignments}
           onAssignmentsChange={setTaskAssignments}
           criteria={taskCriteria}
@@ -2287,7 +2317,14 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
           onGoalChange={setTaskGoal}
           onSubmit={createAgentTask}
           onTitleChange={setTaskTitle}
-          roomName={selectedRoom.name}
+          roomName={taskCreateRoom.name}
+          roomId={taskCreateRoom.roomId}
+          rooms={rooms}
+          onRoomChange={(roomId) => {
+            setTaskCreateRoomId(roomId);
+            setTaskAssignments([]);
+            setTaskCreateError(null);
+          }}
           title={taskTitle}
         />
       )}

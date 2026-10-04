@@ -223,9 +223,10 @@ test("Work creates a Task in the selected Room and opens its details without swi
   const roomSelector = f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement;
   const originalRoom = roomSelector.value;
   f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
-  const dialog = f.within(await f.page.findByRole("dialog", { name: "Create long-lived Task" }));
+  const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
   f.fireEvent.change(dialog.getByRole("textbox", { name: "Task title" }), { target: { value: "Created directly from Work" } });
   f.fireEvent.change(dialog.getByRole("textbox", { name: "Task goal" }), { target: { value: "Navigate only; no Agent execution" } });
+  await f.waitFor(() => assert.equal((dialog.getByRole("button", { name: "Create and switch" }) as HTMLButtonElement).disabled, false));
   f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
   await f.page.findByRole("heading", { name: "Created directly from Work" });
   assert.ok(f.page.getByRole("tablist", { name: "Task detail navigation" }));
@@ -250,6 +251,106 @@ test("Work next-step action navigates to the exact Room Task without creating me
   assert.equal(f.requests.filter(({ method }) => method !== "GET").length, writesBefore);
 });
 
+for (const entry of ["filtered Work", "conversation"] as const) {
+  test(`${entry} creates in its explicit destination and clears the previous Room's assignments`, async (t) => {
+    const f = await fixture(t);
+    const agents = [];
+    for (const [roomId, name] of [[f.roomId, "First room helper"], [f.otherRoomId, "Other room helper"]]) {
+      const agent = await f.seed("POST", `/api/teams/${f.teamId}/fake-agents`, { name, role: "Implementation" }, f.seedAuthorization);
+      agents.push(agent);
+      const settings = await f.seed("GET", `/api/rooms/${roomId}/settings`, undefined, f.seedAuthorization);
+      const joined = await f.server.inject({ method: "PUT", url: `/api/rooms/${roomId}/settings`, headers: { authorization: f.seedAuthorization }, payload: {
+        expectedRevision: settings.room.settingsRevision, memberIds: settings.participants.memberIds, agentIds: [agent.agentId], collaborationPolicy: settings.room.collaborationPolicy
+      } });
+      assert.equal(joined.statusCode, 200, joined.body);
+    }
+    f.render(<App />);
+    await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
+    if (entry === "filtered Work") {
+      f.fireEvent.click(f.page.getByRole("button", { name: "Filters", exact: true }));
+      f.fireEvent.change(f.page.getByLabelText("Filter Room"), { target: { value: f.otherRoomId } });
+      assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, f.roomId);
+      f.fireEvent.click(f.page.getByRole("button", { name: "New Task", exact: true }));
+    } else {
+      await f.openRoomTask(f.firstTask);
+      f.fireEvent.click(f.page.getByRole("button", { name: "+ New Task" }));
+    }
+    const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
+    const destination = dialog.getByLabelText("Room") as HTMLSelectElement;
+    assert.equal(destination.value, entry === "filtered Work" ? f.otherRoomId : f.roomId);
+    // The filtered entry starts at B even while the conversation is in A.
+    // Switching through A exercises the same explicit change in both entries.
+    if (entry === "filtered Work") f.fireEvent.change(destination, { target: { value: f.roomId } });
+    f.fireEvent.change(await dialog.findByLabelText("Task role: First room helper"), { target: { value: "primary" } });
+    f.fireEvent.change(destination, { target: { value: f.otherRoomId } });
+    const otherAssignment = await dialog.findByLabelText("Task role: Other room helper") as HTMLSelectElement;
+    assert.equal(otherAssignment.value, "");
+    assert.equal(dialog.queryByLabelText("Task role: First room helper"), null);
+    f.fireEvent.change(otherAssignment, { target: { value: "reviewer" } });
+    f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: "Cross-room destination task" } });
+    f.fireEvent.change(dialog.getByLabelText("Task goal"), { target: { value: "Keep the destination and assignments aligned" } });
+    f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
+    await f.waitFor(() => assert.equal(Boolean(f.page.queryByRole("dialog", { name: "New task" })), false));
+    const creation = f.requests.find(({ method, url }) => method === "POST" && url.endsWith("/tasks"))!;
+    assert.equal(creation.url, `/api/rooms/${f.otherRoomId}/tasks`);
+    assert.deepEqual(JSON.parse(creation.body!).assignments, [{ agentId: agents[1].agentId, role: "reviewer" }]);
+    const saved = (await f.seed("GET", `/api/rooms/${f.otherRoomId}/tasks`, undefined, f.seedAuthorization) as TaskProjection[])
+      .find(({ title }) => title === "Cross-room destination task")!;
+    assert.ok(saved);
+    assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, f.otherRoomId);
+    if (entry === "filtered Work") {
+      await f.page.findByRole("heading", { name: saved.title });
+      assert.ok(f.page.getByRole("tablist", { name: "Task detail navigation" }));
+    } else {
+      await f.waitFor(() => assert.equal((f.page.getByLabelText("Current Task") as HTMLSelectElement).value, saved.taskId));
+      assert.equal(f.page.queryByRole("option", { name: /First continuous task/u }), null);
+    }
+    assert.equal(f.requests.some(({ method, url }) => method === "POST" && /\/(?:messages|discussions)$/u.test(url)), false);
+  });
+}
+
+test("a late creation from a previous Team cannot clear a newer submission's busy state", async (t) => {
+  const f = await fixture(t);
+  const nextTeam = await f.seed("POST", "/api/teams", { name: "Another creation team" }, f.seedAuthorization);
+  const nextRoom = await f.seed("POST", `/api/teams/${nextTeam.team.teamId}/rooms`, { name: "Another creation room" }, f.seedAuthorization);
+  const dispatch = globalThis.fetch;
+  const held: Array<() => void> = [];
+  globalThis.fetch = async (input, init) => {
+    const response = await dispatch(input, init);
+    if (init?.method === "POST" && String(input).endsWith("/tasks")) {
+      return new Promise<Response>((resolve) => { held.push(() => resolve(response)); });
+    }
+    return response;
+  };
+  f.render(<App />);
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
+  async function submit(title: string) {
+    f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
+    const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
+    f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: title } });
+    f.fireEvent.change(dialog.getByLabelText("Task goal"), { target: { value: "Keep concurrent responses within their creation context" } });
+    await f.waitFor(() => assert.equal((dialog.getByRole("button", { name: "Create and switch" }) as HTMLButtonElement).disabled, false));
+    f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
+    return dialog;
+  }
+  await submit("Old team creation");
+  await f.waitFor(() => assert.equal(held.length, 1));
+  // Browser history can change context even while the modal locks its controls.
+  await f.act(async () => {
+    f.dom.window.history.pushState(null, "", `?team=${nextTeam.team.teamId}&room=${nextRoom.roomId}&view=work`);
+    f.dom.window.dispatchEvent(new f.dom.window.PopStateEvent("popstate"));
+  });
+  await f.waitFor(() => assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, nextRoom.roomId));
+  const dialog = await submit("Current team creation");
+  await f.waitFor(() => assert.equal(held.length, 2));
+  await f.act(async () => { held[0]!(); });
+  assert.equal((dialog.getByRole("button", { name: "Creating…" }) as HTMLButtonElement).disabled, true);
+  assert.equal((dialog.getByLabelText("Task title") as HTMLInputElement).value, "Current team creation");
+  await f.act(async () => { held[1]!(); });
+  await f.page.findByRole("heading", { name: "Current team creation" });
+  assert.equal((f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement).value, nextRoom.roomId);
+});
+
 
 test("native acceptance regression: explicitly assigned new Task routes a real server Run and existing Tasks can be assigned", async (t) => {
   const f = await fixture(t);
@@ -262,10 +363,10 @@ test("native acceptance regression: explicitly assigned new Task routes a real s
   f.render(<App />);
   await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
-  const dialog = f.within(await f.page.findByRole("dialog", { name: "Create long-lived Task" }));
+  const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
   f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: "Assigned native task" } });
   f.fireEvent.change(dialog.getByLabelText("Task goal"), { target: { value: "Run only the fixture Agent" } });
-  f.fireEvent.change(dialog.getByLabelText("Task role: Offline Builder"), { target: { value: "primary" } });
+  f.fireEvent.change(await dialog.findByLabelText("Task role: Offline Builder"), { target: { value: "primary" } });
   f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
   await f.page.findByRole("heading", { name: "Assigned native task" });
   const creation = f.requests.find(({ method, url }) => method === "POST" && url.endsWith("/tasks"))!;

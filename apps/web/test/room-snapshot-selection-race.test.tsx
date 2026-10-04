@@ -100,9 +100,10 @@ async function assertSnapshotSelection(sendBeforeInitial: boolean) {
     await waitFor(() => assert.equal(outputReads, 1));
     fireEvent.click(page.getByRole("button", { name: "对话", exact: true }));
     fireEvent.click(page.getByRole("button", { name: "+ 新任务" }));
-    const dialog = within(await page.findByRole("dialog", { name: "创建长期任务" }));
+    const dialog = within(await page.findByRole("dialog", { name: "新建任务" }));
     fireEvent.change(dialog.getByLabelText("任务名称"), { target: { value: createdTask.title } });
     fireEvent.change(dialog.getByLabelText("任务目标"), { target: { value: createdTask.goal } });
+    await waitFor(() => assert.equal((dialog.getByRole("button", { name: "创建并切换" }) as HTMLButtonElement).disabled, false));
     fireEvent.click(dialog.getByRole("button", { name: "创建并切换" }));
     await waitFor(() => assert.equal((page.getByLabelText("当前任务") as HTMLSelectElement).value, createdTask.taskId));
     if (sendBeforeInitial) {

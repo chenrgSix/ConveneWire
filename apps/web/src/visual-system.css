@@ -934,6 +934,12 @@ summary:focus-visible {
 .task-assignment-fields > label { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .task-assignment-fields > label > span { min-width: 0; overflow-wrap: anywhere; }
 .task-assignment-fields select { min-width: 130px; max-width: 100%; }
+.modal-form #new-task-room {
+  width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--cw-border); border-radius: 9px;
+  background: var(--cw-surface); color: var(--cw-text); font: inherit;
+}
+.modal-form #new-task-room:focus-visible { outline: 2px solid var(--cw-focus); outline-offset: 2px; }
 
 /* Local collaboration inherits the same controls in both appearance modes. */
 :root[data-theme] .peer-host-panel button {

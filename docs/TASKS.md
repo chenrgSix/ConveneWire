@@ -959,6 +959,6 @@ retain their explicit operation scope.
 | ID | State | Task | Depends On | Completion evidence |
 | --- | --- | --- | --- | --- |
 | WEB-095 | DONE | Prioritize actionable work and simplify workbench scanning | WEB-082, WEB-089 | [Fresh review](acceptance/web-095-workbench-review.md): workbench hierarchy, explicit action actors, accessible titles and retained filter summaries; 55 focused checks, TypeScript/build and actual dark/light browser review pass. Local source only |
-| WEB-096 | TODO | Make task creation destination and conversation status explicit | WEB-089, WEB-094 | Pending cross-room creation regression and browser verification |
+| WEB-096 | DONE | Make task creation destination and conversation status explicit | WEB-089, WEB-094 | [Creation evidence](acceptance/web-096-task-destination.md): explicit destination, filtered defaults, scoped Agent loading and stale-request isolation; 19 focused checks, TypeScript/build and actual cross-room browser creation pass |
 | WEB-097 | TODO | Preserve content space with accessible narrow-screen navigation | WEB-081, WEB-082, WEB-093 | Pending narrow-screen browser, focus and navigation verification |
 | WEB-098 | TODO | Present task overview and navigation in user-facing language | WEB-089 | Pending overview localization, empty-state regression and browser verification |
