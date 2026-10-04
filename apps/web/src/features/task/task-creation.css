@@ -1,0 +1,193 @@
+.task-create-backdrop { padding: 16px; }
+
+.task-create-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 560px);
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+  padding: 0;
+}
+
+.task-create-dialog .modal-heading {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 22px 24px 8px;
+}
+
+.task-create-dialog .modal-heading > button {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.task-create-dialog > .task-create-intro {
+  flex: 0 0 auto;
+  padding: 0 24px 18px;
+  color: var(--cw-text-secondary);
+  font-size: 12px;
+}
+
+.task-create-dialog .modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  margin: 0;
+}
+
+.task-create-body {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 24px 20px;
+  scrollbar-gutter: stable;
+}
+
+.task-create-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.task-create-dialog .task-create-field > label {
+  color: var(--cw-text-secondary);
+  font-size: 12px;
+}
+
+.task-create-dialog .task-create-field > :is(input, select, textarea) {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--cw-border);
+  border-radius: var(--cw-radius-control);
+  font-size: 13px;
+}
+
+.task-create-dialog .task-create-options {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cw-border);
+  border-radius: var(--cw-radius-control);
+}
+
+.task-create-options > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px;
+  color: var(--cw-text-secondary);
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-create-options > summary::-webkit-details-marker { display: none; }
+
+.task-create-options > summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-right: 3px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.task-create-options[open] > summary::before { transform: rotate(135deg); }
+.task-create-options[open] > summary { border-bottom: 1px solid var(--cw-border-subtle); }
+.task-create-options > summary:hover { background: var(--cw-surface-hover); }
+
+.task-create-option-status {
+  margin-left: auto;
+  color: var(--cw-text-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.task-create-dialog .task-agent-options .task-assignment-fields {
+  margin: 0;
+  padding: 12px;
+  border: 0;
+}
+
+.task-create-dialog .task-agent-options legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.task-assignment-fields > p {
+  margin: 0 0 12px;
+  color: var(--cw-text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.task-assignment-fields > label {
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--cw-border-subtle);
+  border-radius: 8px;
+}
+
+.task-assignment-fields > label.task-assignment-selected {
+  border-color: var(--cw-accent-border);
+  background: var(--cw-accent-soft);
+}
+
+.task-assignment-fields > label > span {
+  flex: 1 1 120px;
+  color: var(--cw-text);
+  font-size: 12px;
+}
+
+.task-assignment-fields > label > select {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--cw-border);
+  border-radius: 7px;
+  background: var(--cw-surface-inset);
+  color: var(--cw-text);
+  font-size: 12px;
+}
+
+.task-create-dialog .task-delivery-options > :not(summary) {
+  margin: 12px;
+}
+
+.task-create-dialog .task-delivery-options > textarea {
+  width: calc(100% - 24px);
+}
+
+.task-create-dialog .task-delivery-options > label { display: block; }
+
+.task-create-dialog .task-create-actions {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 16px 24px;
+  border-top: 1px solid var(--cw-border);
+  background: var(--cw-surface-raised);
+}
+
+.task-create-actions > button { min-height: 42px; }
+
+@media (max-width: 560px) {
+  .task-create-backdrop { padding: 12px; }
+  .task-create-dialog { max-height: calc(100dvh - 24px); }
+  .task-create-dialog .modal-heading { padding: 16px 16px 8px; }
+  .task-create-dialog > .task-create-intro { padding: 0 16px 14px; }
+  .task-create-body { gap: 14px; padding: 2px 16px 16px; }
+  .task-create-dialog .task-create-actions { padding: 12px 16px; }
+  .task-create-dialog .task-create-field > :is(input, select, textarea) { font-size: 16px; }
+  .task-create-dialog .task-assignment-fields > label > select { flex: 1 1 120px; font-size: 16px; }
+}

@@ -1362,3 +1362,11 @@ unset criteria, no execution, no submitted result and unreported usage. Coverage
 is a result's claim, not independent verification. Internal tab identifiers,
 protocols and raw advanced diagnostics retain their semantics. See
 [overview evidence](../acceptance/web-098-task-overview.md).
+
+## Focused task creation
+
+WEB-100 presents destination, title and goal before optional Agent roles and
+delivery requirements. Collapsed roles retain values and show the assignment
+count. The body scrolls independently from the action footer, and closed
+disclosures exclude their controls from the modal focus cycle. Room candidate
+scoping and creation authority are unchanged. See [form evidence](../acceptance/web-100-task-creation-focus.md).

@@ -14,10 +14,10 @@ export function TaskAssignmentFields({ agents, value, onChange, disabled = false
     ...value.filter(({ agentId }) => !available.some((agent) => agent.agentId === agentId))
       .map(({ agentId }) => ({ agentId, name: t("已不可用的 Agent", "Unavailable Agent"), available: false }))];
   return <fieldset disabled={disabled} className="task-assignment-fields">
-    <legend>{t("任务 Agent", "Task Agents")}</legend>
-    <p>{t("选择参与这个任务的 Agent 和分工。保存只更新指派；发送消息后才会执行。", "Choose this Task's Agents and roles. Saving updates assignments; sending a message starts execution.")}</p>
+    <legend>{t("参与 Agent", "Participating Agents")}</legend>
+    <p>{t("最多一位主负责人，其余可参与或审阅。发送消息后才会执行。", "Choose up to one primary Agent, plus contributors or reviewers. Sending a message starts execution.")}</p>
     {rows.length === 0 && <p>{t("房间暂无可用 Agent，可先创建任务，配置房间 Agent 后再指派。", "No Agents are available in this Room. Create the Task first and assign Agents after configuring the Room.")}</p>}
-    {rows.map(({ agentId, name, available: enabled }) => <label key={agentId}>
+    {rows.map(({ agentId, name, available: enabled }) => <label key={agentId} className={value.some((assignment) => assignment.agentId === agentId) ? "task-assignment-selected" : undefined}>
       <span>{name}</span>
       <select aria-label={t(`任务分工：${name}`, `Task role: ${name}`)} value={value.find((assignment) => assignment.agentId === agentId)?.role ?? ""}
         onChange={(event) => {

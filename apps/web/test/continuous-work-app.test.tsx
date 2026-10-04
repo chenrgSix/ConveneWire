@@ -277,6 +277,7 @@ for (const entry of ["filtered Work", "conversation"] as const) {
     }
     const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
     const destination = dialog.getByLabelText("Room") as HTMLSelectElement;
+    f.fireEvent.click(dialog.getByText("Agent roles (optional)"));
     assert.equal(destination.value, entry === "filtered Work" ? f.otherRoomId : f.roomId);
     // The filtered entry starts at B even while the conversation is in A.
     // Switching through A exercises the same explicit change in both entries.
@@ -366,6 +367,7 @@ test("native acceptance regression: explicitly assigned new Task routes a real s
   const dialog = f.within(await f.page.findByRole("dialog", { name: "New task" }));
   f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: "Assigned native task" } });
   f.fireEvent.change(dialog.getByLabelText("Task goal"), { target: { value: "Run only the fixture Agent" } });
+  f.fireEvent.click(dialog.getByText("Agent roles (optional)"));
   f.fireEvent.change(await dialog.findByLabelText("Task role: Offline Builder"), { target: { value: "primary" } });
   f.fireEvent.click(dialog.getByRole("button", { name: "Create and switch" }));
   await f.page.findByRole("heading", { name: "Assigned native task" });
