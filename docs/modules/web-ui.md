@@ -1354,3 +1354,11 @@ close the drawer; folder disclosure keeps it open. The shared modal traps focus,
 returns it on close and makes the background inert. Mobile-only omission of
 CSS-hidden participant controls and the legacy Room selector keeps the focus
 cycle aligned with visible actions. See [navigation evidence](../acceptance/web-097-mobile-navigation.md).
+
+## Task overview language
+
+WEB-098 localizes the overview and tab labels, names the next actor and separates
+unset criteria, no execution, no submitted result and unreported usage. Coverage
+is a result's claim, not independent verification. Internal tab identifiers,
+protocols and raw advanced diagnostics retain their semantics. See
+[overview evidence](../acceptance/web-098-task-overview.md).

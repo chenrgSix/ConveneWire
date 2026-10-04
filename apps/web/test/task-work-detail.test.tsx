@@ -283,10 +283,10 @@ test("Task detail renders authoritative tabs and untrusted content as text", asy
     const page = within(dom.window.document.body);
     await page.findByRole("heading", { name: task.title });
     assert.ok(page.getByText("Quick Room work"));
-    assert.ok(page.getByText("1/1 required criteria evidenced"));
+    assert.ok(page.getByText("1/1 required criteria claimed as satisfied in the latest result"));
     assert.ok(page.getByText("Attempt 2 · outcome unknown"));
     assert.ok(page.getByText("v1 · proposed"));
-    assert.ok(page.getAllByText("Unknown").length >= 2);
+    assert.ok(page.getAllByText("Not reported").length >= 2);
 
     fireEvent.click(page.getByRole("tab", { name: "Runs" }));
     await page.findByText("Ordered events");
@@ -314,6 +314,64 @@ test("Task detail renders authoritative tabs and untrusted content as text", asy
     cleanup();
     dom.window.close();
   }
+});
+
+test("Chinese overview translates task status, next actor and tabs while preserving tab identities", async () => {
+  const dom = installDom();
+  globalThis.fetch = baseFetch();
+  const { cleanup, fireEvent, render, within } = await import("@testing-library/react");
+  const changedTabs: string[] = [];
+  try {
+    render(<TaskWorkDetail {...detailProps()} locale="zh-CN" onTabChange={(tab) => changedTabs.push(tab)} />);
+    const page = within(dom.window.document.body);
+    await page.findByRole("heading", { name: task.title });
+    for (const name of ["概览", "计划", "证据", "执行记录", "结果", "成果文件", "讨论", "操作记录"]) {
+      assert.ok(page.getByRole("tab", { name, exact: true }));
+    }
+    assert.ok(page.getByText("待审核", { exact: true }));
+    assert.ok(page.getByText("高优先级"));
+    assert.ok(page.getByText("完成前须有已验收的结果"));
+    assert.ok(page.getByText("审核结果 · Owner"));
+    assert.ok(page.getByText("参与智能体: Builder (主要负责)"));
+    assert.ok(page.getByText("尝试 2 · 执行结果待确认"));
+    assert.ok(page.getByText("v1 · 待验收"));
+    assert.ok(page.getByText("已声明满足", { exact: true }));
+    fireEvent.click(page.getByRole("tab", { name: "成果文件", exact: true }));
+    assert.deepEqual(changedTabs, ["artifacts"]);
+    assert.equal(page.getByRole("tabpanel").id, "work-panel-artifacts");
+    fireEvent.keyDown(page.getByRole("tab", { name: "成果文件", exact: true }), { key: "ArrowRight" });
+    assert.deepEqual(changedTabs, ["artifacts", "discussion"]);
+    assert.equal(page.getByRole("tab", { name: "讨论", exact: true }).getAttribute("aria-selected"), "true");
+  } finally { cleanup(); dom.window.close(); }
+});
+
+test("new-task overview explains missing criteria, execution and usage without a false zero denominator", async () => {
+  const dom = installDom();
+  const emptyTask: TaskProjection = {
+    ...task, title: "整理发布说明", goal: "核对本次交付内容。", lifecycleState: "ready", priority: "normal", isDefault: false,
+    completionPolicy: "owner_confirmed", criteria: [], assignments: [], attentionReasons: [],
+    budgetUsage: { ...task.budgetUsage, runAttempts: 0, executionDurationSeconds: 0 },
+    nextAction: { actorKind: "member", reason: "start_work", sourceId: task.taskId, expectedMemberId: null, expectedAgentId: null }
+  };
+  const fallback = baseFetch();
+  globalThis.fetch = async (input, init) => {
+    const path = String(input);
+    if (path === `/api/tasks/${task.taskId}`) return json(emptyTask);
+    if (path === `/api/tasks/${task.taskId}/runs` || path === `/api/tasks/${task.taskId}/results`) return json([]);
+    return fallback(input, init);
+  };
+  const { cleanup, render, within } = await import("@testing-library/react");
+  try {
+    render(<TaskWorkDetail {...detailProps()} locale="zh-CN" memberNames={new Map()} />);
+    const page = within(dom.window.document.body);
+    await page.findByRole("heading", { name: emptyTask.title });
+    for (const value of ["待开始", "普通优先级", "已启用", "由负责人确认完成", "尚未设置验收标准。", "尚未执行", "尚未提交结果", "开始工作 · 待确认的成员", "成员信息暂不可用"]) {
+      assert.ok(page.getByText(value, { exact: true }));
+    }
+    assert.equal(page.getAllByText("未上报", { exact: true }).length, 2);
+    assert.ok(page.getByRole("button", { name: "进入任务对话" }));
+    assert.doesNotMatch(dom.window.document.body.textContent ?? "", /0\/0|ready|normal|enabled|owner confirmed|start work| · member/u);
+  } finally { cleanup(); dom.window.close(); }
 });
 
 test("Result controls follow domain ownership instead of projected next action", async () => {

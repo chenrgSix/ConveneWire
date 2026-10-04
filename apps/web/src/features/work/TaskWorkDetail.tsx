@@ -121,6 +121,25 @@ function display(value: string): string {
   return value.replaceAll("_", " ");
 }
 
+function overviewLabel(value: string, locale: Locale): string {
+  if (locale !== "zh-CN") return display(value);
+  const labels: Record<string, string> = {
+    draft: "草稿", ready: "待开始", active: "进行中", review: "待审核", completed: "已完成", canceled: "已取消",
+    low: "低优先级", normal: "普通优先级", high: "高优先级", urgent: "紧急",
+    enabled: "已启用", paused: "已暂停", owner_confirmed: "由负责人确认完成", accepted_result_required: "完成前须有已验收的结果",
+    provide_input: "补充输入", acknowledge_outcome: "确认执行结果", review_result: "审核结果", resolve_block: "解决阻塞",
+    resume_scheduling: "恢复调度", increase_budget: "调整预算", restore_runtime: "恢复执行环境", submit_result: "提交结果",
+    start_work: "开始工作", none: "当前无需操作",
+    needs_input: "等待补充输入", outcome_unknown: "执行结果待确认", needs_approval: "等待审核", result_stale: "结果已过期",
+    blocked: "已阻塞", overdue: "已逾期", budget_exhausted: "预算已用尽", runtime_unavailable: "执行环境不可用", result_rejected: "结果未通过验收",
+    primary: "主要负责", contributor: "协作", reviewer: "审核",
+    satisfied: "已声明满足", unresolved: "尚待确认", not_satisfied: "未满足", not_applicable: "不适用",
+    queued: "排队中", delivered: "已送达", working: "执行中", input_required: "等待补充输入", failed: "执行失败", expired: "已超时",
+    proposed: "待验收", accepted: "已验收", rejected: "未通过验收", superseded: "已由新版替代"
+  };
+  return labels[value] ?? "状态暂不可用";
+}
+
 function createOperationId(): string {
   const value = globalThis.crypto?.randomUUID?.() ??
     `${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
@@ -355,11 +374,11 @@ export function TaskWorkDetail({
     { key: "overview", label: text("概览", "Overview", locale) },
     { key: "plan", label: text("计划", "Plan", locale) },
     { key: "evidence", label: text("证据", "Evidence", locale) },
-    { key: "runs", label: "Runs" },
-    { key: "results", label: "Results" },
-    { key: "artifacts", label: "Artifacts" },
-    { key: "discussion", label: "Discussion" },
-    { key: "audit", label: "Audit" }
+    { key: "runs", label: text("执行记录", "Runs", locale) },
+    { key: "results", label: text("结果", "Results", locale) },
+    { key: "artifacts", label: text("成果文件", "Artifacts", locale) },
+    { key: "discussion", label: text("讨论", "Discussion", locale) },
+    { key: "audit", label: text("操作记录", "Audit", locale) }
   ], [locale]);
 
   function navigateTabs(event: KeyboardEvent<HTMLButtonElement>, key: TaskWorkDetailTab): void {
@@ -483,19 +502,24 @@ export function TaskWorkDetail({
   }
 
   if (loading && !detail) {
-    return <section className="work-detail loading">{text("正在载入 Task…", "Loading Task…", locale)}</section>;
+    return <section className="work-detail loading">{text("正在载入任务…", "Loading Task…", locale)}</section>;
   }
   if (!detail) {
     return (
       <section className="work-detail error">
         <button onClick={onBack} type="button">← {text("返回工作台", "Back to Work", locale)}</button>
-        <p role="alert">{error ?? text("Task 不可用", "Task unavailable", locale)}</p>
+        <p role="alert">{error ?? text("任务不可用", "Task unavailable", locale)}</p>
       </section>
     );
   }
 
   const { task } = detail;
-  const roomName = roomNames.get(task.roomId) ?? text("未知 Room", "Unknown Room", locale);
+  const roomName = roomNames.get(task.roomId) ?? text("房间名称暂不可用", "Room name unavailable", locale);
+  const nextActor = task.nextAction.actorKind === "member"
+    ? memberNames.get(task.nextAction.expectedMemberId ?? "") ?? text("待确认的成员", "Member to confirm", locale)
+    : task.nextAction.actorKind === "agent"
+      ? agentNames.get(task.nextAction.expectedAgentId ?? "") ?? text("待确认的智能体", "Agent to confirm", locale)
+      : text("系统", "System", locale);
   return (
     <section className="work-detail" aria-label={`TASK-${task.taskDisplayNumber}`}>
       <header className="work-detail-header">
@@ -507,16 +531,16 @@ export function TaskWorkDetail({
         </div>
         <div className="work-detail-actions">
           <div className="work-detail-badges">
-            {task.isDefault && <span>{text("快速 Room 工作", "Quick Room work", locale)}</span>}
-            <span>{display(task.lifecycleState)}</span>
-            <span>{display(task.priority)}</span>
+            {task.isDefault && <span>{text("默认对话", "Quick Room work", locale)}</span>}
+            <span>{overviewLabel(task.lifecycleState, locale)}</span>
+            <span>{overviewLabel(task.priority, locale)}</span>
           </div>
           <TaskCopyControl key={`${task.taskId}:${currentMember?.memberId}:${token}`} task={task} locale={locale} token={token} roomName={roomName} onCreated={(created) => { onChanged(); onOpenTask(created.taskId, created.roomId); }} />
           {onCopyLink && <button className="work-inline-link" onClick={() => void onCopyLink()} type="button">{text("复制当前链接", "Copy current link", locale)}</button>}
         </div>
       </header>
       {token && <DesktopCodexHandoff key={`${task.taskId}:${token}`} taskId={task.taskId} token={token} locale={locale} />}
-      <div aria-label={text("Task 详情导航", "Task detail navigation", locale)} className="work-tabs" role="tablist">
+      <div aria-label={text("任务详情导航", "Task detail navigation", locale)} className="work-tabs" role="tablist">
         {tabs.map((item) => (
           <button
             aria-controls={`work-panel-${item.key}`}
@@ -539,21 +563,25 @@ export function TaskWorkDetail({
             <article className="work-panel-card">
               <h4>{text("责任与位置", "Ownership and location", locale)}</h4>
               <dl>
-                <div><dt>Room</dt><dd>#{roomName}</dd></div>
-                <div><dt>{text("负责人", "Owner", locale)}</dt><dd>{memberNames.get(task.ownerMemberId) ?? text("未知", "Unknown", locale)}</dd></div>
-                <div><dt>{text("调度", "Scheduling", locale)}</dt><dd>{display(task.schedulingState)}</dd></div>
-                <div><dt>{text("完成策略", "Completion", locale)}</dt><dd>{display(task.completionPolicy)}</dd></div>
+                <div><dt>{text("所属房间", "Room", locale)}</dt><dd>#{roomName}</dd></div>
+                <div><dt>{text("负责人", "Owner", locale)}</dt><dd>{memberNames.get(task.ownerMemberId) ?? text("成员信息暂不可用", "Member information unavailable", locale)}</dd></div>
+                <div><dt>{text("任务调度", "Scheduling", locale)}</dt><dd>{overviewLabel(task.schedulingState, locale)}</dd></div>
+                <div><dt>{text("完成方式", "Completion", locale)}</dt><dd>{overviewLabel(task.completionPolicy, locale)}</dd></div>
               </dl>
               <button onClick={() => onOpenRoom(task.roomId, task.taskId)} type="button">
-                {text("在 Room 中打开此 Task", "Open this Task in Room", locale)}
+                {text("进入任务对话", "Open this Task in Room", locale)}
               </button>
             </article>
             <article className="work-panel-card">
               <h4>{text("验收标准", "Acceptance criteria", locale)}</h4>
-              <p>{satisfiedRequired}/{requiredCriteria.length} {text("条必需标准有证据支持", "required criteria evidenced", locale)}</p>
+              {requiredCriteria.length > 0
+                ? <p>{satisfiedRequired}/{requiredCriteria.length} {text("条必需标准在最新结果中声明满足", "required criteria claimed as satisfied in the latest result", locale)}</p>
+                : <p>{task.criteria.length === 0
+                  ? text("尚未设置验收标准。", "No acceptance criteria have been set.", locale)
+                  : text("未设置必需标准；以下为可选要求。", "No required criteria; the following are optional.", locale)}</p>}
               <ol>{task.criteria.map((criterion) => {
                 const claim = latestClaims.get(criterion.criterionKey);
-                return <li key={criterion.criterionKey}><strong>{criterion.description}</strong><span>{claim ? display(claim.coverage) : text("无声明", "No claim", locale)}</span></li>;
+                return <li key={criterion.criterionKey}><strong>{criterion.description}</strong><span>{claim ? overviewLabel(claim.coverage, locale) : text("尚无结果声明", "No result claim yet", locale)}</span></li>;
               })}</ol>
             </article>
             <article className="work-panel-card">
@@ -561,19 +589,19 @@ export function TaskWorkDetail({
               <dl>
                 <div><dt>{text("运行尝试", "Run attempts", locale)}</dt><dd>{task.budgetUsage.runAttempts}/{task.budgetPolicy.maxRunAttempts}</dd></div>
                 <div><dt>{text("执行秒数", "Execution seconds", locale)}</dt><dd>{task.budgetUsage.executionDurationSeconds}</dd></div>
-                <div><dt>{text("提供方 Tokens", "Provider tokens", locale)}</dt><dd>{task.budgetUsage.providerTokens ?? text("未知", "Unknown", locale)}</dd></div>
-                <div><dt>{text("提供方成本", "Provider cost", locale)}</dt><dd>{task.budgetUsage.providerCostUsd ?? text("未知", "Unknown", locale)}</dd></div>
-                <div><dt>{text("最新 Run", "Latest Run", locale)}</dt><dd>{latestRun ? `${text("尝试", "Attempt", locale)} ${latestRun.attemptNumber ?? "?"} · ${display(latestRun.state)}` : text("无", "None", locale)}</dd></div>
-                <div><dt>{text("最新 Result", "Latest Result", locale)}</dt><dd>{latestResult ? `v${latestResult.resultVersion} · ${display(latestResult.state)}` : text("无", "None", locale)}</dd></div>
+                <div><dt>{text("模型用量（词元）", "Provider tokens", locale)}</dt><dd>{task.budgetUsage.providerTokens ?? text("未上报", "Not reported", locale)}</dd></div>
+                <div><dt>{text("模型费用（美元）", "Provider cost (USD)", locale)}</dt><dd>{task.budgetUsage.providerCostUsd ?? text("未上报", "Not reported", locale)}</dd></div>
+                <div><dt>{text("最近执行", "Latest Run", locale)}</dt><dd>{latestRun ? `${text("尝试", "Attempt", locale)} ${latestRun.attemptNumber ?? "?"} · ${overviewLabel(latestRun.state, locale)}` : text("尚未执行", "No execution yet", locale)}</dd></div>
+                <div><dt>{text("最新结果", "Latest Result", locale)}</dt><dd>{latestResult ? `v${latestResult.resultVersion} · ${overviewLabel(latestResult.state, locale)}` : text("尚未提交结果", "No result submitted yet", locale)}</dd></div>
               </dl>
             </article>
             <article className="work-panel-card">
               <h4>{text("下一步与关注项", "Next action and attention", locale)}</h4>
-              <p>{display(task.nextAction.reason)} · {display(task.nextAction.actorKind)}</p>
+              <p>{overviewLabel(task.nextAction.reason, locale)}{task.nextAction.reason !== "none" && ` · ${nextActor}`}</p>
               {task.attentionReasons.length === 0
                 ? <p>{text("没有待处理关注项", "No attention reasons", locale)}</p>
-                : <ul>{task.attentionReasons.map((attention) => <li key={`${attention.reason}:${attention.sourceId}`}>{display(attention.reason)}</li>)}</ul>}
-              <p>{text("指派", "Assignments", locale)}: {task.assignments.map(({ agentId, role }) => `${agentNames.get(agentId) ?? text("未知 Agent", "Unknown Agent", locale)} (${role})`).join(", ") || text("无", "None", locale)}</p>
+                : <ul>{task.attentionReasons.map((attention) => <li key={`${attention.reason}:${attention.sourceId}`}>{overviewLabel(attention.reason, locale)}</li>)}</ul>}
+              <p>{text("参与智能体", "Assignments", locale)}: {task.assignments.map(({ agentId, role }) => `${agentNames.get(agentId) ?? text("智能体信息暂不可用", "Agent information unavailable", locale)} (${overviewLabel(role, locale)})`).join(", ") || text("尚未安排", "Not assigned yet", locale)}</p>
               {latestResult && latestResult.proposal.openQuestions.length > 0 && <><strong>{text("最新开放问题", "Latest open questions", locale)}</strong><ul>{latestResult.proposal.openQuestions.map((question) => <li key={question}>{question}</li>)}</ul></>}
             </article>
           </div>
