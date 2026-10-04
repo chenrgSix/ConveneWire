@@ -1345,3 +1345,12 @@ the Room clears prior assignments and fences late reads. Creation responses
 cannot clear a newer request after a Team or session change. Conversation
 selectors localize presentation without renaming stored Tasks. See
 [creation evidence](../acceptance/web-096-task-destination.md).
+
+## Narrow-screen navigation
+
+WEB-097 presents navigation as an initially closed modal drawer at 760 pixels
+and below, independently of the desktop sidebar preference. Destination actions
+close the drawer; folder disclosure keeps it open. The shared modal traps focus,
+returns it on close and makes the background inert. Mobile-only omission of
+CSS-hidden participant controls and the legacy Room selector keeps the focus
+cycle aligned with visible actions. See [navigation evidence](../acceptance/web-097-mobile-navigation.md).

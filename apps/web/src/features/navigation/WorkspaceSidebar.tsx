@@ -4,10 +4,13 @@ import { type Locale, translate } from "../../i18n.js";
 import type { AgentTask, LocalSession, Room, Team, WorkspaceView } from "../../models.js";
 import { isManagementView } from "./workspace-navigation.js";
 import { RoomFolder } from "./RoomFolder.js";
+import { PanelDialog } from "./PanelDialog.js";
 
 interface Props {
   pendingPermissions?: number;
   collapsed?: boolean;
+  mobile?: boolean;
+  onCloseMobile?: () => void;
   attentionItem?: WorkbenchItem | null;
   attentionFailed?: boolean;
   attentionLoading?: boolean;
@@ -43,18 +46,23 @@ export function WorkspaceSidebar(props: Props) {
     ["members", zh ? "团队与成员" : "Team & members", "♙"],
     ["security", zh ? "账户与安全" : "Account & security", "⚙"]
   ] as const;
-  return (
+  // Close only for a destination/action; folder disclosure remains in the drawer.
+  const navigate = <T,>(action: (value: T) => void) => (value: T) => {
+    if (props.mobile) props.onCloseMobile?.();
+    action(value);
+  };
+  const sidebar = (
     <aside id="workspace-navigation" className="product-sidebar" hidden={props.collapsed} aria-label={zh ? "工作区导航" : "Workspace navigation"}>
       <div className="product-brand"><span className="brand-mark" aria-hidden="true">CW</span><strong>ConveneWire</strong></div>
       <div className="product-team-picker">
-        <select aria-label={zh ? "选择团队" : "Select Team"} value={teamId ?? ""} onChange={(event) => props.onTeam(event.target.value)}>
+        <select aria-label={zh ? "选择团队" : "Select Team"} value={teamId ?? ""} onChange={(event) => navigate(props.onTeam)(event.target.value)}>
           {!teamId && <option value="">{zh ? "选择团队" : "Select Team"}</option>}
           {teams.map((team) => <option value={team.teamId} key={team.teamId}>{team.name}</option>)}
         </select>
-        {props.canCreateTeam !== false && <button aria-label={translate(locale, "newTeam")} title={translate(locale, "newTeam")} onClick={props.onNewTeam} type="button">＋</button>}
+        {props.canCreateTeam !== false && <button aria-label={translate(locale, "newTeam")} title={translate(locale, "newTeam")} onClick={navigate(props.onNewTeam)} type="button">＋</button>}
       </div>
       {teamId && props.onOpenAttention && <div className="product-attention" aria-live="polite">
-        {props.attentionItem ? <button type="button" className="product-attention-link" onClick={() => props.onOpenAttention?.(props.attentionItem!)}>
+        {props.attentionItem ? <button type="button" className="product-attention-link" onClick={navigate(() => props.onOpenAttention?.(props.attentionItem!))}>
           <span className="attention-dot" aria-hidden="true" />{zh ? "我的任务待处理" : "My work needs attention"}
           <small>{zh ? "查看下一步" : "Open next step"}</small>
         </button> : props.attentionFailed ? <button type="button" disabled={props.attentionLoading} onClick={props.onRetryAttention}>{zh ? "重新检查待处理工作" : "Check pending work again"}</button>
@@ -64,7 +72,7 @@ export function WorkspaceSidebar(props: Props) {
       {managing ? (
         <nav className="product-destinations" aria-label={zh ? "设置导航" : "Settings navigation"}>
           {destinations.filter(([view]) => !props.session?.peerAccess || view !== "devices").map(([view, name, icon]) => (
-            <button key={view} disabled={!teamId && view !== "security"} aria-current={activeView === view ? "page" : undefined} onClick={() => props.onView(view)} type="button">
+            <button key={view} disabled={!teamId && view !== "security"} aria-current={activeView === view ? "page" : undefined} onClick={() => navigate(props.onView)(view)} type="button">
               <span aria-hidden="true">{icon}</span>{name}
             </button>
           ))}
@@ -72,29 +80,34 @@ export function WorkspaceSidebar(props: Props) {
       ) : (
         <div className="product-collaboration-nav">
           <nav className="product-destinations" aria-label={zh ? "协作导航" : "Collaboration navigation"}>
-            <button className="product-work-link" aria-current={activeView === "work" ? "page" : undefined} onClick={() => props.onView("work")} type="button"><span aria-hidden="true">▦</span>{zh ? "工作" : "Work"}</button>
-            <button aria-current={activeView === "room" ? "page" : undefined} onClick={() => props.onView("room")} type="button"><span aria-hidden="true">⌁</span>{translate(locale, "chat")}</button>
+            <button className="product-work-link" aria-current={activeView === "work" ? "page" : undefined} onClick={() => navigate(props.onView)("work")} type="button"><span aria-hidden="true">▦</span>{zh ? "工作" : "Work"}</button>
+            <button aria-current={activeView === "room" ? "page" : undefined} onClick={() => navigate(props.onView)("room")} type="button"><span aria-hidden="true">⌁</span>{translate(locale, "chat")}</button>
           </nav>
           {teamId && <div className="product-rooms">
-            <div className="product-section-heading"><span>{zh ? "房间" : "ROOMS"}</span>{props.canCreateRoom !== false && <button aria-label={zh ? "新建房间" : "New Room"} onClick={props.onNewRoom} type="button">＋</button>}</div>
-            <select className="product-room-picker" aria-label={translate(locale, "selectRoom")} value={roomId ?? ""} onChange={(event) => props.onRoom(event.target.value)}>
+            <div className="product-section-heading"><span>{zh ? "房间" : "ROOMS"}</span>{props.canCreateRoom !== false && <button aria-label={zh ? "新建房间" : "New Room"} onClick={navigate(props.onNewRoom)} type="button">＋</button>}</div>
+            {!props.mobile && <select className="product-room-picker" aria-label={translate(locale, "selectRoom")} value={roomId ?? ""} onChange={(event) => navigate(props.onRoom)(event.target.value)}>
               {!roomId && <option value="">{translate(locale, "chooseRoom")}</option>}
               {rooms.map((room) => <option key={room.roomId} value={room.roomId}>{room.name}</option>)}
-            </select>
+            </select>}
             <nav className="product-room-list" aria-label={zh ? "房间列表" : "Room list"}>
               {rooms.filter((room) => room.teamId === teamId).map((room) => <RoomFolder
                 key={JSON.stringify([teamId, props.session?.userId, props.session?.token, room.roomId])}
                 room={room} locale={locale} session={props.session} selected={roomId === room.roomId}
                 selectedTaskId={activeView === "room" && roomId === room.roomId ? props.taskId : null}
                 currentTasks={roomId === room.roomId ? props.tasks : undefined}
-                onRoom={props.onRoom} onTask={props.onTask} />)}
+                onRoom={navigate(props.onRoom)} onTask={(roomId, taskId) => navigate(() => props.onTask(roomId, taskId))(undefined)} />)}
               {rooms.length === 0 && <p>{zh ? "还没有房间" : "No Rooms yet"}</p>}
             </nav>
           </div>}
-          {activeView === "room" && children}
+          {activeView === "room" && !props.mobile && children}
         </div>
       )}
       <p className="product-sidebar-note">{zh ? "让人与智能体，一起完成工作。" : "People and Agents, working together."}</p>
     </aside>
   );
+  if (!props.mobile) return sidebar;
+  if (props.collapsed) return null;
+  return <PanelDialog title={zh ? "工作区导航" : "Workspace navigation"} locale={locale} onClose={() => props.onCloseMobile?.()}>
+    <div className="mobile-navigation">{sidebar}</div>
+  </PanelDialog>;
 }

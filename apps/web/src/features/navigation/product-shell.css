@@ -166,3 +166,47 @@
 .product-attention-link small { width: 100%; color: var(--cw-text-secondary); text-align: left; }
 .attention-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--cw-warning); }
 .product-attention-clear { color: var(--cw-text-muted); }
+
+/* The mobile drawer lives outside the inert workspace, using the same tokens. */
+.mobile-navigation {
+  --shell-panel: var(--cw-sidebar);
+  --shell-border: var(--cw-border-subtle);
+  --shell-muted: var(--cw-text-secondary);
+  --shell-hover: var(--cw-surface-hover);
+  --shell-active: var(--cw-surface-active);
+  --shell-ink: var(--cw-text);
+  --shell-accent: var(--cw-accent-hover);
+  min-height: 0;
+  overflow-y: auto;
+}
+.product-dialog-backdrop:has(.mobile-navigation) { padding: 0; place-items: stretch start; }
+.product-dialog:has(.mobile-navigation) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(340px, calc(100vw - 40px));
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  border-radius: 0 16px 16px 0;
+  padding: 16px;
+  background: var(--cw-sidebar);
+}
+.product-dialog:has(.mobile-navigation) > .product-dialog-heading { flex: none; margin: 0; }
+.product-dialog:has(.mobile-navigation) > .product-dialog-heading button { min-width: 44px; min-height: 44px; }
+.mobile-navigation .product-sidebar {
+  display: flex;
+  flex-direction: column;
+  max-height: none;
+  padding: 0;
+  gap: 20px;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+.mobile-navigation .product-destinations { display: grid; }
+.mobile-navigation .product-destinations button { justify-content: flex-start; width: 100%; font-size: 14px; }
+.mobile-navigation .product-sidebar :is(button, select) { min-height: 44px; }
+.mobile-navigation .product-team-picker select { font-size: 14px; }
+.mobile-navigation .product-room-list button { font-size: 14px; }
+.mobile-navigation .product-sidebar-note { display: block; padding-top: 12px; }

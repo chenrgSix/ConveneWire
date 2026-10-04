@@ -31,6 +31,7 @@ import { AccessGate } from "./features/auth/AccessGate.js";
 import { AccountWorkspace } from "./features/auth/AccountWorkspace.js";
 import { DeviceWorkspace } from "./features/device/DeviceWorkspace.js";
 import { WorkspaceSidebar } from "./features/navigation/WorkspaceSidebar.js";
+import { useSidebarNavigation } from "./features/navigation/useSidebarNavigation.js";
 import { PanelDialog } from "./features/navigation/PanelDialog.js";
 import { isManagementView, type WorkspaceNavigation } from "./features/navigation/workspace-navigation.js";
 import { useWebSession } from "./features/auth/useWebSession.js";
@@ -150,14 +151,7 @@ export function App() {
 function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientEntrySession, "user" | "mode" | "session"> | null }) {
   const [isLocalNode, setIsLocalNode] = useState(false);
   const [isPeerOnly, setIsPeerOnly] = useState(Boolean(clientEntrySession?.user.peerAccess));
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    try { return localStorage.getItem("agent-room.sidebar-collapsed") === "true"; }
-    catch { return false; }
-  });
-  const toggleSidebar = () => setSidebarCollapsed((current) => {
-    try { localStorage.setItem("agent-room.sidebar-collapsed", String(!current)); } catch { /* The current view still works without persistence. */ }
-    return !current;
-  });
+  const { narrow: narrowNavigation, collapsed: sidebarCollapsed, toggle: toggleSidebar, closeMobile: closeMobileNavigation } = useSidebarNavigation();
   const isCurrentSession = captureWebSessionScope();
   const [theme, setTheme] = useState<Theme>(() =>
     localStorage.getItem(themeKey) === "light" ? "light" : "dark"
@@ -1661,6 +1655,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
   return (
     <div className={`app-shell product-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${managing ? "management-area" : "collaboration-area"}`}>
       <WorkspaceSidebar pendingPermissions={runtimeAttention?.scope === runtimeAttentionScope ? runtimeAttention.count : 0} collapsed={sidebarCollapsed} attentionItem={attention.item} attentionFailed={attention.failed} attentionLoading={attention.loading}
+        mobile={narrowNavigation} onCloseMobile={closeMobileNavigation}
         onRetryAttention={() => void attention.refresh()}
         onOpenAttention={(item) => {
           const target = workActionTarget(item);
@@ -1724,7 +1719,7 @@ function WorkspaceApp({ clientEntrySession }: { clientEntrySession: Pick<ClientE
         <header className="workspace-header">
           <div className="workspace-heading">
             <button className="sidebar-toggle" type="button" aria-controls="workspace-navigation" aria-expanded={!sidebarCollapsed}
-              aria-label={sidebarCollapsed ? (locale === "zh-CN" ? "展开侧栏" : "Expand sidebar") : (locale === "zh-CN" ? "收起侧栏" : "Collapse sidebar")}
+              aria-label={narrowNavigation ? (locale === "zh-CN" ? "打开导航" : "Open navigation") : sidebarCollapsed ? (locale === "zh-CN" ? "展开侧栏" : "Expand sidebar") : (locale === "zh-CN" ? "收起侧栏" : "Collapse sidebar")}
               title={sidebarCollapsed ? (locale === "zh-CN" ? "展开侧栏" : "Expand sidebar") : (locale === "zh-CN" ? "收起侧栏" : "Collapse sidebar")}
               onClick={toggleSidebar}>
               <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /></svg>
