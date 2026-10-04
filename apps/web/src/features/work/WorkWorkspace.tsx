@@ -1,5 +1,5 @@
 import type { WorkbenchPage } from "@convene-wire/contracts/task-result";
-import React from "react";
+import React, { useId, useState } from "react";
 
 import type { Locale } from "../../i18n.js";
 import type { TaskWorkDetailTab } from "./TaskWorkDetail.js";
@@ -149,12 +149,17 @@ function WorkCard({
   roomNames: ReadonlyMap<string, string>;
 }) {
   const unknown = locale === "zh-CN" ? "未知" : "Unknown";
+  const nextActor = item.nextAction.actorKind === "member"
+    ? memberNames.get(item.nextAction.expectedMemberId ?? "") ?? (locale === "zh-CN" ? "待确认的成员" : "Member to confirm")
+    : item.nextAction.actorKind === "agent"
+      ? agentNames.get(item.nextAction.expectedAgentId ?? "") ?? (locale === "zh-CN" ? "待确认的智能体" : "Agent to confirm")
+      : (locale === "zh-CN" ? "系统" : "System");
   return (
     <article className="work-card">
       <button
         aria-label={locale === "zh-CN"
-          ? `打开 TASK-${item.taskDisplayNumber}`
-          : `Open TASK-${item.taskDisplayNumber}`}
+          ? `打开 TASK-${item.taskDisplayNumber}：${item.title}`
+          : `Open TASK-${item.taskDisplayNumber}: ${item.title}`}
         className="work-card-open"
         onClick={() => onOpenTask(item.taskId, item.roomId)}
         type="button"
@@ -185,23 +190,13 @@ function WorkCard({
           ))}
         </ul>
       )}
-      <dl className="work-facts">
-        <div>
-          <dt>{locale === "zh-CN" ? "必需标准" : "Required criteria"}</dt>
-          <dd>{item.requiredCriteriaSatisfied}/{item.requiredCriteriaTotal}</dd>
-        </div>
-        <div>
-          <dt>{locale === "zh-CN" ? "运行尝试" : "Run attempts"}</dt>
-          <dd>{item.budgetUsage.runAttempts}</dd>
-        </div>
-        <div>
-          <dt>{locale === "zh-CN" ? "提供方用量" : "Provider usage"}</dt>
-          <dd>{item.budgetUsage.providerTokens === null
-            ? unknown
-            : item.budgetUsage.providerTokens}</dd>
-        </div>
-      </dl>
+      {item.requiredCriteriaTotal > 0 && <p className="work-criteria-summary">
+        {locale === "zh-CN" ? "验收标准" : "Acceptance criteria"} · {item.requiredCriteriaSatisfied}/{item.requiredCriteriaTotal}
+      </p>}
       <footer>
+        {item.nextAction.reason !== "none" && <span className="work-next-actor">
+          {locale === "zh-CN" ? "下一步由" : "Next up"} {nextActor}
+        </span>}
         {onOpenAction && workActionTarget(item) ? <button
           aria-label={locale === "zh-CN"
             ? `查看 TASK-${item.taskDisplayNumber} 的下一步：${label(item.nextAction.reason, locale)}`
@@ -209,7 +204,7 @@ function WorkCard({
           className="work-inline-link work-next-action"
           onClick={() => onOpenAction(item)}
           type="button"
-        >{locale === "zh-CN" ? "前往下一步" : "Open next step"} · {label(item.nextAction.reason, locale)}</button>
+        >{label(item.nextAction.reason, locale)} <span aria-hidden="true">→</span></button>
           : <span>{locale === "zh-CN" ? "下一步" : "Next"}: {label(item.nextAction.reason, locale)}</span>}
         {item.latestResultId && (
           <span>{locale === "zh-CN" ? "最新结果" : "Latest Result"}: {item.latestResultCurrent
@@ -248,8 +243,26 @@ export function WorkWorkspace({
   scope, attention = "", filterRoomId = "", filterAgentId = "", priority = "",
   searchContext = "", onFiltersChange, onClearFilters
 }: WorkWorkspaceProps) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersId = useId();
+  const zh = locale === "zh-CN";
+  const activeFilters = [
+    attention && `${zh ? "关注" : "Attention"}: ${label(attention, locale)}`,
+    filterRoomId && `${zh ? "房间" : "Room"}: ${roomNames.get(filterRoomId) ?? (zh ? "房间不可用" : "Room unavailable")}`,
+    filterAgentId && `${zh ? "智能体" : "Agent"}: ${agentNames.get(filterAgentId) ?? (zh ? "智能体不可用" : "Agent unavailable")}`,
+    priority && `${zh ? "优先级" : "Priority"}: ${label(priority, locale)}`,
+    lifecycleState && `${zh ? "状态" : "State"}: ${label(lifecycleState, locale)}`,
+    ownerMemberId && `${zh ? "负责人" : "Owner"}: ${memberNames.get(ownerMemberId) ?? (zh ? "成员不可用" : "Member unavailable")}`
+  ].filter(Boolean);
+  const hasFilters = Boolean(search || activeFilters.length);
+  const hasAdvancedFilters = Boolean(onFiltersChange || onLifecycleStateChange || onOwnerMemberIdChange);
+  const clearFilters = () => {
+    if (onClearFilters) { onClearFilters(); return; }
+    onLifecycleStateChange?.(""); onOwnerMemberIdChange?.(""); onSearchChange?.("");
+    onFiltersChange?.({ attention: "", filterRoomId: "", filterAgentId: "", priority: "" });
+  };
   const groups: Array<{ key: GroupKey; title: string }> = [
-    { key: "human", title: locale === "zh-CN" ? "需要我处理" : "Needs human action" },
+    { key: "human", title: locale === "zh-CN" ? "待处理" : "Needs attention" },
     { key: "executing", title: locale === "zh-CN" ? "正在执行" : "Executing" },
     { key: "review", title: locale === "zh-CN" ? "等待审核" : "Waiting for review" },
     { key: "blocked", title: locale === "zh-CN" ? "阻塞与风险" : "Blocked and at risk" },
@@ -263,18 +276,12 @@ export function WorkWorkspace({
   return (
     <section className="work-workspace" aria-label={locale === "zh-CN" ? "工作台" : "Work"}>
       <header className="work-intro">
-        <div>
-          <p className="eyebrow">{locale === "zh-CN" ? "TEAM WORKBENCH" : "TEAM WORKBENCH"}</p>
-          <h3>{locale === "zh-CN" ? "从工作开始，而不是从聊天记录开始" : "Start from work, not chat history"}</h3>
-          <p>{locale === "zh-CN"
-            ? "这里展示你有权访问的 Task、关注原因、最新 Run/Result 与下一步。"
-            : "Authorized Tasks, every attention reason, the latest Run/Result, and the next action."}</p>
-        </div>
+        <h3>{locale === "zh-CN" ? "任务" : "Tasks"}</h3>
         <div className="work-toolbar">
           {onCreateTask && <button className="work-inline-link work-create-task" disabled={createTaskDisabled} onClick={onCreateTask} type="button">{locale === "zh-CN" ? "新建任务" : "New Task"}</button>}
           <div aria-label={locale === "zh-CN" ? "工作范围" : "Work scope"} className="work-scope" role="group">
             <button aria-pressed={scope === "mine"} onClick={() => onScopeChange("mine")} type="button">{locale === "zh-CN" ? "我的" : "Mine"}</button>
-            <button aria-pressed={scope === "team"} onClick={() => onScopeChange("team")} type="button">Team</button>
+            <button aria-pressed={scope === "team"} onClick={() => onScopeChange("team")} type="button">{locale === "zh-CN" ? "团队" : "Team"}</button>
           </div>
           <button className="work-refresh" disabled={loading} onClick={onRefresh} type="button">
             {loading ? (locale === "zh-CN" ? "刷新中…" : "Refreshing…") : (locale === "zh-CN" ? "刷新" : "Refresh")}
@@ -282,9 +289,22 @@ export function WorkWorkspace({
           {onCopyLink && <button className="work-inline-link" onClick={() => void onCopyLink()} type="button">{locale === "zh-CN" ? "复制当前链接" : "Copy current link"}</button>}
         </div>
       </header>
-      {(onLifecycleStateChange || onOwnerMemberIdChange || onSearchChange || onFiltersChange) && <div className="work-filters" aria-label={locale === "zh-CN" ? "筛选工作" : "Filter work"}>
+      {(hasAdvancedFilters || onSearchChange) && <section className="work-filter-bar" aria-label={locale === "zh-CN" ? "筛选工作" : "Filter work"}>
+        <div className="work-filters work-filter-primary">
         {onSearchChange && <WorkSearchInput key={searchContext} value={search} locale={locale} onChange={onSearchChange} />}
-        {onFiltersChange && <>
+        {onFiltersChange && <div className="work-quick-filters" role="group" aria-label={locale === "zh-CN" ? "快捷筛选" : "Quick filters"}>
+          {attentionFilters.slice(0, 3).map((filter) => <button className="work-inline-link" type="button" aria-pressed={attention === filter.value} key={filter.value} onClick={() => onFiltersChange({ attention: attention === filter.value ? "" : filter.value })}>{locale === "zh-CN" ? filter.zh : filter.en}</button>)}
+        </div>}
+        {hasAdvancedFilters && <button aria-expanded={filtersOpen} aria-controls={filtersId} className="work-inline-link work-filter-toggle" type="button" onClick={() => setFiltersOpen((open) => !open)}>
+          {locale === "zh-CN" ? "筛选" : "Filters"}{activeFilters.length > 0 ? ` (${activeFilters.length})` : ""}
+        </button>}
+        {hasFilters && <button className="work-inline-link" onClick={clearFilters} type="button">{locale === "zh-CN" ? "清除筛选" : "Clear filters"}</button>}
+        </div>
+        {activeFilters.length > 0 && <ul className="work-active-filters" aria-label={zh ? "已选筛选" : "Active filters"}>
+          {activeFilters.map((filter) => <li key={String(filter)}>{filter}</li>)}
+        </ul>}
+        {hasAdvancedFilters && <div className="work-filters work-filter-advanced" id={filtersId} hidden={!filtersOpen}>
+          {onFiltersChange && <>
           <label>{locale === "zh-CN" ? "关注原因" : "Attention"}<select value={attention} onChange={(event) => onFiltersChange({ attention: event.target.value as WorkFilters["attention"] })}>
             <option value="">{locale === "zh-CN" ? "全部原因" : "All reasons"}</option>
             {attentionFilters.map((filter) => <option value={filter.value} key={filter.value}>{locale === "zh-CN" ? filter.zh : filter.en}</option>)}
@@ -303,9 +323,6 @@ export function WorkWorkspace({
             <option value="">{locale === "zh-CN" ? "全部优先级" : "All priorities"}</option>
             {["low", "normal", "high", "urgent"].map((value) => <option value={value} key={value}>{label(value, locale)}</option>)}
           </select></label>
-          <div className="work-quick-filters" role="group" aria-label={locale === "zh-CN" ? "快捷筛选" : "Quick filters"}>
-            {attentionFilters.slice(0, 3).map((filter) => <button className="work-inline-link" type="button" aria-pressed={attention === filter.value} key={filter.value} onClick={() => onFiltersChange({ attention: attention === filter.value ? "" : filter.value })}>{locale === "zh-CN" ? filter.zh : filter.en}</button>)}
-          </div>
         </>}
         {onLifecycleStateChange && <label>{locale === "zh-CN" ? "任务状态" : "Task state"}<select onChange={(event) => onLifecycleStateChange(event.target.value)} value={lifecycleState}>
           <option value="">{locale === "zh-CN" ? "全部状态" : "All states"}</option>
@@ -315,16 +332,15 @@ export function WorkWorkspace({
           <option value="">{locale === "zh-CN" ? "全部负责人" : "All owners"}</option>
           {[...memberNames].map(([memberId, name]) => <option key={memberId} value={memberId}>{name}</option>)}
         </select></label>}
-        {(lifecycleState || ownerMemberId || search || attention || filterRoomId || filterAgentId || priority) && <button className="work-inline-link" onClick={() => { if (onClearFilters) { onClearFilters(); return; } onLifecycleStateChange?.(""); onOwnerMemberIdChange?.(""); onSearchChange?.(""); onFiltersChange?.({ attention: "", filterRoomId: "", filterAgentId: "", priority: "" }); }} type="button">{locale === "zh-CN" ? "清除筛选" : "Clear filters"}</button>}
-      </div>}
+        </div>}
+      </section>}
       {error && <p className="work-error" role="alert">{error}</p>}
       {!loading && !error && items.length === 0 ? (
         <div className="work-empty">
-          <span>✓</span>
-          <strong>{locale === "zh-CN" ? "当前范围没有工作项" : "No work items in this scope"}</strong>
+          <strong>{hasFilters ? (zh ? "没有匹配的任务" : "No matching tasks") : (zh ? "还没有任务" : "No tasks yet")}</strong>
           <p>{locale === "zh-CN"
-            ? (search ? "没有匹配的任务；可调整搜索词或清除筛选。" : onCreateTask ? "可切换范围，或使用“新建任务”在当前 Room 中创建 Task。" : "可切换范围，或在 Room 中创建明确的 Task。")
-            : (search ? "No matching Tasks; adjust your search or clear the filters." : onCreateTask ? "Change scope or use New Task to create work in the selected Room." : "Change scope or create an explicit Task in a Room.")}</p>
+            ? (hasFilters ? "调整搜索词或清除筛选后再试。" : onCreateTask ? "新建任务，写下目标并安排下一步。" : "切换范围，或进入房间创建任务。")
+            : (hasFilters ? "Adjust your search or clear the filters." : onCreateTask ? "Create a task, describe the goal and plan the next step." : "Change scope or open a room to create a task.")}</p>
         </div>
       ) : (
         <div className="work-groups">

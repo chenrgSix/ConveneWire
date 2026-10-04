@@ -7,6 +7,7 @@ import { JSDOM } from "jsdom";
 import React from "react";
 
 import { WorkWorkspace } from "../src/features/work/WorkWorkspace.js";
+import type { WorkFilters } from "../src/features/work/work-filters.js";
 
 type Item = WorkbenchPage["items"][number];
 
@@ -159,11 +160,12 @@ test("Work groups authoritative items and opens by opaque Task identity", async 
     assert.ok(page.getByText("已阻塞"));
     assert.ok(page.getAllByText("已暂停").length >= 1);
     assert.ok(page.getByText("运行时不可用"));
-    assert.equal(page.getAllByText("1/3").length, 3);
-    assert.equal(page.getAllByText("未知").length, 3);
+    assert.equal(page.getAllByText("验收标准 · 1/3").length, 3);
+    assert.equal(page.queryByText("提供方用量"), null);
+    assert.equal(page.queryByText("运行尝试"), null);
     assert.doesNotMatch(dom.window.document.body.textContent ?? "", /task_opaque/u);
     assert.doesNotMatch(dom.window.document.body.textContent ?? "", /33%|percentage/u);
-    fireEvent.click(page.getByRole("button", { name: "打开 TASK-18" }));
+    fireEvent.click(page.getByRole("button", { name: "打开 TASK-18：Resolve human and Runtime blocks" }));
     assert.deepEqual(opened, [{
       taskId: "task_opaque_workbench_0002",
       roomId: "room_workbench_0001"
@@ -201,6 +203,7 @@ test("work filters and pagination use explicit root callbacks and preserve autho
   try {
     const view = render(<WorkWorkspace {...props} />);
     const page = within(dom.window.document.body);
+    fireEvent.click(page.getByRole("button", { name: "Filters (2)" }));
     fireEvent.change(page.getByRole("combobox", { name: "Task state" }), { target: { value: "completed" } });
     fireEvent.change(page.getByRole("combobox", { name: "Owner" }), { target: { value: "" } });
     assert.deepEqual(states, ["completed"]);
@@ -219,4 +222,80 @@ test("work filters and pagination use explicit root callbacks and preserve autho
     cleanup();
     dom.window.close();
   }
+});
+
+test("advanced filters stay compact and show restored selections before the panel opens", async () => {
+  const dom = installDom();
+  const changes: WorkFilters[] = [];
+  let cleared = 0;
+  const props = {
+    agentNames: new Map([["agent_workbench_0001", "Builder"]]), error: null, items: [], loading: false,
+    locale: "zh-CN" as const, memberNames: new Map([["member_workbench_0001", "Alice"]]),
+    roomNames: new Map([["room_workbench_0001", "delivery"]]), scope: "team" as const,
+    onOpenTask: () => undefined, onRefresh: () => undefined, onScopeChange: () => undefined,
+    onSearchChange: () => undefined, onLifecycleStateChange: () => undefined, onOwnerMemberIdChange: () => undefined,
+    onFiltersChange: (filters: WorkFilters) => changes.push(filters), onClearFilters: () => { cleared += 1; }
+  };
+  const { cleanup, fireEvent, render, within } = await import("@testing-library/react");
+  try {
+    const view = render(<WorkWorkspace {...props} />);
+    const page = within(dom.window.document.body);
+    assert.equal(page.getByRole("button", { name: "筛选", exact: true }).getAttribute("aria-expanded"), "false");
+    assert.equal(page.queryAllByRole("combobox").length, 0);
+    assert.ok(page.getByRole("searchbox", { name: "搜索工作" }));
+    fireEvent.click(page.getByRole("button", { name: "待输入", exact: true }));
+    assert.deepEqual(changes, [{ attention: "needs_input" }]);
+
+    view.rerender(<WorkWorkspace {...props} attention="needs_input" filterRoomId="room_workbench_0001"
+      filterAgentId="agent_workbench_0001" priority="urgent" lifecycleState="active" ownerMemberId="member_workbench_0001" />);
+    const toggle = page.getByRole("button", { name: "筛选 (6)", exact: true });
+    assert.equal(toggle.getAttribute("aria-expanded"), "false");
+    assert.equal(page.queryAllByRole("combobox").length, 0);
+    const selections = page.getByRole("list", { name: "已选筛选" });
+    assert.ok(within(selections).getByText("房间: delivery"));
+    assert.ok(within(selections).getByText("负责人: Alice"));
+    assert.equal(within(selections).getAllByRole("listitem").length, 6);
+    assert.ok(page.getByText("没有匹配的任务"));
+    assert.equal(page.getByRole("button", { name: "待输入", exact: true }).getAttribute("aria-pressed"), "true");
+    fireEvent.click(toggle);
+    assert.equal(toggle.getAttribute("aria-expanded"), "true");
+    assert.equal(page.getAllByRole("combobox").length, 6);
+    assert.equal((page.getByRole("combobox", { name: "筛选房间" }) as HTMLSelectElement).value, "room_workbench_0001");
+    fireEvent.change(page.getByRole("combobox", { name: "筛选房间" }), { target: { value: "" } });
+    assert.deepEqual(changes.at(-1), { filterRoomId: "" });
+    fireEvent.click(toggle);
+    fireEvent.click(page.getByRole("button", { name: "清除筛选" }));
+    assert.equal(cleared, 1, "clearing stays available while advanced controls are hidden");
+    view.rerender(<WorkWorkspace {...props} />);
+    assert.equal(page.queryByRole("list", { name: "已选筛选" }), null);
+    assert.equal(page.queryByRole("button", { name: "清除筛选" }), null);
+    assert.ok(page.getByText("还没有任务"));
+  } finally { cleanup(); dom.window.close(); }
+});
+
+test("cards name the actual next actor without claiming that another member's work is mine", async () => {
+  const dom = installDom();
+  const pending = item({ latestRun: null, requiredCriteriaSatisfied: 0, requiredCriteriaTotal: 0,
+    nextAction: { actorKind: "member", reason: "provide_input", sourceId: null,
+      expectedMemberId: "member_workbench_0002", expectedAgentId: null } });
+  const props = {
+    agentNames: new Map<string, string>(), error: null, items: [pending], loading: false,
+    locale: "zh-CN" as const, memberNames: new Map([["member_workbench_0001", "Alice"], ["member_workbench_0002", "Bob"]]),
+    roomNames: new Map([["room_workbench_0001", "delivery"]]), onOpenTask: () => undefined,
+    onOpenAction: () => undefined, onRefresh: () => undefined, onScopeChange: () => undefined
+  };
+  const { cleanup, render, within } = await import("@testing-library/react");
+  try {
+    const view = render(<WorkWorkspace {...props} scope="team" />);
+    const page = within(dom.window.document.body);
+    assert.ok(page.getByRole("button", { name: "打开 TASK-17：Verify the Workbench" }));
+    assert.ok(page.getByRole("heading", { name: "待处理", exact: true }));
+    assert.ok(page.getByText("下一步由 Bob"));
+    assert.ok(page.getByText(/负责人 Alice/u));
+    assert.ok(page.getByRole("button", { name: /查看 TASK-17 的下一步：提供输入/u }));
+    assert.doesNotMatch(dom.window.document.body.textContent ?? "", /需要我处理|0\/0|提供方用量|运行尝试/u);
+    view.rerender(<WorkWorkspace {...props} scope="mine" />);
+    assert.ok(page.getByText("下一步由 Bob"), "owning a task does not mean owning its next action");
+    assert.equal(page.queryByText("需要我处理"), null);
+  } finally { cleanup(); dom.window.close(); }
 });

@@ -239,7 +239,7 @@ test("a committed retry's late response cannot revoke a replacement local sessio
   try {
     render(<App />);
     const page = within(dom.window.document.body);
-    fireEvent.click(await page.findByRole("button", { name: `Open TASK-${created.taskDisplayNumber}` }));
+    fireEvent.click(await page.findByRole("button", { name: `Open TASK-${created.taskDisplayNumber}: ${created.title}` }));
     await page.findByRole("heading", { name: created.title });
     fireEvent.click(page.getByRole("tab", { name: "Runs" }));
     const authorize = await page.findByRole("checkbox", { name: "I explicitly authorize one new execution attempt." });

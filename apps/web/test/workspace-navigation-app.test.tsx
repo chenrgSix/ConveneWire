@@ -222,9 +222,10 @@ test("browser back and forward restore Task, tab, scope, lifecycle filter and se
   const search = await f.page.findByRole("searchbox", { name: "Search work" });
   f.fireEvent.change(search, { target: { value: "Navigation" } });
   await f.waitFor(() => assert.equal(f.query().get("search"), "Navigation"));
+  f.fireEvent.click(f.page.getByRole("button", { name: "Filters", exact: true }));
   f.fireEvent.change(f.page.getByRole("combobox", { name: "Task state" }), { target: { value: f.firstTask.lifecycleState } });
   f.fireEvent.click(f.page.getByRole("button", { name: "Team", exact: true }));
-  f.fireEvent.click(await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` }));
+  f.fireEvent.click(await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` }));
   await f.expectTab(f.firstTask, "Overview");
   f.fireEvent.click(f.page.getByRole("tab", { name: "Results", exact: true }));
   await f.expectTab(f.firstTask, "Results");
@@ -233,6 +234,7 @@ test("browser back and forward restore Task, tab, scope, lifecycle filter and se
   await f.traverse("back");
   await f.page.findByRole("searchbox", { name: "Search work" });
   assert.equal((f.page.getByRole("searchbox", { name: "Search work" }) as HTMLInputElement).value, "Navigation");
+  f.fireEvent.click(f.page.getByRole("button", { name: "Filters (1)", exact: true }));
   assert.equal((f.page.getByRole("combobox", { name: "Task state" }) as HTMLSelectElement).value, f.firstTask.lifecycleState);
   assert.equal(f.page.getByRole("button", { name: "Team", exact: true }).getAttribute("aria-pressed"), "true");
   await f.traverse("back");
@@ -252,7 +254,7 @@ test("browser back and forward restore Task, tab, scope, lifecycle filter and se
   assert.equal(f.query().get("tab"), "results");
   assert.equal(f.query().get("search"), "Navigation");
   f.fireEvent.click(f.page.getByRole("button", { name: "← Work", exact: true }));
-  f.fireEvent.click(await f.page.findByRole("button", { name: `Open TASK-${f.secondTask.taskDisplayNumber}` }));
+  f.fireEvent.click(await f.page.findByRole("button", { name: `Open TASK-${f.secondTask.taskDisplayNumber}: ${f.secondTask.title}` }));
   await f.expectTab(f.secondTask, "Overview");
   f.fireEvent.click(f.page.getByRole("tab", { name: "Runs", exact: true }));
   await f.expectTab(f.secondTask, "Runs");

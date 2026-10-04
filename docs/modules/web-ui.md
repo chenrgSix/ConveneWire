@@ -1325,3 +1325,13 @@ its delivery state is recorded only in [the task register](../TASKS.md).
 Advanced invitations remain reachable when the configured manual HTTPS or Relay
 transport is ready. They retain their existing invitation format and transport;
 LAN readiness alone cannot advertise an advanced invitation path.
+
+## Workbench reading hierarchy
+
+WEB-095 keeps the search and common attention filters visible while disclosing
+advanced filters on demand. Active filters remain visible when collapsed,
+including restored links. Cards prioritize the task title, owner, actual next
+actor and action; empty diagnostic counters no longer compete with those
+fields. The human-action group does not claim every item belongs to the current
+member. Accessible task names include their titles. See the
+[current-source review](../acceptance/web-095-workbench-review.md).

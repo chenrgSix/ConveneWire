@@ -1,4 +1,27 @@
 .work-filters, .work-pagination { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.work-workspace .work-intro { align-items: center; flex-wrap: wrap; gap: 12px; }
+.work-workspace .work-intro h3 { font-size: 21px; line-height: 1.35; letter-spacing: -.02em; }
+.work-workspace .work-toolbar { flex: 1 1 auto; justify-content: flex-end; }
+.work-filter-bar { display: grid; gap: 12px; min-width: 0; }
+.work-filter-primary { align-items: center; }
+.work-filter-primary .work-search > span, .work-filter-primary .work-search small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.work-filter-advanced { padding: 14px; border: 1px solid var(--cw-border); border-radius: 10px; background: var(--cw-surface-inset); }
+.work-filter-advanced[hidden] { display: none; }
+.work-filter-advanced label { flex: 1 1 180px; }
+.work-filter-advanced select { width: 100%; }
+.work-filter-toggle[aria-expanded="true"] { border-color: var(--cw-accent-border); background: var(--cw-accent-soft); }
+.work-active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.work-active-filters li { max-width: 100%; padding: 5px 9px; border-radius: 6px; background: var(--cw-surface-raised); color: var(--cw-text-secondary); font-size: 12px; overflow-wrap: anywhere; }
+.work-card .work-card-open strong { white-space: normal; overflow-wrap: anywhere; font-size: 16px; line-height: 1.45; }
+.work-card .work-card-open small { color: var(--cw-text-secondary); font-size: 12px; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+.work-card .work-task-number, .work-card .work-priority { font-size: 11px; }
+.work-card .work-state-row span, .work-card .work-attention-list li { font-size: 11px; }
+.work-criteria-summary { margin: 0; color: var(--cw-text-secondary); font-size: 12px; }
+.work-workspace .work-card footer { flex-wrap: wrap; align-items: center; font-size: 12px; }
+.work-workspace .work-card footer span { white-space: normal; overflow-wrap: anywhere; }
+.work-card .work-next-actor { flex: 1 1 140px; color: var(--cw-text-secondary); }
+.work-card footer .work-next-action { font-size: 13px; }
+.work-card-open:focus-visible, .work-filter-bar button:focus-visible, .work-filter-bar select:focus-visible { outline: 2px solid var(--cw-focus); outline-offset: 3px; }
 .work-filters label { display: grid; min-width: 150px; gap: 6px; color: #bac6ac; font-size: 12px; }
 .work-filters select { max-width: 240px; padding: 9px 11px; border: 1px solid #46523a; border-radius: 8px; background: #171d13; color: #e0e8d8; font: inherit; }
 .work-toolbar { flex-wrap: wrap; }

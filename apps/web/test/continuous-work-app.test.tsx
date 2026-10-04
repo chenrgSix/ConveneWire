@@ -100,7 +100,7 @@ async function fixture(t: TestContext) {
     const work = page.getAllByRole("button", { name: "Work", exact: true })
       .find((button) => button.className.includes("product-work-link"))!;
     testing.fireEvent.click(work);
-    testing.fireEvent.click(await page.findByRole("button", { name: `Open TASK-${task.taskDisplayNumber}` }));
+    testing.fireEvent.click(await page.findByRole("button", { name: `Open TASK-${task.taskDisplayNumber}: ${task.title}` }));
     await page.findByRole("heading", { name: task.title });
     testing.fireEvent.click(page.getByRole("button", { name: "Open this Task in Room" }));
     const selector = await page.findByRole("combobox", { name: "Current Task" });
@@ -118,7 +118,7 @@ async function fixture(t: TestContext) {
 test("Room drafts survive Task switches and a remounted App without sending", async (t) => {
   const f = await fixture(t);
   const view = f.render(<App />);
-  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   let editor = await f.openRoomTask(f.firstTask);
   f.fireEvent.change(editor, { target: { value: "First Task's unsent draft" } });
   await f.page.findByText(/Saved in this tab/u);
@@ -148,7 +148,7 @@ test("Room drafts survive Task switches and a remounted App without sending", as
 test("Enter sends an ordinary Room message through the real App and Server", async (t) => {
   const f = await fixture(t);
   f.render(<App />);
-  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   const editor = await f.openRoomTask(f.firstTask);
   f.fireEvent.change(editor, { target: { value: "通过回车发送的普通房间消息" } });
   assert.equal(f.fireEvent.keyDown(editor, { key: "Enter", shiftKey: true }), true);
@@ -165,7 +165,7 @@ test("Enter sends an ordinary Room message through the real App and Server", asy
 test("a management visit preserves the selected Room Task and unsent draft without sending", async (t) => {
   const f = await fixture(t);
   f.render(<App />);
-  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   const editor = await f.openRoomTask(f.firstTask);
   f.fireEvent.change(editor, { target: { value: "Continue after configuring the team" } });
   await f.page.findByText(/Saved in this tab/u);
@@ -186,7 +186,7 @@ for (const exit of ["logout", "session expiry"] as const) {
   test(`${exit} clears App drafts and failed messages before local reauthentication`, async (t) => {
     const f = await fixture(t);
     f.render(<App />);
-    await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+    await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
     let editor = await f.openRoomTask(f.firstTask);
     f.setFailMessages(true);
     f.fireEvent.change(editor, { target: { value: "Failed ordinary message" } });
@@ -219,7 +219,7 @@ for (const exit of ["logout", "session expiry"] as const) {
 test("Work creates a Task in the selected Room and opens its details without switching to Chat", async (t) => {
   const f = await fixture(t);
   f.render(<App />);
-  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   const roomSelector = f.page.getByRole("combobox", { name: "Select Room" }) as HTMLSelectElement;
   const originalRoom = roomSelector.value;
   f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
@@ -260,7 +260,7 @@ test("native acceptance regression: explicitly assigned new Task routes a real s
   } });
   assert.equal(joined.statusCode, 200, joined.body);
   f.render(<App />);
-  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}` });
+  await f.page.findByRole("button", { name: `Open TASK-${f.firstTask.taskDisplayNumber}: ${f.firstTask.title}` });
   f.fireEvent.click(await f.page.findByRole("button", { name: "New Task", exact: true }));
   const dialog = f.within(await f.page.findByRole("dialog", { name: "Create long-lived Task" }));
   f.fireEvent.change(dialog.getByLabelText("Task title"), { target: { value: "Assigned native task" } });

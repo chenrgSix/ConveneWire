@@ -207,7 +207,7 @@ test("an expired Cookie on a protected GET returns App to existing-member recove
     await page.findByRole("heading", { name: "回到你的 Team" });
     assert.ok(page.getByRole("heading", { name: "成员重新登录" }));
     assert.ok(page.getByLabelText("一次性成员恢复码"));
-    assert.equal(page.queryByRole("heading", { name: "从工作开始，而不是从聊天记录开始" }), null);
+    assert.equal(page.queryByRole("heading", { name: "任务", exact: true }), null);
     const calls = mock.requests.filter((request) => request.path.includes("/work-items?"));
     assert.ok(calls.length >= 2);
     assert.equal(calls.at(-1)?.credentials, "same-origin");
@@ -246,7 +246,7 @@ test("a protected 403 reports denied access without signing out the current memb
     mock.workStatus(403);
     fireEvent.click(refresh);
     assert.match((await page.findByRole("alert")).textContent ?? "", /Room access denied/u);
-    assert.ok(page.getByRole("heading", { name: "从工作开始，而不是从聊天记录开始" }));
+    assert.ok(page.getByRole("heading", { name: "任务", exact: true }));
     assert.equal(page.queryByRole("heading", { name: "回到你的 Team" }), null);
     assert.equal(expiredEvents, 0);
   } finally { cleanup(); globalThis.fetch = originalFetch; dom.window.close(); }
@@ -312,7 +312,7 @@ test("a late 401 from an older session generation cannot sign out the new sessio
     assert.equal(error.name, "AbortError");
     assert.equal(expiredEvents, 0);
     assert.equal(page.queryByRole("heading", { name: "回到你的 Team" }), null);
-    assert.ok(page.getByRole("heading", { name: "从工作开始，而不是从聊天记录开始" }));
+    assert.ok(page.getByRole("heading", { name: "任务", exact: true }));
     // Current-generation failures still invalidate the session normally.
     mock.workStatus(401);
     fireEvent.click(page.getByRole("button", { name: "刷新", exact: true }));
